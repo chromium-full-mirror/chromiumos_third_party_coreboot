@@ -222,6 +222,11 @@ static int sst_erase(struct spi_flash *flash, u32 offset, size_t len)
 	return spi_flash_cmd_erase(flash, CMD_SST_SE, offset, len);
 }
 
+static int sst_status(struct spi_flash *flash, u8 *reg)
+{
+	return spi_flash_cmd(flash->spi, CMD_SST_RDSR, reg, sizeof(*reg));
+}
+
 static int
 sst_unlock(struct spi_flash *flash)
 {
@@ -273,6 +278,7 @@ spi_flash_probe_sst(struct spi_slave *spi, u8 *idcode)
 
 	stm->flash.write = sst_write;
 	stm->flash.erase = sst_erase;
+	stm->flash.status = sst_status;
 	stm->flash.read = spi_flash_cmd_read_fast;
 	stm->flash.sector_size = SST_SECTOR_SIZE;
 	stm->flash.size = stm->flash.sector_size * params->nr_sectors;

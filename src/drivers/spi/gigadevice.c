@@ -194,6 +194,11 @@ static int gigadevice_erase(struct spi_flash *flash, u32 offset, size_t len)
 	return spi_flash_cmd_erase(flash, CMD_GD25_SE, offset, len);
 }
 
+static int gigadevice_status(struct spi_flash *flash, u8 *reg)
+{
+	return spi_flash_cmd(flash->spi, CMD_GD25_RDSR, reg, sizeof(*reg));
+}
+
 struct spi_flash *spi_flash_probe_gigadevice(struct spi_slave *spi, u8 *idcode)
 {
 	const struct gigadevice_spi_flash_params *params;
@@ -230,6 +235,7 @@ struct spi_flash *spi_flash_probe_gigadevice(struct spi_slave *spi, u8 *idcode)
 
 	stm->flash.write = gigadevice_write;
 	stm->flash.erase = gigadevice_erase;
+	stm->flash.status = gigadevice_status;
 #if CONFIG_SPI_FLASH_NO_FAST_READ
 	stm->flash.read = spi_flash_cmd_read_slow;
 #else

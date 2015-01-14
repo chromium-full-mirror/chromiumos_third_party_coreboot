@@ -305,6 +305,7 @@ struct spi_flash *spi_flash_probe(unsigned int bus, unsigned int cs,
 	tseg_relocate((void **)&flash->read);
 	tseg_relocate((void **)&flash->write);
 	tseg_relocate((void **)&flash->erase);
+	tseg_relocate((void **)&flash->status);
 	tseg_relocate((void **)&flash->name);
 #endif
 
