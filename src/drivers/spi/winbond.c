@@ -182,6 +182,11 @@ static int winbond_erase(struct spi_flash *flash, u32 offset, size_t len)
 	return spi_flash_cmd_erase(flash, CMD_W25_SE, offset, len);
 }
 
+static int winbond_status(struct spi_flash *flash, u8 *reg)
+{
+	return spi_flash_cmd(flash->spi, CMD_W25_RDSR, reg, sizeof(*reg));
+}
+
 struct spi_flash *spi_flash_probe_winbond(struct spi_slave *spi, u8 *idcode)
 {
 	const struct winbond_spi_flash_params *params;
@@ -216,6 +221,7 @@ struct spi_flash *spi_flash_probe_winbond(struct spi_slave *spi, u8 *idcode)
 
 	stm->flash.write = winbond_write;
 	stm->flash.erase = winbond_erase;
+	stm->flash.status = winbond_status;
 #if CONFIG_SPI_FLASH_NO_FAST_READ
 	stm->flash.read = spi_flash_cmd_read_slow;
 #else

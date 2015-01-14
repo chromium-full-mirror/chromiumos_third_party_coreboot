@@ -204,6 +204,11 @@ static int spansion_erase(struct spi_flash *flash, u32 offset, size_t len)
 	return spi_flash_cmd_erase(flash, CMD_S25FLXX_SE, offset, len);
 }
 
+static int spansion_status(struct spi_flash *flash, u8 *reg)
+{
+	return spi_flash_cmd(flash->spi, CMD_S25FLXX_RDSR, reg, sizeof(*reg));
+}
+
 struct spi_flash *spi_flash_probe_spansion(struct spi_slave *spi, u8 *idcode)
 {
 	const struct spansion_spi_flash_params *params;
@@ -239,6 +244,7 @@ struct spi_flash *spi_flash_probe_spansion(struct spi_slave *spi, u8 *idcode)
 
 	spsn->flash.write = spansion_write;
 	spsn->flash.erase = spansion_erase;
+	spsn->flash.status = spansion_status;
 	spsn->flash.read = spi_flash_cmd_read_fast;
 	spsn->flash.sector_size = params->page_size * params->pages_per_sector;
 	spsn->flash.size = spsn->flash.sector_size * params->nr_sectors;
