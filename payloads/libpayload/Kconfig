@@ -313,6 +313,12 @@ config COREBOOT_VIDEO_CONSOLE
 	  Say Y here if coreboot switched to a graphics mode and
 	  your payload wants to use it.
 
+config PC_I8042
+	bool "A common PC i8042 driver"
+	default n
+	help
+	  To be used by PC_KEYBOARD and PC_MOUSE.
+
 config PC_KEYBOARD
 	bool "Allow input from a PC keyboard"
 	default y if ARCH_X86 # uses IO
