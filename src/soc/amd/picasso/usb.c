@@ -40,7 +40,7 @@ static struct device_operations usb_ops = {
 	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init = picasso_usb_init,
-	.scan_bus = scan_usb_bus,
+	.scan_bus = scan_static_bus,
 	.acpi_name = soc_acpi_name,
 	.ops_pci = &lops_pci,
 };
