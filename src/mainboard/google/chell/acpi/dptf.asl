@@ -19,7 +19,7 @@
  */
 
 #define DPTF_CPU_PASSIVE        80
-#define DPTF_CPU_CRITICAL       99
+#define DPTF_CPU_CRITICAL       100
 
 #define DPTF_TSR0_SENSOR_ID	1
 #define DPTF_TSR0_SENSOR_NAME	"Ambient"
@@ -58,7 +58,7 @@ Name (CHPS, Package () {
 
 Name (DTRT, Package () {
 	/* CPU Throttle Effect on CPU */
-	Package () { \_SB.PCI0.B0D4, \_SB.PCI0.B0D4, 100, 50, 0, 0, 0, 0 },
+	Package () { \_SB.PCI0.B0D4, \_SB.PCI0.B0D4, 100, 10, 0, 0, 0, 0 },
 
 	/* CPU Effect on Temp Sensor 0 */
 	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR0, 100, 600, 0, 0, 0, 0 },
