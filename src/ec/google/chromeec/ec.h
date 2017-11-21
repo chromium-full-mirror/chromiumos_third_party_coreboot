@@ -26,19 +26,19 @@ void google_chromeec_ioport_range(uint16_t *base, size_t *size);
 
 int google_chromeec_i2c_xfer(uint8_t chip, uint8_t addr, int alen,
 			     uint8_t *buffer, int len, int is_read);
-u32 google_chromeec_get_wake_mask(void);
-int google_chromeec_set_sci_mask(u32 mask);
-int google_chromeec_set_smi_mask(u32 mask);
-int google_chromeec_set_wake_mask(u32 mask);
+uint64_t google_chromeec_get_wake_mask(void);
+int google_chromeec_set_sci_mask(uint64_t mask);
+int google_chromeec_set_smi_mask(uint64_t mask);
+int google_chromeec_set_wake_mask(uint64_t mask);
 u8 google_chromeec_get_event(void);
 int google_ec_running_ro(void);
 void google_chromeec_init(void);
 
 /* Device events */
-uint32_t google_chromeec_get_device_enabled_events(void);
-int google_chromeec_set_device_enabled_events(uint32_t mask);
-uint32_t google_chromeec_get_device_current_events(void);
-void google_chromeec_log_device_events(uint32_t mask);
+uint64_t google_chromeec_get_device_enabled_events(void);
+int google_chromeec_set_device_enabled_events(uint64_t mask);
+uint64_t google_chromeec_get_device_current_events(void);
+void google_chromeec_log_device_events(uint64_t mask);
 
 /* If recovery mode is enabled and EC is not running RO firmware reboot. */
 void google_chromeec_early_init(void);
@@ -49,11 +49,11 @@ void google_chromeec_check_pd_image(int expected_type);
 int google_chromeec_check_feature(int feature);
 uint8_t google_chromeec_calc_checksum(const uint8_t *data, int size);
 u16 google_chromeec_get_board_version(void);
-u32 google_chromeec_get_events_b(void);
-int google_chromeec_clear_events_b(u32 mask);
+uint64_t google_chromeec_get_events_b(void);
+int google_chromeec_clear_events_b(uint64_t mask);
 int google_chromeec_kbbacklight(int percent);
 void google_chromeec_post(u8 postcode);
-void google_chromeec_log_events(u32 mask);
+void google_chromeec_log_events(uint64_t mask);
 int google_chromeec_vbnv_context(int is_read, uint8_t *data, int len);
 uint8_t google_chromeec_get_switches(void);
 
