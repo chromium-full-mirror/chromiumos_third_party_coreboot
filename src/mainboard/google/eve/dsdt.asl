@@ -67,4 +67,6 @@ DefinitionBlock(
 	{
 		#include "acpi/dptf.asl"
 	}
+	/* USB ports definition for HLK test */
+	#include "acpi/UsbPortXhci.asl"
 }
