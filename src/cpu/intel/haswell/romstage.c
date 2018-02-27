@@ -43,6 +43,7 @@
 #include "southbridge/intel/lynxpoint/pch.h"
 #include "southbridge/intel/lynxpoint/me.h"
 #include <security/tpm/tspi.h>
+#include <cpu/intel/romstage.h>
 
 static inline void reset_system(void)
 {
@@ -184,6 +185,4 @@ void romstage_common(const struct romstage_params *params)
 	romstage_handoff_init(wake_from_s3);
 
 	post_code(0x3f);
-	if (IS_ENABLED(CONFIG_TPM1) || IS_ENABLED(CONFIG_TPM2))
-		tpm_setup(wake_from_s3);
 }
