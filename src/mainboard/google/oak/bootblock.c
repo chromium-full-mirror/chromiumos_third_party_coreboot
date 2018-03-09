@@ -92,6 +92,8 @@ void bootblock_mainboard_init(void)
 
 	setup_chromeos_gpios();
 
-	if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT < 4)
+	if (!(IS_ENABLED(CONFIG_BOARD_GOOGLE_OAK) && board_id() >= 4) &&
+	    !((IS_ENABLED(CONFIG_BOARD_GOOGLE_ELM) ||
+	       IS_ENABLED(CONFIG_BOARD_GOOGLE_HANA)) && board_id() <= 4))
 		mt6391_enable_reset_when_ap_resets();
 }
