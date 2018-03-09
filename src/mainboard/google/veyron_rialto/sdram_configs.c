@@ -41,16 +41,10 @@ static struct rk3288_sdram_params sdram_configs[] = {
 #include "sdram_inf/sdram-unused.inc"			/* ram_code = 1101 */
 #include "sdram_inf/sdram-unused.inc"			/* ram_code = 1110 */
 #include "sdram_inf/sdram-unused.inc"			/* ram_code = 1111 */
-#include "sdram_inf/sdram-unused.inc"			/* ram_code = 000Z */
-#include "sdram_inf/sdram-unused.inc"			/* ram_code = 001Z */
-#include "sdram_inf/sdram-unused.inc"			/* ram_code = 00Z0 */
-#include "sdram_inf/sdram-unused.inc"			/* ram_code = 00Z1 */
-#include "sdram_inf/sdram-unused.inc"			/* ram_code = 00ZZ */
-#include "sdram_inf/sdram-unused.inc"			/* ram_code = 010Z */
-#include "sdram_inf/sdram-unused.inc"			/* ram_code = 011Z */
-#include "sdram_inf/sdram-unused.inc"			/* ram_code = 01Z0 */
+/* Brain, Jaq, Jerry, Mighty, Danger and Rialto
+ * cannot support tri-state, see b/36279493! */
 };
-_Static_assert(ARRAY_SIZE(sdram_configs) == 24, "Must have 24 sdram_configs!");
+_Static_assert(ARRAY_SIZE(sdram_configs) == 16, "Must have 16 sdram_configs!");
 
 const struct rk3288_sdram_params *get_sdram_config()
 {
