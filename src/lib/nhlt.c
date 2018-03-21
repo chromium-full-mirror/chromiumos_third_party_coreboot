@@ -275,7 +275,7 @@ static size_t calc_size(struct nhlt *nhlt)
 
 size_t nhlt_current_size(struct nhlt *nhlt)
 {
-	return calc_size(nhlt) + sizeof(acpi_header_t);
+	return calc_size(nhlt) + sizeof(acpi_header_t) + sizeof(uint32_t);
 }
 
 static void nhlt_free_resources(struct nhlt *nhlt)
@@ -386,6 +386,7 @@ static void nhlt_serialize_endpoints(struct nhlt *nhlt, struct cursor *cur)
 
 	for (i = 0; i < nhlt->num_endpoints; i++)
 		serialize_endpoint(&nhlt->endpoints[i], cur);
+	ser32(cur, nhlt->buffer_size);
 }
 
 uintptr_t nhlt_serialize(struct nhlt *nhlt, uintptr_t acpi_addr)

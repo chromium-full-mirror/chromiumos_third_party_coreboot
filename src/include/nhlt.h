@@ -207,6 +207,7 @@ enum {
 	NHLT_DIR_RENDER,
 	NHLT_DIR_CAPTURE,
 	NHLT_DIR_BIDIRECTIONAL,
+	NHLT_DIR_FEEDBACK,
 };
 
 /* Channel Mask for an endpoint. While they are prefixed with 'SPEAKER' the
@@ -301,6 +302,7 @@ struct nhlt {
 	uint8_t num_endpoints;
 	struct nhlt_endpoint endpoints[MAX_ENDPOINTS];
 	uint8_t current_instance_id[NHLT_MAX_LINK_TYPES];
+	uint32_t buffer_size;
 };
 
 struct nhlt_tdm_config {
@@ -311,6 +313,13 @@ struct nhlt_tdm_config {
 enum {
 	NHLT_TDM_BASIC,
 	NHLT_TDM_MIC_ARRAY,
+};
+
+struct maxm_array_config {
+	struct nhlt_tdm_config tdm_config1;
+	uint8_t feedback_virtual_slot;
+	uint16_t feedback_channels;
+	uint16_t feedback_valid_bits_per_sample;
 };
 
 struct nhlt_dmic_array_config {

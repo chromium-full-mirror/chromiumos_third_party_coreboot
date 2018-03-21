@@ -45,14 +45,26 @@ static unsigned long mainboard_write_acpi_tables(
 	/* 4 Channel DMIC array */
 	if (nhlt_soc_add_rt5514(nhlt, AUDIO_LINK_SSP0, 4))
 		printk(BIOS_ERR, "Couldn't add rt5514.\n");
+	nhlt->endpoints[nhlt->num_endpoints-1].instance_id = 0;
+	nhlt->endpoints[nhlt->num_endpoints-1].subsystem_id = 0x006B;
 
 	/* RT5663 Headset codec */
 	if (nhlt_soc_add_rt5663(nhlt, AUDIO_LINK_SSP1))
 		printk(BIOS_ERR, "Couldn't add headset codec.\n");
+	nhlt->endpoints[nhlt->num_endpoints-1].instance_id = 0;
+	nhlt->endpoints[nhlt->num_endpoints-1].subsystem_id = 0x006B;
+	nhlt->endpoints[nhlt->num_endpoints-2].instance_id = 0;
+	nhlt->endpoints[nhlt->num_endpoints-2].subsystem_id = 0x006B;
 
 	/* MAXIM98927 Smart Amps for left and right channel */
 	if (nhlt_soc_add_max98927(nhlt, AUDIO_LINK_SSP0))
 		printk(BIOS_ERR, "Couldn't add max98927\n");
+	nhlt->endpoints[nhlt->num_endpoints-1].instance_id = 0;
+	nhlt->endpoints[nhlt->num_endpoints-1].subsystem_id = 0x006B;
+	nhlt->endpoints[nhlt->num_endpoints-2].instance_id = 0;
+	nhlt->endpoints[nhlt->num_endpoints-2].subsystem_id = 0x006B;
+
+	nhlt->buffer_size = 0;
 
 	end_addr = nhlt_soc_serialize_oem_overrides(nhlt, start_addr,
 				    oem_id_maxim, oem_table_id_maxim, 0);
