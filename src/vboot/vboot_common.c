@@ -23,7 +23,9 @@
 #include <rules.h>
 #include <stddef.h>
 #include <string.h>
+#include <vboot/gbb.h>
 #include <vboot/vboot_common.h>
+#include <vboot/vbnv.h>
 
 int vboot_named_region_device(const char *name, struct region_device *rdev)
 {
@@ -33,6 +35,22 @@ int vboot_named_region_device(const char *name, struct region_device *rdev)
 int vboot_named_region_device_rw(const char *name, struct region_device *rdev)
 {
 	return fmap_locate_area_as_rdev_rw(name, rdev);
+}
+
+/* Read the UDC enable flag from VBNV. */
+int vboot_can_enable_udc(void)
+{
+	/* Always disable if not in developer mode */
+	if (!vboot_developer_mode_enabled())
+		return 0;
+	/* Enable if GBB flag is set */
+	if (gbb_is_flag_set(GBB_FLAG_ENABLE_UDC))
+		return 1;
+	/* Enable if VBNV flag is set */
+	if (vbnv_udc_enable_flag())
+		return 1;
+	/* Otherwise disable */
+	return 0;
 }
 
 /* ========================== VBOOT HANDOFF APIs =========================== */

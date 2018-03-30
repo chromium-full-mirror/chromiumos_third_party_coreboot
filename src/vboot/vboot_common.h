@@ -109,10 +109,12 @@ void verstage_mainboard_init(void);
 int vboot_developer_mode_enabled(void);
 int vboot_recovery_mode_enabled(void);
 int vboot_recovery_mode_memory_retrain(void);
+int vboot_can_enable_udc(void);
 #else /* !CONFIG_VBOOT */
 static inline int vboot_developer_mode_enabled(void) { return 0; }
 static inline int vboot_recovery_mode_enabled(void) { return 0; }
 static inline int vboot_recovery_mode_memory_retrain(void) { return 0; }
+static inline int vboot_can_enable_udc(void) { return 0; }
 #endif
 
 #endif /* __VBOOT_VBOOT_COMMON_H__ */
