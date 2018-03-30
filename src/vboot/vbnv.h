@@ -26,6 +26,7 @@ void regen_vbnv_crc(uint8_t *vbnv_copy);
 int get_recovery_mode_from_vbnv(void);
 void set_recovery_mode_into_vbnv(int recovery_reason);
 int vboot_wants_oprom(void);
+int vbnv_udc_enable_flag(void);
 
 /* CMOS backend */
 void read_vbnv_cmos(uint8_t *vbnv_copy);
