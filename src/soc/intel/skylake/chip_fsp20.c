@@ -26,6 +26,7 @@
 #include <device/pci.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
+#include <intelblocks/xdci.h>
 #include <romstage_handoff.h>
 #include <soc/acpi.h>
 #include <soc/interrupt.h>
@@ -201,7 +202,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->PchHdaEnable = config->EnableAzalia;
 	params->PchHdaIoBufferOwnership = config->IoBufferOwnership;
 	params->PchHdaDspEnable = config->DspEnable;
-	params->XdciEnable = config->XdciEnable;
+	params->XdciEnable = xdci_can_enable() ? config->XdciEnable : 0;
 	params->Device4Enable = config->Device4Enable;
 	params->SataEnable = config->EnableSata;
 	params->SataMode = config->SataMode;
