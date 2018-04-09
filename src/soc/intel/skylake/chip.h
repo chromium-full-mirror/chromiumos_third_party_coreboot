@@ -96,6 +96,8 @@ struct soc_intel_skylake_config {
 
 	/* PL2 Override value in Watts */
 	u32 tdp_pl2_override;
+	/* PL1 Override value in Watts */
+	u32 tdp_pl1_override;
 
 	/*
 	 * The following fields come from FspUpdVpd.h.
