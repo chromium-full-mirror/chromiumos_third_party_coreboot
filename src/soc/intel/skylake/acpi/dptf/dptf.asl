@@ -73,7 +73,7 @@ Device (DPTF)
 
 	Method (_TRT)
 	{
-		Return (\_SB.DTRT)
+                Return (\DTRT)
 	}
 
 #ifdef DPTF_ENABLE_FAN_CONTROL

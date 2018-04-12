@@ -48,28 +48,30 @@ Name (CHPS, Package () {
 	Package () { 0, 0, 0, 0, 8, 0x200, "mA", 0 },	/* 500mA */
 })
 
-Name (DTRT, Package () {
-	/* CPU Throttle Effect on CPU */
-	Package () { \_SB.PCI0.B0D4, \_SB.PCI0.B0D4, 100, 10, 0, 0, 0, 0 },
+Scope(\) {
+	Name (DTRT, Package () {
+		/* CPU Throttle Effect on CPU */
+		Package () { \_SB.PCI0.B0D4, \_SB.PCI0.B0D4, 100, 50, 0, 0, 0, 0 },
 
-	/* CPU Effect on Ambient */
-	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR0, 100, 600, 0, 0, 0, 0 },
+		/* CPU Effect on Ambient */
+		Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR0, 100, 600, 0, 0, 0, 0 },
 
-	/* CPU Effect on Charger */
-	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR1, 50, 600, 0, 0, 0, 0 },
+		/* CPU Effect on Charger */
+		Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR1, 50, 600, 0, 0, 0, 0 },
 
-	/* CPU Effect on DRAM */
-	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR2, 100, 600, 0, 0, 0, 0 },
+		/* CPU Effect on DRAM */
+		Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR2, 100, 600, 0, 0, 0, 0 },
 
-	/* CPU Effect on eMMC */
-	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR3, 50, 600, 0, 0, 0, 0 },
+		/* CPU Effect on eMMC */
+		Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR3, 50, 600, 0, 0, 0, 0 },
 
-	/* Charger Throttle Effect on Charger (TSR1) */
-	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR1, 100, 600, 0, 0, 0, 0 },
+		/* Charger Throttle Effect on Charger (TSR1) */
+		Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR1, 100, 600, 0, 0, 0, 0 },
 
-	/* Charger Throttle Effect on eMMC (TSR3) */
-	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR3, 100, 600, 0, 0, 0, 0 },
-})
+		/* Charger Throttle Effect on eMMC (TSR3) */
+		Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR3, 100, 600, 0, 0, 0, 0 },
+	})
+}
 
 Name (MPPC, Package ()
 {
