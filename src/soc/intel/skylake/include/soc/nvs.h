@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2008-2009 coresystems GmbH
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2015 Intel Corporation.
+ * Copyright (C) 2015-2018 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,7 +58,8 @@ typedef struct {
 	u16	u2we; /* 0x3f - USB2 Wake Enable Bitmap */
 	u8	u3we; /* 0x41 - USB3 Wake Enable Bitmap */
 	u8	uior; /* 0x42 - UART debug controller init on S3 resume */
-	u8	unused[189];
+	u32	brtl; /* 0x43 - BRTL Brightness Level */
+	u8	unused[185];
 
 	/* ChromeOS specific (0x100 - 0xfff) */
 	chromeos_acpi_t chromeos;

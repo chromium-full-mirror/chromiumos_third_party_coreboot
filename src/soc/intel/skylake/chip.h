@@ -26,6 +26,7 @@
 #include <stdint.h>
 #include <soc/gpio_defs.h>
 #include <soc/gpe.h>
+#include <soc/i915.h>
 #include <soc/irq.h>
 #include <soc/pci_devs.h>
 #include <soc/pmc.h>
@@ -528,6 +529,8 @@ struct soc_intel_skylake_config {
 	 * end of POST for security concerns.
 	 */
 	u8 SpiFlashCfgLockDown;
+
+	struct i915_gpu_controller_info gfx;
 };
 
 typedef struct soc_intel_skylake_config config_t;

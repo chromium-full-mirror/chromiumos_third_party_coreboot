@@ -52,6 +52,7 @@ ramstage-y += gpio.c
 ramstage-y += gspi.c
 ramstage-y += i2c.c
 ramstage-y += igd.c
+ramstage-y += igd_acpi.c
 ramstage-y += irq.c
 ramstage-y += lpc.c
 ramstage-y += me.c

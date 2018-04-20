@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2015 Intel Corporation.
+ * Copyright (C) 2015-2018 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@
 #include <fsp/util.h>
 #include <soc/acpi.h>
 #include <soc/cpu.h>
+#include <soc/i915.h>
 #include <soc/pm.h>
 #include <soc/ramstage.h>
 #include <soc/systemagent.h>
@@ -179,6 +180,27 @@ static unsigned long write_acpi_igd_opregion(device_t device,
 	return current;
 }
 
+static struct i915_gpu_controller_info *
+intel_igd_get_controller_info(void)
+{
+	device_t dev = dev_find_slot(0, PCI_DEVFN(0x2,0));
+	if (!dev) {
+		return NULL;
+        }
+	struct soc_intel_skylake_config *chip = dev->chip_info;
+	return &chip->gfx;
+}
+
+static void gma_ssdt(device_t device)
+{
+	struct i915_gpu_controller_info *gfx = intel_igd_get_controller_info();
+
+        if (!gfx) {
+                return;
+        }
+	intel_igd_displays_ssdt_generate(gfx);
+}
+
 static struct device_operations igd_ops = {
 	.read_resources		= &pci_dev_read_resources,
 	.set_resources		= &pci_dev_set_resources,
@@ -186,6 +208,7 @@ static struct device_operations igd_ops = {
 	.init			= &igd_init,
 	.ops_pci		= &soc_pci_ops,
 	.write_acpi_tables	= write_acpi_igd_opregion,
+	.acpi_fill_ssdt_generator = gma_ssdt,
 };
 
 static const unsigned short pci_device_ids[] = {
