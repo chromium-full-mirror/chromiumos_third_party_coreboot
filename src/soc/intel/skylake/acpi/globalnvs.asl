@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2007-2009 coresystems GmbH
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2015 Intel Corporation.
+ * Copyright (C) 2015-2018 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
 /* Global Variables */
 
 Name (\PICM, 0)		// IOAPIC/8259
+Name(\DSEN,0)          // Display Output Switching Enable
 
 /*
  * Global ACPI memory region. This region is used for passing information
@@ -67,6 +68,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	U2WE,	16,	// 0x3f - USB2 Wake Enable Bitmap
 	U3WE,	8,	// 0x41 - USB3 Wake Enable Bitmap
 	UIOR,	8,	// 0x42 - UART debug controller init on S3 resume
+	BRTL,   8,     // 0x43 - Brightness Level
 
 	/* ChromeOS specific */
 	Offset (0x100),
