@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2016 Google Inc.
+ * Copyright (C) 2018 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,6 +45,7 @@ DefinitionBlock(
 		{
 			#include <soc/intel/skylake/acpi/systemagent.asl>
 			#include <soc/intel/skylake/acpi/pch.asl>
+			#include <soc/intel/skylake/acpi/gfx.asl>
 		}
 	}
 
