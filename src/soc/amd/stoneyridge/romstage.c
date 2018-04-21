@@ -16,6 +16,7 @@
 
 #include <arch/cpu.h>
 #include <arch/acpi.h>
+#include <compiler.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/mtrr.h>
@@ -31,6 +32,11 @@
 #include <soc/northbridge.h>
 #include <soc/southbridge.h>
 #include <amdblocks/psp.h>
+
+void __weak mainboard_romstage_entry(int s3_resume)
+{
+	/* By default, don't do anything */
+}
 
 asmlinkage void car_stage_entry(void)
 {

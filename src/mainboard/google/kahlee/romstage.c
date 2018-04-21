@@ -13,10 +13,21 @@
  * GNU General Public License for more details.
  */
 
+#include <compiler.h>
 #include <amdblocks/dimm_spd.h>
 #include <baseboard/variants.h>
 
 int mainboard_read_spd(uint8_t spdAddress, char *buf, size_t len)
 {
 	return variant_mainboard_read_spd(spdAddress, buf, len);
+}
+
+void __weak variant_romstage_entry(int s3_resume)
+{
+	/* By default, don't do anything */
+}
+
+void mainboard_romstage_entry(int s3_resume)
+{
+	variant_romstage_entry(s3_resume);
 }
