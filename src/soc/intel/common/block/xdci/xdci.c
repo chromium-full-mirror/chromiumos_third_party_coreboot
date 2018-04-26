@@ -23,13 +23,9 @@
 
 __attribute__((weak)) void soc_xdci_init(struct device *dev) { /* no-op */ }
 
-/* Only allow xDCI controller in developer mode if VBOOT is enabled */
 int xdci_can_enable(void)
 {
-	if (IS_ENABLED(CONFIG_VBOOT))
-		return vboot_developer_mode_enabled() ?  1 : 0;
-	else
-		return 1;
+	return vboot_can_enable_udc();
 }
 
 static struct device_operations usb_xdci_ops = {
