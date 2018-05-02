@@ -42,6 +42,11 @@
 #define GPIO_OEM_ID2		GPP_D11
 #define GPIO_OEM_ID3		GPP_D12
 
+/* CFM APEX chips enable GPIOs */
+#define GPIO_APEX_VCOM_EN	GPP_B20
+#define GPIO_APEX0_VR_EN	GPP_C8
+#define GPIO_APEX1_VR_EN	GPP_C9
+
 #ifndef __ACPI__
 /* Pad configuration in ramstage */
 /* Leave eSPI pins untouched from default settings */
@@ -101,8 +106,7 @@ static const struct pad_config gpio_table[] = {
 /* GSPI0_MOSI */	PAD_CFG_NF(GPP_B18, NONE, DEEP,
 				   NF1), /* PCH_SPI_H1_3V3_MOSI */
 /* GSPI1_CS# */		PAD_CFG_NC(GPP_B19), /* TP111 */
-/* GSPI1_CLK */		PAD_CFG_GPI_GPIO_DRIVER(GPP_B20, 20K_PU,
-						DEEP), /* VR_DISABLE_L */
+/* GSPI1_CLK */		PAD_CFG_GPO(GPP_B20, 1, DEEP), /* APEX_VCOM_EN */
 /* GSPI1_MISO */	PAD_CFG_GPI_GPIO_DRIVER(GPP_B21, 20K_PU,
 						DEEP), /* HWA_TRST_N */
 /* GSPI1_MOSI */	PAD_CFG_NC(GPP_B22), /* GSPI1_MOSI */
@@ -117,10 +121,8 @@ static const struct pad_config gpio_table[] = {
 /* SM1CLK */		PAD_CFG_GPI_GPIO_DRIVER(GPP_C6, 20K_PU,
 						DEEP), /* EC_IN_RW */
 /* SM1DATA */		PAD_CFG_NC(GPP_C7), /* TP310 */
-/* UART0_RXD */		PAD_CFG_GPI_GPIO_DRIVER(GPP_C8, 20K_PU,
-							DEEP), /* GPIO1 */
-/* UART0_TXD */		PAD_CFG_GPI_GPIO_DRIVER(GPP_C9, 20K_PU,
-							DEEP), /* GPIO2 */
+/* UART0_RXD */		PAD_CFG_GPO(GPP_C8, 1, DEEP), /* APEX0_VR_EN */
+/* UART0_TXD */		PAD_CFG_GPO(GPP_C9, 1, DEEP), /* APEX1_VR_EN */
 /* UART0_RTS# */	PAD_CFG_GPI_GPIO_DRIVER(GPP_C10, 20K_PU,
 						DEEP), /* GPIO3 */
 /* UART0_CTS# */	PAD_CFG_GPI_GPIO_DRIVER(GPP_C11, 20K_PU,
