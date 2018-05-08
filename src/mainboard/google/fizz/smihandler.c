@@ -34,7 +34,7 @@ static void mainboard_gpio_smi_sleep(void)
 		GPIO_APEX_VCOM_EN,
 		GPIO_APEX0_VR_EN,
 		GPIO_APEX1_VR_EN,
-	}
+	};
 
 	for (i = 0; i < ARRAY_SIZE(active_high_signals); i++)
 		gpio_set(active_high_signals[i], 0);
