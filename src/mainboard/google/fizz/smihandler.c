@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/acpi.h>
 #include <cpu/x86/smm.h>
 #include <ec/google/chromeec/smm.h>
 #include <gpio.h>
@@ -47,7 +48,7 @@ void mainboard_smi_sleep(u8 slp_typ)
 			MAINBOARD_EC_S5_WAKE_EVENTS);
 
 	/* Power down Apex chips on S3-S5 sleep type. */
-	if (sly_typ >= ACPI_S3)
+	if (slp_typ >= ACPI_S3)
 		mainboard_gpio_smi_sleep();
 }
 
