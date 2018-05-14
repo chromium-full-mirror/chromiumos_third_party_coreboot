@@ -28,6 +28,7 @@ SPD_SOURCES += empty
 SPD_SOURCES += hynix_2GiB_dimm_H9CCNNN8GTMLAR-NUD
 SPD_SOURCES += micron_2GiB_dimm_MT52L256M32D1PF
 SPD_SOURCES += hynix_2GiB_dimm_H9CCNNN8GTALAR-NUD
+SPD_SOURCES += nayna_dimm_NT6CL256T32CM-H1
 
 SPD_DEPS := $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/spd/$(f).spd.hex)
 
