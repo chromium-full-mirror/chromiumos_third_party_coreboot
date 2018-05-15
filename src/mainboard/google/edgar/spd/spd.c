@@ -40,9 +40,13 @@
  *   0b0101 - 4GiB total - 2 x 2GiB Micron LPDDR3 MT52L256M32D1PF-107 (dual)
  *   0b0110 - 4GiB total - 1 x 4GiB Samsung K4E8E324EB-EGCF
  *   0b0111 - 2GiB total - 1 x 2GiB Micron LPDDR3 MT52L256M32D1PF-107
+ *   0b1000 - 4GiB total - 2 x 2GiB NANYA NT6CL256T32CM-H1 (dual)
+ *   0b1001 - 4GiB total - 2 x 2GiB Hynix H9CCNNN8GTALAR-NUD (dual)
+ *   0b1010 - 2GiB total - 1 x 2GiB NANYA NT6CL256T32CM-H1
+ *   0b1011 - 2GiB total - 1 x 2GiB Hynix H9CCNNN8GTALAR-NUD
  */
 static const uint32_t dual_channel_config
-			= (1 << 0) | (1 << 1) | (1 << 4) | (1 << 5);
+	= (1 << 0) | (1 << 1) | (1 << 4) | (1 << 5) | (1 << 8) | (1 << 9);
 
 static void *get_spd_pointer(char *spd_file_content, int total_spds, int *dual)
 {
@@ -89,6 +93,18 @@ static void *get_spd_pointer(char *spd_file_content, int total_spds, int *dual)
 		break;
 	case 7:
 		printk(BIOS_DEBUG, "2GiB Micron LPDDR3 MT52L256M32D1PF-107\n");
+		break;
+	case 8:
+		printk(BIOS_DEBUG, "4GiB NANYA NT6CL256T32CM-H1\n");
+		break;
+	case 9:
+		printk(BIOS_DEBUG, "4GiB Hynix H9CCNNN8GTALAR-NUD\n");
+		break;
+	case 10:
+		printk(BIOS_DEBUG, "2GiB NANYA NT6CL256T32CM-H1\n");
+		break;
+	case 11:
+		printk(BIOS_DEBUG, "2GiB Hynix H9CCNNN8GTALAR-NUD\n");
 		break;
 	}
 
