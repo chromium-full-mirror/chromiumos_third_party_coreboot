@@ -334,7 +334,13 @@ Device (EC0)
 		If (CondRefOf (\_SB.DPTF.TPET)) {
 			\_SB.DPTF.TPET()
 		}
-		Notify (TBMC, 0x80)
+		If (LEqual ((^TBMD), One)) {
+			Notify (VBTN, 0xCB)
+			Notify (VBTN, 0xCC)
+		} Else {
+			Notify (VBTN, 0xCA)
+			Notify (VBTN, 0xCD)
+		}
 #endif
 	}
 
@@ -487,6 +493,6 @@ Device (EC0)
 #endif
 
 #ifdef EC_ENABLE_TABLET_EVENT
-	#include "tbmc.asl"
+	#include "vbtn.asl"
 #endif
 }
