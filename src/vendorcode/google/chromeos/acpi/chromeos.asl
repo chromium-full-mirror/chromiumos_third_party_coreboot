@@ -17,6 +17,9 @@
 
 #if IS_ENABLED(CONFIG_CHROMEOS)
 
+/* Support mainfw type for legacy mode detection */
+#include "mainfwtype.asl"
+
 /* GPIO package generated at run time. */
 External (OIPG)
 
