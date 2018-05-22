@@ -19,7 +19,7 @@ ifeq ($(CONFIG_VGA_ROM_RUN),y)
 ramstage-$(CONFIG_INTEL_INT15) += int15.c
 endif
 ramstage-$(CONFIG_INTEL_GMA_ACPI) += acpi.c
-ramstage-$(CONFIG_INTEL_GMA_ACPI) += opregion.c
+ramstage-y += opregion.c
 
 cbfs-files-$(CONFIG_INTEL_GMA_ADD_VBT_DATA_FILE) += vbt.bin
 vbt.bin-file := $(call strip_quotes,$(CONFIG_INTEL_GMA_VBT_FILE))
