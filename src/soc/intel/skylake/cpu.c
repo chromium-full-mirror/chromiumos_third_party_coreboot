@@ -27,6 +27,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/mp.h>
+#include <cpu/intel/common/common.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/intel/speedstep.h>
 #include <cpu/intel/turbo.h>
@@ -401,6 +402,8 @@ void soc_core_init(device_t cpu, const void *microcode)
 	/* Enable the local CPU apics */
 	enable_lapic_tpr();
 	setup_lapic();
+
+	set_vmx();
 
 	/* Configure c-state interrupt response time */
 	configure_c_states();
