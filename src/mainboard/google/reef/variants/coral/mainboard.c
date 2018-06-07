@@ -34,6 +34,8 @@ enum {
 	SKU_14_EPAULETTE = 14,
 	SKU_15_EPAULETTE = 15,
 	SKU_16_EPAULETTE = 16,
+	SKU_52_BABYMEGA = 52,
+	SKU_53_BABYMEGA = 53,
 	SKU_61_ASTRONAUT = 61,
 	SKU_62_ASTRONAUT = 62,
 	SKU_160_NASHER = 160,
@@ -64,6 +66,9 @@ void variant_nhlt_oem_overrides(const char **oem_id,
 	*oem_revision = variant_board_sku();
 }
 
+static const struct lpss_i2c_speed_config
+babymega_i2c_speed_config = LPSS_I2C_SPEED_CONFIG(FAST, 210, 107, 47);
+
 void mainboard_devtree_update(struct device *dev)
 {
        /* Override dev tree settings per board */
@@ -73,8 +78,8 @@ void mainboard_devtree_update(struct device *dev)
 	sku_id = variant_board_sku();
 
 	switch (sku_id) {
-        case SKU_0_ASTRONAUT:
-        case SKU_1_ASTRONAUT:
+	case SKU_0_ASTRONAUT:
+	case SKU_1_ASTRONAUT:
 		cfg->usb2eye[1].Usb20PerPortPeTxiSet = 7;
 		cfg->usb2eye[1].Usb20PerPortTxiSet = 2;
 		break;
@@ -90,11 +95,15 @@ void mainboard_devtree_update(struct device *dev)
 		cfg->usb2eye[1].Usb20PerPortPeTxiSet = 7;
 		cfg->usb2eye[1].Usb20PerPortTxiSet = 2;
 		break;
-        case SKU_61_ASTRONAUT:
-        case SKU_62_ASTRONAUT:
+	case SKU_52_BABYMEGA:
+	case SKU_53_BABYMEGA:
+		cfg->i2c[4].speed_config[0] = babymega_i2c_speed_config;
+		break;
+	case SKU_61_ASTRONAUT:
+	case SKU_62_ASTRONAUT:
 		cfg->usb2eye[1].Usb20PerPortPeTxiSet = 7;
 		cfg->usb2eye[1].Usb20PerPortTxiSet = 5;
-                break;
+		break;
 	default:
 		break;
 	}
@@ -105,8 +114,8 @@ const char *mainboard_vbt_filename(void)
 	int sku_id = variant_board_sku();
 
 	switch (sku_id) {
-        case SKU_0_ASTRONAUT:
-        case SKU_1_ASTRONAUT:
+	case SKU_0_ASTRONAUT:
+	case SKU_1_ASTRONAUT:
 		return "vbt-astronaut.bin";
 		break;
 	case SKU_2_SANTA:
