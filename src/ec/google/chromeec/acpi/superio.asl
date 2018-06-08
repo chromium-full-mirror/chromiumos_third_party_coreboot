@@ -39,6 +39,9 @@ Device (SIO) {
 #ifdef SIO_EC_MEMMAP_ENABLE
 	Device (ECMM) {
 		Name (_HID, EISAID ("PNP0C02"))
+#ifdef CONFIG_ACPI_SUBSYSTEM_ID
+		Name (_SUB, CONFIG_ACPI_SUBSYSTEM_ID)
+#endif
 		Name (_UID, 1)
 		Name (_ADR, 0)
 
@@ -63,6 +66,9 @@ Device (SIO) {
 #ifdef SIO_EC_HOST_ENABLE
 	Device (ECUI) {
 		Name (_HID, EISAID ("PNP0C02"))
+#ifdef CONFIG_ACPI_SUBSYSTEM_ID
+		Name (_SUB, CONFIG_ACPI_SUBSYSTEM_ID)
+#endif
 		Name (_UID, 3)
 		Name (_ADR, 0)
 
@@ -108,6 +114,9 @@ Device (SIO) {
 #ifdef SIO_EC_ENABLE_COM1
 	Device (COM1) {
 		Name (_HID, EISAID ("PNP0501"))
+#ifdef CONFIG_ACPI_SUBSYSTEM_ID
+		Name (_SUB, CONFIG_ACPI_SUBSYSTEM_ID)
+#endif
 		Name (_UID, 1)
 		Name (_ADR, 0)
 
@@ -140,6 +149,9 @@ Device (PS2K)		// Keyboard
 	Name (_ADR, 0)
 	Name (_HID, EISAID("PNP0303"))
 	Name (_CID, EISAID("PNP030B"))
+#ifdef CONFIG_ACPI_SUBSYSTEM_ID
+	Name (_SUB, CONFIG_ACPI_SUBSYSTEM_ID)
+#endif
 
 	Method (_STA, 0, NotSerialized) {
 		Return (0x0F)

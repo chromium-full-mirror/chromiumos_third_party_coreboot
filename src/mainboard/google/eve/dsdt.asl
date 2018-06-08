@@ -40,6 +40,9 @@ DefinitionBlock(
 		Device (PWRB)
 		{
 			Name (_HID, EisaId ("PNP0C0C"))
+#ifdef CONFIG_ACPI_SUBSYSTEM_ID
+			Name (_SUB, CONFIG_ACPI_SUBSYSTEM_ID)
+#endif
 		}
 		Device (PCI0)
 		{

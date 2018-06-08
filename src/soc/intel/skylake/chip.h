@@ -313,6 +313,10 @@ struct soc_intel_skylake_config {
 	 * enabled.
 	 */
 	u8 LockDownConfigSpiEiss;
+	/* Subsystem Vendor ID of the SA devices*/
+	u16 DefaultSvid;
+	/* Subsystem ID of the SA devices*/
+	u16 DefaultSid;
 	/* Subsystem Vendor ID of the PCH devices*/
 	u16 PchConfigSubSystemVendorId;
 	/* Subsystem ID of the PCH devices*/

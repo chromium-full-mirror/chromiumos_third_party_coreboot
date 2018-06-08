@@ -210,8 +210,32 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	tconfig->PchLockDownRtcLock = config->LockDownConfigRtcLock;
 	params->PchLockDownBiosLock = config->LockDownConfigBiosLock;
 	params->PchLockDownSpiEiss = config->LockDownConfigSpiEiss;
-	params->PchSubSystemVendorId = config->PchConfigSubSystemVendorId;
-	params->PchSubSystemId = config->PchConfigSubSystemId;
+	/* only replacing subsys ID defaults when 'config' non-zero */
+	if (config->DefaultSvid)
+		params->DefaultSvid = config->DefaultSvid;
+#ifdef CONFIG_SUBSYSTEM_VENDOR_ID
+	else
+		params->DefaultSvid = CONFIG_SUBSYSTEM_VENDOR_ID;
+#endif
+	if (config->DefaultSid)
+		params->DefaultSid = config->DefaultSid;
+#ifdef CONFIG_SUBSYSTEM_DEVICE_ID
+	else
+		params->DefaultSid = CONFIG_SUBSYSTEM_DEVICE_ID;
+#endif
+	if (config->PchConfigSubSystemVendorId)
+		params->PchSubSystemVendorId =
+			config->PchConfigSubSystemVendorId;
+#ifdef CONFIG_SUBSYSTEM_VENDOR_ID
+	else
+		params->PchSubSystemVendorId = CONFIG_SUBSYSTEM_VENDOR_ID;
+#endif
+	if (config->PchConfigSubSystemId)
+		params->PchSubSystemId = config->PchConfigSubSystemId;
+#ifdef CONFIG_SUBSYSTEM_VENDOR_ID
+	else
+		params->PchSubSystemId = CONFIG_SUBSYSTEM_DEVICE_ID;
+#endif
 	params->PchPmWolEnableOverride = config->WakeConfigWolEnableOverride;
 	params->PchPmPcieWakeFromDeepSx = config->WakeConfigPcieWakeFromDeepSx;
 	params->PchPmDeepSxPol = config->PmConfigDeepSxPol;
