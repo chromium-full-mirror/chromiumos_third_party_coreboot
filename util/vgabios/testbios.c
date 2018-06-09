@@ -113,8 +113,8 @@ int printk(int msg_level, const char *fmt, ...)
 static void usage(char *name)
 {
 	printf
-	    ("Usage: %s [-c codesegment] [-s size] [-b base] [-i ip] [-t] <filename> ... \n",
-	     name);
+	    ("Usage: %s [-c codesegment] [-s size] [-b base] [-i ip] [-t] "
+	     "<filename> ...\n", name);
 }
 
 /* main entry into YABEL biosemu, arguments are:
@@ -215,7 +215,7 @@ int main(int argc, char **argv)
 			debugflag = strtol(optarg, 0, 0);
 			break;
 		default:
-			printf("Unknown option \n");
+			printf("Unknown option\n");
 			usage(argv[0]);
 			return 1;
 		}
