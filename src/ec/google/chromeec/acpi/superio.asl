@@ -147,8 +147,8 @@ Device (PS2K)		// Keyboard
 {
 	Name (_UID, 0)
 	Name (_ADR, 0)
-	Name (_HID, EISAID("PNP0303"))
-	Name (_CID, EISAID("PNP030B"))
+	Name (_HID, "GOOG000A")
+	Name (_CID, Package() { EISAID("PNP0303"), EISAID("PNP030B") } )
 #ifdef CONFIG_ACPI_SUBSYSTEM_ID
 	Name (_SUB, CONFIG_ACPI_SUBSYSTEM_ID)
 #endif
