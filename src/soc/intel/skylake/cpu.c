@@ -111,6 +111,39 @@ int cpu_config_tdp_levels(void)
 	return (platform_info.hi >> 1) & 3;
 }
 
+static void enable_vmx(void)
+{
+	struct cpuid_result regs = cpuid(1);
+	msr_t msr;
+
+	/* Check that the VMX is supported */
+	if (!((regs.ecx & CPUID_VMX) || (regs.ecx & CPUID_SMX)))
+		return;
+
+	msr = rdmsr(IA32_FEATURE_CONTROL);
+
+	if (msr.lo & (1 << 0)) {
+		printk(BIOS_ERR, "VMX is locked, so %s will do nothing\n",
+		       __func__);
+		return;
+	}
+
+	/* The IA32_FEATURE_CONTROL MSR may initialize with random values.
+	 * It must be cleared regardless of VMX config setting.
+	 */
+	msr.hi = msr.lo = 0;
+	msr.lo |= (1 << 2);
+	if (regs.ecx & CPUID_SMX)
+		msr.lo |= (1 << 1);
+	wrmsr(IA32_FEATURE_CONTROL, msr);
+
+	/* Lock VMX register */
+	msr.lo |= (1 << 0);
+	wrmsr(IA32_FEATURE_CONTROL, msr);
+
+	printk(BIOS_DEBUG, "VMX Enabled\n");
+}
+
 /*
  * Configure processor power limits if possible
  * This must be done AFTER set of BIOS_RESET_CPL
@@ -371,6 +404,9 @@ static void cpu_core_init(device_t cpu)
 	/* Enable the local cpu apics */
 	enable_lapic_tpr();
 	setup_lapic();
+
+	/* Enable virtualization */
+	enable_vmx();
 
 	/* Configure Enhanced SpeedStep and Thermal Sensors */
 	configure_misc();
