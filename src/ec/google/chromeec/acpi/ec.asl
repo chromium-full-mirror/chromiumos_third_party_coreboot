@@ -335,10 +335,8 @@ Device (EC0)
 			\_SB.DPTF.TPET()
 		}
 		If (LEqual ((^TBMD), One)) {
-			Notify (VBTN, 0xCB)
 			Notify (VBTN, 0xCC)
 		} Else {
-			Notify (VBTN, 0xCA)
 			Notify (VBTN, 0xCD)
 		}
 #endif
