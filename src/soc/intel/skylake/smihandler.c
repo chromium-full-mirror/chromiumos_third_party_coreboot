@@ -171,6 +171,9 @@ static void southbridge_smi_sleep(void)
 		/* Invalidate the cache before going to S3 */
 		wbinvd();
 		break;
+	case ACPI_S4:
+		printk(BIOS_DEBUG, "SMI#: Entering S4 (Suspend-To-Disk)\n");
+		break;
 	case ACPI_S5:
 		printk(BIOS_DEBUG, "SMI#: Entering S5 (Soft Power off)\n");
 		/*TODO: cmos_layout.bin need to verify; cause wrong CMOS setup*/
