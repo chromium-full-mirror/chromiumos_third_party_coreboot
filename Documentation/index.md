@@ -17,5 +17,6 @@ Contents:
 * [Northbridge-specific documentation](northbridge/index.md)
 * [System on Chip-specific documentation](soc/index.md)
 * [Mainboard-specific documentation](mainboard/index.md)
+* [Payload-specific documentation](lib/payloads/index.md)
 * [SuperIO-specific documentation](superio/index.md)
 * [Release notes for past releases](releases/index.md)
