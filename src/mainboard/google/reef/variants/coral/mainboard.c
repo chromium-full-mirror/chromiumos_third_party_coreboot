@@ -128,6 +128,10 @@ const char *mainboard_vbt_filename(void)
 	case SKU_16_EPAULETTE:
 		return "vbt-epaulette.bin";
 		break;
+	case SKU_52_BABYMEGA:
+	case SKU_53_BABYMEGA:
+		return "vbt-babymega.bin";
+		break;
 	case SKU_160_NASHER:
 	case SKU_161_NASHER:
 	case SKU_162_NASHER:
