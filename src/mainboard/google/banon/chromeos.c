@@ -19,6 +19,7 @@
  */
 
 #include <arch/io.h>
+#include <delay.h>
 #include <device/device.h>
 #include <device/pci.h>
 
@@ -135,6 +136,8 @@ int get_write_protect_state(void)
 	 */
 #if ENV_ROMSTAGE
 	 gpio_input_pullup(WP_GPIO);
+	/* Wait until signals become stable */
+	 udelay(20);
 #endif
 
 	/* WP is enabled when the pin is reading high. */
