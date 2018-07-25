@@ -17,15 +17,6 @@
 
 #include <variant/onboard.h>
 
-Scope (\_SB)
-{
-	Device (PWRB)
-	{
-		Name (_HID, EisaId ("PNP0C0C"))
-		Name (_UID, 1)
-	}
-}
-
 Scope (\_SB.GPNC)
 {
 	Method (_AEI, 0, NotSerialized)  // _AEI: ACPI Event Interrupts
