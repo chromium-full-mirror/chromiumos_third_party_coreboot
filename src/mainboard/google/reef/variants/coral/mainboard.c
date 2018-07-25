@@ -34,8 +34,10 @@ enum {
 	SKU_14_EPAULETTE = 14,
 	SKU_15_EPAULETTE = 15,
 	SKU_16_EPAULETTE = 16,
+	SKU_30_BABYTIGER = 30,
 	SKU_31_RABBID = 31,
 	SKU_32_RABBID = 32,
+	SKU_33_BABYTIGER = 33,
 	SKU_52_BABYMEGA = 52,
 	SKU_53_BABYMEGA = 53,
 	SKU_61_ASTRONAUT = 61,
@@ -74,6 +76,9 @@ rabbid_i2c_speed_config = LPSS_I2C_SPEED_CONFIG(FAST, 210, 107, 47);
 static const struct lpss_i2c_speed_config
 babymega_i2c_speed_config = LPSS_I2C_SPEED_CONFIG(FAST, 210, 107, 47);
 
+static const struct lpss_i2c_speed_config
+babytiger_i2c_speed_config = LPSS_I2C_SPEED_CONFIG(FAST, 210, 107, 47);
+
 void mainboard_devtree_update(struct device *dev)
 {
        /* Override dev tree settings per board */
@@ -104,6 +109,11 @@ void mainboard_devtree_update(struct device *dev)
 	case SKU_32_RABBID:
 		cfg->i2c[3].speed_config[0] = rabbid_i2c_speed_config;
 		cfg->i2c[4].speed_config[0] = rabbid_i2c_speed_config;
+		break;
+	case SKU_30_BABYTIGER:
+	case SKU_33_BABYTIGER:
+		cfg->i2c[3].speed_config[0] = babytiger_i2c_speed_config;
+		cfg->i2c[4].speed_config[0] = babytiger_i2c_speed_config;
 		break;
 	case SKU_52_BABYMEGA:
 	case SKU_53_BABYMEGA:
