@@ -148,6 +148,10 @@ const char *mainboard_vbt_filename(void)
 	case SKU_16_EPAULETTE:
 		return "vbt-epaulette.bin";
 		break;
+	case SKU_30_BABYTIGER:
+	case SKU_33_BABYTIGER:
+		return "vbt-babytiger.bin";
+		break;
 	case SKU_52_BABYMEGA:
 	case SKU_53_BABYMEGA:
 		return "vbt-babymega.bin";
