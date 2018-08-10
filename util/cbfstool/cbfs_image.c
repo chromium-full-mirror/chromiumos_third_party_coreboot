@@ -1220,14 +1220,12 @@ int cbfs_export_entry(struct cbfs_image *image, const char *entry_name,
 	unsigned int decompressed_size = 0;
 	unsigned int compression = cbfs_file_get_compression_info(entry,
 		&decompressed_size);
-	/* Force nop decompression */
-	decomp_func_ptr decompress = decompression_function(CBFS_COMPRESS_NONE);
-	if (do_processing) {
-		decompress = decompression_function(compression);
-		if (!decompress) {
-			ERROR("looking up decompression routine failed\n");
-			return -1;
-		}
+	/* Force nop decompression when do_processing is false */
+	decomp_func_ptr decompress = decompression_function(
+		do_processing ? compression : CBFS_COMPRESS_NONE);
+	if (!decompress) {
+		ERROR("looking up decompression routine failed\n");
+		return -1;
 	}
 
 	LOG("Found file %.30s at 0x%x, type %.12s, compressed %d, size %d\n",
