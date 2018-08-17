@@ -295,7 +295,6 @@ void southbridge_inject_dsdt(struct device *device)
 
 	if (gnvs) {
 		acpi_create_gnvs(gnvs);
-		acpi_save_gnvs((uintptr_t)gnvs);
 
 		/* Add it to DSDT */
 		acpigen_write_scope("\\");
