@@ -81,7 +81,8 @@ int _gpio_base3_value(const gpio_t gpio[], int num_gpio, int binary_first)
 	int has_z = 0;
 	int binary_below = 0;
 	char value[32];
-	assert(num_gpio <= 32);
+	if ((num_gpio > 32) && (num_gpio < 1))
+		die("gpio_base3_value: Invalid number of GPIOs");
 
 	/* Enable internal pull up */
 	for (index = 0; index < num_gpio; ++index)
