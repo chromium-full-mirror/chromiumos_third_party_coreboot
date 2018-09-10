@@ -72,7 +72,8 @@ extern int yydebug;
     IOAPIC = 282,
     PCIINT = 283,
     GENERIC = 284,
-    SPI = 285
+    SPI = 285,
+    HIDDEN = 286
   };
 #endif
 

@@ -47,6 +47,7 @@ struct device;
 struct device {
 	int id;
 	int enabled;
+	int hidden;
 	int used;
 	int multidev;
 	int link;
@@ -92,7 +93,7 @@ void postprocess_devtree(void);
 struct device *new_chip(struct device *parent, struct device *bus, char *path);
 void add_header(struct device *dev);
 struct device *new_device(struct device *parent, struct device *busdev,
-			  const int bus, const char *devnum, int enabled);
+			  const int bus, const char *devnum, int status);
 void alias_siblings(struct device *d);
 void add_resource(struct device *dev, int type, int index, int base);
 void add_register(struct device *dev, char *name, char *val);
