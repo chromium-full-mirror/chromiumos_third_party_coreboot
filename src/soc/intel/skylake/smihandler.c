@@ -29,6 +29,7 @@
 #include <device/pci_def.h>
 #include <elog.h>
 #include <pc80/mc146818rtc.h>
+#include <smmstore.h>
 #include <spi-generic.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>
@@ -282,6 +283,26 @@ static void southbridge_smi_gsmi(void)
 #endif
 }
 
+static void southbridge_smi_store(void)
+{
+	u8 sub_command, ret;
+	uint32_t reg_ebx;
+	em64t101_smm_state_save_area_t *io_smi =
+		smi_apmc_find_state_save(SMMSTORE_APM_CNT);
+
+	if (!io_smi)
+		return;
+	/* Command and return value in EAX */
+	sub_command = (io_smi->rax >> 8) & 0xff;
+
+	/* Parameter buffer in EBX */
+	reg_ebx = io_smi->rbx;
+
+	/* drivers/smmstore/smi.c */
+	ret = smmstore_exec(sub_command, (void *)reg_ebx);
+	io_smi->rax = ret;
+}
+
 static void finalize(void)
 {
 	static int finalize_done;
@@ -337,6 +358,10 @@ static void southbridge_smi_apmc(void)
 	case ELOG_GSMI_APM_CNT:
 		if (IS_ENABLED(CONFIG_ELOG_GSMI))
 			southbridge_smi_gsmi();
+		break;
+	case SMMSTORE_APM_CNT:
+		if (IS_ENABLED(CONFIG_SMMSTORE))
+			southbridge_smi_store();
 		break;
 	}
 
