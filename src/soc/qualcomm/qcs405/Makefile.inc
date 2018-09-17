@@ -57,6 +57,8 @@ ramstage-y += rpm_load_reset.c
 CPPFLAGS_common += -Isrc/soc/qualcomm/qcs405/include
 CPPFLAGS_common += -Isrc/soc/qualcomm/common/include
 
+QCS405_BLOB := $(top)/3rdparty/blobs/soc/qualcomm/qcs405
+
 $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin
 	@printf "Generating: $(subst $(obj)/,,$(@))\n"
 	cp $(objcbfs)/bootblock.raw.bin $(objcbfs)/bootblock.bin
@@ -118,4 +120,21 @@ ifneq (,$(findstring $(RPM_FILE),$(rpm_file)))
 	cbfs-files-y += $(RPM_CBFS)
 endif
 
+################################################################################
+QC_SEC_FILE := $(QCS405_BLOB)/qc_sec.mbn
+qc_sec_file := $(shell ls $(QC_SEC_FILE))
+ifneq (,$(findstring $(QC_SEC_FILE),$(qc_sec_file)))
+$(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.elf
+	python util/qualcomm/createxbl.py -f $(objcbfs)/bootblock.elf \
+		-x $(QC_SEC_FILE) -o $(objcbfs)/merged_bb_qcsec.mbn \
+		-a 64 -d 32 -c 32
+	@printf "\nqgpt.py 4K sector size\n"
+	python util/qualcomm/qgpt.py $(objcbfs)/merged_bb_qcsec.mbn \
+		$(objcbfs)/bootblock.bin
+
+else
+$(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin
+	@printf "Generating: $(subst $(obj)/,,$(@))\n"
+	cp $(objcbfs)/bootblock.raw.bin $(objcbfs)/bootblock.bin
+endif
 endif
