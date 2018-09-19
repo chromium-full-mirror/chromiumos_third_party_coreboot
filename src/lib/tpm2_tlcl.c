@@ -80,14 +80,7 @@ static uint32_t tlcl_send_startup(TPM_SU type)
 
 uint32_t tlcl_resume(void)
 {
-	uint32_t result = tlcl_send_startup(TPM_SU_STATE);
-	printk(BIOS_INFO, "tlcl_resume(SU_STATE): return code = %x\n", result);
-	if (result != TPM_SUCCESS) {
-		result = tlcl_send_startup(TPM_SU_CLEAR);
-		printk(BIOS_INFO, "tlcl_resume(SU_CLEAR): return code = %x\n",
-		      result);
-	}
-	return result;
+	return tlcl_send_startup(TPM_SU_STATE);
 }
 
 uint32_t tlcl_assert_physical_presence(void)
