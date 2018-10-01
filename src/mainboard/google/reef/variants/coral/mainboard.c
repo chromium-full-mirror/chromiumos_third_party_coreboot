@@ -34,6 +34,7 @@ enum {
 	SKU_14_EPAULETTE = 14,
 	SKU_15_EPAULETTE = 15,
 	SKU_16_EPAULETTE = 16,
+	SKU_28_RABBID_RUGGED = 28,
 	SKU_30_BABYTIGER = 30,
 	SKU_31_RABBID = 31,
 	SKU_32_RABBID = 32,
@@ -105,6 +106,7 @@ void mainboard_devtree_update(struct device *dev)
 		cfg->usb2eye[1].Usb20PerPortPeTxiSet = 7;
 		cfg->usb2eye[1].Usb20PerPortTxiSet = 2;
 		break;
+	case SKU_28_RABBID_RUGGED:
 	case SKU_31_RABBID:
 	case SKU_32_RABBID:
 		cfg->i2c[3].speed_config[0] = rabbid_i2c_speed_config;
