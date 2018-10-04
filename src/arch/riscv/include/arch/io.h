@@ -15,7 +15,6 @@
 #define _ASM_IO_H
 
 #include <stdint.h>
-#include <compiler.h>
 
 static __always_inline uint8_t read8(const volatile void *addr)
 {

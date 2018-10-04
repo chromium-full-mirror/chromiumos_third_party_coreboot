@@ -14,7 +14,6 @@
  */
 
 #include <baseboard/variants.h>
-#include <compiler.h>
 #include <ec/google/chromeec/ec.h>
 
 uint8_t __weak variant_board_id(void)
