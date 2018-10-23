@@ -54,6 +54,9 @@ struct memory_params {
 	const void *rcomp_target;
 	size_t rcomp_target_size;
 	bool use_sec_spd;
+
+	/* This would be set to true if only have single DDR channel */
+	bool single_channel;
 };
 
 void variant_memory_params(struct memory_params *p);
