@@ -17,6 +17,7 @@
 #include <arch/mmu.h>
 #include <arch/cache.h>
 #include <soc/mmu.h>
+#include <soc/mmu_common.h>
 #include <soc/symbols.h>
 
 void qcs405_mmu_init(void)
@@ -29,4 +30,8 @@ void qcs405_mmu_init(void)
 	mmu_config_range((void *)_bsram, REGION_SIZE(bsram), MA_MEM | MA_S | MA_RW);
 
 	mmu_enable();
+}
+
+void soc_mmu_dram_config_post_dram_init(void)
+{
 }

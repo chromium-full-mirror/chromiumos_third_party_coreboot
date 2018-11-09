@@ -15,6 +15,7 @@
 
 #include <console/cbmem_console.h>
 #include <cbmem.h>
+#include <string.h>
 #include <boardid.h>
 #include <string.h>
 #include <fmap.h>
@@ -144,7 +145,7 @@ void qclib_load_and_run(void)
 	if (ssize < 0)
 		goto fail;
 	qclib_add_if_table_entry(QCLIB_TE_DDR_TRAINING_DATA,
-				 _ddr_training, ssize, 0);
+				_ddr_training, ssize, 0);
 
 	/* hook for SoC specific binary blob loads */
 	if (qclib_soc_blob_load()) {

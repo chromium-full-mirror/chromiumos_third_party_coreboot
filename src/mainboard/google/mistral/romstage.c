@@ -14,7 +14,10 @@
  */
 
 #include <arch/stages.h>
+#include <soc/qclib_common.h>
 #include <soc/usb.h>
+
+__weak void qclib_set_buck_type(void) {}
 
 static void prepare_usb(void)
 {
@@ -27,5 +30,8 @@ static void prepare_usb(void)
 
 void platform_romstage_main(void)
 {
+	/* QCLib: DDR init & train */
+	qclib_load_and_run();
+
 	prepare_usb();
 }

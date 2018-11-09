@@ -1,4 +1,3 @@
-
 ifeq ($(CONFIG_SOC_QUALCOMM_QCS405),y)
 
 ################################################################################
@@ -34,6 +33,10 @@ romstage-$(CONFIG_DRIVERS_UART) += uart.c
 romstage-y += i2c.c
 romstage-y += qup.c
 romstage-y += blsp.c
+romstage-y += mmu.c
+romstage-y += ../common/mmu.c
+romstage-y += ../common/qclib.c
+romstage-y += soc_blob_load.c
 
 ################################################################################
 ramstage-y += soc.c
@@ -51,9 +54,56 @@ ramstage-$(CONFIG_DRIVERS_UART) += uart.c
 ################################################################################
 
 CPPFLAGS_common += -Isrc/soc/qualcomm/qcs405/include
+CPPFLAGS_common += -Isrc/soc/qualcomm/common/include
 
 $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin
 	@printf "Generating: $(subst $(obj)/,,$(@))\n"
 	cp $(objcbfs)/bootblock.raw.bin $(objcbfs)/bootblock.bin
+
+################################################################################
+ifeq ($(CONFIG_QC_SDI_ENABLE),y)
+QCSDI_FILE := $(QCS405_BLOB)/QcSdi.elf
+qcsdi_file := $(shell ls $(QCSDI_FILE))
+ifneq (,$(findstring $(QCSDI_FILE),$(qcsdi_file)))
+	QCSDI_CBFS := $(CONFIG_CBFS_PREFIX)/qcsdi
+	$(QCSDI_CBFS)-file := $(QCSDI_FILE)
+	$(QCSDI_CBFS)-type := stage
+	$(QCSDI_CBFS)-compression := none
+	cbfs-files-y += $(QCSDI_CBFS)
+endif
+endif
+
+################################################################################
+DCB_FILE := $(QCS405_BLOB)/cdt.bin
+dcb_file := $(shell ls $(DCB_FILE))
+ifneq (,$(findstring $(DCB_FILE),$(dcb_file)))
+	DCB_CBFS := $(CONFIG_CBFS_PREFIX)/dcb
+	$(DCB_CBFS)-file := $(DCB_FILE)
+	$(DCB_CBFS)-type := raw
+	$(DCB_CBFS)-compression := none
+	cbfs-files-y += $(DCB_CBFS)
+endif
+
+################################################################################
+QCLIB_FILE := $(QCS405_BLOB)/QcLib.elf
+qclib_file := $(shell ls $(QCLIB_FILE))
+ifneq (,$(findstring $(QCLIB_FILE),$(qclib_file)))
+	QCLIB_CBFS := $(CONFIG_CBFS_PREFIX)/qclib
+	$(QCLIB_CBFS)-file := $(QCLIB_FILE)
+	$(QCLIB_CBFS)-type := stage
+	$(QCLIB_CBFS)-compression := none
+	cbfs-files-y += $(QCLIB_CBFS)
+endif
+
+################################################################################
+PMIC_FILE := $(QCS405_BLOB)/Pmic.bin
+pmic_file := $(shell ls $(PMIC_FILE))
+ifneq (,$(findstring $(PMIC_FILE),$(pmic_file)))
+	PMIC_CBFS := $(CONFIG_CBFS_PREFIX)/pmiccfg
+	$(PMIC_CBFS)-file := $(PMIC_FILE)
+	$(PMIC_CBFS)-type := raw
+	$(PMIC_CBFS)-compression := none
+	cbfs-files-y += $(PMIC_CBFS)
+endif
 
 endif

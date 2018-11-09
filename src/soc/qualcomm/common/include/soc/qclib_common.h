@@ -72,5 +72,6 @@ void qclib_add_if_table_entry(const char *name, void *base,
 			      uint32_t size, uint32_t attrs);
 void qclib_load_and_run(void);
 int  qclib_soc_blob_load(void);
+void qclib_set_buck_type(void);
 
 #endif  // _SOC_QUALCOMM_QCLIB_COMMON_H_
