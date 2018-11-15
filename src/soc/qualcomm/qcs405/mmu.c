@@ -28,10 +28,12 @@ void qcs405_mmu_init(void)
 			MA_DEV | MA_S | MA_RW);
 	mmu_config_range((void *)_ssram, REGION_SIZE(ssram), MA_MEM | MA_S | MA_RW);
 	mmu_config_range((void *)_bsram, REGION_SIZE(bsram), MA_MEM | MA_S | MA_RW);
+	mmu_config_range((void *)_rpm, REGION_SIZE(rpm), MA_MEM | MA_NS | MA_RW);
 
 	mmu_enable();
 }
 
 void soc_mmu_dram_config_post_dram_init(void)
 {
+	mmu_config_range((void *)_rpm, REGION_SIZE(rpm), MA_MEM | MA_NS | MA_RW);
 }

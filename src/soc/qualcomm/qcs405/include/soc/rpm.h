@@ -13,17 +13,9 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _SOC_QUALCOMM_QCS405_SYMBOLS_H_
-#define _SOC_QUALCOMM_QCS405_SYMBOLS_H_
+#ifndef _SOC_QUALCOMM_QCS405_RPM_H__
+#define _SOC_QUALCOMM_QCS405_RPM_H__
 
-#include <symbols.h>
-#include <types.h>
+void rpm_fw_load_reset(void);
 
-DECLARE_REGION(ssram);
-DECLARE_REGION(bsram);
-DECLARE_REGION(dram_reserved);
-DECLARE_REGION(dcb);
-DECLARE_REGION(pmic);
-DECLARE_REGION(rpm);
-
-#endif // _SOC_QUALCOMM_QCS405_SYMBOLS_H_
+#endif  // _SOC_QUALCOMM_QCS405_RPM_H__

@@ -50,6 +50,7 @@ ramstage-y += qup.c
 ramstage-y += blsp.c
 ramstage-y += usb.c
 ramstage-$(CONFIG_DRIVERS_UART) += uart.c
+ramstage-y += rpm_load_reset.c
 
 ################################################################################
 
@@ -104,6 +105,17 @@ ifneq (,$(findstring $(PMIC_FILE),$(pmic_file)))
 	$(PMIC_CBFS)-type := raw
 	$(PMIC_CBFS)-compression := none
 	cbfs-files-y += $(PMIC_CBFS)
+endif
+
+################################################################################
+RPM_FILE := $(QCS405_BLOB)/rpm.mbn
+rpm_file := $(shell ls $(RPM_FILE))
+ifneq (,$(findstring $(RPM_FILE),$(rpm_file)))
+	RPM_CBFS := $(CONFIG_CBFS_PREFIX)/rpm
+	$(RPM_CBFS)-file := $(RPM_FILE)
+	$(RPM_CBFS)-type := payload
+	$(RPM_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+	cbfs-files-y += $(RPM_CBFS)
 endif
 
 endif
