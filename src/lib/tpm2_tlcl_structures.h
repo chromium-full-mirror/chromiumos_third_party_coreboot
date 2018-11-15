@@ -81,6 +81,15 @@ struct tpm_header {
 #define TPM2_CR50_VENDOR_COMMAND ((TPM_CC)(TPM_CC_VENDOR_BIT_MASK | 0))
 #define  TPM2_CR50_SUB_CMD_NVMEM_ENABLE_COMMITS (21)
 #define  TPM2_CR50_SUB_CMD_TURN_UPDATE_ON (24)
+#define  TPM2_CR50_SUB_CMD_TPM_MODE (40)
+
+/* TPM2_CR50_SUB_CMD_TPM_MODE return values (TPM modes) */
+enum {
+       TpmModeEnabledTentative = 0,  /* TPM is enabled, can be changed */
+       TpmModeEnabled = 1,           /* TPM is enabled, cannot be changed */
+       TpmModeDisabled = 2,          /* TPM is disabled, cannot be changed */
+       TpmModeMax,
+};
 
 /* Startup values. */
 #define TPM_SU_CLEAR 0
@@ -290,6 +299,7 @@ struct vendor_command_response {
 	uint16_t vc_subcommand;
 	union {
 		uint8_t num_restored_headers;
+		uint8_t tpm_mode;
 	};
 };
 

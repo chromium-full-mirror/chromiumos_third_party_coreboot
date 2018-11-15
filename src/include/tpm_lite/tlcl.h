@@ -180,4 +180,27 @@ uint32_t tlcl_cr50_enable_nvcommits(void);
 uint32_t tlcl_cr50_enable_update(uint16_t timeout_ms,
 				 uint8_t *num_restored_headers);
 
+/**
+ * CR50 specific tpm command to get/set the TPM mode.  This function sets
+ * the mode and validates that it was updated successfully.  If any of the
+ * following occur, the function fails:
+ *   - TPM does not understand the instruction (old version)
+ *   - TPM has already left the TpmModeEnabledTentative mode
+ *   - TPM responds with a mode other than the requested mode
+ *   - Some other communication error
+ * Otherwise, the function call succeeds.
+ *
+ * `mode` argument may be any of the following (src/lib/tpm2_tlcl_structures.h):
+ *   - TpmModeEnabled (1)   request transition from EnabledTentative -> Enabled
+ *   - TpmModeDisabled (2)  request transition from EnabledTentative -> Disabled
+ *
+ * Returns TPM_SUCCESS on success and TPM_E_* on failure.
+ *
+ * Note that CR50 also implements a version of this command which simply
+ * returns the current TPM mode (differentiated by whether or not the 8-bit
+ * mode argument is attached to the vendor command), but only the "set"
+ * version is implemented here.
+ */
+uint32_t tlcl_cr50_set_tpm_mode(uint8_t mode);
+
 #endif  /* TPM_LITE_TLCL_H_ */

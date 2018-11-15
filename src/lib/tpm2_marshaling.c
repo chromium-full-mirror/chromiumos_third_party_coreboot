@@ -272,6 +272,10 @@ static int marshal_cr50_vendor_command(struct obuf *ob, void *command_body)
 		rc |= obuf_write_be16(ob, sub_command[0]);
 		rc |= obuf_write_be16(ob, sub_command[1]);
 		break;
+	case TPM2_CR50_SUB_CMD_TPM_MODE:
+		rc |= obuf_write_be16(ob, sub_command[0]);
+		rc |= obuf_write_be8(ob, sub_command[1]);
+		break;
 	default:
 		/* Unsupported subcommand. */
 		printk(BIOS_WARNING, "Unsupported cr50 subcommand: 0x%04x\n",
@@ -471,6 +475,9 @@ static int unmarshal_vendor_command(struct ibuf *ib,
 		break;
 	case TPM2_CR50_SUB_CMD_TURN_UPDATE_ON:
 		return ibuf_read_be8(ib, &vcr->num_restored_headers);
+		break;
+	case TPM2_CR50_SUB_CMD_TPM_MODE:
+		return ibuf_read_be8(ib, &vcr->tpm_mode);
 		break;
 	default:
 		printk(BIOS_ERR,

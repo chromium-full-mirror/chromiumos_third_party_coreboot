@@ -458,3 +458,35 @@ uint32_t tlcl_cr50_enable_update(uint16_t timeout_ms,
 	*num_restored_headers = response->vcr.num_restored_headers;
 	return TPM_SUCCESS;
 }
+
+uint32_t tlcl_cr50_set_tpm_mode(uint8_t mode)
+{
+	struct tpm2_response *response;
+	uint16_t command_body[] = {
+		TPM2_CR50_SUB_CMD_TPM_MODE, mode
+	};
+
+	printk(BIOS_INFO, "Setting cr50 TPM mode\n");
+
+	response = tpm_process_command(TPM2_CR50_VENDOR_COMMAND, command_body);
+
+	if (response == NULL) {
+		printk(BIOS_ERR, "%s: communications error\n", __func__);
+		return TPM_E_COMMUNICATION_ERROR;
+	}
+
+	if (response->hdr.tpm_code) {
+		printk(BIOS_ERR, "%s: invalid header code: %x\n", __func__,
+		       response->hdr.tpm_code);
+		return TPM_E_IOERROR;
+	}
+
+	if (response->vcr.tpm_mode != mode) {
+		printk(BIOS_ERR,
+		       "%s: invalid TPM mode response: %d (expect %d)\n",
+		       __func__, response->vcr.tpm_mode, mode);
+		return TPM_E_WRITE_FAILURE;
+	}
+
+	return TPM_SUCCESS;
+}
