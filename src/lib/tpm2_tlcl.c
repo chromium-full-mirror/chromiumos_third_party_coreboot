@@ -83,6 +83,34 @@ uint32_t tlcl_resume(void)
 	return tlcl_send_startup(TPM_SU_STATE);
 }
 
+static uint32_t tlcl_send_shutdown(TPM_SU type)
+{
+	struct tpm2_shutdown shutdown;
+	struct tpm2_response *response;
+
+	shutdown.shutdown_type = type;
+	response = tpm_process_command(TPM2_Shutdown, &shutdown);
+
+	/* IO error, tpm2_response pointer is empty. */
+	if (response == NULL) {
+		printk(BIOS_ERR, "%s: TPM communication error\n", __func__);
+		return TPM_E_IOERROR;
+	}
+
+	if (response->hdr.tpm_code) {
+		printk(BIOS_INFO, "%s: Shutdown return code is %x\n",
+		       __func__, response->hdr.tpm_code);
+		return TPM_E_IOERROR;
+	}
+
+	return TPM_SUCCESS;
+}
+
+uint32_t tlcl_save_state(void)
+{
+	return tlcl_send_shutdown(TPM_SU_STATE);
+}
+
 uint32_t tlcl_assert_physical_presence(void)
 {
 	/*
