@@ -139,24 +139,37 @@ static void fill_vboot_handoff(struct vboot_handoff *vboot_handoff,
 
 void vboot_fill_handoff(void)
 {
-	struct vboot_handoff *vh;
 	struct vb2_shared_data *sd;
 
 	sd = vb2_get_shared_data();
 	sd->workbuf_hash_offset = 0;
 	sd->workbuf_hash_size = 0;
 
-	printk(BIOS_INFO, "creating vboot_handoff structure\n");
-	vh = cbmem_add(CBMEM_ID_VBOOT_HANDOFF, sizeof(*vh));
-	if (vh == NULL)
-		/* we don't need to failover gracefully here because this
-		 * shouldn't happen with the image that has passed QA. */
-		die("failed to allocate vboot_handoff structure\n");
+	/* On S3 resume, preserve depthcharge's vboot structures instead
+	 * of overwriting them. */
+	if (cbmem_find(CBMEM_ID_VBOOT_HANDOFF))
+		printk(BIOS_INFO, "preserving vboot_handoff structure\n");
+	else {
+		struct vboot_handoff *vh;
+		VbSharedDataHeader *vb_sd;
 
-	memset(vh, 0, sizeof(*vh));
+		printk(BIOS_INFO, "creating vboot_handoff structure\n");
 
-	/* needed until we finish transtion to vboot2 for kernel verification */
-	fill_vboot_handoff(vh, sd);
+		vh = cbmem_add(CBMEM_ID_VBOOT_HANDOFF, sizeof(*vh));
+		if (vh == NULL)
+			/* we don't need to failover gracefully here because
+			 * this shouldn't happen with the image that has passed
+			 * QA. */
+			die("failed to allocate vboot_handoff structure\n");
+
+		vb_sd = (VbSharedDataHeader *)vh->shared_data;
+
+		memset(vh, 0, sizeof(*vh));
+
+		/* needed until we finish transtion to vboot2 for kernel
+		 * verification */
+		fill_vboot_handoff(vh, sd);
+	}
 
 
 	/* Log the recovery mode switches if required, before clearing them. */
