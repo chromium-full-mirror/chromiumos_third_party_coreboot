@@ -64,6 +64,7 @@ int vboot_get_handoff_info(void **addr, uint32_t *size);
 int vboot_handoff_skip_display_init(void);
 int vboot_handoff_check_recovery_flag(void);
 int vboot_handoff_check_developer_flag(void);
+int vboot_handoff_check_alt_os_legacy_boot_flag(void);
 int vboot_handoff_get_recovery_reason(void);
 
 /* ============================ VBOOT REBOOT ============================== */
