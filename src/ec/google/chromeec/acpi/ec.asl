@@ -57,8 +57,6 @@ Device (EC0)
 		PATC, 8,	// Programmable Auxiliary Trip Commit
 		CHGL, 8,	// Charger Current Limit
 		TBMD, 1,	// Tablet mode
-		offset (0x0A),
-		KMAP, 8,	// KB mapping switch, CrOS=0, altOS=1
 	}
 
 #if CONFIG_EC_GOOGLE_CHROMEEC_ACPI_MEMMAP
@@ -133,9 +131,6 @@ Device (EC0)
 
 		// Initialize LID switch state
 		Store (LIDS, \LIDS)
-
-		// Initialize KB mapping by ALTO.
-		Store (ALTO, \_SB.PCI0.LPCB.EC0.KMAP)
 	}
 
 	/* Read requested temperature and check against EC error values */
