@@ -51,6 +51,7 @@ ramstage-y += blsp.c
 ramstage-y += usb.c
 ramstage-$(CONFIG_DRIVERS_UART) += uart.c
 ramstage-y += rpm_load_reset.c
+ramstage-y += bl31_plat_params.c
 
 ################################################################################
 

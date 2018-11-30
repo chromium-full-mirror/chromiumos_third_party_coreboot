@@ -13,11 +13,18 @@
  * GNU General Public License for more details.
  */
 
+#include <bootmem.h>
 #include <symbols.h>
 #include <device/device.h>
 #include <soc/mmu.h>
 #include <soc/symbols.h>
 #include <soc/rpm.h>
+
+void bootmem_platform_add_ranges(void)
+{
+	bootmem_add_range((uintptr_t)_dram_reserved,
+			REGION_SIZE(dram_reserved), BM_MEM_BL31);
+}
 
 static void soc_read_resources(struct device *dev)
 {

@@ -1,0 +1,38 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright 2018 Qualcomm Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#ifndef __BL31_PLAT_PARAMS_H__
+#define __BL31_PLAT_PARAMS_H__
+
+/* param type */
+enum {
+	PARAM_NONE = 0,
+	PARAM_COREBOOT_TABLE,
+};
+
+/* common header for all plat parameter type */
+struct bl31_plat_param {
+	uint64_t type;
+	void *next;
+};
+
+struct bl31_u64_param {
+	struct bl31_plat_param h;
+	uint64_t value;
+};
+
+void register_bl31_param(struct bl31_plat_param *param);
+
+#endif/* __BL31_PLAT_PARAMS_H__ */
