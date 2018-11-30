@@ -138,4 +138,15 @@ $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin
 	@printf "Generating: $(subst $(obj)/,,$(@))\n"
 	cp $(objcbfs)/bootblock.raw.bin $(objcbfs)/bootblock.bin
 endif
+################################################################################
+BL31_FILE := $(QCS405_BLOB)/bl31.elf
+bl31_file := $(shell ls $(BL31_FILE))
+ifneq (,$(findstring $(BL31_FILE),$(bl31_file)))
+       BL31_CBFS := $(CONFIG_CBFS_PREFIX)/bl31
+       $(BL31_CBFS)-file := $(BL31_FILE)
+       $(BL31_CBFS)-type := payload
+       $(BL31_CBFS)-compression := none
+       cbfs-files-y += $(BL31_CBFS)
+endif
+################################################################################
 endif

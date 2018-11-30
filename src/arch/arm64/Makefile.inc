@@ -157,6 +157,8 @@ $(objcbfs)/ramstage.debug: $$(ramstage-objs)
 
 ifeq ($(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE),y)
 
+ifneq ($(CONFIG_SOC_QUALCOMM_QCS405),y)
+
 ifeq ($(CONFIG_ARM64_BL31_EXTERNAL_FILE),"")
 
 BL31_SOURCE := $(top)/3rdparty/arm-trusted-firmware
@@ -234,6 +236,8 @@ cbfs-files-y += $(SECURE_OS_FILE_CBFS)
 check-ramstage-overlap-files += $(SECURE_OS_FILE_CBFS)
 
 endif # CONFIG_ARM64_USE_SECURE_OS
+
+endif # CONFIG_SOC_QUALCOMM_QCS405
 
 endif # CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE
 
