@@ -103,6 +103,38 @@ static const struct pirq_struct mainboard_pirq_data[] = {
 	{ XHCI_DEVFN,	{ PIRQ_XHCI, PIRQ_NC, PIRQ_NC, PIRQ_NC } },
 };
 
+static int smbios_write_wifi(struct device *dev, int *handle,
+			     unsigned long *current)
+{
+	struct smbios_type_qct_wifi {
+		u8 type;
+		u8 length;
+		u16 handle;
+		u8 disable_11ac;
+		u8 country_code_flag;
+		u16 country_code_value;
+		u8 board_file_extension;
+		u8 eos[2];
+	} __packed;
+
+	struct smbios_type_qct_wifi *t =
+		(struct smbios_type_qct_wifi *)*current;
+	int len = sizeof(struct smbios_type_qct_wifi);
+
+	memset(t, 0, sizeof(struct smbios_type_qct_wifi));
+	t->type = 0xf8;
+	t->length = len - 2;
+	t->handle = *handle;
+	t->disable_11ac = 0;
+	t->country_code_flag = 0;
+	t->country_code_value = 0;
+	t->board_file_extension = smbios_add_string(t->eos, "BDF_GO_LIARA");
+	len = t->length + smbios_string_table_len(t->eos);
+	*current += len;
+	*handle += 1;
+	return len;
+}
+
 /* PIRQ Setup */
 static void pirq_setup(void)
 {
@@ -167,7 +199,8 @@ static void kahlee_enable(struct device *dev)
 
 	/* Initialize the PIRQ data structures for consumption */
 	pirq_setup();
-
+	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_LIARA))
+		dev->ops->get_smbios_data = smbios_write_wifi;
 	dev->ops->acpi_inject_dsdt_generator = chromeos_dsdt_generator;
 }
 
