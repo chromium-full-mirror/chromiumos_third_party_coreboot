@@ -13,10 +13,11 @@ config BOARD_SPECIFIC_OPTIONS
 	select SPI_FLASH_GIGADEVICE
 	select SPI_FLASH_WINBOND
 	select MAINBOARD_HAS_CHROMEOS
+	select MAINBOARD_HAS_TPM2
+	select MAINBOARD_HAS_SPI_TPM_CR50
 
 config VBOOT
 	select VBOOT_VBNV_FLASH
-	select VBOOT_MOCK_SECDATA
 	select VBOOT_NO_BOARD_SUPPORT
 	select GBB_FLAG_FORCE_DEV_SWITCH_ON
 
@@ -27,6 +28,10 @@ config MAINBOARD_DIR
 config MAINBOARD_VENDOR
 	string
 	default "Google"
+
+config DRIVER_TPM_SPI_BUS
+	hex
+	default 0x4
 
 ##########################################################
 #### Update below when adding a new derivative board. ####
