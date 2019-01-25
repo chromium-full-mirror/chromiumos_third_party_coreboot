@@ -61,6 +61,10 @@ struct ssusb_ippc_regs {
 	u64 u2_ctrl_p[6];
 };
 
+/* U2PHY COM USBPHYACR1 */
+#define PA1_RG_U2_VRT_SEL			(0x7 << 12)
+#define PA1_RG_U2_VRT_SEL_VAL(x)	((0x7 & (x)) << 12)
+
 /* U2PHY_COM USBPHYACR5 */
 #define PA5_RG_U2_HSTX_SRCTRL			(0x7 << 12)
 #define PA5_RG_U2_HSTX_SRCTRL_VAL(x)	((0x7 & (x)) << 12)
@@ -128,7 +132,9 @@ struct ssusb_ippc_regs {
 #define P3D_RG_CDR_BIR_LTD0_VAL(x)		((0x1f & (x)) << 8)
 
 struct sif_u2_phy_com {
-	u32 reserved0[5];
+	u32 usbphyacr0;
+	u32 usbphyacr1;
+	u32 reserved0[3];
 	u32 usbphyacr5;
 	u32 usbphyacr6;
 	u32 u2phyacr3;

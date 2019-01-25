@@ -76,6 +76,10 @@ static void phy_index_power_on(int index)
 	/* Set USB 2.0 slew rate value */
 	clrsetbits_le32(&phy->u2phy.usbphyacr5,
 		PA5_RG_U2_HSTX_SRCTRL, PA5_RG_U2_HSTX_SRCTRL_VAL(4));
+
+	/* Override eye_vrt */
+	clrsetbits_le32(&phy->u2phy.usbphyacr1,
+		PA1_RG_U2_VRT_SEL, PA1_RG_U2_VRT_SEL_VAL(0x1));
 }
 
 static void u3phy_power_on(void)
