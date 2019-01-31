@@ -1,6 +1,5 @@
 
 bootblock-y += memlayout.ld
-bootblock-y += chromeos.c
 bootblock-y += reset.c
 bootblock-y += bootblock.c
 

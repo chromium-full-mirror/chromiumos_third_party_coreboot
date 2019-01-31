@@ -18,11 +18,13 @@
 #include <security/vboot/vboot_common.h>
 #include <soc/clock.h>
 #include <spi-generic.h>
+#include "board.h"
 
 void verstage_mainboard_init(void)
 {
 	struct spi_slave spi;
 
+	setup_chromeos_gpios();
 	printk(BIOS_ERR, "Trying to initialize TPM SPI bus\n");
 	if (spi_setup_slave(CONFIG_DRIVER_TPM_SPI_BUS,
 			    CONFIG_DRIVER_TPM_SPI_CHIP, &spi)) {
