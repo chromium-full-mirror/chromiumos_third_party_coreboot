@@ -1,3 +1,0 @@
-config EC_LENOVO_H8
-	select EC_ACPI
-	bool

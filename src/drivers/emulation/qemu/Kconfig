@@ -1,2 +1,0 @@
-config DRIVERS_EMULATION_QEMU
-	bool
