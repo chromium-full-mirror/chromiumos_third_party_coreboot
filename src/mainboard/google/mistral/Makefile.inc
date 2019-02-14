@@ -3,6 +3,7 @@ bootblock-y += memlayout.ld
 bootblock-y += reset.c
 bootblock-y += bootblock.c
 
+verstage-y += boardid.c
 verstage-y += memlayout.ld
 verstage-y += chromeos.c
 verstage-y += reset.c
@@ -12,7 +13,9 @@ romstage-y += memlayout.ld
 romstage-y += chromeos.c
 romstage-y += reset.c
 romstage-y += romstage.c
+romstage-y += boardid.c
 
+ramstage-y += boardid.c
 ramstage-y += memlayout.ld
 ramstage-y += chromeos.c
 ramstage-y += reset.c
