@@ -14,8 +14,9 @@
  */
 
 #include <bootblock_common.h>
+#include "board.h"
 
 void bootblock_mainboard_init(void)
 {
-
+	gpio_input_pullup(GPIO_H1_AP_INT);
 }
