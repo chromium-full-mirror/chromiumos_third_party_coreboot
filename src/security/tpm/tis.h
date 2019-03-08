@@ -97,4 +97,15 @@ int tis_sendrecv(const u8 *sendbuf, size_t send_size, u8 *recvbuf,
  */
 int tis_plat_irq_status(void);
 
+/*
+ * This function is_tpm_detected() sets tpm_detection value to be 1 upon
+ * TPM detection.
+ * The value is writted to the specific region of SRAM which will retain
+ * the TPM Detection information between various stages of the bootloader.
+ *
+ * Returns 0 if TPM is not detected
+ * Returns 1 if TPM is detected
+ */
+unsigned int is_tpm_detected(void);
+
 #endif /* TIS_H_ */

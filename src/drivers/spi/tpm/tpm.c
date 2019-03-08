@@ -45,6 +45,9 @@ static struct spi_slave g_spi_slave CAR_GLOBAL;
 /* Cached TPM device identification. */
 static struct tpm2_info g_tpm_info CAR_GLOBAL;
 
+/* is TPM available? */
+static unsigned tpm_detected CAR_GLOBAL;
+
 /*
  * TODO(vbendeb): make CONFIG_DEBUG_TPM an int to allow different level of
  * debug traces. Right now it is either 0 or 1.
@@ -457,10 +460,12 @@ int tpm2_init(struct spi_slave *spi_if)
 	}
 
 	if (!retries) {
+		car_set_var(tpm_detected, 0);
 		printk(BIOS_ERR, "\n%s: Failed to connect to the TPM\n",
 		       __func__);
 		return -1;
-	}
+	} else
+		car_set_var(tpm_detected, 1);
 
 	printk(BIOS_INFO, " done!\n");
 
@@ -727,4 +732,15 @@ size_t tpm2_process_command(const void *tpm2_command, size_t command_size,
 	write_tpm_sts(TPM_STS_COMMAND_READY);
 
 	return payload_size;
+}
+
+unsigned int is_tpm_detected(void)
+{
+	int tpm_present = car_get_var(tpm_detected);
+	if (tpm_present == 0)
+		return 0;
+	else if (tpm_present == 1)
+		return 1;
+	else
+		return 0;
 }
