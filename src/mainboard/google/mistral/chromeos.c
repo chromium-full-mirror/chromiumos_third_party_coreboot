@@ -24,11 +24,14 @@ void setup_chromeos_gpios(void)
 {
 	gpio_input(GPIO_WP_STATE);
 	gpio_input(GPIO_REC_STATE);
+	gpio_input(GPIO_DEV_STATE);
 }
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	struct lb_gpio chromeos_gpios[] = {
+		{GPIO_DEV_STATE.addr, ACTIVE_HIGH,
+			gpio_get(GPIO_DEV_STATE), "developer"},
 		{GPIO_REC_STATE.addr, ACTIVE_LOW,
 			gpio_get(GPIO_REC_STATE), "recovery"},
 		{GPIO_WP_STATE.addr, ACTIVE_LOW,
