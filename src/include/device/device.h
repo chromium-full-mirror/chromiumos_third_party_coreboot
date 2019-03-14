@@ -326,9 +326,9 @@ static inline DEVTREE_CONST void *config_of_path(pci_devfn_t devfn)
 	return config_of(dev);
 }
 
+void enable_static_devices(struct device *bus);
 void scan_smbus(struct device *bus);
 void scan_generic_bus(struct device *bus);
-void scan_static_bus(struct device *bus);
 void scan_lpc_bus(struct device *bus);
 void scan_usb_bus(struct device *bus);
 
