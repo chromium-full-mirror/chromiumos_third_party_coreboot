@@ -89,7 +89,7 @@ static struct device_operations lpc_bus_ops = {
 	.set_resources		= DEVICE_NOOP,
 	.enable_resources	= lpc_enable_childrens_resources,
 	.init			= lpc_init,
-	.scan_bus		= scan_lpc_bus,
+	.scan_bus		= scan_static_bus,
 	.enable			= d14_f3_child_bus_enable,
 };
 
