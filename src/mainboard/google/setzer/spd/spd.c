@@ -42,9 +42,10 @@
  *   0b0111 - 4GiB total - 2 x 2GiB Samsung K4E8E324EB-EGCF
  *   0b1000 - 2GiB total - 1 x 2GiB Hynix H9CCNNN8GTALAR-NUD
  *   0b1001 - 4GiB total - 2 x 4GiB Hynix H9CCNNN8GTALAR-NUD
+ *   0b1010 - 4GiB total - 1 x 2GiB Samsung K4E8E324EB-EGCF + 1 x 2GiB Hynix H9CCNNN8GTALAR-NUD
  */
 static const uint32_t dual_channel_config =
-	(1 << 0) | (1 << 2) | (1 << 4) | (1 << 7) | (1 << 9);
+	(1 << 0) | (1 << 2) | (1 << 4) | (1 << 7) | (1 << 9) | (1 << 10);
 
 static void *get_spd_pointer(char *spd_file_content, int total_spds, int *dual)
 {
@@ -92,10 +93,31 @@ static void *get_spd_pointer(char *spd_file_content, int total_spds, int *dual)
 	case 9:
 		printk(BIOS_DEBUG, "4GiB Hynix H9CCNNN8GTALAR-NUD\n");
 		break;
+        case 10:
+                printk(BIOS_DEBUG, "4GiB (2GiB Samsung K4E8E324EB-EGCF + 2GiB Hynix H9CCNNN8GTALAR-NUD)\n");
+                break;
 	}
 
 	/* Return the serial product data for the RAM */
 	return &spd_file_content[SPD_LEN * ram_id];
+}
+
+static void *get_spd_pointer_ch1(char *spd_file_content, int total_spds)
+{
+	int ram_id = 0;
+
+	ram_id = get_ramid();
+	if (ram_id >= total_spds)
+		return NULL;
+
+	/* Select the RAM type */
+	if (ram_id == 10) {
+                /* For channel 1, ram_id 10 uses the same serial product data as ram_id 8. */
+                return &spd_file_content[SPD_LEN * 8];
+        } else {
+	        /* Return the nonhybrid serial product data for the RAM */
+	        return &spd_file_content[SPD_LEN * ram_id];
+        }
 }
 
 /* Copy SPD data for on-board memory */
@@ -103,6 +125,7 @@ void mainboard_fill_spd_data(struct pei_data *ps)
 {
 	struct cbfs_file *spd_file;
 	void *spd_content;
+	void *spd_content_ch1;
 	int dual_channel = 0;
 
 	/* Find the SPD data in CBFS. */
@@ -117,9 +140,16 @@ void mainboard_fill_spd_data(struct pei_data *ps)
 	spd_content = get_spd_pointer(CBFS_SUBHEADER(spd_file),
 				      ntohl(spd_file->len) / SPD_LEN,
 				      &dual_channel);
+	spd_content_ch1 = get_spd_pointer_ch1(CBFS_SUBHEADER(spd_file),
+				      ntohl(spd_file->len) / SPD_LEN);
 	if (IS_ENABLED(CONFIG_DISPLAY_SPD_DATA) && spd_content != NULL) {
-		printk(BIOS_DEBUG, "SPD Data:\n");
+		printk(BIOS_DEBUG, "Ch0 SPD Data:\n");
 		hexdump(spd_content, SPD_LEN);
+		printk(BIOS_DEBUG, "\n");
+	}
+	if (IS_ENABLED(CONFIG_DISPLAY_SPD_DATA) && spd_content_ch1 != NULL) {
+		printk(BIOS_DEBUG, "Ch1 SPD Data:\n");
+		hexdump(spd_content_ch1, SPD_LEN);
 		printk(BIOS_DEBUG, "\n");
 	}
 
@@ -135,7 +165,7 @@ void mainboard_fill_spd_data(struct pei_data *ps)
 		printk(BIOS_DEBUG, "Channel 0 DIMM soldered down\n");
 		if (dual_channel) {
 			printk(BIOS_DEBUG, "Channel 1 DIMM soldered down\n");
-			ps->spd_data_ch1 = spd_content;
+			ps->spd_data_ch1 = spd_content_ch1;
 			ps->spd_ch1_config = 1;
 		} else {
 			printk(BIOS_DEBUG, "Channel 1 DIMM not installed\n");
