@@ -72,6 +72,9 @@ static enum switch_state get_rec_sw_state(void)
 	gpio_t rec_sw;
 	static enum switch_state saved_state = not_probed;
 
+	if (is_tpm_detected() == 0)
+		return saved_state;
+
 	if (saved_state != not_probed)
 		return saved_state;
 
