@@ -197,12 +197,6 @@ int rtc_init(u8 recover)
 		goto err;
 	}
 
-	/* using dcxo 32K clock */
-	if (!rtc_enable_dcxo()) {
-		ret = -RTC_STATUS_OSC_SETTING_FAIL;
-		goto err;
-	}
-
 	if (recover)
 		mdelay(20);
 
@@ -310,6 +304,10 @@ void rtc_boot(void)
 	/* dcxo 32k init settings */
 	pwrap_write_field(PMIC_RG_DCXO_CW02, 0xF, 0xF, 0);
 	pwrap_write_field(PMIC_RG_SCK_TOP_CON0, 0x1, 0x1, 0);
+
+	/* using dcxo 32K clock */
+	if (!rtc_enable_dcxo())
+		rtc_info("rtc_enable_dcxo() fail\n");
 
 	rtc_boot_common();
 	rtc_bbpu_power_on();
