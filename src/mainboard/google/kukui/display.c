@@ -1,0 +1,1142 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright 2019 Huaqin Telecom Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#include <console/console.h>
+#include <delay.h>
+#include <device/device.h>
+#include <edid.h>
+#include <gpio.h>
+#include <soc/auxadc.h>
+#include <soc/ddp.h>
+#include <soc/dsi.h>
+#include <soc/gpio.h>
+#include <boardid.h>
+
+#include "display.h"
+#include "gpio.h"
+
+const int tolerance = 30000; /* 30,000 uV */
+
+/* Panel for Kukui */
+static struct edid kukui_innolux_edid = {
+	.panel_bits_per_color = 8,
+	.panel_bits_per_pixel = 24,
+	.mode = {
+		.name = "768x1024@60Hz",
+		.pixel_clock = 56900,
+		.lvds_dual_channel = 0,
+		.refresh = 60,
+		.ha = 768, .hbl = 120, .hso = 40, .hspw = 40, .hborder = 0,
+		.va = 1024, .vbl = 44, .vso = 20, .vspw = 4, .vborder = 0,
+		.phsync = '-', .pvsync = '-',
+		.x_mm = 120, .y_mm = 160,
+	},
+};
+
+static struct lcm_init_table lcm_init_cmd[] = {
+	{INIT_CMD, 1, {MIPI_DCS_EXIT_SLEEP_MODE} },
+	{DELAY_CMD, 120, {} },
+	{INIT_CMD, 1, {MIPI_DCS_SET_DISPLAY_ON} },
+	{DELAY_CMD, 120, {} },
+};
+
+/* flapjack C18 BOE himax panel : PANEL_BOE_TV080WUM_NG0 */
+
+static const struct panel_id_voltage flapjack_panel_id_voltages[] = {
+	/* Voltage (unit: mV) */
+	{PANEL_BOE_TV101WUM_NG0, 74},	/*  PANEL_BOE_TV101WUM_NG0 */
+	{PANEL_BOE_TV080WUM_NG0, 212},	/*  PANEL_BOE_TV080WUM_NG0 */
+	{PANEL_INX_OTA7290D10P, 1191},	/*  PANEL_INX_OTA7290D10P */
+	{PANEL_AUO_NT51021D8P, 1027},	/*  PANEL_AUO_NT51021D8P */
+};
+
+static struct edid flapjack_boe_tv080wum_ng0_edid = {
+	.panel_bits_per_color = 8,
+	.panel_bits_per_pixel = 24,
+	.mode = {
+		 .name = "1200x1920@60Hz",
+		 .pixel_clock = 159420,
+		 .lvds_dual_channel = 0,
+		 .refresh = 60,
+		 .ha = 1200, .hbl = 164, .hso = 80, .hspw = 24, .hborder = 0,
+		 .va = 1920, .vbl = 28, .vso = 10, .vspw = 4, .vborder = 0,
+		 .phsync = '-', .pvsync = '-',
+		 .x_mm = 107, .y_mm = 132,
+		 },
+};
+
+static struct lcm_init_table boe_tv080wum_ng0_lcm_init_cmd[] = {
+	{INIT_CMD, 1, {0x10} },
+	{DELAY_CMD, 0x22, {} },
+	{INIT_CMD, 2, {0xB0, 0x05} },
+	{INIT_CMD, 2, {0xB1, 0xE5} },
+	{INIT_CMD, 2, {0xB3, 0x52} },
+	{INIT_CMD, 2, {0xB0, 0x00} },
+	{INIT_CMD, 2, {0xB3, 0x88} },
+	{INIT_CMD, 2, {0xB0, 0x04} },
+	{INIT_CMD, 2, {0xB8, 0x00} },
+	{INIT_CMD, 2, {0xB0, 0x00} },
+	{INIT_CMD, 2, {0xB1, 0x00} },
+	{INIT_CMD, 2, {0xB6, 0x03} },
+	{INIT_CMD, 2, {0xBA, 0x8B} },
+	{INIT_CMD, 2, {0xBF, 0x15} },
+	{INIT_CMD, 2, {0xC0, 0x0F} },
+	{INIT_CMD, 2, {0xC2, 0x14} },
+	{INIT_CMD, 2, {0xC3, 0x02} },
+	{INIT_CMD, 2, {0xC4, 0x14} },
+	{INIT_CMD, 2, {0xC5, 0x02} },
+	{INIT_CMD, 2, {0xB0, 0x01} },
+	{INIT_CMD, 2, {0xCC, 0x26} },
+	{INIT_CMD, 2, {0xCD, 0x26} },
+	{INIT_CMD, 2, {0xCE, 0x26} },
+	{INIT_CMD, 2, {0xCF, 0x26} },
+	{INIT_CMD, 2, {0xE0, 0x26} },
+	{INIT_CMD, 2, {0xE1, 0x26} },
+	{INIT_CMD, 2, {0xE2, 0x26} },
+	{INIT_CMD, 2, {0xE3, 0x26} },
+	{INIT_CMD, 2, {0xB0, 0x03} },
+	{INIT_CMD, 2, {0xC8, 0x0D} },
+	{INIT_CMD, 2, {0xC9, 0x0B} },
+	{INIT_CMD, 2, {0xC3, 0x2A} },
+	{INIT_CMD, 2, {0xE7, 0x2A} },
+	{INIT_CMD, 2, {0xC5, 0x2A} },
+	{INIT_CMD, 2, {0xDE, 0x2A} },
+	{INIT_CMD, 2, {0xB0, 0x06} },
+	{INIT_CMD, 2, {0xC0, 0xA5} },
+	{INIT_CMD, 2, {0xD5, 0x20} },
+	{INIT_CMD, 2, {0xB0, 0x02} },
+	{INIT_CMD, 2, {0xC0, 0x00} },
+	{INIT_CMD, 2, {0xC1, 0x0F} },
+	{INIT_CMD, 2, {0xC2, 0x1C} },
+	{INIT_CMD, 2, {0xC3, 0x2D} },
+	{INIT_CMD, 2, {0xC4, 0x3A} },
+	{INIT_CMD, 2, {0xC5, 0x38} },
+	{INIT_CMD, 2, {0xC6, 0x3A} },
+	{INIT_CMD, 2, {0xC7, 0x3C} },
+	{INIT_CMD, 2, {0xC8, 0x3C} },
+	{INIT_CMD, 2, {0xC9, 0x3A} },
+	{INIT_CMD, 2, {0xCA, 0x3B} },
+	{INIT_CMD, 2, {0xCB, 0x3B} },
+	{INIT_CMD, 2, {0xCC, 0x3D} },
+	{INIT_CMD, 2, {0xCD, 0x2F} },
+	{INIT_CMD, 2, {0xCE, 0x2F} },
+	{INIT_CMD, 2, {0xCF, 0x2F} },
+	{INIT_CMD, 2, {0xD0, 0x07} },
+	{INIT_CMD, 2, {0xD2, 0x00} },
+	{INIT_CMD, 2, {0xD3, 0x0F} },
+	{INIT_CMD, 2, {0xD4, 0x18} },
+	{INIT_CMD, 2, {0xD5, 0x29} },
+	{INIT_CMD, 2, {0xD6, 0x36} },
+	{INIT_CMD, 2, {0xD7, 0x37} },
+	{INIT_CMD, 2, {0xD8, 0x36} },
+	{INIT_CMD, 2, {0xD9, 0x38} },
+	{INIT_CMD, 2, {0xDA, 0x38} },
+	{INIT_CMD, 2, {0xDB, 0x36} },
+	{INIT_CMD, 2, {0xDC, 0x37} },
+	{INIT_CMD, 2, {0xDD, 0x36} },
+	{INIT_CMD, 2, {0xDE, 0x39} },
+	{INIT_CMD, 2, {0xDF, 0x2F} },
+	{INIT_CMD, 2, {0xE0, 0x2F} },
+	{INIT_CMD, 2, {0xE1, 0x2F} },
+	{INIT_CMD, 2, {0xE2, 0x07} },
+	{INIT_CMD, 2, {0xB0, 0x07} },
+	{INIT_CMD, 2, {0xB1, 0x08} },
+	{INIT_CMD, 2, {0xB2, 0x09} },
+	{INIT_CMD, 2, {0xB3, 0x14} },
+	{INIT_CMD, 2, {0xB4, 0x25} },
+	{INIT_CMD, 2, {0xB5, 0x39} },
+	{INIT_CMD, 2, {0xB6, 0x52} },
+	{INIT_CMD, 2, {0xB7, 0x82} },
+	{INIT_CMD, 2, {0xB8, 0xBC} },
+	{INIT_CMD, 2, {0xB9, 0x33} },
+	{INIT_CMD, 2, {0xBA, 0x99} },
+	{INIT_CMD, 2, {0xBB, 0x3F} },
+	{INIT_CMD, 2, {0xBC, 0xB4} },
+	{INIT_CMD, 2, {0xBD, 0xB7} },
+	{INIT_CMD, 2, {0xBE, 0x16} },
+	{INIT_CMD, 2, {0xBF, 0x6F} },
+	{INIT_CMD, 2, {0xC0, 0x97} },
+	{INIT_CMD, 2, {0xC1, 0xBD} },
+	{INIT_CMD, 2, {0xC2, 0xD0} },
+	{INIT_CMD, 2, {0xC3, 0xE1} },
+	{INIT_CMD, 2, {0xC4, 0xE9} },
+	{INIT_CMD, 2, {0xC5, 0xF1} },
+	{INIT_CMD, 2, {0xC6, 0xF8} },
+	{INIT_CMD, 2, {0xC7, 0xFA} },
+	{INIT_CMD, 2, {0xC8, 0xFC} },
+	{INIT_CMD, 2, {0xC9, 0x00} },
+	{INIT_CMD, 2, {0xCA, 0x00} },
+	{INIT_CMD, 2, {0xCB, 0x5A} },
+	{INIT_CMD, 2, {0xCC, 0xBF} },
+	{INIT_CMD, 2, {0xCD, 0xFF} },
+	{INIT_CMD, 2, {0xCE, 0xFF} },
+	{INIT_CMD, 2, {0xB0, 0x08} },
+	{INIT_CMD, 2, {0xB1, 0x04} },
+	{INIT_CMD, 2, {0xB2, 0x07} },
+	{INIT_CMD, 2, {0xB3, 0x13} },
+	{INIT_CMD, 2, {0xB4, 0x26} },
+	{INIT_CMD, 2, {0xB5, 0x3A} },
+	{INIT_CMD, 2, {0xB6, 0x53} },
+	{INIT_CMD, 2, {0xB7, 0x85} },
+	{INIT_CMD, 2, {0xB8, 0xC0} },
+	{INIT_CMD, 2, {0xB9, 0x38} },
+	{INIT_CMD, 2, {0xBA, 0xA0} },
+	{INIT_CMD, 2, {0xBB, 0x45} },
+	{INIT_CMD, 2, {0xBC, 0xB9} },
+	{INIT_CMD, 2, {0xBD, 0xBC} },
+	{INIT_CMD, 2, {0xBE, 0x19} },
+	{INIT_CMD, 2, {0xBF, 0x72} },
+	{INIT_CMD, 2, {0xC0, 0x99} },
+	{INIT_CMD, 2, {0xC1, 0xBE} },
+	{INIT_CMD, 2, {0xC2, 0xD0} },
+	{INIT_CMD, 2, {0xC3, 0xE1} },
+	{INIT_CMD, 2, {0xC4, 0xE9} },
+	{INIT_CMD, 2, {0xC5, 0xF1} },
+	{INIT_CMD, 2, {0xC6, 0xF8} },
+	{INIT_CMD, 2, {0xC7, 0xFA} },
+	{INIT_CMD, 2, {0xC8, 0xFC} },
+	{INIT_CMD, 2, {0xC9, 0x00} },
+	{INIT_CMD, 2, {0xCA, 0x00} },
+	{INIT_CMD, 2, {0xCB, 0x5A} },
+	{INIT_CMD, 2, {0xCC, 0xBF} },
+	{INIT_CMD, 2, {0xCD, 0xFF} },
+	{INIT_CMD, 2, {0xCE, 0xFF} },
+	{INIT_CMD, 2, {0xB0, 0x09} },
+	{INIT_CMD, 2, {0xB1, 0x04} },
+	{INIT_CMD, 2, {0xB2, 0x08} },
+	{INIT_CMD, 2, {0xB3, 0x11} },
+	{INIT_CMD, 2, {0xB4, 0x26} },
+	{INIT_CMD, 2, {0xB5, 0x3B} },
+	{INIT_CMD, 2, {0xB6, 0x54} },
+	{INIT_CMD, 2, {0xB7, 0x86} },
+	{INIT_CMD, 2, {0xB8, 0xC3} },
+	{INIT_CMD, 2, {0xB9, 0x3B} },
+	{INIT_CMD, 2, {0xBA, 0xA5} },
+	{INIT_CMD, 2, {0xBB, 0x4C} },
+	{INIT_CMD, 2, {0xBC, 0xBF} },
+	{INIT_CMD, 2, {0xBD, 0xC2} },
+	{INIT_CMD, 2, {0xBE, 0x1E} },
+	{INIT_CMD, 2, {0xBF, 0x75} },
+	{INIT_CMD, 2, {0xC0, 0x9B} },
+	{INIT_CMD, 2, {0xC1, 0xBF} },
+	{INIT_CMD, 2, {0xC2, 0xD1} },
+	{INIT_CMD, 2, {0xC3, 0xE2} },
+	{INIT_CMD, 2, {0xC4, 0xEA} },
+	{INIT_CMD, 2, {0xC5, 0xF1} },
+	{INIT_CMD, 2, {0xC6, 0xF8} },
+	{INIT_CMD, 2, {0xC7, 0xFA} },
+	{INIT_CMD, 2, {0xC8, 0xFC} },
+	{INIT_CMD, 2, {0xC9, 0x00} },
+	{INIT_CMD, 2, {0xCA, 0x00} },
+	{INIT_CMD, 2, {0xCB, 0x5A} },
+	{INIT_CMD, 2, {0xCC, 0xBF} },
+	{INIT_CMD, 2, {0xCD, 0xFF} },
+	{INIT_CMD, 2, {0xCE, 0xFF} },
+	{INIT_CMD, 2, {0xB0, 0x0A} },
+	{INIT_CMD, 2, {0xB1, 0x08} },
+	{INIT_CMD, 2, {0xB2, 0x09} },
+	{INIT_CMD, 2, {0xB3, 0x14} },
+	{INIT_CMD, 2, {0xB4, 0x25} },
+	{INIT_CMD, 2, {0xB5, 0x39} },
+	{INIT_CMD, 2, {0xB6, 0x52} },
+	{INIT_CMD, 2, {0xB7, 0x82} },
+	{INIT_CMD, 2, {0xB8, 0xBC} },
+	{INIT_CMD, 2, {0xB9, 0x33} },
+	{INIT_CMD, 2, {0xBA, 0x99} },
+	{INIT_CMD, 2, {0xBB, 0x3F} },
+	{INIT_CMD, 2, {0xBC, 0xB4} },
+	{INIT_CMD, 2, {0xBD, 0xB7} },
+	{INIT_CMD, 2, {0xBE, 0x16} },
+	{INIT_CMD, 2, {0xBF, 0x6F} },
+	{INIT_CMD, 2, {0xC0, 0x97} },
+	{INIT_CMD, 2, {0xC1, 0xBD} },
+	{INIT_CMD, 2, {0xC2, 0xD0} },
+	{INIT_CMD, 2, {0xC3, 0xE1} },
+	{INIT_CMD, 2, {0xC4, 0xE9} },
+	{INIT_CMD, 2, {0xC5, 0xF1} },
+	{INIT_CMD, 2, {0xC6, 0xF8} },
+	{INIT_CMD, 2, {0xC7, 0xFA} },
+	{INIT_CMD, 2, {0xC8, 0xFC} },
+	{INIT_CMD, 2, {0xC9, 0x00} },
+	{INIT_CMD, 2, {0xCA, 0x00} },
+	{INIT_CMD, 2, {0xCB, 0x5A} },
+	{INIT_CMD, 2, {0xCC, 0xBF} },
+	{INIT_CMD, 2, {0xCD, 0xFF} },
+	{INIT_CMD, 2, {0xCE, 0xFF} },
+	{INIT_CMD, 2, {0xB0, 0x0B} },
+	{INIT_CMD, 2, {0xB1, 0x04} },
+	{INIT_CMD, 2, {0xB2, 0x07} },
+	{INIT_CMD, 2, {0xB3, 0x13} },
+	{INIT_CMD, 2, {0xB4, 0x26} },
+	{INIT_CMD, 2, {0xB5, 0x3A} },
+	{INIT_CMD, 2, {0xB6, 0x53} },
+	{INIT_CMD, 2, {0xB7, 0x85} },
+	{INIT_CMD, 2, {0xB8, 0xC0} },
+	{INIT_CMD, 2, {0xB9, 0x38} },
+	{INIT_CMD, 2, {0xBA, 0xA0} },
+	{INIT_CMD, 2, {0xBB, 0x45} },
+	{INIT_CMD, 2, {0xBC, 0xB9} },
+	{INIT_CMD, 2, {0xBD, 0xBC} },
+	{INIT_CMD, 2, {0xBE, 0x19} },
+	{INIT_CMD, 2, {0xBF, 0x72} },
+	{INIT_CMD, 2, {0xC0, 0x99} },
+	{INIT_CMD, 2, {0xC1, 0xBE} },
+	{INIT_CMD, 2, {0xC2, 0xD0} },
+	{INIT_CMD, 2, {0xC3, 0xE1} },
+	{INIT_CMD, 2, {0xC4, 0xE9} },
+	{INIT_CMD, 2, {0xC5, 0xF1} },
+	{INIT_CMD, 2, {0xC6, 0xF8} },
+	{INIT_CMD, 2, {0xC7, 0xFA} },
+	{INIT_CMD, 2, {0xC8, 0xFC} },
+	{INIT_CMD, 2, {0xC9, 0x00} },
+	{INIT_CMD, 2, {0xCA, 0x00} },
+	{INIT_CMD, 2, {0xCB, 0x5A} },
+	{INIT_CMD, 2, {0xCC, 0xBF} },
+	{INIT_CMD, 2, {0xCD, 0xFF} },
+	{INIT_CMD, 2, {0xCE, 0xFF} },
+	{INIT_CMD, 2, {0xB0, 0x0C} },
+	{INIT_CMD, 2, {0xB1, 0x04} },
+	{INIT_CMD, 2, {0xB2, 0x08} },
+	{INIT_CMD, 2, {0xB3, 0x11} },
+	{INIT_CMD, 2, {0xB4, 0x26} },
+	{INIT_CMD, 2, {0xB5, 0x3B} },
+	{INIT_CMD, 2, {0xB6, 0x54} },
+	{INIT_CMD, 2, {0xB7, 0x86} },
+	{INIT_CMD, 2, {0xB8, 0xC3} },
+	{INIT_CMD, 2, {0xB9, 0x3B} },
+	{INIT_CMD, 2, {0xBA, 0xA5} },
+	{INIT_CMD, 2, {0xBB, 0x4C} },
+	{INIT_CMD, 2, {0xBC, 0xBF} },
+	{INIT_CMD, 2, {0xBD, 0xC2} },
+	{INIT_CMD, 2, {0xBE, 0x1E} },
+	{INIT_CMD, 2, {0xBF, 0x75} },
+	{INIT_CMD, 2, {0xC0, 0x9B} },
+	{INIT_CMD, 2, {0xC1, 0xBF} },
+	{INIT_CMD, 2, {0xC2, 0xD1} },
+	{INIT_CMD, 2, {0xC3, 0xE2} },
+	{INIT_CMD, 2, {0xC4, 0xEA} },
+	{INIT_CMD, 2, {0xC5, 0xF1} },
+	{INIT_CMD, 2, {0xC6, 0xF8} },
+	{INIT_CMD, 2, {0xC7, 0xFA} },
+	{INIT_CMD, 2, {0xC8, 0xFC} },
+	{INIT_CMD, 2, {0xC9, 0x00} },
+	{INIT_CMD, 2, {0xCA, 0x00} },
+	{INIT_CMD, 2, {0xCB, 0x5A} },
+	{INIT_CMD, 2, {0xCC, 0xBF} },
+	{INIT_CMD, 2, {0xCD, 0xFF} },
+	{INIT_CMD, 2, {0xCE, 0xFF} },
+	{DELAY_CMD, 0x64, {} },
+	{INIT_CMD, 2, {0xB0, 0x00} },
+	{INIT_CMD, 2, {0xB3, 0x08} },
+	{INIT_CMD, 2, {0xB0, 0x04} },
+	{INIT_CMD, 2, {0xB8, 0x68} },
+	{DELAY_CMD, 0x0A, {} },
+	{INIT_CMD, 1, {0x11} },
+	{DELAY_CMD, 0x64, {} },
+	{INIT_CMD, 1, {0x29} },
+	{DELAY_CMD, 0x32, {} },
+
+};
+
+/* flapjack C19 BOE himax panel : PANEL_BOE_TV101WUM_NG0 */
+static struct edid flapjack_boe_tv101wum_ng0_edid = {
+	.panel_bits_per_color = 8,
+	.panel_bits_per_pixel = 24,
+	.mode = {
+		 .name = "1200x1920@60Hz",
+		 .pixel_clock = 159420,
+		 .lvds_dual_channel = 0,
+		 .refresh = 60,
+		 .ha = 1200, .hbl = 164, .hso = 80, .hspw = 24, .hborder = 0,
+		 .va = 1920, .vbl = 28, .vso = 10, .vspw = 4, .vborder = 0,
+		 .phsync = '-', .pvsync = '-',
+		 .x_mm = 135, .y_mm = 216,
+		 },
+};
+
+static struct lcm_init_table boe_tv101wum_ng0_lcm_init_cmd[] = {
+	{INIT_CMD, 1, {0x10} },
+	{DELAY_CMD, 0x22, {} },
+	{INIT_CMD, 2, {0xB0, 0x05} },
+	{INIT_CMD, 2, {0xB1, 0xE5} },
+	{INIT_CMD, 2, {0xB3, 0x52} },
+	{INIT_CMD, 2, {0xB0, 0x00} },
+	{INIT_CMD, 2, {0xB3, 0x88} },
+	{INIT_CMD, 2, {0xB0, 0x04} },
+	{INIT_CMD, 2, {0xB8, 0x00} },
+	{INIT_CMD, 2, {0xB0, 0x00} },
+	{INIT_CMD, 2, {0xB6, 0x03} },
+	{INIT_CMD, 2, {0xBA, 0x87} },
+	{INIT_CMD, 2, {0xBF, 0x15} },
+	{INIT_CMD, 2, {0xC0, 0x0F} },
+	{INIT_CMD, 2, {0xC2, 0x0C} },
+	{INIT_CMD, 2, {0xC3, 0x02} },
+	{INIT_CMD, 2, {0xC4, 0x0C} },
+	{INIT_CMD, 2, {0xC5, 0x02} },
+	{INIT_CMD, 2, {0xB0, 0x01} },
+	{INIT_CMD, 2, {0xE0, 0x26} },
+	{INIT_CMD, 2, {0xE1, 0x26} },
+	{INIT_CMD, 2, {0xDC, 0x00} },
+	{INIT_CMD, 2, {0xDD, 0x00} },
+	{INIT_CMD, 2, {0xCC, 0x26} },
+	{INIT_CMD, 2, {0xCD, 0x26} },
+	{INIT_CMD, 2, {0xC8, 0x00} },
+	{INIT_CMD, 2, {0xC9, 0x00} },
+	{INIT_CMD, 2, {0xD2, 0x03} },
+	{INIT_CMD, 2, {0xD3, 0x03} },
+	{INIT_CMD, 2, {0xE6, 0x04} },
+	{INIT_CMD, 2, {0xE7, 0x04} },
+	{INIT_CMD, 2, {0xC4, 0x09} },
+	{INIT_CMD, 2, {0xC5, 0x09} },
+	{INIT_CMD, 2, {0xD8, 0x0A} },
+	{INIT_CMD, 2, {0xD9, 0x0A} },
+	{INIT_CMD, 2, {0xC2, 0x0B} },
+	{INIT_CMD, 2, {0xC3, 0x0B} },
+	{INIT_CMD, 2, {0xD6, 0x0C} },
+	{INIT_CMD, 2, {0xD7, 0x0C} },
+	{INIT_CMD, 2, {0xC0, 0x05} },
+	{INIT_CMD, 2, {0xC1, 0x05} },
+	{INIT_CMD, 2, {0xD4, 0x06} },
+	{INIT_CMD, 2, {0xD5, 0x06} },
+	{INIT_CMD, 2, {0xCA, 0x07} },
+	{INIT_CMD, 2, {0xCB, 0x07} },
+	{INIT_CMD, 2, {0xDE, 0x08} },
+	{INIT_CMD, 2, {0xDF, 0x08} },
+	{INIT_CMD, 2, {0xB0, 0x02} },
+	{INIT_CMD, 2, {0xC0, 0x00} },
+	{INIT_CMD, 2, {0xC1, 0x07} },
+	{INIT_CMD, 2, {0xC2, 0x10} },
+	{INIT_CMD, 2, {0xC3, 0x1F} },
+	{INIT_CMD, 2, {0xC4, 0x32} },
+	{INIT_CMD, 2, {0xC5, 0x35} },
+	{INIT_CMD, 2, {0xC6, 0x38} },
+	{INIT_CMD, 2, {0xC7, 0x3A} },
+	{INIT_CMD, 2, {0xC8, 0x3E} },
+	{INIT_CMD, 2, {0xC9, 0x3F} },
+	{INIT_CMD, 2, {0xCA, 0x3F} },
+	{INIT_CMD, 2, {0xCB, 0x3F} },
+	{INIT_CMD, 2, {0xCC, 0x3F} },
+	{INIT_CMD, 2, {0xCD, 0x37} },
+	{INIT_CMD, 2, {0xCE, 0x36} },
+	{INIT_CMD, 2, {0xCF, 0x34} },
+	{INIT_CMD, 2, {0xD0, 0x07} },
+	{INIT_CMD, 2, {0xD2, 0x00} },
+	{INIT_CMD, 2, {0xD3, 0x07} },
+	{INIT_CMD, 2, {0xD4, 0x10} },
+	{INIT_CMD, 2, {0xD5, 0x1F} },
+	{INIT_CMD, 2, {0xD6, 0x32} },
+	{INIT_CMD, 2, {0xD7, 0x35} },
+	{INIT_CMD, 2, {0xD8, 0x38} },
+	{INIT_CMD, 2, {0xD9, 0x3A} },
+	{INIT_CMD, 2, {0xDA, 0x3E} },
+	{INIT_CMD, 2, {0xDB, 0x3F} },
+	{INIT_CMD, 2, {0xDC, 0x3F} },
+	{INIT_CMD, 2, {0xDD, 0x3F} },
+	{INIT_CMD, 2, {0xDE, 0x3F} },
+	{INIT_CMD, 2, {0xDF, 0x37} },
+	{INIT_CMD, 2, {0xE0, 0x36} },
+	{INIT_CMD, 2, {0xE1, 0x34} },
+	{INIT_CMD, 2, {0xE2, 0x07} },
+	{INIT_CMD, 2, {0xB0, 0x03} },
+	{INIT_CMD, 2, {0xC8, 0x0B} },
+	{INIT_CMD, 2, {0xC9, 0x07} },
+	{INIT_CMD, 2, {0xC3, 0x00} },
+	{INIT_CMD, 2, {0xE7, 0x00} },
+	{INIT_CMD, 2, {0xC5, 0x2A} },
+	{INIT_CMD, 2, {0xDE, 0x2A} },
+	{INIT_CMD, 2, {0xCA, 0x43} },
+	{INIT_CMD, 2, {0xC9, 0x07} },
+	{INIT_CMD, 2, {0xE4, 0xC0} },
+	{INIT_CMD, 2, {0xE5, 0x0D} },
+	{INIT_CMD, 2, {0xCB, 0x28} },
+	{INIT_CMD, 2, {0xB0, 0x06} },
+	{INIT_CMD, 2, {0xB8, 0xA5} },
+	{INIT_CMD, 2, {0xC0, 0xA5} },
+	{INIT_CMD, 2, {0xC7, 0x0F} },
+	{INIT_CMD, 2, {0xD5, 0x32} },
+	{INIT_CMD, 2, {0xBC, 0x00} },
+	{INIT_CMD, 2, {0xB0, 0x07} },
+	{INIT_CMD, 2, {0xB1, 0x08} },
+	{INIT_CMD, 2, {0xB2, 0x08} },
+	{INIT_CMD, 2, {0xB3, 0x11} },
+	{INIT_CMD, 2, {0xB4, 0x24} },
+	{INIT_CMD, 2, {0xB5, 0x37} },
+	{INIT_CMD, 2, {0xB6, 0x48} },
+	{INIT_CMD, 2, {0xB7, 0x60} },
+	{INIT_CMD, 2, {0xB8, 0x79} },
+	{INIT_CMD, 2, {0xB9, 0xB9} },
+	{INIT_CMD, 2, {0xBA, 0xF8} },
+	{INIT_CMD, 2, {0xBB, 0x71} },
+	{INIT_CMD, 2, {0xBC, 0xE9} },
+	{INIT_CMD, 2, {0xBD, 0xED} },
+	{INIT_CMD, 2, {0xBE, 0x67} },
+	{INIT_CMD, 2, {0xBF, 0xE4} },
+	{INIT_CMD, 2, {0xC0, 0x25} },
+	{INIT_CMD, 2, {0xC1, 0x63} },
+	{INIT_CMD, 2, {0xC2, 0x84} },
+	{INIT_CMD, 2, {0xC3, 0x9C} },
+	{INIT_CMD, 2, {0xC4, 0xA6} },
+	{INIT_CMD, 2, {0xC5, 0xB1} },
+	{INIT_CMD, 2, {0xC6, 0xBD} },
+	{INIT_CMD, 2, {0xC7, 0xC4} },
+	{INIT_CMD, 2, {0xC8, 0xC8} },
+	{INIT_CMD, 2, {0xC9, 0x00} },
+	{INIT_CMD, 2, {0xCA, 0x00} },
+	{INIT_CMD, 2, {0xCB, 0x05} },
+	{INIT_CMD, 2, {0xCC, 0x6B} },
+	{INIT_CMD, 2, {0xCD, 0xFF} },
+	{INIT_CMD, 2, {0xCE, 0xFF} },
+	{INIT_CMD, 2, {0xB0, 0x08} },
+	{INIT_CMD, 2, {0xB1, 0x04} },
+	{INIT_CMD, 2, {0xB2, 0x06} },
+	{INIT_CMD, 2, {0xB3, 0x11} },
+	{INIT_CMD, 2, {0xB4, 0x24} },
+	{INIT_CMD, 2, {0xB5, 0x38} },
+	{INIT_CMD, 2, {0xB6, 0x49} },
+	{INIT_CMD, 2, {0xB7, 0x61} },
+	{INIT_CMD, 2, {0xB8, 0x79} },
+	{INIT_CMD, 2, {0xB9, 0xB9} },
+	{INIT_CMD, 2, {0xBA, 0xF8} },
+	{INIT_CMD, 2, {0xBB, 0x71} },
+	{INIT_CMD, 2, {0xBC, 0xEA} },
+	{INIT_CMD, 2, {0xBD, 0xED} },
+	{INIT_CMD, 2, {0xBE, 0x68} },
+	{INIT_CMD, 2, {0xBF, 0xE5} },
+	{INIT_CMD, 2, {0xC0, 0x26} },
+	{INIT_CMD, 2, {0xC1, 0x64} },
+	{INIT_CMD, 2, {0xC2, 0x85} },
+	{INIT_CMD, 2, {0xC3, 0x9C} },
+	{INIT_CMD, 2, {0xC4, 0xA7} },
+	{INIT_CMD, 2, {0xC5, 0xB1} },
+	{INIT_CMD, 2, {0xC6, 0xBD} },
+	{INIT_CMD, 2, {0xC7, 0xC4} },
+	{INIT_CMD, 2, {0xC8, 0xC8} },
+	{INIT_CMD, 2, {0xC9, 0x00} },
+	{INIT_CMD, 2, {0xCA, 0x00} },
+	{INIT_CMD, 2, {0xCB, 0x05} },
+	{INIT_CMD, 2, {0xCC, 0x6B} },
+	{INIT_CMD, 2, {0xCD, 0xFF} },
+	{INIT_CMD, 2, {0xCE, 0xFF} },
+	{INIT_CMD, 2, {0xB0, 0x09} },
+	{INIT_CMD, 2, {0xB1, 0x0C} },
+	{INIT_CMD, 2, {0xB2, 0x0C} },
+	{INIT_CMD, 2, {0xB3, 0x0F} },
+	{INIT_CMD, 2, {0xB4, 0x23} },
+	{INIT_CMD, 2, {0xB5, 0x37} },
+	{INIT_CMD, 2, {0xB6, 0x48} },
+	{INIT_CMD, 2, {0xB7, 0x60} },
+	{INIT_CMD, 2, {0xB8, 0x77} },
+	{INIT_CMD, 2, {0xB9, 0xB8} },
+	{INIT_CMD, 2, {0xBA, 0xF7} },
+	{INIT_CMD, 2, {0xBB, 0x6F} },
+	{INIT_CMD, 2, {0xBC, 0xE6} },
+	{INIT_CMD, 2, {0xBD, 0xEA} },
+	{INIT_CMD, 2, {0xBE, 0x62} },
+	{INIT_CMD, 2, {0xBF, 0xDA} },
+	{INIT_CMD, 2, {0xC0, 0x1A} },
+	{INIT_CMD, 2, {0xC1, 0x56} },
+	{INIT_CMD, 2, {0xC2, 0x75} },
+	{INIT_CMD, 2, {0xC3, 0x91} },
+	{INIT_CMD, 2, {0xC4, 0x9C} },
+	{INIT_CMD, 2, {0xC5, 0xA5} },
+	{INIT_CMD, 2, {0xC6, 0xAF} },
+	{INIT_CMD, 2, {0xC7, 0xB5} },
+	{INIT_CMD, 2, {0xC8, 0xB8} },
+	{INIT_CMD, 2, {0xC9, 0x00} },
+	{INIT_CMD, 2, {0xCA, 0x00} },
+	{INIT_CMD, 2, {0xCB, 0x05} },
+	{INIT_CMD, 2, {0xCC, 0x6B} },
+	{INIT_CMD, 2, {0xCD, 0xFF} },
+	{INIT_CMD, 2, {0xCE, 0xFF} },
+	{INIT_CMD, 2, {0xB0, 0x0A} },
+	{INIT_CMD, 2, {0xB1, 0x08} },
+	{INIT_CMD, 2, {0xB2, 0x08} },
+	{INIT_CMD, 2, {0xB3, 0x11} },
+	{INIT_CMD, 2, {0xB4, 0x24} },
+	{INIT_CMD, 2, {0xB5, 0x37} },
+	{INIT_CMD, 2, {0xB6, 0x48} },
+	{INIT_CMD, 2, {0xB7, 0x60} },
+	{INIT_CMD, 2, {0xB8, 0x79} },
+	{INIT_CMD, 2, {0xB9, 0xB9} },
+	{INIT_CMD, 2, {0xBA, 0xF8} },
+	{INIT_CMD, 2, {0xBB, 0x71} },
+	{INIT_CMD, 2, {0xBC, 0xE9} },
+	{INIT_CMD, 2, {0xBD, 0xED} },
+	{INIT_CMD, 2, {0xBE, 0x67} },
+	{INIT_CMD, 2, {0xBF, 0xE4} },
+	{INIT_CMD, 2, {0xC0, 0x25} },
+	{INIT_CMD, 2, {0xC1, 0x63} },
+	{INIT_CMD, 2, {0xC2, 0x84} },
+	{INIT_CMD, 2, {0xC3, 0x9C} },
+	{INIT_CMD, 2, {0xC4, 0xA6} },
+	{INIT_CMD, 2, {0xC5, 0xB1} },
+	{INIT_CMD, 2, {0xC6, 0xBD} },
+	{INIT_CMD, 2, {0xC7, 0xC4} },
+	{INIT_CMD, 2, {0xC8, 0xC8} },
+	{INIT_CMD, 2, {0xC9, 0x00} },
+	{INIT_CMD, 2, {0xCA, 0x00} },
+	{INIT_CMD, 2, {0xCB, 0x05} },
+	{INIT_CMD, 2, {0xCC, 0x6B} },
+	{INIT_CMD, 2, {0xCD, 0xFF} },
+	{INIT_CMD, 2, {0xCE, 0xFF} },
+	{INIT_CMD, 2, {0xB0, 0x0B} },
+	{INIT_CMD, 2, {0xB1, 0x04} },
+	{INIT_CMD, 2, {0xB2, 0x06} },
+	{INIT_CMD, 2, {0xB3, 0x11} },
+	{INIT_CMD, 2, {0xB4, 0x24} },
+	{INIT_CMD, 2, {0xB5, 0x38} },
+	{INIT_CMD, 2, {0xB6, 0x49} },
+	{INIT_CMD, 2, {0xB7, 0x61} },
+	{INIT_CMD, 2, {0xB8, 0x79} },
+	{INIT_CMD, 2, {0xB9, 0xB9} },
+	{INIT_CMD, 2, {0xBA, 0xF8} },
+	{INIT_CMD, 2, {0xBB, 0x71} },
+	{INIT_CMD, 2, {0xBC, 0xEA} },
+	{INIT_CMD, 2, {0xBD, 0xED} },
+	{INIT_CMD, 2, {0xBE, 0x68} },
+	{INIT_CMD, 2, {0xBF, 0xE5} },
+	{INIT_CMD, 2, {0xC0, 0x26} },
+	{INIT_CMD, 2, {0xC1, 0x64} },
+	{INIT_CMD, 2, {0xC2, 0x85} },
+	{INIT_CMD, 2, {0xC3, 0x9C} },
+	{INIT_CMD, 2, {0xC4, 0xA7} },
+	{INIT_CMD, 2, {0xC5, 0xB1} },
+	{INIT_CMD, 2, {0xC6, 0xBD} },
+	{INIT_CMD, 2, {0xC7, 0xC4} },
+	{INIT_CMD, 2, {0xC8, 0xC8} },
+	{INIT_CMD, 2, {0xC9, 0x00} },
+	{INIT_CMD, 2, {0xCA, 0x00} },
+	{INIT_CMD, 2, {0xCB, 0x05} },
+	{INIT_CMD, 2, {0xCC, 0x6B} },
+	{INIT_CMD, 2, {0xCD, 0xFF} },
+	{INIT_CMD, 2, {0xCE, 0xFF} },
+	{INIT_CMD, 2, {0xB0, 0x0C} },
+	{INIT_CMD, 2, {0xB1, 0x0C} },
+	{INIT_CMD, 2, {0xB2, 0x0C} },
+	{INIT_CMD, 2, {0xB3, 0x0C} },
+	{INIT_CMD, 2, {0xB4, 0x23} },
+	{INIT_CMD, 2, {0xB5, 0x37} },
+	{INIT_CMD, 2, {0xB6, 0x48} },
+	{INIT_CMD, 2, {0xB7, 0x60} },
+	{INIT_CMD, 2, {0xB8, 0x77} },
+	{INIT_CMD, 2, {0xB9, 0xB8} },
+	{INIT_CMD, 2, {0xBA, 0xF7} },
+	{INIT_CMD, 2, {0xBB, 0x6F} },
+	{INIT_CMD, 2, {0xBC, 0xE6} },
+	{INIT_CMD, 2, {0xBD, 0xEA} },
+	{INIT_CMD, 2, {0xBE, 0x62} },
+	{INIT_CMD, 2, {0xBF, 0xDA} },
+	{INIT_CMD, 2, {0xC0, 0x1A} },
+	{INIT_CMD, 2, {0xC1, 0x56} },
+	{INIT_CMD, 2, {0xC2, 0x75} },
+	{INIT_CMD, 2, {0xC3, 0x91} },
+	{INIT_CMD, 2, {0xC4, 0x9C} },
+	{INIT_CMD, 2, {0xC5, 0xA5} },
+	{INIT_CMD, 2, {0xC6, 0xAF} },
+	{INIT_CMD, 2, {0xC7, 0xB5} },
+	{INIT_CMD, 2, {0xC8, 0xB8} },
+	{INIT_CMD, 2, {0xC9, 0x00} },
+	{INIT_CMD, 2, {0xCA, 0x00} },
+	{INIT_CMD, 2, {0xCB, 0x05} },
+	{INIT_CMD, 2, {0xCC, 0x6B} },
+	{INIT_CMD, 2, {0xCD, 0xFF} },
+	{INIT_CMD, 2, {0xCE, 0xFF} },
+	{INIT_CMD, 2, {0xCE, 0xFF} },
+	{INIT_CMD, 2, {0xB0, 0x00} },
+	{DELAY_CMD, 0x64, {} },
+	{INIT_CMD, 2, {0xB3, 0x08} },
+	{INIT_CMD, 2, {0xB0, 0x04} },
+	{INIT_CMD, 2, {0xB8, 0x68} },
+	{DELAY_CMD, 0x0A, {} },
+	{INIT_CMD, 1, {0x11} },
+	{DELAY_CMD, 0x64, {} },
+	{INIT_CMD, 1, {0x29} },
+	{DELAY_CMD, 0x32, {} },
+
+};
+
+static struct edid flapjack_auo_nt51021d8p_edid = {
+	.panel_bits_per_color = 8,
+	.panel_bits_per_pixel = 24,
+	.mode = {
+		 .name = "1200x1920@60Hz",
+		 .pixel_clock = 159420,
+		 .lvds_dual_channel = 0,
+		 .refresh = 60,
+		 .ha = 1200, .hbl = 141, .hso = 80, .hspw = 1, .hborder = 0,
+		 .va = 1920, .vbl = 61, .vso = 35, .vspw = 1, .vborder = 0,
+		 .phsync = '-', .pvsync = '-',
+		 .x_mm = 107, .y_mm = 132,
+		 },
+};
+
+static struct lcm_init_table auo_nt51021d8p_lcm_init_cmd[] = {
+	{INIT_CMD, 1, {0x11} },
+	{DELAY_CMD, 0x78, {} },
+	{INIT_CMD, 1, {0x29} },
+	{DELAY_CMD, 0x14, {} },
+
+};
+
+/* flapjack C19 INX OTA7290 panel : PANEL_INX_OTA7290D10P */
+static struct edid flapjack_inx_ota7290d10p_edid = {
+	.panel_bits_per_color = 8,
+	.panel_bits_per_pixel = 24,
+	.mode = {
+		 .name = "1200x1920@60Hz",
+		 .pixel_clock = 159420,
+		 .lvds_dual_channel = 0,
+		 .refresh = 60,
+		 .ha = 1200, .hbl = 141, .hso = 80, .hspw = 1, .hborder = 0,
+		 .va = 1920, .vbl = 61, .vso = 35, .vspw = 1, .vborder = 0,
+		 .phsync = '-', .pvsync = '-',
+		 .x_mm = 135, .y_mm = 216,
+		 },
+};
+
+static struct lcm_init_table inx_ota7290d10p_lcm_init_cmd[] = {
+	{INIT_CMD, 2, { 0xB0, 0x5A} },
+	{INIT_CMD, 2, { 0xB1, 0x00} },
+	{INIT_CMD, 2, { 0x89, 0x01} },
+	{INIT_CMD, 2, { 0x91, 0x17} },
+	{INIT_CMD, 2, { 0xB1, 0x03} },
+	{INIT_CMD, 2, { 0x2C, 0x28} },
+	{INIT_CMD, 2, { 0x00, 0xF1} },
+	{INIT_CMD, 2, { 0x01, 0x78} },
+	{INIT_CMD, 2, { 0x02, 0x3C} },
+	{INIT_CMD, 2, { 0x03, 0x1E} },
+	{INIT_CMD, 2, { 0x04, 0x8F} },
+	{INIT_CMD, 2, { 0x05, 0x01} },
+	{INIT_CMD, 2, { 0x06, 0x00} },
+	{INIT_CMD, 2, { 0x07, 0x00} },
+	{INIT_CMD, 2, { 0x08, 0x00} },
+	{INIT_CMD, 2, { 0x09, 0x00} },
+	{INIT_CMD, 2, { 0x0A, 0x01} },
+	{INIT_CMD, 2, { 0x0B, 0x3C} },
+	{INIT_CMD, 2, { 0x0C, 0x00} },
+	{INIT_CMD, 2, { 0x0D, 0x00} },
+	{INIT_CMD, 2, { 0x0E, 0x24} },
+	{INIT_CMD, 2, { 0x0F, 0x1C} },
+	{INIT_CMD, 2, { 0x10, 0xC8} },
+	{INIT_CMD, 2, { 0x11, 0x60} },
+	{INIT_CMD, 2, { 0x12, 0x70} },
+	{INIT_CMD, 2, { 0x13, 0x01} },
+	{INIT_CMD, 2, { 0x14, 0xE3} },
+	{INIT_CMD, 2, { 0x15, 0xFF} },
+	{INIT_CMD, 2, { 0x16, 0x3D} },
+	{INIT_CMD, 2, { 0x17, 0x0E} },
+	{INIT_CMD, 2, { 0x18, 0x01} },
+	{INIT_CMD, 2, { 0x19, 0x00} },
+	{INIT_CMD, 2, { 0x1A, 0x00} },
+	{INIT_CMD, 2, { 0x1B, 0xFC} },
+	{INIT_CMD, 2, { 0x1C, 0x0B} },
+	{INIT_CMD, 2, { 0x1D, 0xA0} },
+	{INIT_CMD, 2, { 0x1E, 0x03} },
+	{INIT_CMD, 2, { 0x1F, 0x04} },
+	{INIT_CMD, 2, { 0x20, 0x0C} },
+	{INIT_CMD, 2, { 0x21, 0x00} },
+	{INIT_CMD, 2, { 0x22, 0x04} },
+	{INIT_CMD, 2, { 0x23, 0x81} },
+	{INIT_CMD, 2, { 0x24, 0x1F} },
+	{INIT_CMD, 2, { 0x25, 0x10} },
+	{INIT_CMD, 2, { 0x26, 0x9B} },
+	{INIT_CMD, 2, { 0x2D, 0x01} },
+	{INIT_CMD, 2, { 0x2E, 0x84} },
+	{INIT_CMD, 2, { 0x2F, 0x00} },
+	{INIT_CMD, 2, { 0x30, 0x02} },
+	{INIT_CMD, 2, { 0x31, 0x08} },
+	{INIT_CMD, 2, { 0x32, 0x01} },
+	{INIT_CMD, 2, { 0x33, 0x1C} },
+	{INIT_CMD, 2, { 0x34, 0x70} },
+	{INIT_CMD, 2, { 0x35, 0xFF} },
+	{INIT_CMD, 2, { 0x36, 0xFF} },
+	{INIT_CMD, 2, { 0x37, 0xFF} },
+	{INIT_CMD, 2, { 0x38, 0xFF} },
+	{INIT_CMD, 2, { 0x39, 0xFF} },
+	{INIT_CMD, 2, { 0x3A, 0x05} },
+	{INIT_CMD, 2, { 0x3B, 0x00} },
+	{INIT_CMD, 2, { 0x3C, 0x00} },
+	{INIT_CMD, 2, { 0x3D, 0x00} },
+	{INIT_CMD, 2, { 0x3E, 0x0F} },
+	{INIT_CMD, 2, { 0x3F, 0xA4} },
+	{INIT_CMD, 2, { 0x40, 0x28} },
+	{INIT_CMD, 2, { 0x41, 0xFC} },
+	{INIT_CMD, 2, { 0x42, 0x01} },
+	{INIT_CMD, 2, { 0x43, 0x08} },
+	{INIT_CMD, 2, { 0x44, 0x05} },
+	{INIT_CMD, 2, { 0x45, 0xF0} },
+	{INIT_CMD, 2, { 0x46, 0x01} },
+	{INIT_CMD, 2, { 0x47, 0x02} },
+	{INIT_CMD, 2, { 0x48, 0x00} },
+	{INIT_CMD, 2, { 0x49, 0x58} },
+	{INIT_CMD, 2, { 0x4A, 0x00} },
+	{INIT_CMD, 2, { 0x4B, 0x05} },
+	{INIT_CMD, 2, { 0x4C, 0x03} },
+	{INIT_CMD, 2, { 0x4D, 0xD0} },
+	{INIT_CMD, 2, { 0x4E, 0x13} },
+	{INIT_CMD, 2, { 0x4F, 0xFF} },
+	{INIT_CMD, 2, { 0x50, 0x0A} },
+	{INIT_CMD, 2, { 0x51, 0x53} },
+	{INIT_CMD, 2, { 0x52, 0x26} },
+	{INIT_CMD, 2, { 0x53, 0x22} },
+	{INIT_CMD, 2, { 0x54, 0x09} },
+	{INIT_CMD, 2, { 0x55, 0x22} },
+	{INIT_CMD, 2, { 0x56, 0x00} },
+	{INIT_CMD, 2, { 0x57, 0x1C} },
+	{INIT_CMD, 2, { 0x58, 0x03} },
+	{INIT_CMD, 2, { 0x59, 0x3F} },
+	{INIT_CMD, 2, { 0x5A, 0x28} },
+	{INIT_CMD, 2, { 0x5B, 0x01} },
+	{INIT_CMD, 2, { 0x5C, 0xCC} },
+	{INIT_CMD, 2, { 0x5D, 0x21} },
+	{INIT_CMD, 2, { 0x5E, 0x04} },
+	{INIT_CMD, 2, { 0x5F, 0x13} },
+	{INIT_CMD, 2, { 0x60, 0x42} },
+	{INIT_CMD, 2, { 0x61, 0x08} },
+	{INIT_CMD, 2, { 0x62, 0x64} },
+	{INIT_CMD, 2, { 0x63, 0xEB} },
+	{INIT_CMD, 2, { 0x64, 0x10} },
+	{INIT_CMD, 2, { 0x65, 0xA8} },
+	{INIT_CMD, 2, { 0x66, 0x84} },
+	{INIT_CMD, 2, { 0x67, 0x8E} },
+	{INIT_CMD, 2, { 0x68, 0x29} },
+	{INIT_CMD, 2, { 0x69, 0x11} },
+	{INIT_CMD, 2, { 0x6A, 0x42} },
+	{INIT_CMD, 2, { 0x6B, 0x38} },
+	{INIT_CMD, 2, { 0x6C, 0x21} },
+	{INIT_CMD, 2, { 0x6D, 0x84} },
+	{INIT_CMD, 2, { 0x6E, 0x50} },
+	{INIT_CMD, 2, { 0x6F, 0xB6} },
+	{INIT_CMD, 2, { 0x70, 0x0E} },
+	{INIT_CMD, 2, { 0x71, 0xA1} },
+	{INIT_CMD, 2, { 0x72, 0xCE} },
+	{INIT_CMD, 2, { 0x73, 0xF8} },
+	{INIT_CMD, 2, { 0x74, 0xDA} },
+	{INIT_CMD, 2, { 0x75, 0x1A} },
+	{INIT_CMD, 2, { 0x76, 0x00} },
+	{INIT_CMD, 2, { 0x77, 0x00} },
+	{INIT_CMD, 2, { 0x78, 0x5F} },
+	{INIT_CMD, 2, { 0x79, 0xE0} },
+	{INIT_CMD, 2, { 0x7A, 0x01} },
+	{INIT_CMD, 2, { 0x7B, 0xFF} },
+	{INIT_CMD, 2, { 0x7C, 0xFF} },
+	{INIT_CMD, 2, { 0x7D, 0xFF} },
+	{INIT_CMD, 2, { 0x7E, 0xFF} },
+	{INIT_CMD, 2, { 0x7F, 0xFE} },
+	{INIT_CMD, 2, { 0xB1, 0x02} },
+	{INIT_CMD, 2, { 0x00, 0xFF} },
+	{INIT_CMD, 2, { 0x01, 0x01} },
+	{INIT_CMD, 2, { 0x02, 0x00} },
+	{INIT_CMD, 2, { 0x03, 0x00} },
+	{INIT_CMD, 2, { 0x04, 0x00} },
+	{INIT_CMD, 2, { 0x05, 0x00} },
+	{INIT_CMD, 2, { 0x06, 0x00} },
+	{INIT_CMD, 2, { 0x07, 0x00} },
+	{INIT_CMD, 2, { 0x08, 0xC0} },
+	{INIT_CMD, 2, { 0x09, 0x00} },
+	{INIT_CMD, 2, { 0x0A, 0x00} },
+	{INIT_CMD, 2, { 0x0B, 0x04} },
+	{INIT_CMD, 2, { 0x0C, 0xE6} },
+	{INIT_CMD, 2, { 0x0D, 0x0D} },
+	{INIT_CMD, 2, { 0x0F, 0x08} },
+	{INIT_CMD, 2, { 0x10, 0xE5} },
+	{INIT_CMD, 2, { 0x11, 0xA8} },
+	{INIT_CMD, 2, { 0x12, 0xEC} },
+	{INIT_CMD, 2, { 0x13, 0x54} },
+	{INIT_CMD, 2, { 0x14, 0x5A} },
+	{INIT_CMD, 2, { 0x15, 0xD5} },
+	{INIT_CMD, 2, { 0x16, 0x23} },
+	{INIT_CMD, 2, { 0x17, 0x11} },
+	{INIT_CMD, 2, { 0x18, 0x2F} },
+	{INIT_CMD, 2, { 0x19, 0x93} },
+	{INIT_CMD, 2, { 0x1A, 0xA6} },
+	{INIT_CMD, 2, { 0x1B, 0x0F} },
+	{INIT_CMD, 2, { 0x1C, 0xFF} },
+	{INIT_CMD, 2, { 0x1D, 0xFF} },
+	{INIT_CMD, 2, { 0x1E, 0xFF} },
+	{INIT_CMD, 2, { 0x1F, 0xFF} },
+	{INIT_CMD, 2, { 0x20, 0xFF} },
+	{INIT_CMD, 2, { 0x21, 0xFF} },
+	{INIT_CMD, 2, { 0x22, 0xFF} },
+	{INIT_CMD, 2, { 0x23, 0xFF} },
+	{INIT_CMD, 2, { 0x24, 0xFF} },
+	{INIT_CMD, 2, { 0x25, 0xFF} },
+	{INIT_CMD, 2, { 0x26, 0xFF} },
+	{INIT_CMD, 2, { 0x27, 0x1F} },
+	{INIT_CMD, 2, { 0x28, 0xC8} },
+	{INIT_CMD, 2, { 0x29, 0xFF} },
+	{INIT_CMD, 2, { 0x2A, 0xFF} },
+	{INIT_CMD, 2, { 0x2B, 0xFF} },
+	{INIT_CMD, 2, { 0x2C, 0x07} },
+	{INIT_CMD, 2, { 0x2D, 0x03} },
+	{INIT_CMD, 2, { 0x33, 0x09} },
+	{INIT_CMD, 2, { 0x35, 0x7F} },
+	{INIT_CMD, 2, { 0x36, 0x0C} },
+	{INIT_CMD, 2, { 0x38, 0x7F} },
+	{INIT_CMD, 2, { 0x3A, 0x80} },
+	{INIT_CMD, 2, { 0x3B, 0x55} },
+	{INIT_CMD, 2, { 0x3C, 0xE2} },
+	{INIT_CMD, 2, { 0x3D, 0x32} },
+	{INIT_CMD, 2, { 0x3E, 0x00} },
+	{INIT_CMD, 2, { 0x3F, 0x58} },
+	{INIT_CMD, 2, { 0x40, 0x06} },
+	{INIT_CMD, 2, { 0x41, 0x80} },
+	{INIT_CMD, 2, { 0x42, 0xCB} },
+	{INIT_CMD, 2, { 0x43, 0x2C} },
+	{INIT_CMD, 2, { 0x44, 0x61} },
+	{INIT_CMD, 2, { 0x45, 0x39} },
+	{INIT_CMD, 2, { 0x46, 0x00} },
+	{INIT_CMD, 2, { 0x47, 0x00} },
+	{INIT_CMD, 2, { 0x48, 0x8B} },
+	{INIT_CMD, 2, { 0x49, 0xD2} },
+	{INIT_CMD, 2, { 0x4A, 0x01} },
+	{INIT_CMD, 2, { 0x4B, 0x00} },
+	{INIT_CMD, 2, { 0x4C, 0x10} },
+	{INIT_CMD, 2, { 0x4D, 0xC0} },
+	{INIT_CMD, 2, { 0x4E, 0x0F} },
+	{INIT_CMD, 2, { 0x4F, 0xF1} },
+	{INIT_CMD, 2, { 0x50, 0x78} },
+	{INIT_CMD, 2, { 0x51, 0x7A} },
+	{INIT_CMD, 2, { 0x52, 0x34} },
+	{INIT_CMD, 2, { 0x53, 0x99} },
+	{INIT_CMD, 2, { 0x54, 0xA2} },
+	{INIT_CMD, 2, { 0x55, 0x03} },
+	{INIT_CMD, 2, { 0x56, 0x6C} },
+	{INIT_CMD, 2, { 0x57, 0x1A} },
+	{INIT_CMD, 2, { 0x58, 0x05} },
+	{INIT_CMD, 2, { 0x59, 0x30} },
+	{INIT_CMD, 2, { 0x5A, 0x1E} },
+	{INIT_CMD, 2, { 0x5B, 0x8F} },
+	{INIT_CMD, 2, { 0x5C, 0xC7} },
+	{INIT_CMD, 2, { 0x5D, 0xE3} },
+	{INIT_CMD, 2, { 0x5E, 0xF1} },
+	{INIT_CMD, 2, { 0x5F, 0x78} },
+	{INIT_CMD, 2, { 0x60, 0x3C} },
+	{INIT_CMD, 2, { 0x61, 0x36} },
+	{INIT_CMD, 2, { 0x62, 0x1E} },
+	{INIT_CMD, 2, { 0x63, 0x1B} },
+	{INIT_CMD, 2, { 0x64, 0x8F} },
+	{INIT_CMD, 2, { 0x65, 0xC7} },
+	{INIT_CMD, 2, { 0x66, 0xE3} },
+	{INIT_CMD, 2, { 0x67, 0x31} },
+	{INIT_CMD, 2, { 0x68, 0x14} },
+	{INIT_CMD, 2, { 0x69, 0x89} },
+	{INIT_CMD, 2, { 0x6A, 0x70} },
+	{INIT_CMD, 2, { 0x6B, 0x8C} },
+	{INIT_CMD, 2, { 0x6C, 0x8D} },
+	{INIT_CMD, 2, { 0x6D, 0x8D} },
+	{INIT_CMD, 2, { 0x6E, 0x8D} },
+	{INIT_CMD, 2, { 0x6F, 0x8D} },
+	{INIT_CMD, 2, { 0x70, 0xC7} },
+	{INIT_CMD, 2, { 0x71, 0xE3} },
+	{INIT_CMD, 2, { 0x72, 0xF1} },
+	{INIT_CMD, 2, { 0x73, 0xD8} },
+	{INIT_CMD, 2, { 0x74, 0xD8} },
+	{INIT_CMD, 2, { 0x75, 0xD8} },
+	{INIT_CMD, 2, { 0x76, 0x18} },
+	{INIT_CMD, 2, { 0x77, 0x00} },
+	{INIT_CMD, 2, { 0x78, 0x00} },
+	{INIT_CMD, 2, { 0x79, 0x00} },
+	{INIT_CMD, 2, { 0x7A, 0xC6} },
+	{INIT_CMD, 2, { 0x7B, 0xC6} },
+	{INIT_CMD, 2, { 0x7C, 0xC6} },
+	{INIT_CMD, 2, { 0x7D, 0xC6} },
+	{INIT_CMD, 2, { 0x7E, 0xC6} },
+	{INIT_CMD, 2, { 0x7F, 0xE3} },
+	{INIT_CMD, 2, { 0x0B, 0x04} },
+	{INIT_CMD, 2, { 0xB1, 0x03} },
+	{INIT_CMD, 2, { 0x2C, 0x2C} },
+	{INIT_CMD, 2, { 0xB1, 0x00} },
+	{INIT_CMD, 2, { 0x89, 0x03} },
+	{INIT_CMD, 1, {0x11} },
+	{DELAY_CMD, 0x78, {} },
+	{INIT_CMD, 1, {0x29} },
+	{DELAY_CMD, 0x14, {} },
+};
+
+static struct panel_info panel_info_with_id[] = {
+	PANEL(kukui_innolux_edid,
+	      lcm_init_cmd,
+	      PANEL_KUKUI_INNOLUX),
+	PANEL(flapjack_boe_tv101wum_ng0_edid,
+	      boe_tv101wum_ng0_lcm_init_cmd,
+	      PANEL_BOE_TV101WUM_NG0),
+	PANEL(flapjack_boe_tv080wum_ng0_edid,
+	      boe_tv080wum_ng0_lcm_init_cmd,
+	      PANEL_BOE_TV080WUM_NG0),
+	PANEL(flapjack_inx_ota7290d10p_edid,
+	      inx_ota7290d10p_lcm_init_cmd,
+	      PANEL_INX_OTA7290D10P),
+	PANEL(flapjack_auo_nt51021d8p_edid,
+	      auo_nt51021d8p_lcm_init_cmd,
+	      PANEL_AUO_NT51021D8P),
+	{NULL, NULL, 0, MAKE_AS_A_STRING(PANEL_UNKNOWN)},
+};
+
+static struct edid *get_edid(enum panel_id id)
+{
+	return (id < PANEL_UNKNOWN) ? panel_info_with_id[id].edid : NULL;
+}
+
+static struct lcm_init_table *get_panel_init_table(enum panel_id id,
+						   u32 *table_size)
+{
+	if (id >= PANEL_UNKNOWN) {
+		printk(BIOS_INFO, "Unsupported Panel\n");
+		return NULL;
+	}
+	*table_size = panel_info_with_id[id].table_size;
+	return panel_info_with_id[id].init_table;
+}
+
+static const char *get_panel_name(enum panel_id id)
+{
+	if (id > PANEL_UNKNOWN) {
+		printk(BIOS_INFO, "Unsupported Panel\n");
+		return NULL;
+	}
+	return panel_info_with_id[id].panel_name;
+}
+
+static enum panel_id get_panel_id_from_adc(int channel,
+	const struct panel_id_voltage *id_voltage_table,
+	u32 id_voltage_table_size)
+{
+	int id;
+	int value = auxadc_get_voltage(channel) / 1000;
+
+	for (id = 0; id < id_voltage_table_size - 1; id++) {
+		if (ABS(value - id_voltage_table[id].voltage) < tolerance)
+			break;
+	}
+
+	return (id == id_voltage_table_size)
+		? PANEL_UNKNOWN : id_voltage_table[id].id;
+}
+
+enum panel_id get_panel_id(void)
+{
+	enum panel_id id = PANEL_UNKNOWN;
+	uint32_t ver = board_id();
+
+	/* TO-DO: will remove once Kukui add strap pin in Panel */
+	if (CONFIG(BOARD_GOOGLE_KUKUI) && ver < 3)
+		id = PANEL_KUKUI_INNOLUX;
+	else if (CONFIG(BOARD_GOOGLE_FLAPJACK)) {
+		if (ver == BOARD_ID_UNKNOWN || ver < 3)
+			id = get_panel_id_from_adc(FLAPJACK_PANEL_ADC_ID,
+					flapjack_panel_id_voltages,
+					ARRAY_SIZE(flapjack_panel_id_voltages));
+		else
+			/* Extract LCM_ID from sku_id */
+			id = (sku_id() >> FLAPJACK_PANEL_ID_BIT_POSITION) & 0xf;
+	}
+
+	return id;
+}
+
+static void _display_startup(struct edid *edid,
+			     struct lcm_init_table *init_table,
+			     u32 init_table_size)
+{
+	int ret = 0;
+	u32 mipi_dsi_flags;
+
+	if ((edid == NULL) || (init_table == NULL)) {
+		printk(BIOS_INFO, "wrong parameters\n");
+		return;
+	}
+
+	mipi_dsi_flags = MIPI_DSI_MODE_VIDEO |
+			 MIPI_DSI_MODE_VIDEO_SYNC_PULSE |
+			 MIPI_DSI_MODE_LPM;
+
+	edid_set_framebuffer_bits_per_pixel(edid, 32, 0);
+
+	mtk_ddp_init();
+	ret = mtk_dsi_init(mipi_dsi_flags, MIPI_DSI_FMT_RGB888, 4,
+			   false, edid, init_table, init_table_size);
+
+	if (ret < 0) {
+		printk(BIOS_ERR, "dsi init fail\n");
+		return;
+	}
+
+	mtk_ddp_mode_set(edid);
+
+	set_vbe_mode_info_valid(edid, (uintptr_t)0);
+}
+
+/* Exported Functions */
+void configure_backlight(enum panel_id id)
+{
+	if (id >= PANEL_UNKNOWN) {
+		printk(BIOS_INFO, "Unsupported Panel\n");
+		return;
+	}
+
+	/* Configure PANEL_LCD_POWER_EN */
+	gpio_output(GPIO(PERIPHERAL_EN13), 1);
+	gpio_output(GPIO(DISP_PWM), 1);	/* DISP_PWM0 */
+}
+
+void configure_display(enum panel_id id)
+{
+	switch (id) {
+	case PANEL_KUKUI_INNOLUX:
+		/* board from p0 */
+		gpio_output(GPIO(LCM_RST), 0);
+		udelay(100);
+		gpio_output(GPIO(LCM_RST), 1);
+		mdelay(20);
+		break;
+	case PANEL_BOE_TV101WUM_NG0:
+	case PANEL_BOE_TV080WUM_NG0:
+	case PANEL_INX_OTA7290D10P:
+	case PANEL_AUO_NT51021D8P:
+		gpio_output(PP3300_LCM_EN, 1);
+		gpio_output(PP1800_LCM_EN, 1);
+
+		gpio_output(GPIO(LCM_RST), 0);
+		mdelay(20);
+		gpio_output(GPIO(LCM_RST), 1);
+		mdelay(10);
+		break;
+	case PANEL_UNKNOWN:
+	default:
+		break;
+	}
+}
+
+void display_startup(enum panel_id id)
+{
+	struct edid *edid;
+	u32 init_table_size;
+	struct lcm_init_table *init_table;
+
+	if (id >= PANEL_UNKNOWN) {
+		printk(BIOS_INFO, "Unsupported Panel\n");
+		return;
+	}
+
+	edid = get_edid(id);
+	init_table = get_panel_init_table(id, &init_table_size);
+	printk(BIOS_INFO, "%s: id:%d name:%s init_table_size:%d\n",
+			  __func__,
+			  id,
+			  get_panel_name(id),
+			  init_table_size);
+	_display_startup(edid, init_table, init_table_size);
+}
