@@ -22,8 +22,6 @@ verstage-y += ../common/timer.c
 verstage-y += ../common/uart.c
 verstage-y += ../common/wdt.c
 
-BL31_MAKEARGS += PLAT=mt8183
-
 romstage-y += auxadc.c
 romstage-y += ../common/cbmem.c emi.c
 romstage-y += dramc_init_setting.c
@@ -43,8 +41,6 @@ romstage-y += ../common/wdt.c
 
 ramstage-y += auxadc.c
 ramstage-y += ../common/cbmem.c emi.c
-ramstage-y += ddp.c
-ramstage-y += dsi.c
 ramstage-y += ../common/gpio.c gpio.c
 ramstage-y += ../common/mmu_operations.c mmu_operations.c
 ramstage-y += ../common/mtcmos.c mtcmos.c
@@ -54,9 +50,6 @@ ramstage-y += ../common/timer.c
 ramstage-y += ../common/uart.c
 ramstage-y += ../common/usb.c
 ramstage-y += ../common/wdt.c
-
-ramstage-y += ../common/bl31_plat_params.c
-BL31_MAKEARGS += PLAT=mt8183
 
 CPPFLAGS_common += -Isrc/soc/mediatek/mt8183/include
 CPPFLAGS_common += -Isrc/soc/mediatek/common/include

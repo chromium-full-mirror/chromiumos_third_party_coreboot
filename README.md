@@ -1,7 +1,6 @@
 coreboot README
 ===============
 
-
 coreboot is a Free Software project aimed at replacing the proprietary BIOS
 (firmware) found in most computers.  coreboot performs a little bit of
 hardware initialization and then executes additional boot logic, called a
