@@ -199,5 +199,11 @@ void gpio_route_gpe(uint8_t gpe0b, uint8_t gpe0c, uint8_t gpe0d);
  */
 uint8_t gpio_get_pad_portid(const gpio_t pad);
 
+/*
+ * Function to reset/clear the GPI Interrupt Enable & Status registers for
+ * all GPIO pad communities.
+ */
+void gpi_clear_int_cfg(void);
+
 #endif
 #endif /* _SOC_INTELBLOCKS_GPIO_H_ */
