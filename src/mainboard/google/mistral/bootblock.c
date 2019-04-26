@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2018, The Linux Foundation.  All rights reserved.
+ * Copyright (C) 2019, The Linux Foundation.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -14,9 +14,14 @@
  */
 
 #include <bootblock_common.h>
+#include <delay.h>
 #include "board.h"
 
 void bootblock_mainboard_init(void)
 {
+	gpio_output(GPIO_LED_ENABLE, 0);
+	udelay(2);
+	gpio_set(GPIO_LED_ENABLE, 1);
+	mdelay(2);
 	gpio_input_pullup(GPIO_H1_AP_INT);
 }

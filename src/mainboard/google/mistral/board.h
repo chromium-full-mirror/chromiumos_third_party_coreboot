@@ -19,10 +19,11 @@
 #include <gpio.h>
 #include <soc/gpio.h>
 
-#define GPIO_DEV_STATE	GPIO(45)
-#define GPIO_H1_AP_INT	GPIO(53)
-#define GPIO_WP_STATE	GPIO(54)
-#define GPIO_REC_STATE	GPIO(77)
+#define GPIO_DEV_STATE GPIO(45)
+#define GPIO_H1_AP_INT GPIO(53)
+#define GPIO_WP_STATE GPIO(54)
+#define GPIO_REC_STATE GPIO(77)
+#define GPIO_LED_ENABLE GPIO(119)
 
 void setup_chromeos_gpios(void);
 

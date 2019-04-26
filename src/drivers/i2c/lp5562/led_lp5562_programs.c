@@ -59,73 +59,118 @@
 */
 
 /* RGB set to 000000, resulting in all LEDs off. */
-static const uint8_t solid_00_text[] = {
-	0x40, 0x00, 0xc0, 0x00
-};
+static const uint8_t solid_00_text[] = {0x40, 0, 0xc0, 0x00};
 
 /* Rgb set to 128, resulting in a brightish white color. */
-static const uint8_t solid_80_text[] = {
-	0x40, 0x80, 0xc0, 0x00
-};
+static const uint8_t solid_FF_text[] = {0x40, 255, 0xc0, 0x00};
 
-static const ti_lp5562_program solid_000000_program = {
+static const ti_lp5562_program solid_000000_program = {{
 	{
-		{ /* Engine1:Blue */
-			solid_00_text,
-			sizeof(solid_00_text),
-			0,
-		},
-		{ /* Engine2:Green */
-			solid_00_text,
-			sizeof(solid_00_text),
-			0,
-		},
-		{ /* Engine3:Red */
-			solid_00_text,
-			sizeof(solid_00_text),
-			0,
-		},
-	}
-};
+		/* Engine1:Blue */
+		solid_00_text,
+		sizeof(solid_00_text),
+		0,
+	},
+	{
+		/* Engine2:Green */
+		solid_00_text,
+		sizeof(solid_00_text),
+		0,
+	},
+	{
+		/* Engine3:Red */
+		solid_00_text,
+		sizeof(solid_00_text),
+		0,
+	},
+}};
 
-static const ti_lp5562_program solid_808080_program = {
+static const ti_lp5562_program solid_FFFFFF_program = {{
 	{
-		{ /* Engine1:Blue */
-			solid_80_text,
-			sizeof(solid_80_text),
-			0,
-		},
-		{ /* Engine2:Green */
-			solid_80_text,
-			sizeof(solid_80_text),
-			0,
-		},
-		{ /* Engine3:Red */
-			solid_80_text,
-			sizeof(solid_80_text),
-			0,
-		},
-	}
-};
+		/* Engine1:Blue */
+		solid_FF_text,
+		sizeof(solid_FF_text),
+		0,
+	},
+	{
+		/* Engine2:Green */
+		solid_FF_text,
+		sizeof(solid_FF_text),
+		0,
+	},
+	{
+		/* Engine3:Red */
+		solid_FF_text,
+		sizeof(solid_FF_text),
+		0,
+	},
+}};
 
 /*
+ * fdr_press1.src
+ *
+  1 00		.ENGINE1(B)
+  2 00 4000		set_pwm 0
+  3 01 C000		end
+  4
+  5 10		.ENGINE2(G)
+  6 10 40CC		set_pwm 204
+  7 11 C000		end
+  8
+  9 20		.ENGINE3(R)
+ 10 20 40FF		set_pwm 255
+ 11 21 C000		end
+*/
+
+static const uint8_t fdr_press1_b_text[] = {
+	0x40,
+	0,
+	0xc0,
+	0x00,
+};
+
+static const uint8_t fdr_press1_g_text[] = {0x40, 204, 0xc0, 0x00};
+
+static const uint8_t fdr_press1_r_text[] = {0x40, 255, 0xc0, 0x00};
+
+static const ti_lp5562_program fdr_press1_program = {{
+	{
+		fdr_press1_b_text,
+		sizeof(fdr_press1_b_text),
+		0,
+	},
+	{
+		fdr_press1_g_text,
+		sizeof(fdr_press1_g_text),
+		0,
+	},
+	{
+		fdr_press1_r_text,
+		sizeof(fdr_press1_r_text),
+		0,
+	},
+}};
+
+/*
+ * blink_recovery1.src
+ *
   1 00          .ENGINE1(B)
   2 00 E200             trigger w3
-  3 01 409B             set_pwm 155
+  3 01 4000             set_pwm 0
   4 02 E200             trigger w3
   5 03 4000             set_pwm 0
   6 04 0000             gotostart
   7
   8 10          .ENGINE2(G)
   9 10 E200             trigger w3
- 10 11 4032             set_pwm 50
+ 10 11 40CC             set_pwm 204
  11 12 E200             trigger w3
  12 13 4000             set_pwm 0
  13 14 0000             gotostart
  14
  15 20          .ENGINE3(R)
  16 20 E006             trigger s21
- 17 21 4001             set_pwm 1
+ 17 21 40FF             set_pwm 255
  18 22 5300             wait 300
  19 23 E006             trigger s21
  20 24 4000             set_pwm 0
@@ -133,141 +178,88 @@ static const ti_lp5562_program solid_808080_program = {
  22 26 0000             gotostart
 */
 
-static const uint8_t blink_wipeout1_b_text[] = {
-	0xe2,  0x00,  0x40,   155,  0xe2,  0x00,  0x40,     0,
-	0x00,  0x00,
-};
-
-static const uint8_t blink_wipeout1_g_text[] = {
-	0xe2,  0x00,  0x40,    50,  0xe2,  0x00,  0x40,     0,
-	0x00,  0x00,
-};
-
-static const uint8_t blink_wipeout1_r_text[] = {
-	0xe0,  0x06,  0x40,     1,  0x53,  0x00,  0xe0,  0x06,
-	0x40,     0,  0x53,  0x00,  0x00,  0x00
-};
-
-static const ti_lp5562_program blink_wipeout1_program = {
-	{
-		{
-			blink_wipeout1_b_text,
-			sizeof(blink_wipeout1_b_text),
-			0,
-		},
-		{
-			blink_wipeout1_g_text,
-			sizeof(blink_wipeout1_g_text),
-			0,
-		},
-		{
-			blink_wipeout1_r_text,
-			sizeof(blink_wipeout1_r_text),
-			0,
-		},
-	}
-};
-
 static const uint8_t blink_recovery1_b_text[] = {
-	0xe2,  0x00,  0x40,    10,  0xe2,  0x00,  0x40,     0,
-	0x00,  0x00,
+	0xe2, 0x00, 0x40, 0, 0xe2, 0x00, 0x40, 0, 0x00, 0x00,
 };
 
 static const uint8_t blink_recovery1_g_text[] = {
-	0xe2,  0x00,  0x40,   100,  0xe2,  0x00,  0x40,     0,
-	0x00,  0x00,
+	0xe2, 0x00, 0x40, 204, 0xe2, 0x00, 0x40, 0, 0x00, 0x00,
 };
 
-static const uint8_t blink_recovery1_r_text[] = {
-	0xe0,  0x06,  0x40,   255,  0x53,  0x00,  0xe0,  0x06,
-	0x40,     0,  0x53,  0x00,  0x00,  0x00
-};
+static const uint8_t blink_recovery1_r_text[] = {0xe0, 0x06, 0x40, 255,  0x53, 0x00, 0xe0,
+						 0x06, 0x40, 0,    0x53, 0x00, 0x00, 0x00};
 
-static const ti_lp5562_program blink_recovery1_program = {
+static const ti_lp5562_program blink_recovery1_program = {{
 	{
-		{
-			blink_recovery1_b_text,
-			sizeof(blink_wipeout1_b_text),
-			0,
-		},
-		{
-			blink_recovery1_g_text,
-			sizeof(blink_wipeout1_g_text),
-			0,
-		},
-		{
-			blink_recovery1_r_text,
-			sizeof(blink_wipeout1_r_text),
-			0,
-		},
-	}
-};
+		blink_recovery1_b_text,
+		sizeof(blink_recovery1_b_text),
+		0,
+	},
+	{
+		blink_recovery1_g_text,
+		sizeof(blink_recovery1_g_text),
+		0,
+	},
+	{
+		blink_recovery1_r_text,
+		sizeof(blink_recovery1_r_text),
+		0,
+	},
+}};
 
 /*
- * fade_in1.src
+ * preboot1.src
  *
   1 00          .ENGINE1(B)
   2 00 4000             set_pwm 0
   3 01 E200             trigger w3
-  4 02 1B4C             ramp 1000, 77 # ramp up to 155 for 2 seconds
-  5 03 1A4D             ramp 1000, 78
-  6 04 C000             end
-  7
-  8 10          .ENGINE2(G)
-  9 10 4000             set_pwm 0
- 10 11 E200             trigger w3
- 11 12 4318             ramp 1000, 25 # ramp up to 50 for 2 seconds
- 12 13 4318             ramp 1000, 25
- 13 14 C000             end
- 14
- 15 20          .ENGINE3(R)
- 16 20 E006             trigger s21
- 17 21 4001             set_pwm 1
- 18 22 E006             trigger s21
- 19 23 C000             end
+  4 02 0D4C             ramp 500, 77
+  5 03 C000             end
+  6
+  7 10          .ENGINE2(G)
+  8 10 4000             set_pwm 0
+  9 11 E200             trigger w3
+ 10 12 0D4C             ramp 500, 77
+ 11 13 C000             end
+ 12
+ 13 20          .ENGINE3(R)
+ 14 20 4000             set_pwm 0
+ 15 21 E006             trigger s21
+ 16 22 0D4C             ramp 500, 77
+ 17 23 C000             end
 */
 
-static const uint8_t fade_in1_b_text[] = {
-	0x40,     0,  0xe2,  0x00,  0x1b,  0x4c,  0x1a,  0x4d,
-	0xc0,  0x00
-};
-static const uint8_t fade_in1_g_text[] = {
-	0x40,     0,  0xe2,  0x00,  0x43,  0x18,  0x43,  0x18,
-	0xc0,  0x00
-};
-static const uint8_t fade_in1_r_text[] = {
-	0xe0,  0x06,  0x40,     1,  0xe0,  0x06,  0x00
-};
+static const uint8_t preboot1_b_text[] = {0x40, 0x00, 0xe2, 0x00, 0x0d, 0x4c, 0xc0, 0x00};
+static const uint8_t preboot1_g_text[] = {0x40, 0x00, 0xe2, 0x00, 0x0d, 0x4c, 0xc0, 0x00};
+static const uint8_t preboot1_r_text[] = {0x40, 0x00, 0xe0, 0x06, 0x0d, 0x4c, 0xc0, 0x00};
 
-static const ti_lp5562_program fade_in1_program = {
+static const ti_lp5562_program preboot1_program = {{
 	{
-		{
-			fade_in1_b_text,
-			sizeof(fade_in1_b_text),
-			0,
-		},
-		{
-			fade_in1_g_text,
-			sizeof(fade_in1_g_text),
-			0,
-		},
-		{
-			fade_in1_r_text,
-			sizeof(fade_in1_r_text),
-			0,
-		},
-	}
-};
+		preboot1_b_text,
+		sizeof(preboot1_b_text),
+		0,
+	},
+	{
+		preboot1_g_text,
+		sizeof(preboot1_g_text),
+		0,
+	},
+	{
+		preboot1_r_text,
+		sizeof(preboot1_r_text),
+		0,
+	},
+}};
 
 const led5562_state_prog led_lp5562_state_programs[] = {
 	/*
 	 * for test purposes the blank screen program is set to blinking, will
 	 * be changed soon.
 	 */
-	{LED_ALL_OFF, {&solid_000000_program} },
-	{LED_RECOVERY_PUSHED, {&solid_808080_program} },
-	{LED_WIPEOUT_REQUEST, {&blink_wipeout1_program} },
-	{LED_RECOVERY_REQUEST, {&blink_recovery1_program} },
-	{LED_NORMAL_BOOT, {&fade_in1_program} },
+	{LED_ALL_OFF, {&solid_000000_program}},
+	{LED_RECOVERY_PUSHED, {&solid_FFFFFF_program}},
+	{LED_WIPEOUT_REQUEST, {&fdr_press1_program}},
+	{LED_RECOVERY_REQUEST, {&blink_recovery1_program}},
+	{LED_NORMAL_BOOT, {&preboot1_program}},
 	{}, /* Empty record to mark the end of the table. */
 };

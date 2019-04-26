@@ -18,6 +18,8 @@
 #include <console/console.h>
 #include <security/tpm/tis.h>
 #include <timer.h>
+#include <drivers/i2c/lp5562/led_lp5562.h>
+#include <soc/blsp.h>
 #include "board.h"
 
 void setup_chromeos_gpios(void)
@@ -65,6 +67,11 @@ enum switch_state {
 	wipeout_req
 };
 
+static void display_pattern(int pattern)
+{
+	led_lp5562_display_pattern(BLSP_QUP_ID_1, pattern);
+}
+
 static enum switch_state get_rec_sw_state(void)
 {
 	struct stopwatch sw;
@@ -83,11 +90,11 @@ static enum switch_state get_rec_sw_state(void)
 
 	if (!sampled_value) {
 		saved_state = no_req;
-		//display_pattern(WWR_NORMAL_BOOT);
+		display_pattern(LED_NORMAL_BOOT);
 		return saved_state;
 	}
 
-	//display_pattern(WWR_RECOVERY_PUSHED);
+	display_pattern(LED_RECOVERY_PUSHED);
 	printk(BIOS_INFO, "recovery button pressed\n");
 
 	stopwatch_init_msecs_expire(&sw, WIPEOUT_MODE_DELAY_MS);
@@ -99,7 +106,7 @@ static enum switch_state get_rec_sw_state(void)
 	} while (!stopwatch_expired(&sw));
 
 	if (sampled_value) {
-		//display_pattern(WWR_WIPEOUT_REQUEST);
+		display_pattern(LED_WIPEOUT_REQUEST);
 		printk(BIOS_INFO, "wipeout requested, checking recovery\n");
 		stopwatch_init_msecs_expire(&sw, RECOVERY_MODE_EXTRA_DELAY_MS);
 		do {
@@ -110,14 +117,14 @@ static enum switch_state get_rec_sw_state(void)
 
 		if (sampled_value) {
 			saved_state = recovery_req;
-			//display_pattern(WWR_RECOVERY_REQUEST);
+			display_pattern(LED_RECOVERY_REQUEST);
 			printk(BIOS_INFO, "recovery requested\n");
 		} else {
 			saved_state = wipeout_req;
 		}
 	} else {
 		saved_state = no_req;
-		//display_pattern(WWR_NORMAL_BOOT);
+		display_pattern(LED_NORMAL_BOOT);
 	}
 
 	return saved_state;
