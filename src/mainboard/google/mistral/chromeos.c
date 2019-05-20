@@ -67,6 +67,11 @@ enum switch_state {
 	wipeout_req
 };
 
+/*
+ * FDR switch detection and LED state change is only functional
+ * when called in verstage.
+ */
+#if defined(__VERSTAGE__)
 static void display_pattern(int pattern)
 {
 	led_lp5562_display_pattern(BLSP_QUP_ID_1, pattern);
@@ -129,6 +134,20 @@ static enum switch_state get_rec_sw_state(void)
 
 	return saved_state;
 }
+
+/*
+ * get_recovery_mode_switch is called from ramstage as part of
+ * elog function, but this is informational purpose to show current
+ * FDR switch state, should not affecting LED and boot mode.
+ */
+#else  // defined(__VERSTAGE)
+static enum switch_state get_rec_sw_state(void)
+{
+	gpio_t rec_sw = GPIO_REC_STATE;
+	int sampled_value = !gpio_get(rec_sw);
+	return sampled_value ? recovery_req : no_req;
+}
+#endif // defined(__VERSTAGE)
 
 int get_recovery_mode_switch(void)
 {
