@@ -421,6 +421,7 @@ struct soc_intel_cannonlake_config {
 	 * Bit 0: MISCCFG_GPDLCGEN
 	 */
 	uint8_t gpio_pm[TOTAL_GPIO_COMM];
+	uint8_t Heci1Disabled;
 };
 
 typedef struct soc_intel_cannonlake_config config_t;

@@ -341,6 +341,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		params->ScsUfsEnabled = dev->enabled;
 
 	params->Heci3Enabled = config->Heci3Enabled;
+	params->Heci1Disabled = config->Heci1Disabled;
 	params->Device4Enable = config->Device4Enable;
 
 	/* VrConfig Settings for 5 domains
