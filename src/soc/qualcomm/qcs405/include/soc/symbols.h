@@ -25,5 +25,6 @@ DECLARE_REGION(dram_reserved);
 DECLARE_REGION(dcb);
 DECLARE_REGION(pmic);
 DECLARE_REGION(rpm);
+DECLARE_REGION(board_config);
 
 #endif // _SOC_QUALCOMM_QCS405_SYMBOLS_H_

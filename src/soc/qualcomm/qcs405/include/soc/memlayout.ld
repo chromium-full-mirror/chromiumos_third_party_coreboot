@@ -54,6 +54,7 @@ SECTIONS
 	REGION(ddr_training, 0x8CFE000, 8K, 8)
 	REGION(ddr_information, 0x8D00000, 256, 256)
 	REGION(dcb, 0x8D01000, 4K, 8)
+	REGION(board_config, 0x8D02000, 0x8, 16)
 	REGION(qclib_shared_data, 0x8D78000, 32K, 4096)
 	BSRAM_END(0x8D80000)
 

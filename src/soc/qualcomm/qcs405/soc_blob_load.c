@@ -15,8 +15,28 @@
 
 #include <cbfs.h>
 #include <console/console.h>
+#include <symbols.h>
+#include <boardid.h>
 #include <soc/symbols.h>
 #include <soc/qclib_common.h>
+
+enum buck_type {
+	ext_buck = 1,
+	int_buck,
+};
+
+struct board_config {
+	u8 buck_type;
+} qcs405_board_config;
+
+void qclib_set_buck_type(void)
+{
+	qcs405_board_config.buck_type = ext_buck;
+	if ((uint8_t)board_id() == 2)
+		qcs405_board_config.buck_type = int_buck;
+
+	*_board_config = qcs405_board_config.buck_type;
+}
 
 int qclib_soc_blob_load(void)
 {
@@ -38,6 +58,9 @@ int qclib_soc_blob_load(void)
 		goto fail;
 
 	qclib_add_if_table_entry(QCLIB_TE_DCB_SETTINGS, _dcb, size, 0);
+
+	qclib_add_if_table_entry(QCLIB_TE_BOARD_CONFIG, _board_config,
+				REGION_SIZE(board_config), 0);
 
 	return 0;
 

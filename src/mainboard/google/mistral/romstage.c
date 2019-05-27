@@ -30,6 +30,8 @@ static void prepare_usb(void)
 
 void platform_romstage_main(void)
 {
+	qclib_set_buck_type();
+
 	/* QCLib: DDR init & train */
 	qclib_load_and_run();
 
