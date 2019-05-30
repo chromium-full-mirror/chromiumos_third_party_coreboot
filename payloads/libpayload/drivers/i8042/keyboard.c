@@ -239,6 +239,16 @@ int keyboard_getchar(void)
 	while (!keyboard_havechar()) ;
 
 	ch = keyboard_get_scancode();
+	if (ch == 0xe0) {
+		ch = keyboard_get_scancode();
+		/* Ignore almost all special function keys & get the next key */
+		/* F12 key generates 0xe0 0xb on press when fn is engaged. */
+		if (ch == 0xb)
+			return KEY_F(12);
+		if (ch == 0x5e)
+			return POWER_BUTTON;
+		return 0;
+	}
 
 	if (!(ch & 0x80) && ch < 0x59) {
 		shift =
