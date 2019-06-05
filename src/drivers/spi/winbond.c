@@ -195,11 +195,8 @@ static const struct spi_flash_ops spi_flash_ops = {
 	.write = winbond_write,
 	.erase = spi_flash_cmd_erase,
 	.status = spi_flash_cmd_status,
-#if IS_ENABLED(CONFIG_SPI_FLASH_NO_FAST_READ)
-	.read = spi_flash_cmd_read_slow,
-#else
-	.read = spi_flash_cmd_read_fast,
-#endif
+	.get_write_protection = winbond_get_write_protection,
+	.set_write_protection = winbond_set_write_protection,
 };
 
 int spi_flash_probe_winbond(const struct spi_slave *spi, u8 *idcode,
