@@ -44,6 +44,7 @@
 #
 # when       who       what, where, why
 # --------   ---       ------------------------------------------------------
+# 05/21/19   rissha    Added --mbn_version to add MBN header accordingly
 # 03/26/18   tv        Added -e to enable extended MBNV5 support
 # 09/04/15   et        Added -x and -d to embed xbl_sec ELF
 # 02/11/15   ck        Fixed missing elf type check in ZI OOB feature
@@ -118,6 +119,10 @@ def main():
                     action="store_true", dest="zi_oob",
                     help="Removes ZI segments that have addresses greater" + \
                          " than 32 bits when converting from a 64 to 32 bit ELF")
+
+  parser.add_option("--mbn_version",
+                    action="store", type="int", dest="mbn_version",
+                    help="Add mbn header in elf image.  '5' or '6'")
 
 
   (options, args) = parser.parse_args()
@@ -206,11 +211,16 @@ def main():
   else:
     zi_oob_enabled = True
 
+  header_version = 3
+
   if options.elf_inp_xbl_sec:
     is_ext_mbn_v5 = True
+    header_version = 5
   else:
     is_ext_mbn_v5 = False
 
+  if options.mbn_version:
+    header_version = options.mbn_version
 
   mbn_type = 'elf'
   header_format = 'reg'
@@ -259,7 +269,7 @@ def main():
                                  source_elf,
 				 target_hash,
                                  elf_out_file_name = target_phdr_elf,
-                                 secure_type = image_header_secflag)
+                                 secure_type = image_header_secflag, header_version = header_version )
     if rv:
        raise RuntimeError, "Failed to run pboot_gen_elf"
 
@@ -270,7 +280,8 @@ def main():
 				target_hash_hd,
                          	image_header_secflag,
 				is_ext_mbn_v5,
-				elf_file_name = source_elf)
+				elf_file_name = source_elf,
+				header_version = header_version)
     if rv:
        raise RuntimeError, "Failed to create image header for hash segment"
 
