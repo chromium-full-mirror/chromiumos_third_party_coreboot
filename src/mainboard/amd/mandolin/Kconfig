@@ -1,0 +1,138 @@
+#
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2019 Advanced Micro Devices, Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+if BOARD_AMD_MANDOLIN
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select SOC_AMD_PICASSO
+	select HAVE_PIRQ_TABLE
+	select HAVE_MP_TABLE
+	select HAVE_ACPI_TABLES
+	select BOARD_ROMSIZE_KB_8192
+	select AZALIA_PLUGIN_SUPPORT
+
+config FSP_M_FILE
+	string "FSP-M (memory init) binary path and filename"
+	depends on ADD_FSP_BINARIES
+	default "PICASSO_M.fd"
+	help
+	  The path and filename of the FSP-M binary for this platform.
+	  TODO: remove this: Mandolin temporarily makes the default
+	  location the coreboot root for easy internal development.
+
+config FSP_S_FILE
+	string "FSP-S (silicon init) binary path and filename"
+	depends on ADD_FSP_BINARIES
+	default "PICASSO_S.fd"
+	help
+	  The path and filename of the FSP-S binary for this platform.
+	  TODO: remove this: Mandolin temporarily makes the default
+	  location the coreboot root for easy internal development.
+
+config AMD_LPC_DEBUG_CARD
+	bool "Enable LPC-Serial debug card on the debug header"
+	default n
+	select PICASSO_LPC_IOMUX
+	select SUPERIO_SMSC_SIO1036
+	help
+	  AMD's debug card contains an SMSC SIO1036 device which provides
+	  an I/O-based UART in the system.  This feature is not compatible with
+	  CONFIG_HUDSON_UART enabling the memory-mapped UART in the chipset.
+	  Note that Kconfig does not currently enforce this restriction.
+
+config CBFS_SIZE
+	default 0x400000
+	help
+	  TODO: Adjust this! Right now it's simply making a lot of room for
+	  amdfw.rom and EC firmware.
+
+config MAINBOARD_DIR
+	string
+	default amd/mandolin
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "MANDOLIN"
+
+config MAX_CPUS
+	int
+	default 8
+
+config IRQ_SLOT_COUNT
+	int
+	default 11
+
+config ONBOARD_VGA_IS_PRIMARY
+	bool
+	default y
+
+config MANDOLIN_HAVE_APCB_BLOB
+	bool "Have AGESA PSP Customization Block file?"
+	default n
+	help
+	  The PSP requires the APCB file to know how to configure memory, as
+	  well as other settings it will initialize.  To build an image that
+	  will get to POST, select 'y' and provide the file path/name.  The
+	  default of 'n' allows the board to build successfully but it avoids
+	  redistributing the APCB blob extracted from UEFI.
+	  TODO: Add the ability to construct APCB on the fly for any mainboard.
+
+config PSP_APCB_FILE
+	string "APCB file"
+	depends on MANDOLIN_HAVE_APCB_BLOB
+	default "3rdparty/blobs/mainboard/amd/mandolin/apcb.bin"
+	help
+	  The name of the AGESA Parameter Customization Block.  TODO: will we
+	  be able to generate this at build-time?  Build it offline for
+	  inclusion?
+
+config MANDOLIN_HAVE_MCHP_FW
+	bool "Have Microchip EC firmware?"
+	default n
+	select AMDFW_OUTSIDE_CBFS
+	# todo: fix build the "inside" build.
+
+config MANDOLIN_MCHP_FW_FILE
+	string
+	depends on MANDOLIN_HAVE_MCHP_FW
+	default "3rdparty/blobs/mainboard/amd/mandolin/mchp.bin"
+
+if !AMD_LPC_DEBUG_CARD
+choice MANDOLIN_LPC_IOMUX
+	prompt "State of IOMux for LPC/eMMC signals"
+	default MANDOLIN_IOMUX_USE_EMMC
+	help
+	  Mandolin is designed to use either LPC or eMMC signals.  Use this
+	  selection to determine which are configured for this image.
+
+config MANDOLIN_IOMUX_USE_LPC
+	bool "LPC signals"
+	help
+
+config MANDOLIN_IOMUX_USE_EMMC
+	bool "eMMC signals"
+
+endchoice
+endif # !AMD_LPC_DEBUG_CARD
+
+config PICASSO_LPC_IOMUX
+	bool
+	default y if MANDOLIN_IOMUX_USE_LPC
+	help
+	  Picasso's LPC bus signals are MUXed with some of the EMMC signals.
+	  Select this option if LPC signals are required.
+
+endif # BOARD_AMD_MANDOLIN
