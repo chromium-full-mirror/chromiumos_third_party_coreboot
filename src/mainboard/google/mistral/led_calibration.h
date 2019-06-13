@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright 2016 Google Inc.
+ * Copyright 2019 Google LLC
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -11,25 +11,11 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
  */
 
-#include <console/console.h>
-#include <security/vboot/vboot_common.h>
-#include <soc/clock.h>
-#include <spi-generic.h>
-#include "board.h"
-#include "led_calibration.h"
+#ifndef __COREBOOT_SRC_MAINBOARD_GOOGLE_MISTRAL_LED_CALIBRATION_H
+#define __COREBOOT_SRC_MAINBOARD_GOOGLE_MISTRAL_LED_CALIBRATION_H
 
-void verstage_mainboard_init(void)
-{
-	struct spi_slave spi;
+extern int calibrate_led(void);
 
-	setup_chromeos_gpios();
-	printk(BIOS_ERR, "Trying to initialize TPM SPI bus\n");
-	if (spi_setup_slave(CONFIG_DRIVER_TPM_SPI_BUS,
-			    CONFIG_DRIVER_TPM_SPI_CHIP, &spi)) {
-		printk(BIOS_ERR, "Failed to setup TPM SPI slave\n");
-	}
-	calibrate_led();
-}
+#endif

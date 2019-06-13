@@ -8,6 +8,7 @@ verstage-y += memlayout.ld
 verstage-y += chromeos.c
 verstage-y += reset.c
 verstage-y += verstage.c
+verstage-y += led_calibration.c
 
 romstage-y += memlayout.ld
 romstage-y += chromeos.c
