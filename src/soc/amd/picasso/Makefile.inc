@@ -37,6 +37,7 @@ subdirs-y += ../../../cpu/x86/mtrr
 subdirs-y += ../../../cpu/x86/pae
 subdirs-y += ../../../cpu/x86/smm
 
+romstage-y += early_stack.S
 romstage-y += i2c.c
 romstage-y += romstage.c
 romstage-y += gpio.c
@@ -59,12 +60,6 @@ verstage-y += reset.c
 verstage-$(CONFIG_PICASSO_UART) += uart.c
 verstage-y += tsc_freq.c
 verstage-$(CONFIG_SPI_FLASH) += spi.c
-
-postcar-y += monotonic_timer.c
-postcar-$(CONFIG_PICASSO_UART) += uart.c
-postcar-y += memmap.c
-postcar-$(CONFIG_VBOOT_MEASURED_BOOT) += i2c.c
-postcar-y += tsc_freq.c
 
 ramstage-y += i2c.c
 ramstage-y += chip.c

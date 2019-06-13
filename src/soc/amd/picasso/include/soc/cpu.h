@@ -17,12 +17,16 @@
 #define __PICASSO_CPU_H__
 
 #include <device/device.h>
-
-#define SOC_EARLY_VMTRR_FLASH 1
-#define SOC_EARLY_VMTRR_TEMPRAM 2
+#include <commonlib/helpers.h>
 
 void picasso_init_cpus(struct device *dev);
 int get_cpu_count(void);
 void check_mca(void);
+
+#define ROMSTAGE_SIZE (64 * KiB) /* Enforced by Makefile.inc for PSP info */
+#define ROMSTAGE_TOP (CONFIG_ROMSTAGE_ADDR + ROMSTAGE_SIZE)
+#if ROMSTAGE_TOP & 0xffff
+# error Top of the BIOS binary image must be 64KB aligned
+#endif
 
 #endif /* __PICASSO_CPU_H__ */
