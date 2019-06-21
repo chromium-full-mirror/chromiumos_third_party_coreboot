@@ -79,36 +79,37 @@ int get_wifi_sar_limits(struct wifi_sar_limits *sar_limits)
 					 sizeof(struct wifi_sar_delta_table);
 	}
 
-	/* Try to read the SAR limit entry from VPD */
-	if (!vpd_gets(wifi_sar_limit_key, wifi_sar_limit_str,
-							 buffer_size, VPD_ANY)) {
-		printk(BIOS_ERR, "Error: Could not locate '%s' in VPD.\n",
-				wifi_sar_limit_key);
-
-		if (!IS_ENABLED(CONFIG_WIFI_SAR_CBFS))
-			return -1;
-
+	if (IS_ENABLED(CONFIG_WIFI_SAR_CBFS)) {
 		printk(BIOS_DEBUG, "Checking CBFS for default SAR values\n");
 
 		sar_cbfs_len = load_sar_file_from_cbfs(
 					(void *) wifi_sar_limit_str,
 						sar_expected_len);
 
-		if (sar_cbfs_len != sar_expected_len) {
-			printk(BIOS_ERR, "%s has bad len in CBFS\n",
-					WIFI_SAR_CBFS_FILENAME);
-			return -1;
-		}
-	} else {
-		/* VPD key "wifi_sar" found. strlen is checked with addition of
-		 * 1 as we have created buffer size 1 char larger for the reason
-		 * mentioned at start of this function itself */
-		if (strlen(wifi_sar_limit_str) + 1 != sar_expected_len) {
-			printk(BIOS_ERR, "WIFI SAR key has bad len in VPD\n");
-			return -1;
-		}
+		if (sar_cbfs_len == sar_expected_len)
+		    goto done;
+
+		printk(BIOS_ERR, "%s has bad len in CBFS\n",
+				WIFI_SAR_CBFS_FILENAME);
 	}
 
+	/* Try to read the SAR limit entry from VPD */
+	if (!vpd_gets(wifi_sar_limit_key, wifi_sar_limit_str,
+							 buffer_size, VPD_ANY)) {
+		printk(BIOS_ERR, "Error: Could not locate '%s' in VPD.\n",
+				wifi_sar_limit_key);
+		return -1;
+	}
+
+	/* VPD key "wifi_sar" found. strlen is checked with addition of
+	 * 1 as we have created buffer size 1 char larger for the reason
+	 * mentioned at start of this function itself */
+	if (strlen(wifi_sar_limit_str) + 1 != sar_expected_len) {
+		printk(BIOS_ERR, "WIFI SAR key has bad len in VPD\n");
+		return -1;
+	}
+
+done:
 	/* Decode the heximal encoded string to binary values */
 	if (hexstrtobin(wifi_sar_limit_str, bin_buffer, bin_buff_adjusted_size)
 			< bin_buff_adjusted_size) {
