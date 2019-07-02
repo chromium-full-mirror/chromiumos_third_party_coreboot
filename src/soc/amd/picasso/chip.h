@@ -22,6 +22,7 @@
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <soc/i2c.h>
 #include <arch/acpi_device.h>
+#include <FspsUpd.h>
 
 #define PICASSO_I2C_DEV_MAX 4
 
@@ -41,5 +42,9 @@ struct soc_amd_picasso_config {
 typedef struct soc_amd_picasso_config config_t;
 
 extern struct device_operations pci_domain_ops;
+
+/* Empty function for compatibility with FSP 2.0 driver */
+void *vbt_get(void);
+void mainboard_fsp_silicon_init_params_cb(FSP_S_CONFIG *scfg);
 
 #endif /* __PICASSO_CHIP_H__ */

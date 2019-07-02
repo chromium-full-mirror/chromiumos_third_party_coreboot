@@ -27,17 +27,13 @@
 #include <soc/northbridge.h>
 #include <soc/iomap.h>
 #include <amdblocks/acpimmio.h>
+#include <fsp/util.h>
 
 #define BERT_REGION_MAX_SIZE 0x100000
 
-void backup_top_of_low_cacheable(uintptr_t ramtop)
+static uintptr_t top_of_lowmem(void)
 {
-	biosram_write32(BIOSRAM_CBMEM_TOP, ramtop);
-}
-
-uintptr_t restore_top_of_low_cacheable(void)
-{
-	return biosram_read32(BIOSRAM_CBMEM_TOP);
+	return biosram_read32(BIOSRAM_TOP_LOWMEM);
 }
 
 void bert_reserved_region(void **start, size_t *size)
@@ -55,15 +51,44 @@ void bert_reserved_region(void **start, size_t *size)
 	*size = cbmem_entry_size(bert);
 }
 
+static void init_topmem(void)
+{
+	const struct hob_header *hob = fsp_get_hob_list();
+	const struct hob_resource *res;
+	uintptr_t topmem = 0;
+
+	if (!hob) {
+		printk(BIOS_ERR, "Error: No HOB list was found, can't calculate cbmem_top()\n");
+		biosram_write32(BIOSRAM_TOP_LOWMEM, 0);
+		return;
+	}
+
+	for (; hob->type != HOB_TYPE_END_OF_HOB_LIST; hob = fsp_next_hob(hob)) {
+		if (hob->type != HOB_TYPE_RESOURCE_DESCRIPTOR)
+			continue;
+
+		res = fsp_hob_header_to_resource(hob);
+		if (res->type != EFI_RESOURCE_SYSTEM_MEMORY)
+			continue;
+
+		/* cbmem is highest available DRAM below 4GB */
+		if (res->addr < (uint64_t)4 * GiB && res->addr + res->length > topmem)
+			topmem = res->addr + res->length;
+	}
+	biosram_write32(BIOSRAM_TOP_LOWMEM, topmem);
+}
+
 void *cbmem_top(void)
 {
-	msr_t tom = rdmsr(TOP_MEM);
+	static int once;
 
-	if (!tom.lo)
-		return 0;
+	if (ENV_ROMSTAGE && !once) {
+		init_topmem();
+		once = 1;
+	}
 
 	/* 8MB alignment to keep MTRR usage low */
-	return (void *)ALIGN_DOWN(restore_top_of_low_cacheable(), 8 * MiB);
+	return (void *)ALIGN_DOWN(top_of_lowmem(), 8 * MiB);
 }
 
 /*

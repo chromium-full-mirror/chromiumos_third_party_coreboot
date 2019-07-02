@@ -22,6 +22,8 @@
 #include <soc/southbridge.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/reset.h>
+#include <fsp/util.h>
+#include <assert.h>
 
 void set_warm_reset_flag(void)
 {
@@ -54,5 +56,13 @@ void do_warm_reset(void)
 void do_board_reset(void)
 {
 	/* TODO: Would a warm_reset() suffice? */
+	do_cold_reset();
+}
+
+void chipset_handle_reset(uint32_t status)
+{
+	assert(0);
+	printk(BIOS_ERR, "Error: unexpected call to %s(0x%08x).  Doing cold reset.\n",
+			__func__, status);
 	do_cold_reset();
 }

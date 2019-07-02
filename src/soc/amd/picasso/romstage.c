@@ -26,6 +26,8 @@
 #include <cpu/x86/bist.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/amd/msr.h>
+#include <smp/node.h>
+#include <console/uart.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <commonlib/helpers.h>
@@ -37,6 +39,7 @@
 #include <soc/northbridge.h>
 #include <soc/southbridge.h>
 #include <soc/romstage.h>
+#include <fsp/api.h>
 
 void __weak mainboard_romstage_early_init(void) {}
 void __weak mainboard_romstage_entry_s3(int s3_resume) {}
@@ -78,6 +81,30 @@ static int set_early_mtrrs(void)
 	return 0;
 }
 
+static void clear_agesa_mtrrs(void)
+{
+	msr_t mtrr_cap = rdmsr(MTRR_CAP_MSR);
+	int vmtrrs = mtrr_cap.lo & MTRR_CAP_VCNT;
+	int i;
+	msr_t mtrr = {
+		.hi = 0,
+		.lo = 0,
+	};
+
+	for (i = 0 ; i < vmtrrs ; i++) {
+		wrmsr(MTRR_PHYS_MASK(i), mtrr);
+		wrmsr(MTRR_PHYS_BASE(i), mtrr);
+	}
+
+	/* Disable WB from to region 4GB - TOM2 */
+	msr_t sys_cfg = rdmsr(SYSCFG_MSR);
+	sys_cfg.lo &= ~SYSCFG_MSR_TOM2WB;
+	wrmsr(SYSCFG_MSR, sys_cfg);
+
+	if (set_early_mtrrs())
+		printk(BIOS_WARNING, "Warning: MTRRs not set properly for ramstage\n");
+}
+
 static void set_mtrrs_for_ramstage(void)
 {
 	uintptr_t mem_top;
@@ -86,6 +113,8 @@ static void set_mtrrs_for_ramstage(void)
 	int mtrr;
 
 	mem_top = (uintptr_t)cbmem_top();
+
+	clear_agesa_mtrrs(); /* TODO: make AGESA leave the MTRRs alone*/
 
 	/* Cache anticipated ramstage location through the top of cbmem.
 	 * Unlike some other implementations, TSEG is in cbmem so it will
@@ -112,14 +141,29 @@ static void set_mtrrs_for_ramstage(void)
 		printk(BIOS_WARNING, "Warning: Unable to make ramstage cacheable\n");
 }
 
+void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
+{
+	FSP_M_CONFIG *mcfg = &mupd->FspmConfig;
+
+	mcfg->pci_express_base_addr = CONFIG_MMCONF_BASE_ADDRESS;
+
+	mcfg->serial_port_base = uart_platform_base(CONFIG_UART_FOR_CONSOLE);
+	mcfg->serial_port_use_mmio = CONFIG(DRIVERS_UART_8250MEM);
+	mcfg->serial_port_stride = CONFIG(DRIVERS_UART_8250MEM_32) ? 4 : 1;
+	mcfg->serial_port_baudrate = get_uart_baudrate();
+	mcfg->serial_port_refclk = uart_platform_refclk();
+
+	mainboard_fsp_memory_init_params_cb(mcfg, version);
+}
+
 asmlinkage void soc_hybrid_romstage_entry(uint32_t bist, uint64_t early_tsc)
 {
-	uintptr_t top_of_mem;
 	int s3_resume;
+	int on_bsp = boot_cpu();
 	int early_mtrr_err;
 
 	post_code(0x40);
-	if (CONFIG(COLLECT_TIMESTAMPS)) {
+	if (CONFIG(COLLECT_TIMESTAMPS) && on_bsp) {
 		timestamp_init(early_tsc);
 		timestamp_add_now(TS_START_ROMSTAGE);
 	}
@@ -129,26 +173,30 @@ asmlinkage void soc_hybrid_romstage_entry(uint32_t bist, uint64_t early_tsc)
 	post_code(0x41);
 	early_mtrr_err = set_early_mtrrs();
 
-	post_code(0x42);
-	romstage_soc_early_init();
-	romstage_mainboard_early_init();
+	if (on_bsp) {
+		post_code(0x42);
+		romstage_soc_early_init();
+		mainboard_romstage_early_init();
 
-	post_code(0x43);
-	init_timer();
-	sanitize_cmos();
-	cmos_post_init();
+		post_code(0x43);
+		init_timer();
+		sanitize_cmos();
+		cmos_post_init();
 
-	post_code(0x44);
-	console_init();
-	exception_init();
+		post_code(0x44);
+		console_init();
+		exception_init();
+	}
 
 	post_code(0x45);
 	report_bist_failure(bist);
 
 	post_code(0x46);
 	s3_resume = acpi_s3_resume_allowed() && acpi_is_wakeup_s3();
-	romstage_soc_init(s3_resume);
-	mainboard_romstage_entry_s3(s3_resume);
+	if (on_bsp) {
+		romstage_soc_init(s3_resume);
+		mainboard_romstage_entry_s3(s3_resume);
+	}
 
 	post_code(0x47);
 	u32 val = cpuid_eax(1);
@@ -158,20 +206,14 @@ asmlinkage void soc_hybrid_romstage_entry(uint32_t bist, uint64_t early_tsc)
 		printk(BIOS_WARNING, "Early MTRRs were not set properly\n");
 
 	post_code(0x48);
-	if (!s3_resume && CONFIG(ELOG_BOOT_COUNT))
+	if (!s3_resume && CONFIG(ELOG_BOOT_COUNT) && on_bsp)
 		boot_count_increment();
 
 	post_code(0x49);
-	top_of_mem = ALIGN_DOWN(rdmsr(TOP_MEM).lo, BIT(23));
-	backup_top_of_low_cacheable(top_of_mem);
+	fsp_memory_init(s3_resume);
+	/* APs do not return to here and continue  */
 
 	post_code(0x4a);
-	if (cbmem_recovery(s3_resume))
-		printk(BIOS_CRIT, "Failed to recover cbmem\n");
-	if (romstage_handoff_init(s3_resume))
-		printk(BIOS_ERR, "Failed to set romstage handoff data\n");
-
-	post_code(0x4b);
 	set_mtrrs_for_ramstage();
 	run_ramstage();
 

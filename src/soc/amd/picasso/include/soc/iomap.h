@@ -99,8 +99,6 @@
 #define SYS_RESET			0xcf9
 
 /* BiosRam Ranges at 0xfed80500 or I/O 0xcd4/0xcd5 */
-#define BIOSRAM_CBMEM_TOP		0xf0 /* 4 bytes */
-#define BIOSRAM_UMA_SIZE		0xf4 /* 4 bytes */
-#define BIOSRAM_UMA_BASE		0xf8 /* 8 bytes */
+#define BIOSRAM_TOP_LOWMEM		0xf0 /* 4 bytes */
 
 #endif /* __SOC_PICASSO_IOMAP_H__ */
