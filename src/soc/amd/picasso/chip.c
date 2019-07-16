@@ -132,6 +132,7 @@ static void soc_init(void *chip_info)
 {
 	fsp_silicon_init(acpi_is_wakeup_s3());
 
+	northbridge_init();
 	southbridge_init(chip_info);
 	setup_bsp_ramtop();
 }

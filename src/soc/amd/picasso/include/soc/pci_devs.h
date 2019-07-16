@@ -102,47 +102,36 @@
 #define HDA1_DEVFN		PCI_DEVFN(HDA1_DEV, HDA1_FUNC)
 #define SOC_HDA1_DEV		_SOC_DEV(HDA1_DEV, HDA1_FUNC)
 
-/* HT Configuration */
-#define HT_DEV			0x18
-#define HT_FUNC			0
-#define HT_DEVID		0x15b0
-#define HT_DEVFN		PCI_DEVFN(HT_DEV, HT_FUNC)
-#define SOC_HT_DEV		_SOC_DEV(HT_DEV, HT_FUNC)
+/* Data Fabric functions */
+#define DF_DEV			0x18
 
-/* Address Maps */
-#define ADDR_DEV		0x18
-#define ADDR_FUNC		1
-#define ADDR_DEVID		0x15b1
-#define ADDR_DEVFN		PCI_DEVFN(ADDR_DEV, ADDR_FUNC)
-#define SOC_ADDR_DEV		_SOC_DEV(ADDR_DEV, ADDR_FUNC)
+#define DF_F0_DEVID		0x15e8
+#define DF_F0_DEVFN		PCI_DEVFN(DF_DEV, 0)
+#define SOC_DF_F0_DEVFN		_SOC_DEV(DF_DEV, 0)
 
-/* DRAM Configuration */
-#define DCT_DEV			0x18
-#define DCT_FUNC		2
-#define DCT_DEVID		0x15b2
-#define DCT_DEVFN		PCI_DEVFN(DCT_DEV, DCT_FUNC)
-#define SOC_DCT_DEV		_SOC_DEV(DCT_DEV, DCT_FUNC)
+#define DF_F1_DEVID		0x15e9
+#define DF_F1_DEVFN		PCI_DEVFN(DF_DEV, 1)
+#define SOC_DF_F1_DEVFN		_SOC_DEV(DF_DEV, 1)
 
-/* Misc. Configuration */
-#define MISC_DEV		0x18
-#define MISC_FUNC		3
-#define MISC_DEVID		0x15b3
-#define MISC_DEVFN		PCI_DEVFN(MISC_DEV, MISC_FUNC)
-#define SOC_MISC_DEV		_SOC_DEV(MISC_DEV, MISC_FUNC)
+#define DF_F2_DEVID		0x15ea
+#define DF_F2_DEVFN		PCI_DEVFN(DF_DEV, 2)
+#define SOC_DF_F2_DEVFN		_SOC_DEV(DF_DEV, 2)
 
-/* PM Configuration */
-#define PM_DEV			0x18
-#define PM_FUNC			4
-#define PM_DEVID		0x15b4
-#define PM_DEVFN		PCI_DEVFN(PM_DEV, PM_FUNC)
-#define SOC_PM_DEV		_SOC_DEV(PM_DEV, PM_FUNC)
+#define DF_F3_DEVID		0x15eb
+#define DF_F3_DEVFN		PCI_DEVFN(DF_DEV, 3)
+#define SOC_DF_F3_DEVFN		_SOC_DEV(DF_DEV, 3)
 
-/* Northbridge Configuration */
-#define NB_DEV			0x18
-#define NB_FUNC			5
-#define NB_DEVID		0x15b5
-#define NB_DEVFN		PCI_DEVFN(NB_DEV, NB_FUNC)
-#define SOC_NB_DEV		_SOC_DEV(NB_DEV, NB_FUNC)
+#define DF_F4_DEVID		0x15ec
+#define DF_F4_DEVFN		PCI_DEVFN(DF_DEV, 4)
+#define SOC_DF_F4_DEVFN		_SOC_DEV(DF_DEV, 4)
+
+#define DF_F5_DEVID		0x15ed
+#define DF_F5_DEVFN		PCI_DEVFN(DF_DEV, 5)
+#define SOC_DF_F5_DEVFN		_SOC_DEV(DF_DEV, 5)
+
+#define DF_F6_DEVID		0x15ee
+#define DF_F6_DEVFN		PCI_DEVFN(DF_DEV, 6)
+#define SOC_DF_F6_DEVFN		_SOC_DEV(DF_DEV, 6)
 
 /* USB 3.1 */
 #define XHCI0_DEV		0x0
