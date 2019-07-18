@@ -73,6 +73,8 @@ typedef enum {
 
 /*
  * USB sets an upper limit of 5 seconds for any transfer to be completed.
+ * For this branch, use a 10 second timeout to work around to USB error
+ * handling limitations found in the libpayload USB driver.
  *
  * Data originally from EHCI driver:
  *	Tested with some USB2.0 flash sticks:
@@ -85,7 +87,7 @@ typedef enum {
  *	to take more than 100 ms to complete a SET ADDRESS request on a
  *	downstream port.
  */
-#define USB_MAX_PROCESSING_TIME_US (5 * 1000 * 1000)
+#define USB_MAX_PROCESSING_TIME_US (10 * 1000 * 1000)
 
 #define USB_FULL_LOW_SPEED_FRAME_US 1000
 
