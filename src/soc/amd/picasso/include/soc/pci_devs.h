@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2014 Sage Electronic Engineering, LLC.
+ * Copyright (C) 2019 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,68 +39,51 @@
 #define IOMMU_DEVFN		PCI_DEVFN(IOMMU_DEV, IOMMU_FUNC)
 #define SOC_IOMMU_DEV		_SOC_DEV(IOMMU_DEV, IOMMU_FUNC)
 
-/* Internal Graphics */
-#define GFX_DEV			0x1
-#define GFX_FUNC		0
-#define GFX_DEVID		0x15d8
-#define GFX_DEVFN		PCI_DEVFN(GFX_DEV, GFX_FUNC)
-#define SOC_GFX_DEV		_SOC_DEV(GFX_DEV, GFX_FUNC)
+/* PCIe GPP Bridges 0 - 6 */
+#define PCIE_DEV		0x1
+#define PCIE_BRIDGE_DEVID	0x15d3
 
-/* HD Audio 0 */
-#define HDA0_DEV		0x1
-#define HDA0_FUNC		1
-#define HDA0_DEVID		0x15b3
-#define HDA0_DEVFN		PCI_DEVFN(HDA0_DEV, HDA0_FUNC)
-#define SOC_HDA0_DEV		_SOC_DEV(HDA0_DEV, HDA0_FUNC)
-
-/* Host Bridge */
-#define HOST_DEV		0x2
-#define HOST_FUNC		0
-#define HOST_DEVID		0x157b
-#define HOST_DEVFN		PCI_DEVFN(HOST_DEV, HOST_FUNC)
-#define SOC_HOST_DEV		_SOC_DEV(HOST_DEV, HOST_FUNC)
-
-/* PCIe GPP Bridge 0 */
-#define PCIE0_DEV		0x2
 #define PCIE0_FUNC		1
-#define PCIE0_DEVID		0x157c
-#define PCIE0_DEVFN		PCI_DEVFN(PCIE0_DEV, PCIE0_FUNC)
-#define SOC_PCIE0_DEV		_SOC_DEV(PCIE0_DEV, PCIE0_FUNC)
+#define PCIE0_DEVFN		PCI_DEVFN(PCIE_DEV, PCIE0_FUNC)
+#define SOC_PCIE0_DEV		_SOC_DEV(PCIE_DEV, PCIE0_FUNC)
 
-/* PCIe GPP Bridge 1 */
-#define PCIE1_DEV		0x2
 #define PCIE1_FUNC		2
-#define PCIE1_DEVID		0x157c
-#define PCIE1_DEVFN		PCI_DEVFN(PCIE1_DEV, PCIE1_FUNC)
-#define SOC_PCIE1_DEV		_SOC_DEV(PCIE1_DEV, PCIE1_FUNC)
+#define PCIE1_DEVFN		PCI_DEVFN(PCIE_DEV, PCIE1_FUNC)
+#define SOC_PCIE1_DEV		_SOC_DEV(PCIE_DEV, PCIE1_FUNC)
 
-/* PCIe GPP Bridge 2 */
-#define PCIE2_DEV		0x2
 #define PCIE2_FUNC		3
-#define PCIE2_DEVID		0x157c
-#define PCIE2_DEVFN		PCI_DEVFN(PCIE2_DEV, PCIE2_FUNC)
-#define SOC_PCIE2_DEV		_SOC_DEV(PCIE2_DEV, PCIE2_FUNC)
+#define PCIE2_DEVFN		PCI_DEVFN(PCIE_DEV, PCIE2_FUNC)
+#define SOC_PCIE2_DEV		_SOC_DEV(PCIE_DEV, PCIE2_FUNC)
 
-/* PCIe GPP Bridge 3 */
-#define PCIE3_DEV		0x2
 #define PCIE3_FUNC		4
-#define PCIE3_DEVID		0x157c
-#define PCIE3_DEVFN		PCI_DEVFN(PCIE3_DEV, PCIE3_FUNC)
-#define SOC_PCIE3_DEV		_SOC_DEV(PCIE3_DEV, PCIE3_FUNC)
+#define PCIE3_DEVFN		PCI_DEVFN(PCIE_DEV, PCIE3_FUNC)
+#define SOC_PCIE3_DEV		_SOC_DEV(PCIE_DEV, PCIE3_FUNC)
 
-/* PCIe GPP Bridge 4 */
-#define PCIE4_DEV		0x2
 #define PCIE4_FUNC		5
-#define PCIE4_DEVID		0x157c
-#define PCIE4_DEVFN		PCI_DEVFN(PCIE4_DEV, PCIE4_FUNC)
-#define SOC_PCIE4_DEV		_SOC_DEV(PCIE4_DEV, PCIE4_FUNC)
+#define PCIE4_DEVFN		PCI_DEVFN(PCIE_DEV, PCIE4_FUNC)
+#define SOC_PCIE4_DEV		_SOC_DEV(PCIE_DEV, PCIE4_FUNC)
 
-/* HD Audio 1 */
-#define HDA1_DEV		0x9
-#define HDA1_FUNC		2
-#define HDA1_DEVID		0x157a
-#define HDA1_DEVFN		PCI_DEVFN(HDA1_DEV, HDA1_FUNC)
-#define SOC_HDA1_DEV		_SOC_DEV(HDA1_DEV, HDA1_FUNC)
+#define PCIE5_FUNC		6
+#define PCIE5_DEVFN		PCI_DEVFN(PCIE_DEV, PCIE5_FUNC)
+#define SOC_PCIE5_DEV		_SOC_DEV(PCIE_DEV, PCIE5_FUNC)
+
+#define PCIE6_FUNC		7
+#define PCIE6_DEVFN		PCI_DEVFN(PCIE_DEV, PCIE6_FUNC)
+#define SOC_PCIE6_DEV		_SOC_DEV(PCIE_DEV, PCIE6_FUNC)
+
+/* Bridges 7 - 8 are to Bus A and Bus B devices*/
+#define PCIE_AB_BRIDGE_DEV	0x8
+
+#define PCIE_A_BRIDGE_DEVID	0x15db
+#define PCIE7_FUNC		1
+#define PCIE7_DEVFN		PCI_DEVFN(PCIE_AB_BRIDGE_DEV, PCIE7_FUNC)
+#define SOC_PCIE7_DEV		_SOC_DEV(PCIE_AB_BRIDGE_DEV, PCIE7_FUNC)
+
+#define PCIE_B_BRIDGE_DEVID	0x15dc
+#define PCIE8_FUNC		2
+#define PCIE8_DEVFN		PCI_DEVFN(PCIE_AB_BRIDGE_DEV, PCIE8_FUNC)
+#define SOC_PCIE8_DEV		_SOC_DEV(PCIE_AB_BRIDGE_DEV, PCIE8_FUNC)
+
 
 /* Data Fabric functions */
 #define DF_DEV			0x18
@@ -169,5 +152,26 @@
 #define LPC_DEVID		0x790e
 #define LPC_DEVFN		PCI_DEVFN(PCU_DEV, LPC_FUNC)
 #define SOC_LPC_DEV		_SOC_DEV(PCU_DEV, LPC_FUNC)
+
+/* Internal Graphics */
+#define GFX_DEV			0x1
+#define GFX_FUNC		0
+#define GFX_DEVID		0x15d8
+#define GFX_DEVFN		PCI_DEVFN(GFX_DEV, GFX_FUNC)
+#define SOC_GFX_DEV		_SOC_DEV(GFX_DEV, GFX_FUNC)
+
+/* HD Audio 0 */
+#define HDA0_DEV		0x1
+#define HDA0_FUNC		1
+#define HDA0_DEVID		0x15b3
+#define HDA0_DEVFN		PCI_DEVFN(HDA0_DEV, HDA0_FUNC)
+#define SOC_HDA0_DEV		_SOC_DEV(HDA0_DEV, HDA0_FUNC)
+
+/* HD Audio 1 */
+#define HDA1_DEV		0x9
+#define HDA1_FUNC		2
+#define HDA1_DEVID		0x157a
+#define HDA1_DEVFN		PCI_DEVFN(HDA1_DEV, HDA1_FUNC)
+#define SOC_HDA1_DEV		_SOC_DEV(HDA1_DEV, HDA1_FUNC)
 
 #endif /* __PI_PICASSO_PCI_DEVS_H__ */
