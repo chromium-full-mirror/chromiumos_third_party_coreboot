@@ -46,7 +46,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 }
 
 #define WIPEOUT_MODE_DELAY_MS (8 * 1000)
-#define RECOVERY_MODE_EXTRA_DELAY_MS (8 * 1000)
+#define RECOVERY_MODE_EXTRA_DELAY_MS (22 * 1000)
 
 /*
  * The recovery switch: it needs to be pressed for a
