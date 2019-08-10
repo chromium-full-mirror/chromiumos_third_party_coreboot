@@ -51,6 +51,22 @@ Device (GPIO)
 	}
 }
 
+Device (MMC0)
+{
+	Name (_HID, "PNP0D40")
+	Name (_UID, 0x0)
+	Name (_CRS, ResourceTemplate()
+	{
+		Interrupt (ResourceConsumer, Level, ActiveLow, Shared, ,, )
+		{ 17 }
+		Memory32Fixed (ReadWrite, APU_EMMC_BASE, 0x1000)
+	})
+	Method (_STA, 0x0, NotSerialized)
+	{
+		Return (0x0F)
+	}
+}
+
 Device (FUR0)
 {
 	Name (_HID, "AMD0020")
