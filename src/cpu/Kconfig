@@ -21,7 +21,12 @@ config DCACHE_RAM_SIZE
 	hex
 
 config DCACHE_BSP_STACK_SIZE
+	depends on !CAR_GLOBAL_MIGRATION
 	hex
+	default 0x2000
+	help
+	  The amount of anticipated stack usage by bootblock and
+	  other pre-ram stages.
 
 config SMP
 	bool

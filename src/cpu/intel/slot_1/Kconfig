@@ -36,4 +36,12 @@ config DCACHE_RAM_SIZE
 	hex
 	default 0x02000
 
+config PRERAM_CBMEM_CONSOLE_SIZE
+	hex
+	default 0x00200
+
+config DCACHE_BSP_STACK_SIZE
+	hex
+	default 0x01A00
+
 endif

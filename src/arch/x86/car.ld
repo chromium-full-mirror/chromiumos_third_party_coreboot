@@ -40,7 +40,7 @@
 	/* Stack for CAR stages. Since it persists across all stages that
 	 * use CAR it can be reused. The chipset/SoC is expected to provide
 	 * the stack size. */
-#if CONFIG(C_ENVIRONMENT_BOOTBLOCK)
+#if !CONFIG(CAR_GLOBAL_MIGRATION)
 	_car_stack_start = .;
 	. += CONFIG_DCACHE_BSP_STACK_SIZE;
 	_car_stack_end = .;
@@ -91,7 +91,7 @@
 	_car_global_end = .;
 	_car_relocatable_data_end = .;
 
-#if !CONFIG(C_ENVIRONMENT_BOOTBLOCK)
+#if CONFIG(CAR_GLOBAL_MIGRATION)
 	_car_stack_start = .;
 	_car_stack_end = _car_region_end;
 #endif
@@ -122,6 +122,6 @@ _bogus = ASSERT((CONFIG_DCACHE_RAM_SIZE == 0) || (SIZEOF(.car.data) <= CONFIG_DC
 #if CONFIG(PAGING_IN_CACHE_AS_RAM)
 _bogus2 = ASSERT(_pagetables == ALIGN(_pagetables, 4096), "_pagetables aren't 4KiB aligned");
 #endif
-#if CONFIG(C_ENVIRONMENT_BOOTBLOCK)
+#if !CONFIG(CAR_GLOBAL_MIGRATION)
 _bogus3 = ASSERT(CONFIG_DCACHE_BSP_STACK_SIZE > 0x0, "BSP stack size not configured");
 #endif
