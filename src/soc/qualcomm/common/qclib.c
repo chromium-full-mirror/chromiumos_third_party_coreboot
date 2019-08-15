@@ -17,12 +17,14 @@
 #include <cbmem.h>
 #include <string.h>
 #include <boardid.h>
+#include <delay.h>
 #include <string.h>
 #include <fmap.h>
 #include <assert.h>
 #include <arch/mmu.h>
 #include <cbfs.h>
 #include <console/console.h>
+#include <security/tpm/tis.h>
 #include <soc/mmu.h>
 #include <soc/mmu_common.h>
 #include <soc/qclib_common.h>
@@ -74,6 +76,14 @@ static void write_qclib_log_to_cbmemc(struct qclib_cb_if_table_entry *te)
 
 static void write_table_entry(struct qclib_cb_if_table_entry *te)
 {
+	if (is_tpm_detected() == 0) {
+		/* Enough time for Cr50 closed loop reset to kick in after
+		 * the timer was initialized in QCLib, which avoids a reset
+		 * during SPI erase.
+		 * That way flash will be ready after reboot.
+		 */
+		mdelay(800);
+	}
 
 	if (!strncmp(QCLIB_TE_DDR_INFORMATION, te->name,
 			sizeof(te->name))) {

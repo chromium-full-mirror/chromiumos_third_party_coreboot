@@ -14,6 +14,9 @@
  */
 
 #include <arch/stages.h>
+#include <console/console.h>
+#include <security/tpm/tis.h>
+#include <security/tpm/tss.h>
 #include <soc/qclib_common.h>
 #include <soc/usb.h>
 
@@ -30,6 +33,8 @@ static void prepare_usb(void)
 
 void platform_romstage_main(void)
 {
+	tlcl_lib_init();
+
 	qclib_set_buck_type();
 
 	/* QCLib: DDR init & train */
