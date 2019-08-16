@@ -41,6 +41,9 @@
 #define NB_MMIO_LIMIT(reg)	((reg) * 4 * sizeof(uint32_t) + D18F0_MMIO_LIMIT0)
 #define NB_MMIO_CONTROL(reg)	((reg) * 4 * sizeof(uint32_t) + D18F0_MMIO_CTRL0)
 
+/* Bus A D0F5 - Audio Processor */
+#define D0F5_I2S_PIN_CONFIG	0x1400	/* HDA, Soundwire, I2S */
+
 void amd_initcpuio(void);
 
 void domain_enable_resources(struct device *dev);
