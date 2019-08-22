@@ -131,6 +131,16 @@ static void power_on_aoac_device(int dev)
 	aoac_write8(AOAC_DEV_D3_CTL(dev), byte);
 }
 
+static void power_off_aoac_device(int dev)
+{
+	uint8_t byte;
+
+	/* Power on the UART and AMBA devices */
+	byte = aoac_read8(AOAC_DEV_D3_CTL(dev));
+	byte &= ~FCH_AOAC_PWR_ON_DEV;
+	aoac_write8(AOAC_DEV_D3_CTL(dev), byte);
+}
+
 static bool is_aoac_device_enabled(int dev)
 {
 	uint8_t byte;
@@ -351,6 +361,14 @@ void fch_early_init(void)
 void sb_enable(struct device *dev)
 {
 	printk(BIOS_DEBUG, "%s\n", __func__);
+
+	switch (dev->path.pci.devfn) {
+	case SDHCI_DEVFN:
+		/* Enabled on reset. No need to explicitly enable. */
+		if (!dev->enabled)
+			power_off_aoac_device(FCH_AOAC_DEV_SD1);
+		break;
+	}
 }
 
 static void sb_init_acpi_ports(void)

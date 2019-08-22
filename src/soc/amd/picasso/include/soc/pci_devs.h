@@ -153,6 +153,9 @@
 #define LPC_DEVFN		PCI_DEVFN(PCU_DEV, LPC_FUNC)
 #define SOC_LPC_DEV		_SOC_DEV(PCU_DEV, LPC_FUNC)
 
+/* SDHCI controller */
+#define SDHCI_DEVFN		PCI_DEVFN(0x14, 6)
+
 /* Internal Graphics */
 #define GFX_DEV			0x1
 #define GFX_FUNC		0
