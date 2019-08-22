@@ -88,7 +88,7 @@ static const struct fch_apic_routing {
 	{ PIRQ_GPIOB,	PIRQ_NC,	PIRQ_NC },
 	{ PIRQ_GPIOC,	PIRQ_NC,	PIRQ_NC },
 	{ PIRQ_SATA,	PIRQ_NC,	19 },
-	{ PIRQ_EMMC,	 0,		 0 },
+	{ PIRQ_EMMC,	PIRQ_NC,	17 },
 	{ PIRQ_GPP0,	 3,		PIRQ_NC },
 	{ PIRQ_GPP1,	 4,		PIRQ_NC },
 	{ PIRQ_GPP2,	 5,		PIRQ_NC },
