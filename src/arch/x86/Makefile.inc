@@ -245,7 +245,11 @@ romstage-$(CONFIG_ARCH_ROMSTAGE_X86_32) += walkcbfs.S
 romstage-srcs += $(wildcard $(src)/mainboard/$(MAINBOARDDIR)/romstage.c)
 romstage-libs ?=
 
+ifeq ($(CONFIG_RESET_VECTOR_IN_RAM),y)
+romstage-y += reset_in_dram_crt0.S
+else
 $(eval $(call early_x86_assembly_entry_rule,romstage))
+endif
 
 ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32),y)
 $(eval $(call early_x86_stage,romstage,elf32-i386))

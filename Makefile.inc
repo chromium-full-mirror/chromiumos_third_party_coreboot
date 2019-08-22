@@ -1143,6 +1143,7 @@ ifeq ($(CONFIG_ARCH_ROMSTAGE_ARM),y)
 $(CONFIG_CBFS_PREFIX)/romstage-options := -b 0
 endif
 ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32)$(CONFIG_ARCH_ROMSTAGE_X86_64),y)
+ifneq ($(CONFIG_RESET_VECTOR_IN_RAM),y)
 # Use a 64 byte alignment to provide a minimum alignment
 # requirement for the overall romstage. While the first object within
 # romstage could have a 4 byte minimum alignment that doesn't mean the linker
@@ -1166,6 +1167,7 @@ $(CONFIG_CBFS_PREFIX)/romstage-options += -P $(CONFIG_XIP_ROM_SIZE)
 endif    # CONFIG_NO_FIXED_XIP_ROM_SIZE
 
 endif   # CONFIG_NO_XIP_EARLY_STAGES
+endif   # !CONFIG_RESET_VECTOR_IN_RAM
 endif   # CONFIG_ARCH_ROMSTAGE_X86_32 / CONFIG_ARCH_ROMSTAGE_X86_64
 
 cbfs-files-$(CONFIG_HAVE_RAMSTAGE) += $(CONFIG_CBFS_PREFIX)/ramstage

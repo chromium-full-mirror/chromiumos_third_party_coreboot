@@ -13,6 +13,8 @@
 
 /* For starting coreboot in protected mode */
 
+#define _START_IN_ENTRY32 (!ENV_BOOTBLOCK && !CONFIG(RESET_VECTOR_IN_RAM))
+
 #include <arch/rom_segs.h>
 #include <cpu/x86/post_code.h>
 #include <arch/x86/gdt_init.S>
@@ -35,7 +37,7 @@
  *	expose the _start symbol for bootblock.
  */
 	.align	4
-#if !ENV_BOOTBLOCK
+#if _START_IN_ENTRY32
 .globl _start
 _start:
 #endif

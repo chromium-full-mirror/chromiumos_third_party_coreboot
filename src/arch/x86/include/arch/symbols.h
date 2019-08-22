@@ -41,4 +41,14 @@ extern char _car_ehci_dbg_info_end[];
 #define _car_ehci_dbg_info_size \
 	(_car_ehci_dbg_info_end - _car_ehci_dbg_info_start)
 
+extern char _earlyram_region_start[];
+extern char _earlyram_region_end[];
+#define _earlyram_region_size (_car_region_earlyram - _earlyram_region_start)
+
+extern char _earlyram_stack_start[];
+extern char _earlyram_stack_end[];
+#define _earlyram_stack_size (_earlyram_stack_end - _earlyram_stack_start)
+
+extern char _earlyram_unallocated_start[];
+
 #endif

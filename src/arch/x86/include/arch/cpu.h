@@ -290,6 +290,13 @@ static inline void get_fms(struct cpuinfo_x86 *c, uint32_t tfms)
  */
 asmlinkage void car_stage_entry(void);
 
+/*
+ * A system using CONFIG_RESET_VECTOR_IN_RAM eliminates bootblock and relies
+ * on certain romstage source.  hybrid_romstage_entry() is the platform's
+ * entry point.
+ */
+asmlinkage void soc_hybrid_romstage_entry(uint32_t bist, uint64_t early_tsc);
+
 #endif
 
 /*

@@ -28,6 +28,27 @@ config DCACHE_BSP_STACK_SIZE
 	  The amount of anticipated stack usage by bootblock and
 	  other pre-ram stages.
 
+config EARLYRAM_SIZE
+	depends on RESET_VECTOR_IN_RAM
+	hex
+	help
+	  Set the size for DRAM allocated as a scratch region prior to cbmem
+	  ramstage.  The base of the region is linked to immediately follow
+	  the code.
+
+config EARLYRAM_BSP_STACK_SIZE
+	depends on RESET_VECTOR_IN_RAM
+	hex
+	help
+	  The amount of stack allocated to the bootstrap core before ramstage.
+
+config EARLYRAM_AP_STACK_SIZE
+	depends on RESET_VECTOR_IN_RAM
+	hex
+	help
+	  The amount of stack allocated to the AP cores before ramstage.  If
+	  APs do not run prior to ramstage, this value may be left as 0.
+
 config SMP
 	bool
 	default y if MAX_CPUS != 1

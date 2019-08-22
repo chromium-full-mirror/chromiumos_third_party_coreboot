@@ -21,7 +21,7 @@
 #if ENV_CACHE_AS_RAM
 #define EARLY_MEMLAYOUT	"car.ld"
 #else
-#error "Early DRAM environment for x86 is work-in-progress. */
+#define EARLY_MEMLAYOUT	"early_dram.ld"
 #endif
 #endif
 

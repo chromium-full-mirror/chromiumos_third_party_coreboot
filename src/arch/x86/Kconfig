@@ -232,6 +232,7 @@ config POSTCAR_STAGE
 	def_bool y
 	depends on ARCH_X86
 	depends on !CAR_GLOBAL_MIGRATION
+	depends on !RESET_VECTOR_IN_RAM
 
 config VERSTAGE_DEBUG_SPINLOOP
 	bool
