@@ -82,13 +82,11 @@
 	*(.sbss)
 	*(.sbss.*)
 #else
-	/* .car.global_data objects only around when
-	 * CONFIG_CAR_GLOBAL_MIGRATION is employed. */
 	*(.car.global_data);
 #endif
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_car_global_end = .;
-	_car_relocatable_data_end = .;
+	_car_unallocated_start = .;
 
 #if CONFIG(CAR_GLOBAL_MIGRATION)
 	_car_stack_start = .;
