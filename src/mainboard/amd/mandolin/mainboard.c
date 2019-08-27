@@ -17,6 +17,7 @@
 #include <device/device.h>
 #include <arch/acpi.h>
 #include <amdblocks/amd_pci_util.h>
+#include <soc/espi.h>
 #include <soc/southbridge.h>
 #include <soc/pci_devs.h>
 #include "gpio.h"
@@ -137,6 +138,28 @@ static void pirq_setup(void)
 	picr_data_ptr = fch_pic_routing;
 }
 
+static void enable_ec_io_ports(void)
+{
+	struct resource ioports[] = { {
+		.flags = IORESOURCE_IO,
+		.base = 0x662,
+		.size = 8,
+		.next = ioports + 1,
+	}, {
+		.flags = IORESOURCE_IO,
+		.base = 0x60,
+		.size = 1,
+		.next = ioports + 2,
+	}, {
+		.flags = IORESOURCE_IO,
+		.base = 0x64,
+		.size = 1,
+		.next = NULL
+	} };
+
+	espi_enable_resources(ioports);
+}
+
 static void mainboard_init(void *chip_info)
 {
 	mainboard_program_gpios();
@@ -170,6 +193,7 @@ static void mandolin_enable(struct device *dev)
 
 	/* Initialize the PIRQ data structures for consumption */
 	pirq_setup();
+	enable_ec_io_ports();
 }
 
 struct chip_operations mainboard_ops = {
