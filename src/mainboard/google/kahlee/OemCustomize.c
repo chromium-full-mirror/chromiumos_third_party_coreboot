@@ -39,7 +39,7 @@ static const PSO_ENTRY DDR4PlatformMemoryConfiguration[] = {
 	PSO_END
 };
 /* Liara-specific 2T memory configuration */
-static const PSO_ENTRY DDR4LiaraMemoryConfiguration[] = {
+static const PSO_ENTRY DDR4_2T_MemoryConfiguration[] = {
 	DRAM_TECHNOLOGY(ANY_SOCKET, DDR4_TECHNOLOGY),
 	NUMBER_OF_DIMMS_SUPPORTED(ANY_SOCKET, ANY_CHANNEL, DIMMS_PER_CHANNEL),
 	NUMBER_OF_CHANNELS_SUPPORTED(ANY_SOCKET, MAX_DRAM_CH),
@@ -58,9 +58,13 @@ static const PSO_ENTRY DDR4LiaraMemoryConfiguration[] = {
 
 void OemPostParams(AMD_POST_PARAMS *PostParams)
 {
+<<<<<<< HEAD   (e76699 UPSTREAM: mb/google/kahlee/variants/careena: override DRAM S)
 	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_LIARA))
+=======
+	if (CONFIG(BOARD_GOOGLE_LIARA) || CONFIG(BOARD_GOOGLE_TREEYA))
+>>>>>>> CHANGE (3c54cf UPSTREAM: mb/google/kahlee/treeya: Update the memory timing )
 		PostParams->MemConfig.PlatformMemoryConfiguration =
-			(PSO_ENTRY *)DDR4LiaraMemoryConfiguration;
+			(PSO_ENTRY *)DDR4_2T_MemoryConfiguration;
 	else
 		PostParams->MemConfig.PlatformMemoryConfiguration =
 			(PSO_ENTRY *)DDR4PlatformMemoryConfiguration;
