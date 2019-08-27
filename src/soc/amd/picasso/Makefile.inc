@@ -39,6 +39,7 @@ subdirs-y += ../../../cpu/x86/smm
 
 romstage-y += early_stack.S
 romstage-y += i2c.c
+romstage-y += espi.c
 romstage-y += romstage.c
 romstage-y += gpio.c
 romstage-y += pmutil.c
@@ -62,6 +63,7 @@ verstage-$(CONFIG_SPI_FLASH) += spi.c
 ramstage-y += i2c.c
 ramstage-y += chip.c
 ramstage-y += cpu.c
+ramstage-y += espi.c
 ramstage-y += mca.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-y += gpio.c
