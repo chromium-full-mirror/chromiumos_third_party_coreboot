@@ -60,6 +60,7 @@ verstage-$(CONFIG_PICASSO_UART) += uart.c
 verstage-y += tsc_freq.c
 verstage-$(CONFIG_SPI_FLASH) += spi.c
 
+ramstage-y += d14_f3_bridge.c
 ramstage-y += i2c.c
 ramstage-y += chip.c
 ramstage-y += cpu.c
