@@ -16,6 +16,7 @@
 #ifndef __AMDBLOCKS_LPC_H__
 #define __AMDBLOCKS_LPC_H__
 
+#include <device/device.h>
 #include <types.h>
 #include <stdint.h>
 
@@ -182,5 +183,10 @@ int lpc_set_wideio_range(uint16_t start, uint16_t size);
 
 uintptr_t lpc_get_spibase(void);
 void lpc_set_spibase(uint32_t base, uint32_t enable);
+
+void lpc_init(struct device *dev);
+void lpc_read_resources(struct device *dev);
+void lpc_set_resources(struct device *dev);
+void lpc_enable_childrens_resources(struct device *dev);
 
 #endif /* __AMDBLOCKS_LPC_H__ */
