@@ -15,6 +15,7 @@
 
 #include <ec/google/chromeec/ec.h>
 #include <baseboard/variants.h>
+#include <boardid.h>
 #include <cbfs.h>
 #include <gpio.h>
 #include <smbios.h>
@@ -22,7 +23,7 @@
 #include <device/pci.h>
 #include <drivers/generic/bayhub/bh720.h>
 
-uint8_t variant_board_sku(void)
+uint32_t sku_id(void)
 {
 	static int sku = -1;
 
@@ -30,6 +31,11 @@ uint8_t variant_board_sku(void)
 		sku = google_chromeec_get_sku_id();
 
 	return sku;
+}
+
+uint8_t variant_board_sku(void)
+{
+	return sku_id();
 }
 
 #if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
