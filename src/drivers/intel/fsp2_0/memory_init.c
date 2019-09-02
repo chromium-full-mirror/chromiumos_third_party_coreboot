@@ -36,6 +36,20 @@
 
 static uint8_t temp_ram[CONFIG_FSP_TEMP_RAM_SIZE] __aligned(sizeof(uint64_t));
 
+#if CONFIG(RESET_VECTOR_IN_RAM)
+ #define EARLY_STORAGE_START _earlyram_region_start
+ #define EARLY_STORAGE_USED (_earlyram_unallocated_start - _earlyram_region_start)
+ #define END_OF_ALLOCATED _earlyram_region_end
+ #define BSP_STACK_BASE _earlyram_stack_start
+ #define BSP_STACK_SIZE CONFIG_EARLYRAM_BSP_STACK_SIZE
+#else
+ #define EARLY_STORAGE_START _car_region_start
+ #define EARLY_STORAGE_USED (_car_unallocated_start - _car_region_start)
+ #define END_OF_ALLOCATED _car_region_end
+ #define BSP_STACK_BASE _car_stack_start
+ #define BSP_STACK_SIZE CONFIG_DCACHE_BSP_STACK_SIZE
+#endif
+
 /* TPM MRC hash functionality depends on vboot starting before memory init. */
 _Static_assert(!CONFIG(FSP2_0_USES_TPM_MRC_HASH) ||
 	       CONFIG(VBOOT_STARTS_IN_BOOTBLOCK),
@@ -172,10 +186,11 @@ static enum cb_err setup_fsp_stack_frame(FSPM_ARCH_UPD *arch_upd,
 
 	/*
 	 * FSPM_UPD passed here is populated with default values
-	 * provided by the blob itself. We let FSPM use top of CAR
-	 * region of the size it requests.
+	 * provided by the blob itself. We let FSPM use unallocated
+	 * space at the top of CAR or EARLYRAM region for the size
+	 * it requests.
 	 */
-	stack_end = (uintptr_t)_car_region_end;
+	stack_end = (uintptr_t)END_OF_ALLOCATED;
 	stack_begin = stack_end - arch_upd->StackSize;
 	if (check_region_overlap(memmap, "FSPM stack", stack_begin,
 				stack_end) != CB_SUCCESS)
@@ -406,8 +421,8 @@ void fsp_memory_init(bool s3wake)
 
 	/* Build up memory map of romstage address space including CAR. */
 	memranges_init_empty(&memmap, &freeranges[0], ARRAY_SIZE(freeranges));
-	memranges_insert(&memmap, (uintptr_t)_car_region_start,
-		_car_unallocated_start - _car_region_start, 0);
+	memranges_insert(&memmap, (uintptr_t)EARLY_STORAGE_START,
+			EARLY_STORAGE_USED, 0);
 	memranges_insert(&memmap, (uintptr_t)_program, REGION_SIZE(program), 0);
 
 	if (!CONFIG(FSP_M_XIP))
