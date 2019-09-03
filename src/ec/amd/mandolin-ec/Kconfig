@@ -1,0 +1,5 @@
+config EC_AMD_MANDOLIN_EC
+	bool
+	select EC_ACPI
+	help
+	  Enable some support for embedded controller on Mandolin boards.
