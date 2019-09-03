@@ -140,6 +140,18 @@ static void pirq_setup(void)
 
 static void enable_ec_io_ports(void)
 {
+	const struct espi_config cfg = {
+		.bus_width		= ESPI_SINGLE_IO,
+		.espi_freq_mhz		= 20,
+		.enable_crc_checking	= 1,
+		.alert_pin_on_io1	= 0,
+		.peripheral_ch_en	= 0,
+		.virtual_wire_ch_en	= 0,
+		.out_of_band_ch_en	= 0,
+		.flash_ch_en		= 0,
+		.update_slave = 1,
+	};
+
 	struct resource ioports[] = { {
 		.flags = IORESOURCE_IO,
 		.base = 0x662,
@@ -157,6 +169,7 @@ static void enable_ec_io_ports(void)
 		.next = NULL
 	} };
 
+	espi_setup(&cfg);
 	espi_enable_resources(ioports);
 }
 
