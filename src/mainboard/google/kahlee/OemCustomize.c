@@ -58,11 +58,7 @@ static const PSO_ENTRY DDR4_2T_MemoryConfiguration[] = {
 
 void OemPostParams(AMD_POST_PARAMS *PostParams)
 {
-<<<<<<< HEAD   (e76699 UPSTREAM: mb/google/kahlee/variants/careena: override DRAM S)
-	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_LIARA))
-=======
-	if (CONFIG(BOARD_GOOGLE_LIARA) || CONFIG(BOARD_GOOGLE_TREEYA))
->>>>>>> CHANGE (3c54cf UPSTREAM: mb/google/kahlee/treeya: Update the memory timing )
+	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_LIARA) || IS_ENABLED(CONFIG_BOARD_GOOGLE_TREEYA))
 		PostParams->MemConfig.PlatformMemoryConfiguration =
 			(PSO_ENTRY *)DDR4_2T_MemoryConfiguration;
 	else
