@@ -21,8 +21,10 @@
 #include <delay.h>
 #include <pc80/mc146818rtc.h>
 #include <cpu/x86/msr.h>
+#include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
 #include <cpu/x86/bist.h>
+#include <cpu/amd/mtrr.h>
 #include <cpu/amd/msr.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -56,10 +58,68 @@ static void romstage_soc_init(int s3_resume)
 	fch_early_init();
 }
 
+static int set_early_mtrrs(void)
+{
+	int mtrr;
+
+	mtrr = get_free_var_mtrr();
+	if (mtrr < 0)
+		return -1;
+
+	set_var_mtrr(mtrr, EARLY_DRAM_MTRR_BASE, EARLY_DRAM_MTRR_SIZE,
+				MTRR_TYPE_WRBACK);
+
+	mtrr = get_free_var_mtrr();
+	if (mtrr < 0)
+		return -1;
+
+	set_var_mtrr(mtrr, FLASH_BASE_ADDR, CONFIG_ROM_SIZE,
+				MTRR_TYPE_WRPROT);
+	return 0;
+}
+
+static void set_mtrrs_for_ramstage(void)
+{
+	uintptr_t smm_base;
+	size_t smm_size;
+	uintptr_t smm_top;
+	uintptr_t mem_top;
+	uintptr_t ramstage_wb_base;
+	size_t ramstage_wb_size;
+	int mtrr;
+
+	smm_region(&smm_base, &smm_size);
+	smm_top = smm_base + smm_size;
+
+	mem_top = (uintptr_t)cbmem_top();
+
+	/* Cache anticipated ramstage location through the top of TSEG */
+	ramstage_wb_base = mem_top - EARLY_RAMSTAGE_MTRR_SZ;
+	ramstage_wb_size = smm_top - ramstage_wb_base;
+
+	/* Make sure MTRR base and size are usable */
+	if (ramstage_wb_size != 1 << fms(ramstage_wb_size)) {
+		ramstage_wb_size = 1 << (1 + fms(ramstage_wb_size));
+		ramstage_wb_base = smm_top - ramstage_wb_size;
+	}
+	if (mem_top - EARLY_RAMSTAGE_MTRR_SZ < EARLY_DRAM_MTRR_TOP) {
+		printk(BIOS_WARNING, "Warning: Skipping ramstage cacheable due to configuration\n");
+		return;
+	}
+
+	mtrr = get_free_var_mtrr();
+	if (mtrr >= 0)
+		set_var_mtrr(mtrr, ramstage_wb_base, ramstage_wb_size,
+					MTRR_TYPE_WRBACK);
+	else
+		printk(BIOS_WARNING, "Warning: Unable to make ramstage cacheable\n");
+}
+
 asmlinkage void soc_hybrid_romstage_entry(uint32_t bist, uint64_t early_tsc)
 {
 	uintptr_t top_of_mem;
 	int s3_resume;
+	int early_mtrr_err;
 
 	post_code(0x40);
 	if (CONFIG(COLLECT_TIMESTAMPS)) {
@@ -70,6 +130,7 @@ asmlinkage void soc_hybrid_romstage_entry(uint32_t bist, uint64_t early_tsc)
 	/* Many of these tasks typically happen in bootblock, but execution
 	 * begins in romstage for this device. */
 	post_code(0x41);
+	early_mtrr_err = set_early_mtrrs();
 
 	post_code(0x42);
 	romstage_soc_early_init();
@@ -96,6 +157,9 @@ asmlinkage void soc_hybrid_romstage_entry(uint32_t bist, uint64_t early_tsc)
 	u32 val = cpuid_eax(1);
 	printk(BIOS_DEBUG, "Family_Model: %08x\n", val);
 
+	if (early_mtrr_err)
+		printk(BIOS_WARNING, "Early MTRRs were not set properly\n");
+
 	post_code(0x48);
 	if (!s3_resume && CONFIG(ELOG_BOOT_COUNT))
 		boot_count_increment();
@@ -111,6 +175,7 @@ asmlinkage void soc_hybrid_romstage_entry(uint32_t bist, uint64_t early_tsc)
 		printk(BIOS_ERR, "Failed to set romstage handoff data\n");
 
 	post_code(0x4b);
+	set_mtrrs_for_ramstage();
 	run_ramstage();
 
 	post_code(0x50); /* Should never see this post code. */
