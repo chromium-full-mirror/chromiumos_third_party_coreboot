@@ -39,6 +39,6 @@ void check_mca(void);
 #define EARLY_DRAM_MTRR_TOP \
 		(EARLY_DRAM_MTRR_BASE + EARLY_DRAM_MTRR_SIZE)
 
-#define EARLY_RAMSTAGE_MTRR_SZ (32 * MiB)
+#define EARLY_RAMSTAGE_MTRR_SZ (32 * MiB + CONFIG_SMM_TSEG_SIZE)
 
 #endif /* __PICASSO_CPU_H__ */

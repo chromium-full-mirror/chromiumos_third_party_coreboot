@@ -28,6 +28,8 @@
 #include <soc/iomap.h>
 #include <amdblocks/acpimmio.h>
 
+#define BERT_REGION_MAX_SIZE 0x100000
+
 void backup_top_of_low_cacheable(uintptr_t ramtop)
 {
 	biosram_write32(BIOSRAM_CBMEM_TOP, ramtop);
@@ -38,24 +40,19 @@ uintptr_t restore_top_of_low_cacheable(void)
 	return biosram_read32(BIOSRAM_CBMEM_TOP);
 }
 
-#if CONFIG(ACPI_BERT)
- #if CONFIG_SMM_TSEG_SIZE == 0x0
-  #define BERT_REGION_MAX_SIZE 0x100000
- #else
-  /* SMM_TSEG_SIZE must stay on a boundary appropriate for its granularity */
-  #define BERT_REGION_MAX_SIZE CONFIG_SMM_TSEG_SIZE
- #endif
-#else
- #define BERT_REGION_MAX_SIZE 0
-#endif
-
 void bert_reserved_region(void **start, size_t *size)
 {
-	if (CONFIG(ACPI_BERT))
-		*start = cbmem_top();
-	else
-		start = NULL;
-	*size = BERT_REGION_MAX_SIZE;
+	const struct cbmem_entry *bert;
+
+	*start = 0;
+	*size = 0;
+
+	bert = cbmem_entry_find(CBMEM_ID_BERT_RAW_DATA);
+	if (!bert)
+		return;
+
+	*start = cbmem_entry_start(bert);
+	*size = cbmem_entry_size(bert);
 }
 
 void *cbmem_top(void)
@@ -66,19 +63,7 @@ void *cbmem_top(void)
 		return 0;
 
 	/* 8MB alignment to keep MTRR usage low */
-	return (void *)ALIGN_DOWN(restore_top_of_low_cacheable()
-			- CONFIG_SMM_TSEG_SIZE
-			- BERT_REGION_MAX_SIZE, 8*MiB);
-}
-
-static uintptr_t smm_region_start(void)
-{
-	return (uintptr_t)cbmem_top() + BERT_REGION_MAX_SIZE;
-}
-
-static size_t smm_region_size(void)
-{
-	return CONFIG_SMM_TSEG_SIZE;
+	return (void *)ALIGN_DOWN(restore_top_of_low_cacheable(), 8 * MiB);
 }
 
 /*
@@ -106,12 +91,39 @@ static void clear_tvalid(void)
 void smm_region(uintptr_t *start, size_t *size)
 {
 	static int once;
+	const struct cbmem_entry *smm;
 
-	*start = smm_region_start();
-	*size = smm_region_size();
+	*start = 0;
+	*size = 0;
+
+	smm = cbmem_entry_find(CBMEM_ID_SMM_TSEG_SPACE);
+	if (!smm)
+		return;
+
+	*start = ALIGN_UP((uintptr_t)cbmem_entry_start(smm), CONFIG_SMM_TSEG_SIZE);
+	*size = CONFIG_SMM_TSEG_SIZE;
 
 	if (!once) {
 		clear_tvalid();
 		once = 1;
 	}
 }
+
+/* Add or find TSEG and BERT storage prior to ramstage.  ramstage may need
+ * to be recovered from cached space in TSEG.  BERT storage is consumed at
+ * ROMSTAGE_CBMEM_INIT_HOOK and ordering can't be enforced for a hook.
+ */
+static void alloc_reserved_in_cbmem(int unused)
+{
+	void *p;
+
+	/* Make large enough so TSEG can have alignment = size, allowing a
+	 * good mask.
+	 */
+	p = cbmem_add(CBMEM_ID_SMM_TSEG_SPACE, 2 * CONFIG_SMM_TSEG_SIZE);
+
+	if (CONFIG(ACPI_BERT))
+		p = cbmem_add(CBMEM_ID_BERT_RAW_DATA, BERT_REGION_MAX_SIZE);
+}
+
+ROMSTAGE_CBMEM_INIT_HOOK(alloc_reserved_in_cbmem)

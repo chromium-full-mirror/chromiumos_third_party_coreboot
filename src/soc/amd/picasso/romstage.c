@@ -80,27 +80,24 @@ static int set_early_mtrrs(void)
 
 static void set_mtrrs_for_ramstage(void)
 {
-	uintptr_t smm_base;
-	size_t smm_size;
-	uintptr_t smm_top;
 	uintptr_t mem_top;
 	uintptr_t ramstage_wb_base;
 	size_t ramstage_wb_size;
 	int mtrr;
 
-	smm_region(&smm_base, &smm_size);
-	smm_top = smm_base + smm_size;
-
 	mem_top = (uintptr_t)cbmem_top();
 
-	/* Cache anticipated ramstage location through the top of TSEG */
-	ramstage_wb_base = mem_top - EARLY_RAMSTAGE_MTRR_SZ;
-	ramstage_wb_size = smm_top - ramstage_wb_base;
+	/* Cache anticipated ramstage location through the top of cbmem.
+	 * Unlike some other implementations, TSEG is in cbmem so it will
+	 * be cached as well.
+	 */
+	ramstage_wb_size = EARLY_RAMSTAGE_MTRR_SZ;
+	ramstage_wb_base = mem_top - ramstage_wb_size;
 
-	/* Make sure MTRR base and size are usable */
+	/* Ensure base and size are usable in a single MTRR pair */
 	if (ramstage_wb_size != 1 << fms(ramstage_wb_size)) {
 		ramstage_wb_size = 1 << (1 + fms(ramstage_wb_size));
-		ramstage_wb_base = smm_top - ramstage_wb_size;
+		ramstage_wb_base = mem_top - ramstage_wb_size;
 	}
 	if (mem_top - EARLY_RAMSTAGE_MTRR_SZ < EARLY_DRAM_MTRR_TOP) {
 		printk(BIOS_WARNING, "Warning: Skipping ramstage cacheable due to configuration\n");
