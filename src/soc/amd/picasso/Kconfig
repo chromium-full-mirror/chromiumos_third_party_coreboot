@@ -64,6 +64,7 @@ config CPU_SPECIFIC_OPTIONS
 	select HAVE_CF9_RESET
 	select HAVE_ESPI_INIT_DEBUG
 	select NO_STAGE_CACHE
+	select NO_FMAP_CACHE # Picasso doesn't have Cache as RAM
 
 config VBOOT
 	select VBOOT_STARTS_IN_ROMSTAGE

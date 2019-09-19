@@ -221,7 +221,7 @@ $(foreach type,ads adb, \
 # Add handler to copy linker scripts
 define generic-objs_ld_template_gen
 de$(EMPTY)fine $(1)-objs_ld_template
-$$(call src-to-obj,$1,$$(1).ld): $$(1).ld $(obj)/config.h
+$$(call src-to-obj,$1,$$(1).ld): $$(1).ld $(obj)/config.h $(obj)/fmap_config.h
 	@printf "    CP         $$$$(subst $$$$(obj)/,,$$$$(@))\n"
 	$$(CC_$(1)) -MMD $$(CPPFLAGS_$(1)) $$($(1)-ld-ccopts) $(PREPROCESS_ONLY) -include $(obj)/config.h -MT $$$$@ -o $$$$@ $$$$<
 en$(EMPTY)def
@@ -677,6 +677,18 @@ find-class = $(if $(filter $(1),$(basename $(1))),$(if $(CC_$(1)), $(1), $(call 
 # the linker marked it NOBITS automatically because there are only zeroes in it.
 preserve-bss-flags := --set-section-flags .bss=load,alloc,data --set-section-flags .data=load,alloc,data
 
+# For Intel TXT files in the CBFS needs to be marked as 'Initial Boot Block'.
+# As CBFS attributes aren't cheap, only mark them if TXT is enabled.
+ifeq ($(CONFIG_INTEL_TXT),y)
+
+TXTIBB := --ibb
+
+else
+
+TXTIBB :=
+
+endif
+
 ifeq ($(CONFIG_COMPRESS_BOOTBLOCK),y)
 
 $(objcbfs)/bootblock.lz4: $(objcbfs)/bootblock.elf $(objutil)/cbfstool/cbfs-compression-tool
@@ -1030,6 +1042,7 @@ ifeq ($(CONFIG_ARCH_X86),y)
 		-f $(objcbfs)/bootblock.bin \
 		-n bootblock \
 		-t bootblock \
+		$(TXTIBB) \
 		-b -$(call file-size,$(objcbfs)/bootblock.bin) $(cbfs-autogen-attributes) \
 		$(TS_OPTIONS)
 else # ifeq ($(CONFIG_ARCH_X86),y)
@@ -1169,6 +1182,9 @@ endif    # CONFIG_NO_FIXED_XIP_ROM_SIZE
 endif   # CONFIG_NO_XIP_EARLY_STAGES
 endif   # !CONFIG_RESET_VECTOR_IN_RAM
 endif   # CONFIG_ARCH_ROMSTAGE_X86_32 / CONFIG_ARCH_ROMSTAGE_X86_64
+ifeq ($(CONFIG_VBOOT_STARTS_IN_ROMSTAGE),y)
+$(CONFIG_CBFS_PREFIX)/romstage-options += $(TXTIBB)
+endif
 
 cbfs-files-$(CONFIG_HAVE_RAMSTAGE) += $(CONFIG_CBFS_PREFIX)/ramstage
 $(CONFIG_CBFS_PREFIX)/ramstage-file := $(RAMSTAGE)
