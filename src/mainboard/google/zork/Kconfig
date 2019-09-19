@@ -1,0 +1,189 @@
+#
+# This file is part of the coreboot project.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+config BOARD_GOOGLE_BASEBOARD_TREMBYLE
+	bool
+	select SOC_AMD_PICASSO
+	select VGA_BIOS
+	select ALWAYS_LOAD_OPROM
+	select ALWAYS_RUN_OPROM
+	select BOARD_ROMSIZE_KB_16384
+	select DRIVERS_I2C_GENERIC
+	select DRIVERS_I2C_HID
+	select EC_GOOGLE_CHROMEEC
+	select EC_GOOGLE_CHROMEEC_BOARDID
+	select EC_GOOGLE_CHROMEEC_SPI
+	select HAVE_ACPI_TABLES
+	select GENERIC_SPD_BIN
+	select GFXUMA
+	select GOOGLE_SMBIOS_MAINBOARD_VERSION
+	select MAINBOARD_HAS_CHROMEOS
+	select PICASSO_UART
+	#select HAVE_ACPI_RESUME
+	select MAINBOARD_HAS_I2C_TPM_CR50
+	select MAINBOARD_HAS_TPM2
+	select PCIEXP_ASPM
+	select PCIEXP_CLK_PM
+	select PCIEXP_COMMON_CLOCK
+	select PCIEXP_L1_SUB_STATE
+	select HAVE_EM100_SUPPORT
+	select SYSTEM_TYPE_LAPTOP
+
+if BOARD_GOOGLE_BASEBOARD_TREMBYLE
+
+config MAINBOARD_DIR
+	string
+	default google/zork
+
+config VGA_BIOS_ID
+
+config VGA_BIOS_FILE
+	string
+	default "3rdparty/blobs/mainboard/google/zork/PicassoGenericVbios.bin"
+
+config VARIANT_DIR
+	string
+	default "ezkinil" if BOARD_GOOGLE_EZKINIL
+	default "morphius" if BOARD_GOOGLE_MORPHIUS
+	default "trembyle" if BOARD_GOOGLE_TREMBYLE
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Trembyle"
+
+config DEVICETREE
+	string
+	default "devicetree.cb"
+	# Update to variant specific devicetree files when needed.
+	# default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
+
+config MAINBOARD_FAMILY
+	string
+	default "Google_Zork"
+
+config FMDFILE
+	string
+	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/chromeos.fmd" if CHROMEOS
+	# Update to variant specific fmd files if needed
+	# default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/variants/$(CONFIG_VARIANT_DIR)/chromeos.fmd" if CHROMEOS
+	default ""
+	help
+	  The build system creates a default FMAP from ROM_SIZE and CBFS_SIZE,
+	  but in some cases more complex setups are required.
+	  When an fmd is specified, it overrides the default format.
+
+config MAX_CPUS
+	int
+	default 8
+
+config IRQ_SLOT_COUNT
+	int
+	default 11
+
+config ONBOARD_VGA_IS_PRIMARY
+	bool
+	default y
+
+config VBOOT
+	select EC_GOOGLE_CHROMEEC_SWITCHES
+	select VBOOT_LID_SWITCH
+
+
+config VBOOT_VBNV_OFFSET
+	hex
+	default 0x2A
+
+config CHROMEOS
+	# Use default libpayload config
+	select LP_DEFCONFIG_OVERRIDE if PAYLOAD_DEPTHCHARGE
+
+config GBB_HWID
+	string
+	depends on CHROMEOS
+	default "EZKINIL TEST" if BOARD_GOOGLE_EZKINIL
+	default "MORPHIUS TEST 9467" if BOARD_GOOGLE_MORPHIUS
+	default "TREMBYLE TEST 4197" if BOARD_GOOGLE_TREMBYLE
+
+config AMD_FWM_POSITION_INDEX
+	int
+	default 2
+
+config DRIVER_TPM_I2C_BUS
+	hex
+	default 0x01
+
+config DRIVER_TPM_I2C_ADDR
+	hex
+	default 0x50
+
+config EC_GOOGLE_CHROMEEC_LPC
+	def_bool n
+
+config EC_GOOGLE_CHROMEEC_SPI_BUS
+	hex
+	default 0x01
+
+config USE_OEM_BIN
+	bool "Add an oem.bin file"
+	help
+	  Add an oem.bin file to identify the manufacturer in SMBIOS, overriding the
+	  CONFIG_MAINBOARD_SMBIOS_MANUFACTURER value.
+
+config OEM_BIN_FILE
+	string "OEM ID table"
+	depends on USE_OEM_BIN
+	default ""
+
+config PICASSO_LEGACY_FREE
+	bool
+	default n
+
+config FSP_M_FILE
+	string "FSP-M (memory init) binary path and filename"
+	depends on ADD_FSP_BINARIES
+	default "3rdparty/blobs/soc/amd/picasso/PICASSO_M.fd"
+	help
+	  The path and filename of the FSP-M binary for this platform.
+	  TODO: remove this: Mandolin temporarily makes the default
+	  location the coreboot root for easy internal development.
+
+config FSP_S_FILE
+	string "FSP-S (silicon init) binary path and filename"
+	depends on ADD_FSP_BINARIES
+	default "3rdparty/blobs/soc/amd/picasso/PICASSO_S.fd"
+	help
+	  The path and filename of the FSP-S binary for this platform.
+	  TODO: remove this: Mandolin temporarily makes the default
+	  location the coreboot root for easy internal development.
+
+config HAVE_APCB_BLOB
+	bool "Have AGESA PSP Customization Block file?"
+	default n
+	help
+	  The PSP requires the APCB file to know how to configure memory, as
+	  well as other settings it will initialize.  To build an image that
+	  will get to POST, select 'y' and provide the file path/name.  The
+	  default of 'n' allows the board to build successfully but it avoids
+	  redistributing the APCB blob extracted from UEFI.
+	  TODO: Add the ability to construct APCB on the fly for any mainboard.
+
+config PSP_APCB_FILE
+	string "APCB file"
+	depends on HAVE_APCB_BLOB
+	default "3rdparty/blobs/mainboard/google/zork/apcb.bin"
+	help
+	  The name of the AGESA Parameter Customization Block.  TODO: will we
+	  be able to generate this at build-time?  Build it offline for
+	  inclusion?
+
+endif # BOARD_GOOGLE_BASEBOARD_TREMBYLE

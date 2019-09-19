@@ -1,0 +1,230 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#include <baseboard/variants.h>
+#include <soc/gpio.h>
+#include <soc/southbridge.h>
+#include <stdlib.h>
+#include <boardid.h>
+#include <variant/gpio.h>
+
+/*
+ * As a rule of thumb, GPIO pins used by coreboot should be initialized at
+ * bootblock while GPIO pins used only by the OS should be initialized at
+ * ramstage.
+ */
+static const struct soc_amd_gpio gpio_set_stage_reset[] = {
+	/* H1_INT */
+	PAD_GPI(GPIO_3, PULL_UP),
+	/* PEN_POWER_EN - reset */
+	PAD_GPO(GPIO_5, LOW),
+	/* I2C3_SCL - H1 */
+	PAD_NF(GPIO_19, I2C3_SCL, PULL_UP),
+	/* I2C3_SDA - H1 */
+	PAD_NF(GPIO_20,I2C3_SDA, PULL_UP),
+	/* EC_FCH_WAKE_L */
+	PAD_GPI(GPIO_24, PULL_UP),
+	PAD_WAKE(GPIO_24, PULL_UP, EDGE_LOW, S3_S4_S5),
+	/* PCIE_RST0_L */
+	PAD_NF(GPIO_26, PCIE_RST_L, PULL_NONE),
+	/* PCIE_RST1_L */
+	PAD_NF(GPIO_27, PCIE_RST1_L, PULL_NONE),
+	/* EN_PWR_WIFI */
+	PAD_GPO(GPIO_29, HIGH),
+	/* ESPI_CS_L */
+	PAD_NF(GPIO_30, ESPI_CS_L, PULL_NONE),
+	/* NVME_AUX_RESET_L */
+	PAD_GPO(GPIO_40, HIGH),
+	/* WIFI_AUX_RESET_L */
+	PAD_GPO(GPIO_42, HIGH),
+	/* EN_PWR_TOUCHPAD_PS2 - reset */
+	PAD_GPO(GPIO_67, LOW),
+	/* EMMC_RESET - reset */
+	PAD_GPO(GPIO_68, HIGH),
+	/* EN_PWR_CAMERA - reset */
+	PAD_GPO(GPIO_76, LOW),
+	/* CLK_REQ0_L - WIFI */
+	PAD_NF(GPIO_92, CLK_REQ0_L, PULL_UP),
+	/* ESPI_ALERT_L */
+	PAD_NF(GPIO_108, ESPI_ALERT_L, PULL_NONE),
+	/* CLK_REQ1_L - SD Card */
+	PAD_NF(GPIO_115, CLK_REQ1_L, PULL_UP),
+	/*  RAM_ID_3  */
+	PAD_GPI(GPIO_116, PULL_NONE),
+	/* RAM_ID_1  */
+	PAD_GPI(GPIO_120, PULL_NONE),
+	/* RAM_ID_0  */
+	PAD_GPI(GPIO_121, PULL_NONE),
+	/* RAM_ID_2 */
+	PAD_GPI(GPIO_131, PULL_NONE),
+	/* CLK_REQ4_L - SSD */
+	PAD_NF(GPIO_132, CLK_REQ4_L, PULL_UP),
+	/* UART0_RXD - DEBUG */
+	PAD_NF(GPIO_136, UART0_RXD, PULL_NONE),
+	/* BIOS_FLASH_WP_L */
+	PAD_GPI(GPIO_137, PULL_NONE),
+	/* UART0_TXD - DEBUG */
+	PAD_NF(GPIO_138, UART0_TXD, PULL_NONE),
+};
+
+static const struct soc_amd_gpio gpio_set_stage_rom[] = {
+
+
+};
+
+static const struct soc_amd_gpio gpio_set_stage_ram[] = {
+
+	/* PWR_BTN_L */
+	PAD_NF(GPIO_0, PWR_BTN_L, PULL_UP),
+	/* SYS_RESET_L */
+	PAD_NF(GPIO_1, SYS_RESET_L, PULL_UP),
+	/* PCIE_WAKE_L */
+	PAD_NF(GPIO_2, WAKE_L, PULL_UP),
+	/* PEN_DETECT_ODL */
+	PAD_GPI(GPIO_4, PULL_UP),
+	/* PEN_POWER_EN - Enabled*/
+	PAD_GPO(GPIO_5, HIGH),
+	/* FPMCU_INT_L */
+	PAD_GPI(GPIO_6, PULL_UP),
+	PAD_WAKE(GPIO_6, PULL_UP, EDGE_LOW, S3_S4_S5),
+	/* I2S_SDIN */
+	PAD_NF(GPIO_7, ACP_I2S_SDIN, PULL_NONE),
+	/* I2S_LRCLK */
+	PAD_NF(GPIO_8, ACP_I2S_LRCLK, PULL_NONE),
+	/* TOUCHPAD_INT */
+	PAD_GPI(GPIO_9, PULL_DOWN),
+	/* S0iX SLP */
+	PAD_GPI(GPIO_10, PULL_DOWN),
+	/* FPMCU_RST_ODL */
+	PAD_GPI(GPIO_11, PULL_UP),
+	/* USI_INT_ODL */
+	PAD_GPI(GPIO_12, PULL_UP),
+	/* DMIC_SEL */
+	PAD_GPO(GPIO_13, LOW), // Camera 1
+	/* USB_OC4_L - USB_A1 */
+	PAD_NF(GPIO_14, USB_OC4_L, PULL_UP),
+	/* USB_OC0_L - USB C0 */
+	PAD_NF(GPIO_16,USB_OC0_L, PULL_UP),
+	/* USB_OC1_L - USB C1 */
+	PAD_NF(GPIO_17,USB_OC1_L, PULL_UP),
+	/* USB_OC2_L - USB A0 */
+	PAD_NF(GPIO_18,USB_OC2_L, PULL_UP),
+	/* EMMC_CMD */
+	PAD_NF(GPIO_21, EMMC_CMD, PULL_NONE),
+	/* EC_FCH_SCI_ODL */
+	PAD_GPI(GPIO_22, PULL_UP),
+	/* AC_PRES */
+	PAD_NF(GPIO_23, AC_PRES, PULL_UP),
+	/*  EC_AP_INT_ODL (Sensor Framesync) */
+	PAD_GPI(GPIO_31, PULL_UP),
+	/* TP_31 */
+	PAD_GPI(GPIO_32, PULL_UP),
+	/* EN_PWR_TOUCHPAD_PS2 */
+	PAD_GPO(GPIO_67, HIGH),
+	/* EMMC_RESET */
+	PAD_GPO(GPIO_68, LOW),
+	/* FPMCU_BOOT0 */
+	PAD_GPO(GPIO_69, LOW),
+	/* EMMC_CLK */
+	PAD_NF(GPIO_70, EMMC_CLK, PULL_NONE),
+	/* EMMC_DATA4 */
+	PAD_NF(GPIO_74, EMMC_DATA4, PULL_NONE),
+	/* EMMC_DATA6 */
+	PAD_NF(GPIO_75, EMMC_DATA6, PULL_NONE),
+	/* EN_PWR_CAMERA */
+	PAD_GPO(GPIO_76, HIGH),
+	/* DMIC_AD_EN */
+	PAD_GPO(GPIO_84, HIGH),
+	/* APU_EDP_BL_DISABLE */
+	PAD_GPO(GPIO_85, HIGH),
+	/* MST_GPIO_2 (Fw Update HDMI hub) */
+	PAD_GPO(GPIO_86, LOW),
+	/* EMMC_DATA7 */
+	PAD_NF(GPIO_87, EMMC_DATA7, PULL_NONE),
+	/* EMMC_DATA5 */
+	PAD_NF(GPIO_88, EMMC_DATA5, PULL_NONE),
+	/*  EN_DEV_BEEP_L */
+	PAD_GPO(GPIO_89, HIGH),
+	/* MST_GPIO_3 (Fw Update HDMI hub) */
+	PAD_GPO(GPIO_90, LOW),
+	/* EN_SPKR */
+	PAD_GPO(GPIO_91, HIGH),
+	/* EMMC_DATA0 */
+	PAD_NF(GPIO_104, EMMC_DATA0, PULL_NONE),
+	/* EMMC_DATA1 */
+	PAD_NF(GPIO_105, EMMC_DATA1, PULL_NONE),
+	/* EMMC_DATA2 */
+	PAD_NF(GPIO_106, EMMC_DATA2, PULL_NONE),
+	/* EMMC_DATA3 */
+	PAD_NF(GPIO_107, EMMC_DATA3, PULL_NONE),
+	/* EMMC_DS */
+	PAD_NF(GPIO_109, EMMC_DS, PULL_NONE),
+	/* I2C2_SCL - USI/Touchpad */
+	PAD_NF(GPIO_113, I2C2_SCL, PULL_UP),
+	/* I2C2_SDA - USI/Touchpad */
+	PAD_NF(GPIO_114, I2C2_SDA, PULL_UP),
+	/* KBRST_L */
+	PAD_NF(GPIO_129, KBRST_L, PULL_UP),
+	/* EC_IN_RW_OD */
+	PAD_GPI(GPIO_130, PULL_UP),
+	/* DEV_BEEP_CODEC_IN (Dev beep Data out) */
+	PAD_GPO(GPIO_135, LOW),
+	/* Dev Beep Bitclock */
+	PAD_GPO(GPIO_139, LOW),
+	/* USI_RESET */
+	PAD_GPO(GPIO_140, LOW),
+	/* UART1_RXD - FPMCU */
+	PAD_NF(GPIO_141, UART1_RXD, PULL_NONE),
+	/* EGPIO142 - SD_AUX_RESET_L */
+	PAD_GPO(GPIO_142, HIGH),
+	/* UART1_TXD - FPMCU */
+	PAD_NF(GPIO_143, UART1_TXD, PULL_NONE),
+	/* EGPIO144 - USI_REPORT_EN */
+	PAD_GPO(GPIO_144, HIGH),
+
+
+
+};
+
+const __weak
+struct soc_amd_gpio *variant_early_gpio_table(size_t *size)
+{
+	*size = ARRAY_SIZE(gpio_set_stage_reset);
+	return gpio_set_stage_reset;
+}
+
+const __weak
+struct soc_amd_gpio *variant_romstage_gpio_table(size_t *size)
+{
+	*size = ARRAY_SIZE(gpio_set_stage_rom);
+	return gpio_set_stage_rom;
+}
+
+const __weak
+struct soc_amd_gpio *variant_gpio_table(size_t *size)
+{
+	*size = ARRAY_SIZE(gpio_set_stage_ram);
+	return gpio_set_stage_ram;
+}
+
+/*
+ * This function is still needed for boards that sets gevents above 23
+ * that will generate SCI or SMI. Normally this function
+ * points to a table of gevents and what needs to be set. The code that
+ * calls it was modified so that when this function returns NULL then the
+ * caller does nothing.
+ */
+const __weak struct sci_source *get_gpe_table(size_t *num)
+{
+	return NULL;
+}

@@ -1,0 +1,13 @@
+comment "Zork"
+
+config BOARD_GOOGLE_EZKINIL
+	bool "->  Ezkinil"
+	select BOARD_GOOGLE_BASEBOARD_TREMBYLE
+
+config BOARD_GOOGLE_MORPHIUS
+	bool "->  Morphius"
+	select BOARD_GOOGLE_BASEBOARD_TREMBYLE
+
+config BOARD_GOOGLE_TREMBYLE
+	bool "->  Trembyle"
+	select BOARD_GOOGLE_BASEBOARD_TREMBYLE
