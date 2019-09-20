@@ -96,51 +96,60 @@ static ti_lp5562_program solid_000000_program = {
   3		loop1_1:
   4 01 E208		trigger w3,s3
   5 02 4000		set_pwm 0
-  6 03 4000		set_pwm 0
-  7 04 E208		trigger w3,s3
-  8 05 4000		set_pwm 0
+  6 03 0100		wait 0.5
+  7 04 4000		set_pwm 0
+  8 05 E208		trigger w3,s3
   9 06 4000		set_pwm 0
- 10 07 A001		branch 0, loop1_1
- 11
- 12 10		.ENGINE2(G)
- 13 10 4000		set_pwm 0
- 14		loop2_1:
- 15 11 E208		trigger w3,s3
- 16 12 0565		ramp 250, 102
- 17 13 0565		ramp 250, 102
- 18 14 E208		trigger w3,s3
- 19 15 05E5		ramp 250, -102
- 20 16 05E5		ramp 250, -102
- 21 17 A011		branch 0,loop2_1
- 22
- 23 20		.ENGINE3(R)
- 24 20 4000		set_pwm 0
- 25		loop3_1:
- 26 21 E186		trigger s21,w21
- 27 22 047E		ramp 250, 127
- 28 23 047F		ramp 250, 128
- 29 24 E186		trigger s21,w21
- 30 25 04FE		ramp 250, -127
- 31 26 04FF		ramp 250, -128
- 32 27 A021		branch 0,loop3_1
+ 10 07 0100		wait 0.5
+ 11 08 4000		set_pwm 0
+ 12 09 A001		branch 0, loop1_1
+ 13
+ 14 10		.ENGINE2(G)
+ 15 10 4000		set_pwm 0
+ 16		loop2_1:
+ 17 11 E208		trigger w3,s3
+ 18 12 0565		ramp 250, 102
+ 19 13 0100		wait 0.5
+ 20 14 0565		ramp 250, 102
+ 21 15 E208		trigger w3,s3
+ 22 16 05E5		ramp 250, -102
+ 23 17 0100		wait 0.5
+ 24 18 05E5		ramp 250, -102
+ 25 19 A011		branch 0,loop2_1
+ 26
+ 27 20		.ENGINE3(R)
+ 28 20 4000		set_pwm 0
+ 29		loop3_1:
+ 30 21 E186		trigger s21,w21
+ 31 22 047E		ramp 250, 127
+ 32 23 0100		wait 0.5
+ 33 24 047F		ramp 250, 128
+ 34 25 E186		trigger s21,w21
+ 35 26 04FE		ramp 250, -127
+ 36 27 0100		wait 0.5
+ 37 28 04FF		ramp 250, -128
+ 38 29 A021		branch 0,loop3_1
 */
 
 /* WWR_RECOVERY_PUSHED */
 /* Fast Blinking Yellow */
 /* Ramp up to (255,204,0) in 0.5sec, ramp down to (0,0,0) in 0.5sec */
 static uint8_t fdr_press1_b_text[] = {
-	0x40,  0x00,  0xE2,  0x08,  0x40,  0x00,  0x40,  0x00,
-	0xE2,  0x08,  0x40,  0x00,  0x40,  0x00,  0xA0,  0x01,
+	0x40,  0x00,  0xE2,  0x08,  0x40,  0x00,  0x01,  0x00,
+	0x40,  0x00,  0xE2,  0x08,  0x40,  0x00,  0x01,  0x00,
+	0x40,  0x00,  0xA0,  0x01
 };
 
 static uint8_t fdr_press1_g_text[] = {
-	0x40,  0x00,  0xE2,  0x08,  0x05,  0x65,  0x05,  0x65,
-	0xE2,  0x08,  0x05,  0xE5,  0x05,  0xE5,  0xA0,  0x11,
+	0x40,  0x00,  0xE2,  0x08,  0x05,  0x65,  0x01,  0x00,
+	0x05,  0x65,  0xE2,  0x08,  0x05,  0xE5,  0x01,  0x00,
+	0x05,  0xE5,  0xA0,  0x11
 };
 
 static uint8_t fdr_press1_r_text[] = {
-	0x40,  0x00,  0xE1,  0x86,  0x04,  0x7E,  0x04,  0x7F,
-	0xE1,  0x86,  0x04,  0xFE,  0x04,  0xFF,  0xA0,  0x21,
+	0x40,  0x00,  0xE1,  0x86,  0x04,  0x7E,  0x01,  0x00,
+	0x04,  0x7F,  0xE1,  0x86,  0x04,  0xFE,  0x01,  0x00,
+	0x04,  0xFF,  0xA0,  0x21
 };
 
 static ti_lp5562_program fdr_press1_program = {
@@ -174,35 +183,42 @@ static ti_lp5562_program fdr_press1_program = {
   3		loop1_1:
   4 01 E208		trigger w3,s3
   5 02 4000		set_pwm 0
-  6 03 4000		set_pwm 0
-  7 04 E208		trigger w3,s3
-  8 05 4000		set_pwm 0
+  6 03 0100		wait 0.5
+  7 04 4000		set_pwm 0
+  8 05 E208		trigger w3,s3
   9 06 4000		set_pwm 0
- 10 07 A001		branch 0, loop1_1
- 11
- 12 10		.ENGINE2(G)
- 13 10 4000             set_pwm 0
- 14		loop2_1:
- 15 11 E208		trigger w3,s3
- 16 12 0565		ramp 250, 102
- 17 13 0565		ramp 250, 102
- 18 14 E208		trigger w3,s3
- 19 15 05E5		ramp 250, -102
- 20 16 05E5		ramp 250, -102
- 21 17 A011		branch 0,loop2_1
- 22
- 23 20		.ENGINE3(R)
- 24 20 4000             set_pwm 0
- 25		loop3_2:
- 26 21 6000             wait 500
- 27 22 A321             branch 6,loop3_2
- 28		loop3_1:
- 29 23 E186		trigger s21,w21
- 30 24 047E		ramp 250, 127
- 31 25 047F		ramp 250, 128
- 32 26 E186		trigger s21,w21
- 33 27 04FE		ramp 250, -127
- 34 28 04FF		ramp 250, -128
+ 10 07 0100		wait 0.5
+ 11 08 4000		set_pwm 0
+ 12 09 A001		branch 0, loop1_1
+ 13
+ 14 10		.ENGINE2(G)
+ 15 10 4000		set_pwm 0
+ 16		loop2_1:
+ 17 11 E208		trigger w3,s3
+ 18 12 0565		ramp 250, 102
+ 19 13 0100		wait 0.5
+ 20 14 0565		ramp 250, 102
+ 21 15 E208		trigger w3,s3
+ 22 16 05E5		ramp 250, -102
+ 23 17 0100		wait 0.5
+ 24 18 05E5		ramp 250, -102
+ 25 19 A011		branch 0,loop2_1
+ 26
+ 27 20		.ENGINE3(R)
+ 28 20 4000		set_pwm 0
+ 29		loop3_2:
+ 30 21 6000		wait 500
+ 31 22 A321		branch 6,loop3_2
+ 32		loop3_1:
+ 33 23 E186		trigger s21,w21
+ 34 24 047E		ramp 250, 127
+ 35 25 0100		wait 0.5
+ 36 26 047F		ramp 250, 128
+ 37 27 E186		trigger s21,w21
+ 38 28 04FE		ramp 250, -127
+ 39 29 0100		wait 0.5
+ 40 2A 04FF		ramp 250, -128
+ 41 2B A023		branch 0,loop3_1
 */
 
 /* WWR_WIPEOUT_REQUEST */
@@ -210,19 +226,21 @@ static ti_lp5562_program fdr_press1_program = {
 /* Blank for 3sec */
 /* Ramp up to (255,204,0) in 0.5sec, ramp down to (0,0,0) in 0.5sec */
 static uint8_t wipeout_request1_b_text[] = {
-	0x40,  0x00,  0xE2,  0x08,  0x40,  0x00,  0x40,  0x00,
-	0xE2,  0x08,  0x40,  0x00,  0x40,  0x00,  0xA0,  0x01,
+	0x40,  0x00,  0xE2,  0x08,  0x40,  0x00,  0x01,  0x00,
+	0x40,  0x00,  0xE2,  0x08,  0x40,  0x00,  0x01,  0x00,
+	0x40,  0x00,  0xA0,  0x01
 };
 
 static uint8_t wipeout_request1_g_text[] = {
-	0x40,  0x00,  0xE2,  0x08,  0x05,  0x65,  0x05,  0x65,
-	0xE2,  0x08,  0x05,  0xE5,  0x05,  0xE5,  0xA0,  0x11,
+	0x40,  0x00,  0xE2,  0x08,  0x05,  0x65,  0x01,  0x00,
+	0x05,  0x65,  0xE2,  0x08,  0x05,  0xE5,  0x01,  0x00,
+	0x05,  0xE5,  0xA0,  0x11
 };
 
 static uint8_t wipeout_request1_r_text[] = {
 	0x40,  0x00,  0x60,  0x00,  0xA3,  0x21,  0xE1,  0x86,
-	0x04,  0x7E,  0x04,  0x7F,  0xE1,  0x86,  0x04,  0xFE,
-	0x04,  0xFF,  0xA0,  0x23,
+	0x04,  0x7E,  0x01,  0x00,  0x04,  0x7F,  0xE1,  0x86,
+	0x04,  0xFE,  0x01,  0x00,  0x04,  0xFF,  0xA0,  0x23
 };
 
 static ti_lp5562_program wipeout_request1_program = {
@@ -541,49 +559,107 @@ const struct lp5562_calibration_code_map mistral_code_map_fast_blink[] = {
 	}
 };
 
-// Calibration code map for "wipeout request" pattern.
-// Start from OFF, wait for 3 seconds
-// ramp up in 0.5sec, ramp down in 0.5sec, repeat forever.
-const struct lp5562_calibration_code_map mistral_code_map_wipeout_request1[] = {
+/*
+ * Calibration code map for "fast blink" pattern with mitigation wait
+ * Start from OFF,
+ * ramp up in 0.5sec, ramp down in 0.5sec, repeat forever.
+ */
+const struct lp5562_calibration_code_map
+	mistral_code_map_fast_blink_with_wait[] = {
 	{
 		blue,
-		ramp,
+		ramp_and_wait,
 		0x02,
 		2,
 		{ {250, 128}, {250, 128} }
 	},
 	{
 		blue,
-		ramp,
-		0x05,
+		ramp_and_wait,
+		0x06,
 		2,
 		{ {250, -128}, {250, -128} }
 	},
 	{
 		green,
-		ramp,
+		ramp_and_wait,
 		0x12,
 		2,
 		{ {250, 128}, {250, 128} }
 	},
 	{
 		green,
-		ramp,
-		0x15,
+		ramp_and_wait,
+		0x16,
 		2,
 		{ {250, -128}, {250, -128} }
 	},
 	{
 		red,
-		ramp,
+		ramp_and_wait,
+		0x22,
+		2,
+		{ {250, 128}, {250, 128} }
+	},
+	{
+		red,
+		ramp_and_wait,
+		0x26,
+		2,
+		{ {250, -128}, {250, -128} }
+	},
+	{
+		0,
+		invalid,
+		0x00,
+		0,
+		{ }
+	}
+};
+
+// Calibration code map for "wipeout request" pattern.
+// Start from OFF, wait for 3 seconds
+// ramp up in 0.5sec, ramp down in 0.5sec, repeat forever.
+const struct lp5562_calibration_code_map mistral_code_map_wipeout_request1[] = {
+	{
+		blue,
+		ramp_and_wait,
+		0x02,
+		2,
+		{ {250, 128}, {250, 128} }
+	},
+	{
+		blue,
+		ramp_and_wait,
+		0x06,
+		2,
+		{ {250, -128}, {250, -128} }
+	},
+	{
+		green,
+		ramp_and_wait,
+		0x12,
+		2,
+		{ {250, 128}, {250, 128} }
+	},
+	{
+		green,
+		ramp_and_wait,
+		0x16,
+		2,
+		{ {250, -128}, {250, -128} }
+	},
+	{
+		red,
+		ramp_and_wait,
 		0x24,
 		2,
 		{ {250, 128}, {250, 128} }
 	},
 	{
 		red,
-		ramp,
-		0x27,
+		ramp_and_wait,
+		0x28,
 		2,
 		{ {250, -128}, {250, -128} }
 	},
@@ -601,7 +677,7 @@ const struct lp5562_calibration_data mistral_calibration_database[] = {
 		&fdr_press1_program,
 		1, /* Yellow */
 		100, /* 100% brigheness */
-		mistral_code_map_fast_blink,
+		mistral_code_map_fast_blink_with_wait,
 	},
 	{
 		&preboot1_program,
