@@ -41,10 +41,11 @@ static void early_ec_init(void)
 	/*
 	 * Set up LPC decoding for the ChromeEC I/O port ranges:
 	 * - Ports 62/66, 60/64, and 200->208
-	 *  -- set by hudson_lpc_decode() in pre
 	 * - ChromeEC specific communication I/O ports.
 	 */
 	google_chromeec_ioport_range(&ec_ioport_base, &ec_ioport_size);
+
+	//TODO: UPDATE TO eSPI
 	printk(BIOS_DEBUG,
 		"LPC Setup google_chromeec_ioport_range: %04x, %08zx\n",
 		ec_ioport_base, ec_ioport_size);

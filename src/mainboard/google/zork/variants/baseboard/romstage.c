@@ -19,8 +19,6 @@
 #include <soc/gpio.h>
 #include "gpio.h"
 
-#define SERIAL_DEV PNP_DEV(0x4e, SIO1036_SP1)
-
 void variant_romstage_entry(int s3_resume)
 {
 	uint32_t sku = google_chromeec_get_sku_id();

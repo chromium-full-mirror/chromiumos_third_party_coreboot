@@ -22,7 +22,7 @@ config BOARD_GOOGLE_BASEBOARD_TREMBYLE
 	select DRIVERS_I2C_HID
 	select EC_GOOGLE_CHROMEEC
 	select EC_GOOGLE_CHROMEEC_BOARDID
-	select EC_GOOGLE_CHROMEEC_SPI
+	select EC_GOOGLE_CHROMEEC_ESPI
 	select HAVE_ACPI_TABLES
 	select GENERIC_SPD_BIN
 	select GFXUMA
@@ -98,7 +98,6 @@ config VBOOT
 	select EC_GOOGLE_CHROMEEC_SWITCHES
 	select VBOOT_LID_SWITCH
 
-
 config VBOOT_VBNV_OFFSET
 	hex
 	default 0x2A
@@ -143,10 +142,6 @@ config OEM_BIN_FILE
 	string "OEM ID table"
 	depends on USE_OEM_BIN
 	default ""
-
-config PICASSO_LEGACY_FREE
-	bool
-	default n
 
 config FSP_M_FILE
 	string "FSP-M (memory init) binary path and filename"

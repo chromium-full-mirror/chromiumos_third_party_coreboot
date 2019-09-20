@@ -181,6 +181,7 @@ static void mainboard_init(void *chip_info)
 void mainboard_fsp_silicon_init_params_cb(FSP_S_CONFIG *scfg)
 {
 
+// TODO: Move to a header file or delete when something better is developed.
 #define FIRST_LANE(x)		(x << 28)
 #define LAST_LANE(x)		(x << 24)
 #define CLKREQ(x)		(x << 20)
@@ -190,6 +191,7 @@ void mainboard_fsp_silicon_init_params_cb(FSP_S_CONFIG *scfg)
 
 
 // Possible definition of the SD/EMMC values
+// TODO: Remove when we get official definitions
 #define SD_DISABLE		0
 #define SD_LOW_SPEED		1
 #define SD_HIGH_SPEED		2

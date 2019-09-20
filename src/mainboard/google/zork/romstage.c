@@ -12,8 +12,10 @@
  */
 
 #include <baseboard/variants.h>
+#include <ec/ec.h>
 #include <soc/gpio.h>
 #include <soc/romstage.h>
+#include <variant/ec.h>
 
 void __weak variant_romstage_entry(int s3_resume)
 {
@@ -28,6 +30,8 @@ void mainboard_romstage_early_init(void)
 
 	gpios = variant_romstage_gpio_table(&num_gpios);
 	program_gpios(gpios, num_gpios);
+
+	mainboard_ec_init();
 
 	variant_romstage_entry(s3_resume);
 }

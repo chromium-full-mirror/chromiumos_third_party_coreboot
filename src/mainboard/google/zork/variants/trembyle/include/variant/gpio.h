@@ -12,4 +12,3 @@
  */
 
 #include <baseboard/gpio.h>
-

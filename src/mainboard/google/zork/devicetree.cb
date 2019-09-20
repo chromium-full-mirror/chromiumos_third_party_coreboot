@@ -11,6 +11,8 @@
 # GNU General Public License for more details.
 #
 chip soc/amd/picasso
+	register "acp_pin_cfg" = "I2S_PINS_MAX_HDA"
+
 	device cpu_cluster 0 on
 		device lapic 0 on end
 	end
@@ -41,12 +43,10 @@ chip soc/amd/picasso
 				device i2c 50 on end
 				device i2c 51 on end
 			end
-			chip superio/smsc/sio1036 # optional debug card
-			end
 		end # SM
 		device pci 14.3 on  end # LPC
-		device pci 14.6 on  end #
-		device pci 18.0 on  end
+		device pci 14.6 off end # SDHCI
+		device pci 18.0 on  end # Data fabric [0-7]
 		device pci 18.1 on  end
 		device pci 18.2 on  end
 		device pci 18.3 on  end

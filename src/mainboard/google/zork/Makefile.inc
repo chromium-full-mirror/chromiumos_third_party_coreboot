@@ -11,9 +11,8 @@
 # GNU General Public License for more details.
 #
 
-bootblock-y += ec.c
-
 romstage-y += chromeos.c
+romstage-y += ec.c
 
 ramstage-y += chromeos.c
 ramstage-y += ec.c
