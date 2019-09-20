@@ -52,7 +52,7 @@ static const struct soc_amd_gpio gpio_set_stage_reset[] = {
 
 static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* SSD DEVSLP */
-	PAD_NF(GPIO_5, DEVSLP0_S5, PULL_NONE),
+	PAD_NF(GPIO_5, DEVSLP0, PULL_NONE),
 	/* Defeature SATA Express DEVSLP, as some boards are reworked
 	 * to tie this to GPIO23 to control power */
 	PAD_GPI(GPIO_6, PULL_UP),
@@ -78,7 +78,7 @@ static const struct soc_amd_gpio emmc_gpios[] = {
 	PAD_NF(GPIO_22,  EMMC_PRW_CTRL,	PULL_UP),
 	PAD_NF(GPIO_68,  EMMC_CD,	PULL_UP),
 	PAD_NF(GPIO_70,  EMMC_CLK,	PULL_NONE),
-	PAD_NF(GPIO_104, EMMC_SDATA0,	PULL_UP),
+	PAD_NF(GPIO_104, EMMC_DATA0,	PULL_UP),
 	PAD_NF(GPIO_105, EMMC_DATA1,	PULL_UP),
 	PAD_NF(GPIO_106, EMMC_DATA2,	PULL_UP),
 	PAD_NF(GPIO_107, EMMC_DATA3,	PULL_NONE),
