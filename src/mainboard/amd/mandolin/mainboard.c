@@ -156,6 +156,8 @@ void mainboard_fsp_silicon_init_params_cb(FSP_S_CONFIG *scfg)
 	scfg->pcie_xgbe2_topology = 0;
 	if (!CONFIG(PICASSO_LPC_IOMUX))
 		scfg->emmc0_mode = 10;
+	scfg->dp0_connector_type = 0;
+	scfg->dp1_connector_type = 1;
 }
 
 /*************************************************
