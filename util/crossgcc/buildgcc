@@ -893,6 +893,7 @@ build_LLVM() {
 }
 
 build_MAKE() {
+	( cd ../${MAKE_DIR}/ && aclocal && autoconf )
 	CC="$(hostcc host)" CXX="$(hostcxx host)" CFLAGS="$HOSTCFLAGS" \
 	../${MAKE_DIR}/configure --prefix="$TARGETDIR" --disable-nls \
 		|| touch .failed
