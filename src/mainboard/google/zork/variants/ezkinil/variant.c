@@ -28,7 +28,7 @@ void variant_devtree_update(void)
 {
 	struct soc_amd_picasso_config *cfg;
 
-	cfg = config_of_path(GNB_DEVFN);
+	cfg = config_of_soc();
 
 	if (!sku_has_emmc())
 		cfg->sd_emmc_config = SD_EMMC_DISABLE;

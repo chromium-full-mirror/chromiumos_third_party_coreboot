@@ -136,7 +136,7 @@ void variant_devtree_update(void)
 {
 	struct soc_amd_picasso_config *cfg;
 
-	cfg = config_of_path(GNB_DEVFN);
+	cfg = config_of_soc();
 
 	if (sku_has_emmc()) {
 		if (sku_id() == 0x5A800003)

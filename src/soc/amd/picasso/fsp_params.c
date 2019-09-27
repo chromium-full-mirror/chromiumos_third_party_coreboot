@@ -101,7 +101,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	const struct soc_amd_picasso_config *cfg;
 	FSP_S_CONFIG *scfg = &supd->FspsConfig;
 
-	cfg = config_of_path(GNB_DEVFN);
+	cfg = config_of_soc();
 	fsps_update_emmc_config(scfg, cfg);
 	fsp_fill_pcie_ddi_descriptors(scfg);
 }

@@ -179,7 +179,7 @@ static void enable_ec_io_ports(void)
 
 static void mainboard_init(void *chip_info)
 {
-	struct soc_amd_picasso_config *cfg = config_of_path(GNB_DEVFN);
+	struct soc_amd_picasso_config *cfg = config_of_soc();
 
 	if (!CONFIG(PICASSO_LPC_IOMUX)) {
 		cfg->sd_emmc_config = SD_EMMC_EMMC_HS400;
