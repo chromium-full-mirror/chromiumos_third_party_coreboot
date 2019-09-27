@@ -54,8 +54,8 @@ config EC_GOOGLE_CHROMEEC_BOARDNAME
 	string
 	default "strago"
 
-config GBB_HWID
-	string
-	depends on CHROMEOS
-	default "STRAGO TEST A-A 9657"
+config CBFS_SIZE
+	hex
+	default 0x200000
+
 endif # BOARD_INTEL_STRAGO
