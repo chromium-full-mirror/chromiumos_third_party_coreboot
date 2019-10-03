@@ -41,6 +41,8 @@ config BOARD_GOOGLE_BASEBOARD_TREMBYLE
 
 if BOARD_GOOGLE_BASEBOARD_TREMBYLE
 
+source "src/mainboard/google/zork/variants/*/Kconfig"
+
 config MAINBOARD_DIR
 	string
 	default google/zork
