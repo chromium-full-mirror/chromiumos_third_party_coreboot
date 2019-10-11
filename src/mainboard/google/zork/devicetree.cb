@@ -11,7 +11,7 @@
 # GNU General Public License for more details.
 #
 chip soc/amd/picasso
-	register "acp_pin_cfg" = "I2S_PINS_MAX_HDA"
+	register "acp_pin_cfg" = "I2S_PINS_I2S_TDM"
 
 	# Enable I2C2 for trackpad, pen at 400kHz
 	register "i2c[2]" = "{
