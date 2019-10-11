@@ -32,6 +32,9 @@ static void enable(struct device *dev)
 	struct resource *res;
 	uintptr_t bar;
 
+	pci_dev_enable_resources(dev);
+
+	/* Set the proper I2S_PIN_CONFIG state */
 	if (!nb_dev || !nb_dev->chip_info)
 		return;
 
@@ -49,7 +52,6 @@ static void enable(struct device *dev)
 	if (cfg->acp_pin_cfg == I2S_PINS_I2S_TDM)
 		sb_clk_output_48Mhz(); /* Internal connection to I2S */
 
-	pci_dev_enable_resources(dev);
 }
 
 static struct pci_operations lops_pci = {
