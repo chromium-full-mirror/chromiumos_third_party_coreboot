@@ -56,4 +56,9 @@ chip soc/amd/picasso
 		device pci 18.6 on  end
 		device pci 18.7 on  end
 	end # domain
+	chip drivers/generic/max98357a
+			register "sdmode_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_91)"
+			register "sdmode_delay" = "5"
+			device generic 0.1 on end
+	end
 end	# chip soc/amd/picasso
