@@ -163,3 +163,8 @@ int get_write_protect_state(void)
 {
 	return !gpio_get(GPIO_WP_STATE);
 }
+
+int tis_plat_irq_status(void)
+{
+	return gpio_irq_status(GPIO_H1_AP_INT);
+}

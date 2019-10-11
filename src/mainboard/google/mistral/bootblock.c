@@ -23,5 +23,5 @@ void bootblock_mainboard_init(void)
 	udelay(2);
 	gpio_set(GPIO_LED_ENABLE, 1);
 	mdelay(2);
-	gpio_input_pullup(GPIO_H1_AP_INT);
+	gpio_input_irq(GPIO_H1_AP_INT, IRQ_TYPE_RISING_EDGE, GPIO_PULL_UP);
 }
