@@ -23,7 +23,6 @@
 #include <intelblocks/systemagent.h>
 #include <soc/cpu.h>
 #include <soc/pci_devs.h>
-#include <string.h>
 
 static bool sgx_param_valid;
 static struct sgx_param g_sgx_param;
