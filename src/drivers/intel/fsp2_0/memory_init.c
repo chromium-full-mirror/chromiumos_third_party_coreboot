@@ -405,7 +405,7 @@ void fsp_memory_init(bool s3wake)
 	struct region_device file_data;
 	const char *name = CONFIG_FSP_M_CBFS;
 	struct memranges memmap;
-	struct range_entry freeranges[2];
+	struct range_entry prog_ranges[2];
 
 	timestamp_add_now(TS_BEFORE_INITRAM);
 
@@ -420,9 +420,10 @@ void fsp_memory_init(bool s3wake)
 	cbfs_file_data(&file_data, &file_desc);
 
 	/* Build up memory map of romstage address space including CAR. */
-	memranges_init_empty(&memmap, &freeranges[0], ARRAY_SIZE(freeranges));
-	memranges_insert(&memmap, (uintptr_t)EARLY_STORAGE_START,
-			EARLY_STORAGE_USED, 0);
+	memranges_init_empty(&memmap, &prog_ranges[0], ARRAY_SIZE(prog_ranges));
+	if (ENV_CACHE_AS_RAM)
+		memranges_insert(&memmap, (uintptr_t)_car_region_start,
+			_car_unallocated_start - _car_region_start, 0);
 	memranges_insert(&memmap, (uintptr_t)_program, REGION_SIZE(program), 0);
 
 	if (!CONFIG(FSP_M_XIP))
