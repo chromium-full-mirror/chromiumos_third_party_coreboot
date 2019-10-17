@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2017 Advanced Micro Devices, Inc.
+ * Copyright (C) 2019 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,8 @@
 
 #include <device/device.h>
 #include <commonlib/helpers.h>
+
+#define CSTATE_BASE_REG 0xc0010073
 
 void picasso_init_cpus(struct device *dev);
 int get_cpu_count(void);
