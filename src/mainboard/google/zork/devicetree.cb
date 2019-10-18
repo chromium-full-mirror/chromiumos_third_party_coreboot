@@ -61,4 +61,13 @@ chip soc/amd/picasso
 			register "sdmode_delay" = "5"
 			device generic 0.1 on end
 	end
+
+	device mmio 0xfedc5000 on
+		chip drivers/i2c/tpm
+			register "hid" = ""GOOG0005""
+			register "desc" = ""Cr50 TPM""
+			register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_LOW(GPIO_3)"
+			device i2c 50 on end
+		end
+	end
 end	# chip soc/amd/picasso
