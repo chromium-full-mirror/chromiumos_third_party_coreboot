@@ -152,13 +152,13 @@ static void mainboard_init(void *chip_info)
 {
 	const struct sci_source *gpes;
 	size_t num;
-//	int boardid = board_id();
+	int boardid;
 	size_t num_gpios;
 	const struct soc_amd_gpio *gpios;
 
-//	printk(BIOS_INFO, "Board ID: %d\n", boardid);
-
 	mainboard_ec_init();
+	boardid = board_id();
+	printk(BIOS_INFO, "Board ID: %d\n", boardid);
 
 	gpios = variant_gpio_table(&num_gpios);
 	program_gpios(gpios, num_gpios);
