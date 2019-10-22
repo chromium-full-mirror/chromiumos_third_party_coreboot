@@ -60,7 +60,6 @@ void pmic_set_vsim2_cali(unsigned int vsim2_mv);
 void pmic_init_scp_voltage(void);
 unsigned int pmic_get_vcore_vol(void);
 void pmic_set_vcore_vol(unsigned int vcore_uv);
-void pmic_set_vdram1_vol(unsigned int vdram_uv);
 unsigned int pmic_get_vdram1_vol(void);
 void pmic_set_vdram1_vol(unsigned int vdram_uv);
 unsigned int pmic_get_vddq_vol(void);
