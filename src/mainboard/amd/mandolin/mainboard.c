@@ -141,8 +141,8 @@ static void pirq_setup(void)
 static void enable_ec_io_ports(void)
 {
 	const struct espi_config cfg = {
-		.bus_width		= ESPI_SINGLE_IO,
-		.espi_freq_mhz		= 20,
+		.bus_width		= ESPI_IO_MODE_SINGLE,
+		.espi_freq_mhz		= ESPI_OP_FREQ_33_MHZ,
 		.enable_crc_checking	= 1,
 		.alert_pin_on_io1	= 0,
 		.peripheral_ch_en	= 0,
