@@ -20,10 +20,6 @@
 #include <cpu/x86/16bit/reset16.inc>
 #include <cpu/x86/32bit/entry32.inc>
 
-	movl	%cr0, %eax
-	andl	$0x9fffffff, %eax /* CD, NW = 0 since we're already in DRAM */
-	movl	%eax, %cr0
-
 	cld
 
 	movl	$(_earlyram_stack_end), %esp
