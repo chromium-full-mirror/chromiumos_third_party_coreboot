@@ -21,6 +21,7 @@
 #include <security/vboot/vbnv.h>
 #include <security/vboot/vboot_common.h>
 #include <timer.h>
+#include <timestamp.h>
 #include <vb2_api.h>
 
 #define _EC_FILENAME(select, suffix) \
@@ -51,6 +52,8 @@ void vboot_sync_ec(void)
 {
 	vb2_error_t retval = VB2_SUCCESS;
 	struct vb2_context *ctx;
+
+	timestamp_add_now(TS_START_EC_SYNC);
 
 	ctx = vboot_get_context();
 	ctx->flags |= VB2_CONTEXT_EC_SYNC_SUPPORTED;
@@ -91,6 +94,8 @@ void vboot_sync_ec(void)
 		vboot_reboot();
 		break;
 	}
+
+	timestamp_add_now(TS_END_EC_SYNC);
 }
 
 /* Convert firmware image type into a flash offset */
@@ -167,6 +172,8 @@ static vb2_error_t ec_hash_image(enum vb2_firmware_selection select,
 		}
 	} while (resp.status == EC_VBOOT_HASH_STATUS_BUSY &&
 		 !stopwatch_expired(&sw));
+
+	timestamp_add_now(TS_EC_HASH_READY);
 
 	if (resp.status != EC_VBOOT_HASH_STATUS_DONE) {
 		printk(BIOS_ERR, "%s: Hash status not done: %d\n", __func__,
@@ -445,7 +452,6 @@ vb2_error_t vb2ex_ec_vboot_done(struct vb2_context *ctx)
 	int limit_power = 0;
 	bool message_printed = false;
 	struct stopwatch sw;
-	vb2_error_t rv = VB2_SUCCESS;
 	int in_recovery = !!(ctx->flags & VB2_CONTEXT_RECOVERY_MODE);
 
 	/*
@@ -455,15 +461,16 @@ vb2_error_t vb2ex_ec_vboot_done(struct vb2_context *ctx)
 	if (in_recovery)
 		return VB2_SUCCESS;
 
+	timestamp_add_now(TS_EC_POWER_LIMIT_WAIT);
+
 	stopwatch_init_msecs_expire(&sw, LIMIT_POWER_WAIT_TIMEOUT_MS);
 
-	/* Ensure we have enough power to continue booting */
+	/* Ensure we have enough power to continue booting. */
 	while (1) {
 		if (google_chromeec_read_limit_power_request(&limit_power)) {
 			printk(BIOS_ERR, "Failed to check EC limit power"
 			       "flag.\n");
-			rv = VB2_ERROR_UNKNOWN;
-			break;
+			return VB2_ERROR_UNKNOWN;
 		}
 
 		if (!limit_power || stopwatch_expired(&sw))
@@ -481,13 +488,13 @@ vb2_error_t vb2ex_ec_vboot_done(struct vb2_context *ctx)
 	if (limit_power) {
 		printk(BIOS_INFO,
 		       "EC requests limited power usage. Request shutdown.\n");
-		rv = VBERROR_SHUTDOWN_REQUESTED;
+		return VBERROR_SHUTDOWN_REQUESTED;
 	} else {
 		printk(BIOS_INFO, "Waited %luus to clear limit power flag.\n",
 			stopwatch_duration_usecs(&sw));
 	}
 
-	return rv;
+	return VB2_SUCCESS;
 }
 
 /*
