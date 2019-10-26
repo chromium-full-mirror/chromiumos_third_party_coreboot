@@ -10,6 +10,7 @@
  * (at your option) any later version.
  */
 
+#include <boot/coreboot_tables.h>
 #include <console/console.h>
 #include <fsp/util.h>
 #include <soc/intel/common/vbt.h>
