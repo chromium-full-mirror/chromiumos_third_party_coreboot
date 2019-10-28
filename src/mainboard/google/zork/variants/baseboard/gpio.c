@@ -116,7 +116,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* USB_OC2_L - USB A0 */
 	PAD_NF(GPIO_18, USB_OC2_L, PULL_UP),
 	/* EMMC_CMD */
-	//PAD_NF(GPIO_21, EMMC_CMD, PULL_UP),
+	PAD_NF(GPIO_21, EMMC_CMD, PULL_UP),
 	/* EC_FCH_SCI_ODL */
 	PAD_GPI(GPIO_22, PULL_UP),
 	/* AC_PRES */
@@ -128,15 +128,15 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* EN_PWR_TOUCHPAD_PS2 */
 //	PAD_GPO(GPIO_67, HIGH),
 	/* EMMC_RESET */
-	//PAD_GPO(GPIO_68, LOW),
+	PAD_GPO(GPIO_68, LOW),
 	/* FPMCU_BOOT0 - TODO: Check this */
 	PAD_GPO(GPIO_69, LOW),
 	/* EMMC_CLK */
-	//PAD_NF(GPIO_70, EMMC_CLK, PULL_NONE),
+	PAD_NF(GPIO_70, EMMC_CLK, PULL_NONE),
 	/* EMMC_DATA4 */
-	//PAD_NF(GPIO_74, EMMC_DATA4, PULL_NONE),
+	// PAD_NF(GPIO_74, EMMC_DATA4, PULL_NONE),
 	/* EMMC_DATA6 */
-	//PAD_NF(GPIO_75, EMMC_DATA6, PULL_NONE),
+	// PAD_NF(GPIO_75, EMMC_DATA6, PULL_NONE),
 	/* EN_PWR_CAMERA */
 	PAD_GPO(GPIO_76, HIGH),
 	/* DMIC_AD_EN */
@@ -146,9 +146,9 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* MST_GPIO_2 (Fw Update HDMI hub) */
 	PAD_GPI(GPIO_86, PULL_NONE),
 	/* EMMC_DATA7 */
-	//PAD_NF(GPIO_87, EMMC_DATA7, PULL_NONE),
+	// PAD_NF(GPIO_87, EMMC_DATA7, PULL_NONE),
 	/* EMMC_DATA5 */
-	//PAD_NF(GPIO_88, EMMC_DATA5, PULL_NONE),
+	// PAD_NF(GPIO_88, EMMC_DATA5, PULL_NONE),
 	/*  EN_DEV_BEEP_L */
 	PAD_GPO(GPIO_89, HIGH),
 	/* MST_GPIO_3 (Fw Update HDMI hub) */
@@ -156,15 +156,15 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* EN_SPKR TODO: Verify driver enables this (add to ACPI) */
 	PAD_GPO(GPIO_91, LOW),
 	/* EMMC_DATA0 */
-	//PAD_NF(GPIO_104, EMMC_DATA0, PULL_NONE),
+	PAD_NF(GPIO_104, EMMC_DATA0, PULL_NONE),
 	/* EMMC_DATA1 */
-	//PAD_NF(GPIO_105, EMMC_DATA1, PULL_NONE),
+	PAD_NF(GPIO_105, EMMC_DATA1, PULL_NONE),
 	/* EMMC_DATA2 */
-	//PAD_NF(GPIO_106, EMMC_DATA2, PULL_NONE),
+	PAD_NF(GPIO_106, EMMC_DATA2, PULL_NONE),
 	/* EMMC_DATA3 */
-	//PAD_NF(GPIO_107, EMMC_DATA3, PULL_NONE),
+	PAD_NF(GPIO_107, EMMC_DATA3, PULL_NONE),
 	/* EMMC_DS */
-	//PAD_NF(GPIO_109, EMMC_DS, PULL_NONE),
+	PAD_NF(GPIO_109, EMMC_DS, PULL_NONE),
 	/* I2C2_SCL - USI/Touchpad */
 	PAD_NF(GPIO_113, I2C2_SCL, PULL_UP),
 	/* I2C2_SDA - USI/Touchpad */
