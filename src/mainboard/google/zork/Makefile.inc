@@ -24,6 +24,7 @@ subdirs-y += variants/baseboard
 subdirs-y += spd
 
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/baseboard/include
+CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/baseboard/include/baseboard/acpi
 
 subdirs-y += variants/$(VARIANT_DIR)
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/include
