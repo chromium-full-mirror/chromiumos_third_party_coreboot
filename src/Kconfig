@@ -999,6 +999,22 @@ config DEBUG_SPI_FLASH
 	help
 	  This option enables additional SPI flash related debug messages.
 
+config HAVE_ESPI_INIT_DEBUG
+	def_bool n
+	help
+	  Chipsets with eSPI debug code should select this.
+
+config DEBUG_ESPI_INIT
+	bool "Enable eSPI initialization debug messages"
+	depends on HAVE_ESPI_INIT_DEBUG
+	default n
+	help
+	  Enable printing debug information from eSPI initialization.
+
+	  Because eSPI initialization may happen before serial consoles
+	  are initialized, you may need to modify the source to output
+	  the debug information to the console.
+
 if SOUTHBRIDGE_INTEL_BD82X6X && DEFAULT_CONSOLE_LOGLEVEL_8
 # Only visible with the right southbridge and loglevel.
 config DEBUG_INTEL_ME
