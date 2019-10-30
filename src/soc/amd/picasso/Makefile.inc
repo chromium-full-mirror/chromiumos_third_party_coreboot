@@ -92,6 +92,10 @@ smm-$(CONFIG_DEBUG_SMI) += uart.c
 smm-$(CONFIG_SPI_FLASH) += spi.c
 smm-y += gpio.c
 
+cbfs-files-y += etc/sdcard0
+etc/sdcard0-file = $(src)/soc/amd/picasso/sdcard0
+etc/sdcard0-type = raw
+
 CPPFLAGS_common += -I$(src)/soc/amd/picasso
 CPPFLAGS_common += -I$(src)/soc/amd/picasso/include
 CPPFLAGS_common += -I$(src)/soc/amd/picasso/acpi
