@@ -25,7 +25,7 @@ Device(PCI0) {
 #include "pci_int.asl"
 
 /* Describe the devices in the Southbridge */
-#include "sb_fch.asl"
+#include <sb_fch.asl>
 
 /* Add GPIO library */
 #include <soc/amd/common/acpi/gpio_bank_lib.asl>
