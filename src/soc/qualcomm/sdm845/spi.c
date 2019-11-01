@@ -33,18 +33,10 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 }
 
 static const struct spi_ctrlr spi_ctrlr = {
-<<<<<<< HEAD   (3c21cb UPSTREAM: google/grunt: add new two DDR source for Treeya)
 	.claim_bus = spi_ctrlr_claim_bus,
 	.release_bus = spi_ctrlr_release_bus,
 	.xfer = spi_ctrlr_xfer,
 	.max_xfer_size = 65535,
-=======
-	.claim_bus = sdm845_claim_bus,
-	.release_bus = sdm845_release_bus,
-	.xfer = sdm845_xfer,
-	.xfer_dual = sdm845_xfer_dual,
-	.max_xfer_size = QSPI_MAX_PACKET_COUNT,
->>>>>>> CHANGE (1f811c UPSTREAM: sdm845: qspi: Add Dual SPI support)
 };
 
 const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {
