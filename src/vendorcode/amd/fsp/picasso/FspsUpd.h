@@ -13,22 +13,19 @@
 
 
 typedef struct {
-	/** Offset 0x0020**/	uint32_t                    pcie_port0_topology;
-	/** Offset 0x0024**/	uint32_t                    pcie_port1_topology;
-	/** Offset 0x0028**/	uint32_t                    pcie_port2_topology;
-	/** Offset 0x002C**/	uint32_t                    pcie_port3_topology;
-	/** Offset 0x0030**/	uint32_t                    pcie_port4_topology;
-	/** Offset 0x0034**/	uint32_t                    pcie_port5_topology;
-	/** Offset 0x0038**/	uint32_t                    pcie_port6_topology;
-	/** Offset 0x003C**/	uint32_t                    pcie_sata_topology;
-	/** Offset 0x0040**/	uint32_t                    pcie_xgbe1_topology;
-	/** Offset 0x0044**/	uint32_t                    pcie_xgbe2_topology;
-	/** Offset 0x0048**/	uint32_t                    dp0_connector_type;
-	/** Offset 0x004C**/	uint32_t                    dp1_connector_type;
-	/** Offset 0x0050**/	uint32_t                    dp2_connector_type;
-	/** Offset 0x0054**/	uint32_t                    dp3_connector_type;
-	/** Offset 0x0058**/	uint32_t                    emmc0_mode;
-	/** Offset 0x005C**/	uint8_t                     UnusedUpdSpace0[196];
+	/** Offset 0x0020**/	uint32_t                    emmc0_mode;
+	/** Offset 0x0024**/	uint8_t                     reserved_for_later[12];
+	/** Offset 0x0030**/	uint8_t                     dxio_descriptor0[16];
+	/** Offset 0x0040**/	uint8_t                     dxio_descriptor1[16];
+	/** Offset 0x0050**/	uint8_t                     dxio_descriptor2[16];
+	/** Offset 0x0060**/	uint8_t                     dxio_descriptor3[16];
+	/** Offset 0x0070**/	uint8_t                     dxio_descriptor4[16];
+	/** Offset 0x0080**/	uint8_t                     dxio_descriptor5[16];
+	/** Offset 0x0090**/	uint32_t                    ddi_descriptor0;
+	/** Offset 0x0094**/	uint32_t                    ddi_descriptor1;
+	/** Offset 0x0098**/	uint32_t                    ddi_descriptor2;
+	/** Offset 0x009C**/	uint32_t                    ddi_descriptor3;
+	/** Offset 0x00A0**/	uint8_t                     UnusedUpdSpace0[128];
 	/** Offset 0x0120**/	uint16_t                    UpdTerminator;
 } FSP_S_CONFIG;
 

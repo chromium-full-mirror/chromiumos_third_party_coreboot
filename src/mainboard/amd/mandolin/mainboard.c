@@ -20,6 +20,8 @@
 #include <soc/espi.h>
 #include <soc/southbridge.h>
 #include <soc/pci_devs.h>
+#include <commonlib/helpers.h>
+#include <platform_descriptors.h>
 #include "gpio.h"
 //
 //
@@ -178,22 +180,140 @@ static void mainboard_init(void *chip_info)
 	mainboard_program_gpios();
 }
 
+static const picasso_fsp_pcie_descriptor mandolin_pcie_descriptors[] =
+{
+	{ // MXM
+		.port_present = true,
+		.engine_type = PCIE_ENGINE,
+		.start_lane = 8,
+		.end_lane = 15,
+		.device_number = 1,
+		.function_number = 1,
+		.link_aspm = ASPM_L1,
+		.link_aspm_L1_1 = true,
+		.link_aspm_L1_2 = true,
+		.turn_off_unused_lanes = true,
+		.clk_req = CLK_REQ6
+	},
+	{ // SSD
+		.port_present = true,
+		.engine_type = PCIE_ENGINE,
+		.start_lane = 0,
+		.end_lane = 1,
+		.device_number = 1,
+		.function_number = 7,
+		.link_aspm = ASPM_L1,
+		.link_aspm_L1_1 = true,
+		.link_aspm_L1_2 = true,
+		.turn_off_unused_lanes = true,
+		.clk_req = CLK_REQ5
+	},
+	{ // WLAN
+		.port_present = true,
+		.engine_type = PCIE_ENGINE,
+		.start_lane = 4,
+		.end_lane = 4,
+		.device_number = 1,
+		.function_number = 2,
+		.link_aspm = ASPM_L1,
+		.link_aspm_L1_1 = true,
+		.link_aspm_L1_2 = true,
+		.turn_off_unused_lanes = true,
+		.clk_req = CLK_REQ0
+	},
+	{ // LAN
+		.port_present = true,
+		.engine_type = PCIE_ENGINE,
+		.start_lane = 5,
+		.end_lane = 5,
+		.device_number = 1,
+		.function_number = 3,
+		.link_aspm = ASPM_L1,
+		.link_aspm_L1_1 = true,
+		.link_aspm_L1_2 = true,
+		.turn_off_unused_lanes = true,
+		.clk_req = CLK_REQ1
+	},
+	{ // WWAN
+		.port_present = true,
+		.engine_type = PCIE_ENGINE,
+		.start_lane = 6,
+		.end_lane = 6,
+		.device_number = 1,
+		.function_number = 4,
+		.link_aspm = ASPM_L1,
+		.link_aspm_L1_1 = true,
+		.link_aspm_L1_2 = true,
+		.turn_off_unused_lanes = true,
+		.clk_req = CLK_REQ2
+	},
+	{ // WIFI
+		.port_present = true,
+		.engine_type = PCIE_ENGINE,
+		.start_lane = 7,
+		.end_lane = 7,
+		.gpio_group_id = 1,
+		.device_number = 1,
+		.function_number = 5,
+		.link_aspm = ASPM_L1,
+		.link_aspm_L1_1 = true,
+		.link_aspm_L1_2 = true,
+		.turn_off_unused_lanes = true,
+		.clk_req = CLK_REQ3
+	},
+	{ // SATA EXPRESS
+		.port_present = true,
+		.engine_type = SATA_ENGINE,
+		.start_lane = 2,
+		.end_lane = 3,
+		.gpio_group_id = 1,
+		.channel_type = DxioSataChannelLong,
+	}
+};
+
+picasso_fsp_ddi_descriptor mandolin_ddi_descriptors[] =
+{
+	{ // DDI0 - DP
+		.connector_type = DP,
+		.aux_index = AUX1,
+		.hdp_index = HDP1
+	},
+	{ // DDI1 - eDP
+		.connector_type = EDP,
+		.aux_index = AUX2,
+		.hdp_index = HDP2
+	},
+	{ // DDI2 - DP
+		.connector_type = DP,
+		.aux_index = AUX3,
+		.hdp_index = HDP3,
+	},
+	{ // DDI3 - DP
+		.connector_type = DP,
+		.aux_index = AUX4,
+		.hdp_index = HDP4,
+	}
+};
+
 void mainboard_fsp_silicon_init_params_cb(FSP_S_CONFIG *scfg)
 {
-	scfg->pcie_port0_topology = 0x8f610000;
-	scfg->pcie_port1_topology = 0x44010000;
-	scfg->pcie_port2_topology = 0x55110000;
-	scfg->pcie_port3_topology = 0x66210000;
-	scfg->pcie_port4_topology = 0x77310000;
-	scfg->pcie_port5_topology = 0;
-	scfg->pcie_port6_topology = 0x01510000;
-	scfg->pcie_sata_topology  = 0x23020000;
-	scfg->pcie_xgbe1_topology = 0;
-	scfg->pcie_xgbe2_topology = 0;
+	picasso_fsp_ddi_descriptor     *fsp_ddi;
+	picasso_fsp_pcie_descriptor    *fsp_pcie;
+	uint8_t                        counter;
+
+	fsp_pcie = (picasso_fsp_pcie_descriptor *)&(scfg->dxio_descriptor0);
+	fsp_ddi = (picasso_fsp_ddi_descriptor *)&(scfg->ddi_descriptor0);
+
+	for (counter = 0; counter < ARRAY_SIZE(mandolin_pcie_descriptors); counter++) {
+		fsp_pcie[counter] = mandolin_pcie_descriptors[counter];
+	}
+
+	for (counter = 0; counter < ARRAY_SIZE(mandolin_ddi_descriptors); counter++) {
+		fsp_ddi[counter] = mandolin_ddi_descriptors[counter];
+	}
+
 	if (!CONFIG(PICASSO_LPC_IOMUX))
 		scfg->emmc0_mode = 10;
-	scfg->dp0_connector_type = 0;
-	scfg->dp1_connector_type = 1;
 }
 
 /*************************************************

@@ -29,6 +29,8 @@
 #include <variant/ec.h>
 #include <variant/thermal.h>
 #include <vendorcode/google/chromeos/chromeos.h>
+#include <commonlib/helpers.h>
+#include <platform_descriptors.h>
 
 /***********************************************************
  * These arrays set up the FCH PCI_INTR registers 0xC00/0xC01.
@@ -178,17 +180,90 @@ static void mainboard_init(void *chip_info)
 	i2c_soc_init();
 }
 
+static const picasso_fsp_pcie_descriptor zork_pcie_descriptors[] =
+{
+	{ // NVME SSD
+		.port_present = true,
+		.engine_type = PCIE_ENGINE,
+		.start_lane = 0,
+		.end_lane = 3,
+		.device_number = 1,
+		.function_number = 7,
+		.link_aspm = ASPM_L1,
+		.link_aspm_L1_1 = true,
+		.link_aspm_L1_2 = true,
+		.turn_off_unused_lanes = true,
+		.clk_req = CLK_REQ4,
+	},
+	{ // WLAN
+		.port_present = true,
+		.engine_type = PCIE_ENGINE,
+		.start_lane = 4,
+		.end_lane = 4,
+		.device_number = 1,
+		.function_number = 2,
+		.link_aspm = ASPM_L1,
+		.link_aspm_L1_1 = true,
+		.link_aspm_L1_2 = true,
+		.turn_off_unused_lanes = true,
+		.clk_req = CLK_REQ0,
+	},
+	{ // SD Reader
+		.port_present = true,
+		.engine_type = PCIE_ENGINE,
+		.start_lane = 5,
+		.end_lane = 5,
+		.device_number = 1,
+		.function_number = 3,
+		.link_aspm = ASPM_L1,
+		.link_aspm_L1_1 = true,
+		.link_aspm_L1_2 = true,
+		.turn_off_unused_lanes = true,
+		.clk_req = CLK_REQ1,
+	}
+};
+
+picasso_fsp_ddi_descriptor zork_ddi_descriptors[] =
+{
+	{ // DDI0 - DP
+		.connector_type = EDP,
+		.aux_index = AUX1,
+		.hdp_index = HDP1
+	},
+	{ // DDI1 - eDP
+		.connector_type = HDMI,
+		.aux_index = AUX2,
+		.hdp_index = HDP2
+	},
+	{ // DDI2 - DP
+		.connector_type = DP,
+		.aux_index = AUX3,
+		.hdp_index = HDP3,
+	},
+	{ // DDI3 - DP
+		.connector_type = DP,
+		.aux_index = AUX4,
+		.hdp_index = HDP4,
+	}
+};
+
 void mainboard_fsp_silicon_init_params_cb(FSP_S_CONFIG *scfg)
 {
 
-// TODO: Move to a header file or delete when something better is developed.
-#define FIRST_LANE(x)		(x << 28)
-#define LAST_LANE(x)		(x << 24)
-#define CLKREQ(x)		(x << 20)
-#define LINK_PCIE		(1 << 16)
-#define LINK_SATA		(2 << 16)
-#define LINK_DISABLE		0
+	picasso_fsp_ddi_descriptor     *fsp_ddi;
+	picasso_fsp_pcie_descriptor    *fsp_pcie;
+	uint8_t                        counter;
 
+	fsp_pcie = (picasso_fsp_pcie_descriptor *)(scfg->dxio_descriptor0);
+	fsp_ddi = (picasso_fsp_ddi_descriptor *)&(scfg->ddi_descriptor0);
+
+	for (counter = 0; counter < ARRAY_SIZE(zork_pcie_descriptors); counter++) {
+		fsp_pcie[counter] = zork_pcie_descriptors[counter];
+	}
+
+	for (counter = 0; counter < ARRAY_SIZE(zork_ddi_descriptors); counter++) {
+		fsp_ddi[counter] = zork_ddi_descriptors[counter];
+	}
 
 // Possible definition of the SD/EMMC values
 // TODO: Remove when we get official definitions
@@ -204,18 +279,6 @@ void mainboard_fsp_silicon_init_params_cb(FSP_S_CONFIG *scfg)
 #define EMMC_HS200		9
 #define EMMC_HS400		10
 #define EMMC_HS300		11
-
-
-	scfg->pcie_port0_topology = LINK_PCIE | FIRST_LANE(0) | LAST_LANE(0) | CLKREQ(0);
-	scfg->pcie_port1_topology = LINK_PCIE | FIRST_LANE(1) | LAST_LANE(1) | CLKREQ(1);
-	scfg->pcie_port2_topology = LINK_PCIE | FIRST_LANE(5) | LAST_LANE(8) | CLKREQ(2);
-	scfg->pcie_port3_topology = LINK_DISABLE;
-	scfg->pcie_port4_topology = LINK_DISABLE;
-	scfg->pcie_port5_topology = 0;
-	scfg->pcie_port6_topology = LINK_DISABLE;
-	scfg->pcie_sata_topology  = LINK_DISABLE;
-	scfg->pcie_xgbe1_topology = LINK_DISABLE;
-	scfg->pcie_xgbe2_topology = LINK_DISABLE;
 
 	if (has_emmc(variant_board_sku()))
 		scfg->emmc0_mode = EMMC_HS400;
