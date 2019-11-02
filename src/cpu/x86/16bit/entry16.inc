@@ -29,6 +29,10 @@
 
 #include <arch/rom_segs.h>
 
+#if (CONFIG(C_ENVIRONMENT_BOOTBLOCK) && CONFIG_C_ENV_BOOTBLOCK_SIZE > 0x10000)
+.section ".near_reset_vector", "ax", @progbits
+#endif
+
 #if CONFIG(C_ENVIRONMENT_BOOTBLOCK) || \
     CONFIG(SIPI_VECTOR_IN_ROM)
 /* Symbol _start16bit must be aligned to 4kB to start AP CPUs with
