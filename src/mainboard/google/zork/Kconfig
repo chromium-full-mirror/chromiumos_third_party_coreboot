@@ -122,7 +122,7 @@ config AMD_FWM_POSITION_INDEX
 
 config DRIVER_TPM_I2C_BUS
 	hex
-	default 0x01
+	default 0x03
 
 config DRIVER_TPM_I2C_ADDR
 	hex
