@@ -17,11 +17,6 @@
 #ifndef __ACPI__
 #include <soc/gpio.h>
 
-# define MEM_CONFIG0		GPIO_121	/* RAM_ID_0 */
-# define MEM_CONFIG1		GPIO_120	/* RAM_ID_1 */
-# define MEM_CONFIG2		GPIO_131	/* RAM_ID_2 */
-# define MEM_CONFIG3		GPIO_116	/* RAM_ID_3 */
-
 /* CR50 interrupt pin */
 #define H1_PCH_INT		GPIO_3		/* H1_INT */
 
