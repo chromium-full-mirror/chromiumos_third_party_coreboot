@@ -128,13 +128,6 @@ config DRIVER_TPM_I2C_ADDR
 	hex
 	default 0x50
 
-config EC_GOOGLE_CHROMEEC_LPC
-	def_bool n
-
-config EC_GOOGLE_CHROMEEC_SPI_BUS
-	hex
-	default 0x01
-
 config USE_OEM_BIN
 	bool "Add an oem.bin file"
 	help
