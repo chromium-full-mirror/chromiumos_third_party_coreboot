@@ -728,7 +728,7 @@ int espi_enable_resources(const struct resource *resource_linked_list)
 
 /*
  * Same as above, but also opens IO windows for all probed subordinate devices.
- * Any previously enabled ranges will be nullified.
+ * Any previously enabled ranges will be nullified if any values are set here.
  * Intended to be used as the ops->enable_resources of the eSPI bridge device.
  */
 void espi_enable_children_resources(struct device *espi)
@@ -736,6 +736,7 @@ void espi_enable_children_resources(struct device *espi)
 	struct espi_resource_allocator allocation;
 	const struct device *child;
 	const struct bus *link;
+	int set = 0;
 
 	memset(&allocation, 0, sizeof(allocation));
 
@@ -743,10 +744,11 @@ void espi_enable_children_resources(struct device *espi)
 		for (child = link->children; child; child = child->sibling) {
 			if (!child->enabled)
 				continue;
-
+			set = 1;
 			espi_allocate(&allocation, child->resource_list);
 		}
 	}
 
-	espi_write_resources(&allocation);
+	if (set)
+		espi_write_resources(&allocation);
 }
