@@ -110,7 +110,7 @@ static void dw_i2c_soc_init(bool is_early_init)
 	if (config == NULL)
 		return;
 
-	for (i = 0; i < ARRAY_SIZE(config->i2c); i++) {
+	for (i = APU_I2C_MIN_BUS; i < ARRAY_SIZE(config->i2c); i++) {
 		const struct dw_i2c_bus_config *cfg  = &config->i2c[i];
 
 		if (cfg->early_init != is_early_init)
