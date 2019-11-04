@@ -39,18 +39,3 @@ Name(APR0, Package(){
 	Package() { 0x0014FFFF, 2, 0, 18 },
 	Package() { 0x0014FFFF, 3, 0, 19 },
 })
-
-Name(PS4, Package(){
-})
-
-Name(PS5, Package(){
-})
-
-Name(PS6, Package(){
-})
-
-Name(PS7, Package(){
-})
-
-Name(PS8, Package(){
-})
