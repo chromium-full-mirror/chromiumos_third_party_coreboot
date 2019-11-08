@@ -67,7 +67,7 @@ static const struct fch_apic_routing {
 	uint8_t intr_index;
 	uint8_t pic_irq_num;
 	uint8_t apic_irq_num;
-} mandolin_fch[] = {
+} fch_pirq[] = {
 	{ PIRQ_A,	3,		16 },
 	{ PIRQ_B,	4,		17 },
 	{ PIRQ_C,	5,		18 },
@@ -123,8 +123,8 @@ static void init_tables(void)
 	memset(fch_pic_routing, PIRQ_NC, sizeof(fch_pic_routing));
 	memset(fch_apic_routing, PIRQ_NC, sizeof(fch_apic_routing));
 
-	for (i = 0; i < ARRAY_SIZE(mandolin_fch); i++) {
-		entry = mandolin_fch + i;
+	for (i = 0; i < ARRAY_SIZE(fch_pirq); i++) {
+		entry = fch_pirq + i;
 		fch_pic_routing[entry->intr_index] = entry->pic_irq_num;
 		fch_apic_routing[entry->intr_index] = entry->apic_irq_num;
 	}
