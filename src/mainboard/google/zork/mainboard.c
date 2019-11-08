@@ -141,15 +141,6 @@ static void pirq_setup(void)
 	picr_data_ptr = fch_pic_routing;
 }
 
-static int has_emmc(uint8_t sku)
-{
-	if (sku == 2) {
-		return 1;
-	}
-
-	return 0;
-}
-
 static void mainboard_init(void *chip_info)
 {
 	const struct sci_source *gpes;
@@ -280,7 +271,7 @@ void mainboard_fsp_silicon_init_params_cb(FSP_S_CONFIG *scfg)
 #define EMMC_HS400		10
 #define EMMC_HS300		11
 
-	if (has_emmc(variant_board_sku()))
+	if (variant_has_emmc(variant_board_sku()))
 		scfg->emmc0_mode = EMMC_HS400;
 	else
 		scfg->emmc0_mode = SD_DISABLE;
@@ -325,7 +316,16 @@ struct chip_operations mainboard_ops = {
 	.final = mainboard_final,
 };
 
-/* Variants may override these functions so see definitions in variants/ */
+const char *smbios_system_sku(void)
+{
+	static char sku_str[7]; /* sku{0..255} */
+
+	snprintf(sku_str, sizeof(sku_str), "sku%hhd", variant_board_sku());
+
+	return sku_str;
+}
+
+/* Variants may override these functions so see definitions in variants */
 uint8_t __weak variant_board_sku(void)
 {
 	return 0;
@@ -335,11 +335,8 @@ void __weak variant_mainboard_suspend_resume(void)
 {
 }
 
-const char *smbios_system_sku(void)
+int __weak variant_has_emmc(uint8_t sku)
 {
-	static char sku_str[7]; /* sku{0..255} */
-
-	snprintf(sku_str, sizeof(sku_str), "sku%d", variant_board_sku());
-
-	return sku_str;
+	/* Default to EMMC enabled */
+	return 1;
 }
