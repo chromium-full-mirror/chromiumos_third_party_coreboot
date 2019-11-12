@@ -133,6 +133,14 @@ static const struct winbond_spi_flash_params winbond_spi_flash_table[] = {
 		.name				= "W25Q128J",
 	},
 	{
+		.id                             = 0x8018,
+		.l2_page_size_shift             = 8,
+		.pages_per_sector_shift         = 4,
+		.sectors_per_block_shift        = 4,
+		.nr_blocks_shift                = 8,
+		.name                           = "W25Q128JW",
+	},
+	{
 		.id				= 0x4019,
 		.l2_page_size_shift		= 8,
 		.pages_per_sector_shift		= 4,
