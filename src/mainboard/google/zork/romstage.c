@@ -46,18 +46,18 @@ static void enable_espi_early(void)
 
 	struct resource ioports[] = { {
 		.flags = IORESOURCE_IO,
-		.base = 0x60,
-		.size = 8,
+		.base = 0x62,
+		.size = 5,
 		.next = ioports + 1,
 	},{
 		.flags = IORESOURCE_IO,
-		.base = 0x800,
-		.size = 0x100,
+		.base = EC_HOST_CMD_REGION0,
+		.size = EC_HOST_CMD_REGION_SIZE * 2,
 		.next = ioports + 2
 	},{
 		.flags = IORESOURCE_IO,
-		.base = 0x900,
-		.size = 0x100,
+		.base = EC_LPC_ADDR_MEMMAP,
+		.size = EC_MEMMAP_SIZE + 1,
 		.next = ioports + 3
 	},{
 		.flags = IORESOURCE_IO,
