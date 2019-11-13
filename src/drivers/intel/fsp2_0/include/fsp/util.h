@@ -38,6 +38,12 @@ struct hob_resource {
 	uint64_t length;
 } __packed;
 
+struct hob_guid_extension {
+	struct hob_header header;
+	uint32_t reserved;
+	uint8_t name[16];
+} __packed;
+
 #if CONFIG_UDK_VERSION < CONFIG_UDK_2017_VERSION
 enum resource_type {
 	EFI_RESOURCE_SYSTEM_MEMORY		= 0,

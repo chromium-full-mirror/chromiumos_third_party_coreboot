@@ -32,6 +32,7 @@
 #include <soc/southbridge.h>
 #include <soc/pci_devs.h>
 #include <soc/iomap.h>
+#include <soc/acpi.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -135,11 +136,70 @@ static void northbridge_fill_ssdt_generator(struct device *device)
 	acpigen_pop_len();
 }
 
-static unsigned long agesa_write_acpi_tables(struct device *device,
-					     unsigned long current,
+static struct amd_fsp_acpi_hob_info *find_acpi_guid_hob(const uint8_t *guid)
+{
+	const struct hob_header *hob = fsp_get_hob_list();
+	struct amd_fsp_acpi_hob_info *guid_hob;
+	const struct hob_resource *res;
+
+	if (!hob) {
+		printk(BIOS_ERR, "Error: No HOB list was found. Cannot find ACPI hob\n");
+		return NULL;
+	}
+
+	for (; hob->type != HOB_TYPE_END_OF_HOB_LIST; hob = fsp_next_hob(hob)) {
+		if (hob->type != HOB_TYPE_GUID_EXTENSION) {
+			continue;
+		}
+		res = fsp_hob_header_to_resource(hob);
+		guid_hob = (struct amd_fsp_acpi_hob_info *)hob;
+
+		if (memcmp(res->owner_guid, guid, 16) == 0) {
+			return guid_hob;
+		}
+	}
+
+	return NULL;
+}
+
+static unsigned long agesa_write_acpi_tables(struct device *device, unsigned long current,
 					     acpi_rsdp_t *rsdp)
 {
-	/* TODO - different mechanism to collect this info for Family 17h */
+	struct amd_fsp_acpi_hob_info *data;
+	uint8_t guid[] = AMD_FSP_ACPI_HOB_BASE_GUID;
+	printk(BIOS_DEBUG, "Searching for AGESA FSP ACPI Tables\n");
+
+	// SSDT
+	memcpy(guid, "SSDT", 4);
+	data = find_acpi_guid_hob(guid);
+	if (data != NULL) {
+		printk(BIOS_DEBUG, "Found SSDT\n");
+		acpi_add_table(rsdp, (void *)data);
+	}
+	// CRAT
+	memcpy(guid, "CRAT", 4);
+	data = find_acpi_guid_hob(guid);
+	if (data != NULL) {
+		printk(BIOS_DEBUG, "Found CRAT\n");
+		acpi_add_table(rsdp, (void *)data);
+	}
+	// ALIB
+	memcpy(guid, "ALIB", 4);
+	data = find_acpi_guid_hob(guid);
+	if (data != NULL) {
+		printk(BIOS_DEBUG, "Found ALIB\n");
+		acpi_add_table(rsdp, (void *)data);
+	}
+	// IVRS
+	memcpy(guid, "IVRS", 4);
+	data = find_acpi_guid_hob(guid);
+	if (data != NULL) {
+		printk(BIOS_DEBUG, "Found IVRS\n");
+		acpi_add_table(rsdp, (void *)data);
+	}
+
+	// Add SRAT, MSCT, SLIT if needed in the future
+
 	return current;
 }
 

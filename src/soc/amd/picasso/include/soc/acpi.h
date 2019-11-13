@@ -19,10 +19,27 @@
 #define __SOC_PICASSO_ACPI_H__
 
 #include <arch/acpi.h>
+#include <fsp/util.h>
 
 #ifndef FADT_PM_PROFILE
 	#define FADT_PM_PROFILE PM_UNSPECIFIED
 #endif
+
+#define AMD_FSP_ACPI_HOB_BASE_GUID { \
+	0x00, 0x00, 0x00, 0x00, \
+	0x02, 0x40, 0x3B, 0x40, \
+	0x87, 0xE1, 0x3F, 0xEB, \
+	0x13, 0xC5, 0x66, 0x9A \
+	}
+
+struct amd_fsp_acpi_hob_info {
+	struct hob_guid_extension guid_extension_header;
+	uint32_t table_size_in_bytes;
+	uint8_t total_hobs_for_table;
+	uint8_t sequence_number;
+	uint16_t reserved;
+	uint16_t hob_payload[0xffc8];
+} __packed;
 
 unsigned long southbridge_write_acpi_tables(struct device *device,
 		unsigned long current, struct acpi_rsdp *rsdp);
