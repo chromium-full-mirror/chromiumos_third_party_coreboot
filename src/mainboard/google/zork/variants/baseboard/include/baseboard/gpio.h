@@ -34,7 +34,7 @@
 #endif /* _ACPI__ */
 
 /* These define the GPE, not the GPIO. */
-#define EC_SCI_GPI		3	/* AGPIO 22 -> GPE  3 */
+#define EC_SCI_GPI		23	/* eSPI system event -> GPE 23 */
 #define EC_WAKE_GPI		15	/* AGPIO 24 -> GPE 15 */
 
 /* EC sync irq */

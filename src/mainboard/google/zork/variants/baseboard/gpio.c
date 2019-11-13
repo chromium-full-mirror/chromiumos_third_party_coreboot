@@ -13,6 +13,7 @@
 
 #include <baseboard/variants.h>
 #include <soc/gpio.h>
+#include <soc/smi.h>
 #include <soc/southbridge.h>
 #include <stdlib.h>
 #include <boardid.h>
@@ -201,6 +202,15 @@ struct soc_amd_gpio *variant_gpio_table(size_t *size)
 	return gpio_set_stage_ram;
 }
 
+static const struct sci_source sci_sources[] = {
+	{
+		.scimap = SMITYPE_ESPI_SYS,
+		.gpe = GEVENT_23,
+		.direction = 1,
+		.level = 0
+	}
+};
+
 /*
  * This function is still needed for boards that sets gevents above 23
  * that will generate SCI or SMI. Normally this function
@@ -210,5 +220,6 @@ struct soc_amd_gpio *variant_gpio_table(size_t *size)
  */
 const __weak struct sci_source *get_gpe_table(size_t *num)
 {
-	return NULL;
+	*num = ARRAY_SIZE(sci_sources);
+	return sci_sources;
 }
