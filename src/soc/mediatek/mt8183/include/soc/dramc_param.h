@@ -70,6 +70,7 @@ struct dramc_param_ops {
 	struct dramc_param *param;
 	bool (*read_from_flash)(struct dramc_param *dparam);
 	bool (*write_to_flash)(const struct dramc_param *dparam);
+	void (*do_putc)(unsigned char c);
 };
 
 struct dramc_param *get_dramc_param_from_blob(void *blob);

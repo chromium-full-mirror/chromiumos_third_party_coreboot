@@ -52,6 +52,34 @@ static bool write_calibration_data_to_flash(const struct dramc_param *dparam)
 	return ret == length;
 }
 
+static void write_calibration_message(unsigned char c)
+{
+	static char message[4096];
+	static int cursor, flash_cursor, has_rdev = -1;
+	static struct region_device rdev;
+	const int chunk_size = sizeof(message);
+
+	message[cursor++] = c;
+
+	if (c) {
+		do_putchar(c);
+		if (cursor < chunk_size)
+			return;
+	}
+
+	/* Flush message buffer. */
+	if (has_rdev == -1)
+		has_rdev = !fmap_locate_area_as_rdev_rw("DRAMK_LOG", &rdev);
+
+	if (has_rdev &&
+	    flash_cursor + chunk_size <= region_device_sz(&rdev) &&
+	    rdev_eraseat(&rdev, flash_cursor, chunk_size) >= 0)
+		rdev_writeat(&rdev, message, flash_cursor, cursor);
+
+	flash_cursor += chunk_size;
+	cursor = 0;
+}
+
 /* dramc_param is ~2K and too large to fit in stack. */
 static struct dramc_param dramc_parameter;
 
@@ -59,6 +87,7 @@ static struct dramc_param_ops dparam_ops = {
 	.param = &dramc_parameter,
 	.read_from_flash = &read_calibration_data_from_flash,
 	.write_to_flash = &write_calibration_data_to_flash,
+	.do_putc = write_calibration_message,
 };
 
 void platform_romstage_main(void)

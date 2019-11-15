@@ -108,7 +108,8 @@ static int dram_run_fast_calibration(const struct dramc_param *dparam,
 	return 0;
 }
 
-static int dram_run_full_calibration(struct dramc_param *dparam, u16 config)
+static int dram_run_full_calibration(struct dramc_param *dparam, u16 config,
+				     void *do_putc)
 {
 	initialize_dramc_param(dparam, config);
 
@@ -121,7 +122,7 @@ static int dram_run_full_calibration(struct dramc_param *dparam, u16 config)
 	if (cbfs_prog_stage_load(&dram))
 		return -2;
 
-	dparam->do_putc = do_putchar;
+	dparam->do_putc = do_putc;
 	prog_set_entry(&dram, prog_entry(&dram), dparam);
 	prog_run(&dram);
 
@@ -197,8 +198,18 @@ void mt_mem_init(struct dramc_param_ops *dparam_ops)
 	}
 
 	/* Run full calibration */
+	void (*do_putc)(unsigned char) = dparam_ops->do_putc;
+	if (recovery_mode)
+		do_putc = do_putchar;
+
+
 	printk(BIOS_INFO, "DRAM-K: Full Calibration\n");
-	int err = dram_run_full_calibration(dparam, config);
+	int err = dram_run_full_calibration(dparam, config, do_putc);
+
+	/* Flush messages */
+	if (!recovery_mode)
+		do_putc(0);
+
 	if (err == 0) {
 		printk(BIOS_INFO, "Successfully loaded DRAM blobs and "
 		       "ran DRAM calibration\n");
