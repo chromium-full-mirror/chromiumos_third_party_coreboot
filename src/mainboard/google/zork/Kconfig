@@ -74,12 +74,11 @@ config MAINBOARD_FAMILY
 	string
 	default "Google_Zork"
 
+#TODO: Change back to only using the fmd file if we're building for chromeos
+#      after verstage is building.
 config FMDFILE
 	string
-	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/chromeos.fmd" if CHROMEOS
-	# Update to variant specific fmd files if needed
-	# default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/variants/$(CONFIG_VARIANT_DIR)/chromeos.fmd" if CHROMEOS
-	default ""
+	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/chromeos.fmd" #if CHROMEOS
 	help
 	  The build system creates a default FMAP from ROM_SIZE and CBFS_SIZE,
 	  but in some cases more complex setups are required.
