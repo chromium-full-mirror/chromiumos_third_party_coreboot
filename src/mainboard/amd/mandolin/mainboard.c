@@ -267,7 +267,7 @@ static const picasso_fsp_pcie_descriptor mandolin_pcie_descriptors[] =
 		.start_lane = 2,
 		.end_lane = 3,
 		.gpio_group_id = 1,
-		.channel_type = DxioSataChannelLong,
+		.channel_type = SATA_CHANNEL_LONG,
 	}
 };
 
