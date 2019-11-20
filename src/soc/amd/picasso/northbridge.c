@@ -140,7 +140,7 @@ static struct amd_fsp_acpi_hob_info *find_acpi_guid_hob(const uint8_t *guid)
 {
 	const struct hob_header *hob = fsp_get_hob_list();
 	struct amd_fsp_acpi_hob_info *guid_hob;
-	const struct hob_resource *res;
+	const struct hob_resource *hob_data;
 
 	if (!hob) {
 		printk(BIOS_ERR, "Error: No HOB list was found. Cannot find ACPI hob\n");
@@ -151,10 +151,10 @@ static struct amd_fsp_acpi_hob_info *find_acpi_guid_hob(const uint8_t *guid)
 		if (hob->type != HOB_TYPE_GUID_EXTENSION) {
 			continue;
 		}
-		res = fsp_hob_header_to_resource(hob);
+		hob_data = fsp_hob_header_to_resource(hob);
 		guid_hob = (struct amd_fsp_acpi_hob_info *)hob;
 
-		if (memcmp(res->owner_guid, guid, 16) == 0) {
+		if (memcmp(hob_data->owner_guid, guid, 16) == 0) {
 			return guid_hob;
 		}
 	}
@@ -169,36 +169,36 @@ static unsigned long agesa_write_acpi_tables(struct device *device, unsigned lon
 	uint8_t guid[] = AMD_FSP_ACPI_HOB_BASE_GUID;
 	printk(BIOS_DEBUG, "Searching for AGESA FSP ACPI Tables\n");
 
-	// SSDT
+	/* SSDT */
 	memcpy(guid, "SSDT", 4);
 	data = find_acpi_guid_hob(guid);
 	if (data != NULL) {
 		printk(BIOS_DEBUG, "Found SSDT\n");
-		acpi_add_table(rsdp, (void *)data);
+		acpi_add_table(rsdp, data->hob_payload);
 	}
-	// CRAT
+	/* CRAT */
 	memcpy(guid, "CRAT", 4);
 	data = find_acpi_guid_hob(guid);
 	if (data != NULL) {
 		printk(BIOS_DEBUG, "Found CRAT\n");
-		acpi_add_table(rsdp, (void *)data);
+		acpi_add_table(rsdp, data->hob_payload);
 	}
-	// ALIB
+	/* ALIB */
 	memcpy(guid, "ALIB", 4);
 	data = find_acpi_guid_hob(guid);
 	if (data != NULL) {
 		printk(BIOS_DEBUG, "Found ALIB\n");
-		acpi_add_table(rsdp, (void *)data);
+		acpi_add_table(rsdp, data->hob_payload);
 	}
-	// IVRS
+	/* IVRS */
 	memcpy(guid, "IVRS", 4);
 	data = find_acpi_guid_hob(guid);
 	if (data != NULL) {
 		printk(BIOS_DEBUG, "Found IVRS\n");
-		acpi_add_table(rsdp, (void *)data);
+		acpi_add_table(rsdp, data->hob_payload);
 	}
 
-	// Add SRAT, MSCT, SLIT if needed in the future
+	/* Add SRAT, MSCT, SLIT if needed in the future */
 
 	return current;
 }
