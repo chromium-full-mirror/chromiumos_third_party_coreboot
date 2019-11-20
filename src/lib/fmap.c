@@ -46,7 +46,13 @@ uint64_t get_fmap_flash_offset(void)
 
 static int check_signature(const struct fmap *fmap)
 {
+#if 1
+	/* Special hack to prevent generating FMAP_SIGNATURE directly. */
+	return !(fmap->signature[0] == '-' &&
+		 memcmp(&fmap->signature[1], "_FMAP__", 7) == 0);
+#else
 	return memcmp(fmap->signature, FMAP_SIGNATURE, sizeof(fmap->signature));
+#endif
 }
 
 static void report(const struct fmap *fmap)
