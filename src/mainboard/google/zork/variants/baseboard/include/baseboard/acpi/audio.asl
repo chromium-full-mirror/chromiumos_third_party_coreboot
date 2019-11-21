@@ -10,32 +10,54 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-#include <soc/iomap.h>
 
-/* Grunt specific I2S machine driver */
-Device (I2S)
-{
-	Name (_ADR, 1)
-	Name (_HID, "AMD7219")
-	Name (_CID, "AMD7219")
-
-	/* Device-Specific Data */
-	Name (_DSD, Package ()
+Scope (EC0.CREC) {
+	Device (I2CT)
 	{
-		ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
-		Package ()
+		Name (_HID, "GOOG0012")
+		Name (_UID, 1)
+		Name (_DDN, "CROS I2C TUNNEL Device")
+
+		/* Device-Specific Data */
+		Name (_DSD, Package ()
 		{
-			Package () { "bt-pad-enable", 1 },
-		}
-	})
+			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+			Package ()
+			{
+				Package () { "google,remote-bus", 8 },
+			}
 
-	Method (_CRS, 0x0, Serialized) {
-		Name (RBUF, ResourceTemplate () {
-			// Memory resource is for MISC FCH register set.
-			// It is needed for enabling the clock.
-			Memory32Fixed(ReadWrite, ACPIMMIO_MISC_BASE, 0x100)
 		})
+		Device (RT58)
+		{
+			Name (_HID, "10EC5682")
+			Name (_UID, 1)
+			Name (_DDN, "Realtek RT5682")
 
-		Return (RBUF)
+			Name (_CRS, ResourceTemplate ()
+			{
+				I2cSerialBus (
+					0x001A, /* Slave address */
+					ControllerInitiated,
+					0x00061A80,     /* speed */
+					AddressingMode7Bit,
+					"^", /* bus */
+					0x00,
+					ResourceConsumer,
+					,
+				)
+			})
+
+			/* Device-Specific Data */
+			Name (_DSD, Package ()
+			{
+				ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+				Package ()
+				{
+					Package () { "realtek,jd-src", 1 },
+				},
+
+			})
+		}
 	}
 }
