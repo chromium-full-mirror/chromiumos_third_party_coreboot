@@ -74,6 +74,8 @@ DefinitionBlock (
 		#include <ec/google/chromeec/acpi/superio.asl>
 		/* ACPI code for EC functions */
 		#include <ec/google/chromeec/acpi/ec.asl>
+		/* ACPI code for EC I2C Audio Tunnel */
+		#include <variant/acpi/audio.asl>
 	}
 }
 /* End of ASL file */
