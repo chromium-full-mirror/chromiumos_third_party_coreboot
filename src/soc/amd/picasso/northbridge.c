@@ -190,6 +190,8 @@ static unsigned long agesa_write_acpi_tables(struct device *device, unsigned lon
 		printk(BIOS_DEBUG, "Found ALIB\n");
 		acpi_add_table(rsdp, data->hob_payload);
 	}
+//TODO: Re-enable this after we figure out the IOMMU issue
+#if 0
 	/* IVRS */
 	memcpy(guid, "IVRS", 4);
 	data = find_acpi_guid_hob(guid);
@@ -197,6 +199,7 @@ static unsigned long agesa_write_acpi_tables(struct device *device, unsigned lon
 		printk(BIOS_DEBUG, "Found IVRS\n");
 		acpi_add_table(rsdp, data->hob_payload);
 	}
+#endif
 
 	/* Add SRAT, MSCT, SLIT if needed in the future */
 
