@@ -14,6 +14,7 @@
 #if !defined(__ASSEMBLER__)
 
 #include <arch/cpu.h>
+#include <stdbool.h>
 
 static inline void wbinvd(void)
 {
@@ -29,6 +30,8 @@ static inline void clflush(void *addr)
 {
 	asm volatile ("clflush (%0)"::"r" (addr));
 }
+
+bool clflush_supported(void);
 
 /* The following functions require the __always_inline due to AMD
  * function STOP_CAR_AND_CPU that disables cache as
