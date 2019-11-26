@@ -26,7 +26,6 @@ struct vb2_shared_data;
 /*
  * Source: security/vboot/common.c
  */
-void *vboot_get_workbuf(void);
 struct vb2_context *vboot_get_context(void);
 
 /*
