@@ -13,14 +13,14 @@
 chip soc/amd/picasso
 	register "acp_pin_cfg" = "I2S_PINS_I2S_TDM"
 
-	# Enable I2C2 for trackpad, pen at 400kHz
+	# Enable I2C2 for trackpad, touchscreen, pen at 400kHz
 	register "i2c[2]" = "{
 		.speed = I2C_SPEED_FAST,
 		.rise_time_ns = 3,
 		.fall_time_ns = 2,
 	}"
 
-	# Enable I2C3 for touchscreen at 400kHz
+	# Enable I2C3 for H1 400kHz
 	register "i2c[3]" = "{
 		.speed = I2C_SPEED_FAST,
 		.rise_time_ns = 16,
@@ -37,13 +37,14 @@ chip soc/amd/picasso
 		subsystemid 0x1022 0x1510 inherit
 		device pci 0.0 on  end # Root Complex
 		device pci 0.2 on  end # IOMMU
-		device pci 1.0 on  end # Wifi
-		device pci 1.3 on # Bridge
-			device pci 0.0 on  end # SD
-		end
-		device pci 1.7 on # Bridge
-			device pci 0.0 on  end # NVMe
-		end
+		device pci 1.0 on  end # Unused, but must be enabled
+		device pci 1.1 off end
+		device pci 1.2 on  end # Bridge to Wifi
+		device pci 1.3 on  end # Bridge to SD
+		device pci 1.4 off end
+		device pci 1.5 off end
+		device pci 1.6 off end
+		device pci 1.7 on  end # Bridge to NVME
 		device pci 8.0 on  end # Dummy Host Bridge
 		device pci 8.1 on      # Bridge to Bus A
 			device pci 0.0 on  end # Internal GPU
@@ -63,7 +64,6 @@ chip soc/amd/picasso
 			device generic a0.1 on end # - eSPI bus
 			device generic 0.0 off end # - LPC bus
 		end
-		device pci 14.6 off end # SDHCI
 		device pci 18.0 on  end # Data fabric [0-7]
 		device pci 18.1 on  end
 		device pci 18.2 on  end
