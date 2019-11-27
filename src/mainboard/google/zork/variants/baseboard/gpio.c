@@ -127,7 +127,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* TP_31 (unused) */
 	PAD_GPI(GPIO_32, PULL_UP),
 	/* EN_PWR_TOUCHPAD_PS2 */
-//	PAD_GPO(GPIO_67, HIGH),
+//	PAD_GPO(GPIO_67, HIGH), /* Set high later in boot sequence */
 	/* EMMC_RESET */
 	PAD_GPO(GPIO_68, LOW),
 	/* FPMCU_BOOT0 - TODO: Check this */
