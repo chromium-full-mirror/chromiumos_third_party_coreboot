@@ -30,8 +30,6 @@ endif
 
 verstage-generic-ccopts += -D__VERSTAGE__
 
-ramstage-y += gbb.c
-
 bootblock-y += vbnv.c
 verstage-y += vbnv.c
 romstage-y += vbnv.c
