@@ -72,6 +72,10 @@ unsigned long acpi_fill_madt(unsigned long current)
 void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 {
 	acpi_header_t *header = &(fadt->header);
+	const config_t *config = get_soc_config();
+
+	if (config == NULL)
+		return;
 
 	printk(BIOS_DEBUG, "pm_base: 0x%04x\n", PICASSO_ACPI_IO_BASE);
 
@@ -88,7 +92,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	fadt->firmware_ctrl = (u32) facs;
 	fadt->dsdt = (u32) dsdt;
 	fadt->reserved = 0;		/* reserved, should be 0 ACPI 3.0 */
-	fadt->preferred_pm_profile = FADT_PM_PROFILE;
+	fadt->preferred_pm_profile = config->fadt_pm_profile; /* unknown is default */
 	fadt->sci_int = 9;		/* IRQ 09 - ACPI SCI */
 
 	if (CONFIG(HAVE_SMI_HANDLER)) {
@@ -135,9 +139,12 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	fadt->day_alrm = 0;	/* 0x7d these have to be */
 	fadt->mon_alrm = 0;	/* 0x7e added to cmos.layout */
 	fadt->century = 0;	/* 0x7f to make rtc alarm work */
-	fadt->iapc_boot_arch = ACPI_FADT_LEGACY_DEVICES | ACPI_FADT_8042;
+	fadt->iapc_boot_arch = config->fadt_boot_arch; /* legacy free default */
 	fadt->res2 = 0;		/* reserved, MUST be 0 ACPI 3.0 */
-	fadt->flags = ACPI_FADT_WBINVD | /* See table 5-10 ACPI 3.0a spec */
+	if (config->fadt_flags)
+		fadt->flags = config->fadt_flags;
+	else
+		fadt->flags = ACPI_FADT_WBINVD | /* See table 5-10 ACPI 3.0a spec */
 				ACPI_FADT_C1_SUPPORTED |
 				ACPI_FADT_SLEEP_BUTTON |
 				ACPI_FADT_S4_RTC_WAKE |

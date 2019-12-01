@@ -21,10 +21,6 @@
 #include <arch/acpi.h>
 #include <fsp/util.h>
 
-#ifndef FADT_PM_PROFILE
-	#define FADT_PM_PROFILE PM_UNSPECIFIED
-#endif
-
 #define AMD_FSP_ACPI_HOB_BASE_GUID { \
 	0x00, 0x00, 0x00, 0x00, \
 	0x02, 0x40, 0x3B, 0x40, \

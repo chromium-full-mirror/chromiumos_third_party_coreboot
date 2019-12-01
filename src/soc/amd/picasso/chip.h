@@ -18,6 +18,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <arch/acpi.h>
 #include <commonlib/helpers.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <soc/i2c.h>
@@ -45,6 +46,12 @@ struct soc_amd_picasso_config {
 		I2S_PINS_I2S_TDM = 4,
 		I2S_PINS_UNCONF = 7,	/* All pads will be input mode */
 	} acp_pin_cfg;
+
+/* ***** ACPI configuration ***** */
+	/* Options for these are in src/arch/x86/include/arch/acpi.h */
+	uint8_t  fadt_pm_profile;
+	uint16_t fadt_boot_arch;
+	uint32_t fadt_flags;
 };
 
 typedef struct soc_amd_picasso_config config_t;
