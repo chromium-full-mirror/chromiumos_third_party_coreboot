@@ -348,6 +348,7 @@ void sb_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm);
 void fch_pre_init(void);
 void fch_early_init(void);
 void set_uart_config(int idx);
+const struct soc_amd_picasso_config *get_soc_config(void);
 
 /* Initialize all the i2c buses that are marked with early init. */
 void i2c_soc_early_init(void);

@@ -115,6 +115,19 @@ const static struct irq_idx_name irq_association[] = {
 	{ PIRQ_UART3,	"UART3" },
 };
 
+const struct soc_amd_picasso_config *get_soc_config(void)
+{
+	const struct device *dev = pcidev_path_on_root(GNB_DEVFN);
+
+	if (!dev || !dev->chip_info) {
+		printk(BIOS_ERR, "%s: Could not find SoC devicetree config!\n",
+			__func__);
+		return NULL;
+	}
+
+	return dev->chip_info;
+}
+
 const struct irq_idx_name *sb_get_apic_reg_association(size_t *size)
 {
 	*size = ARRAY_SIZE(irq_association);
