@@ -22,7 +22,7 @@
 
 	cld
 
-	movl	$(_earlyram_stack_end), %esp
+	movl	$(_eearlyram_stack), %esp
 	movl	$CONFIG_EARLYRAM_BSP_STACK_SIZE, %ecx
 
 	/* Send execution to the soc directory to allow assignment of a

@@ -211,8 +211,9 @@ PSP_APOB_BASE=$(CONFIG_PSP_APOB_DESTINATION)
 
 # type = 0x62
 PSP_BIOSBIN_FILE=$(obj)/amd_biospsp.img
+PSP_ELF_FILE=$(obj)/cbfs/fallback/romstage.elf
 PSP_BIOSBIN_DEST=$(CONFIG_ROMSTAGE_ADDR)
-PSP_BIOSBIN_SIZE=0x10000 # Current size of romstage program
+PSP_BIOSBIN_SIZE=$(shell printf "%x" $(call int-subtract, $(call int-add, $(CONFIG_X86_RESET_VECTOR) 0x10) $(PSP_BIOSBIN_DEST)))
 
 # type = 0x63
 PSP_APOBNV_BASE=$(CONFIG_PSP_APOB_NV_ADDRESS)
@@ -293,6 +294,12 @@ OPT_PSP_UCODE_FILE1=$(call add_opt_prefix, $(PSP_UCODE_FILE1), --instance 0 --uc
 OPT_PSP_UCODE_FILE2=$(call add_opt_prefix, $(PSP_UCODE_FILE2), --instance 1 --ucode)
 OPT_PSP_UCODE_FILE3=$(call add_opt_prefix, $(PSP_UCODE_FILE3), --instance 2 --ucode)
 OPT_MP2CFG_FILE=$(call add_opt_prefix, $(PSP_MP2CFG_FILE), --mp2-config)
+
+$(PSP_BIOSBIN_FILE): $(PSP_ELF_FILE) $(AMDCOMPRESS)
+	rm -f $@
+	@printf "    AMDCOMPRS  $(subst $(obj)/,,$(@))\n"
+	$(AMDCOMPRESS) --infile $(PSP_ELF_FILE) --outfile $@ --compress \
+		--maxsize $(PSP_BIOSBIN_SIZE)
 
 $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)) \
 			$(call strip_quotes, $(PUBSIGNEDKEY_FILE)) \
@@ -397,13 +404,6 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)) \
 		--flashsize $(CONFIG_ROM_SIZE) \
 		--location $(shell printf "0x%x" $(PICASSO_FWM_POSITION)) \
 		--output	$@
-
-USE_BIOS_FILE=$(obj)/cbfs/fallback/romstage.elf
-$(PSP_BIOSBIN_FILE): $(obj)/cbfs/fallback/romstage.elf $(AMDCOMPRESS)
-	rm -f $@
-	@printf "    AMDCOMPRS  $(subst $(obj)/,,$(@))\n"
-	$(AMDCOMPRESS) --infile $(USE_BIOS_FILE) --outfile $@ --compress \
-		--maxsize $(PSP_BIOSBIN_SIZE)
 
 ifeq ($(CONFIG_AMDFW_OUTSIDE_CBFS),y)
 PHONY+=add_amdfw

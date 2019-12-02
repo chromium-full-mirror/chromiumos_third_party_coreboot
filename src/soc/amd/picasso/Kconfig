@@ -58,6 +58,7 @@ config CPU_SPECIFIC_OPTIONS
 	select SSE2
 	select RTC
 	select PLATFORM_USES_FSP2_0
+	select FSP_USES_CB_STACK
 	select UDK_2017_BINDING
 	select HAVE_CF9_RESET
 	select HAVE_ESPI_INIT_DEBUG
@@ -240,13 +241,34 @@ config ROMSTAGE_ADDR
 	  is 64KB and the reset vector is ROMSTAGE_ADDR + 0xfff0.  Systems
 	  supporting S3 must reserved this region from use by the OS.
 
-config EARLYRAM_SIZE
+config X86_RESET_VECTOR
 	hex
-	default 0xf0000
+	depends on ARCH_X86
+	default 0x807fff0
+	help
+	  Specify the location of the x86 reset vector.  In traditional devices
+	  this must match the architectural reset vector to produce a bootable
+	  image.  Nontraditional designs may use this to position the reset
+	  vector into its desired location.
+
+config RAM_RESET_VECTOR_STAGE_BSS_SIZE
+	hex
+	depends on RESET_VECTOR_IN_RAM
+	default 0x40000
+	help
+	  A common region of DRAM is allocated for use as .bss for all
+	  pre-ramstage stages and is located within the initial stage.
 
 config EARLYRAM_BSP_STACK_SIZE
 	hex
-	default 0x10000
+	default 0x1000
+
+config FSP_TEMP_RAM_SIZE
+	hex
+	depends on FSP_USES_CB_STACK
+	default 0x40000
+	help
+	  The amount of coreboot-allocated heap and stack usage by the FSP.
 
 config EARLYRAM_AP_STACK_SIZE
 	hex

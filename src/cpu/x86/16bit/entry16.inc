@@ -29,7 +29,8 @@
 
 #include <arch/rom_segs.h>
 
-#if (CONFIG(C_ENVIRONMENT_BOOTBLOCK) && CONFIG_C_ENV_BOOTBLOCK_SIZE > 0x10000)
+#if ((CONFIG(C_ENVIRONMENT_BOOTBLOCK) && CONFIG_C_ENV_BOOTBLOCK_SIZE > 0x10000) || \
+		CONFIG(RESET_VECTOR_IN_RAM))
 .section ".near_reset_vector", "ax", @progbits
 #endif
 

@@ -15,38 +15,46 @@
  * GNU General Public License for more details.
  */
 
-/* This file is included inside a SECTIONS block */
+	/* This file is included inside a SECTIONS block */
 
-/* Force the early storage to immedately follow the 64KB code in order to ease
- * MTRR programming and memory reserving.
- */
-. = CONFIG_ROMSTAGE_ADDR + 0x10000;
-.earlyram.data . (NOLOAD) : {
-	_earlyram_region_start = . ;
+	/* Enforce consistent positions for PRERAM_CBMEM_CONSOLE and TIMESTAMP
+	 * regions by placing them near the top of the first stage's program
+	 * region.  The stack and .bss are reused and do not rely on cross-stage
+	 * access, however they are sized and positioned to prevent overwriting
+	 * a previous stage's program in memory.
+	 */
+	_STACK_SIZE = CONFIG_EARLYRAM_BSP_STACK_SIZE;
+	_CONSOLE_SIZE = CONFIG_PRERAM_CBMEM_CONSOLE_SIZE;
+	_TIMESTAMPS_SIZE = 0x200;
+	_BSS_SIZE = CONFIG_RAM_RESET_VECTOR_STAGE_BSS_SIZE;
+	_TOP_4KB = 0x1000; /* regardless if allocated at .near_reset_vector */
 
-	_earlyram_stack_start = .;
-	. += CONFIG_EARLYRAM_AP_STACK_SIZE * (CONFIG_MAX_CPUS - 1);
-	. += CONFIG_EARLYRAM_BSP_STACK_SIZE;
-	_earlyram_stack_end = .;
+	_bogus1 = ASSERT(_STACK_SIZE > 0x0, "Early BSP stack size not configured");
 
-	PRERAM_CBMEM_CONSOLE(., CONFIG_PRERAM_CBMEM_CONSOLE_SIZE)
-
-	TIMESTAMP(., 0x200)
-
-	_earlyram_unallocated_start = .;
-
-	_earlyram_region_end = . + CONFIG_EARLYRAM_SIZE - (. - _earlyram_region_start);
-}
-
-_bogus = ASSERT((CONFIG_EARLYRAM_SIZE == 0) || (SIZEOF(.earlyram.data) <= CONFIG_EARLYRAM_SIZE), "EARLYRAM area is too full");
-_bogus2 = ASSERT(CONFIG_EARLYRAM_BSP_STACK_SIZE > 0x0, "BSP stack size not configured");
+	. = CONFIG_X86_RESET_VECTOR + 0x10 - _STACK_SIZE - _CONSOLE_SIZE - _TIMESTAMPS_SIZE - _BSS_SIZE - _TOP_4KB;
+	EARLYRAM_STACK(., _STACK_SIZE)
+	PRERAM_CBMEM_CONSOLE(., _CONSOLE_SIZE)
+	TIMESTAMP(., _TIMESTAMPS_SIZE)
+	.bss . : {
+		. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
+		_bss = .;
+		*(.bss)
+		*(.bss.*)
+		*(.sbss)
+		*(.sbss.*)
+		. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
+		_ebss = .;
+	}
 
 /* Implementation must fit within 64KB and _start16bit is guaranteed
  * to be reachable from the reset vector.
  */
-_RESET_VECTOR = CONFIG_ROMSTAGE_ADDR + 0x10000 - 0x10;
+. = CONFIG_X86_RESET_VECTOR & 0xfffff000;
+.near_reset_vector . : {
+	*(.near_reset_vector);
+}
 
-. = _RESET_VECTOR;
+. = CONFIG_X86_RESET_VECTOR;
 .reset . : {
 	*(.reset);
 	. = 15;
