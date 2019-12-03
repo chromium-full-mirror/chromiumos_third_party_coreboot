@@ -17,10 +17,9 @@
 #include <timer.h>
 #include <arch/early_variables.h>
 #include <console/console.h>
-#include <arch/mmio.h>
 #include <delay.h>
+#include <device/mmio.h>
 #include <string.h>
-#include <endian.h>
 #include <soc/pci_devs.h>
 #include <device/pci_ops.h>
 
