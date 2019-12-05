@@ -46,6 +46,9 @@ Scope (EC0.CREC) {
 					ResourceConsumer,
 					,
 				)
+				/* Jack Detect CODEC_GPI */
+				GpioInt (Edge, ActiveLow, ExclusiveAndWake, PullNone,,
+					"\\_SB.GPIO") { 62 }
 			})
 
 			/* Device-Specific Data */
