@@ -205,7 +205,7 @@ struct soc_amd_gpio *variant_gpio_table(size_t *size)
 static const struct sci_source sci_sources[] = {
 	{
 		.scimap = SMITYPE_ESPI_SYS,
-		.gpe = GEVENT_23,
+		.gpe = GEVENT_24,
 		.direction = 1,
 		.level = 0
 	}
