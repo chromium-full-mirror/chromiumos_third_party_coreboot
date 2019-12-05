@@ -61,3 +61,12 @@ Scope (EC0.CREC) {
 		}
 	}
 }
+
+/* machine driver */
+Device (I2S)
+{
+	Name (_ADR, 1)
+	Name (_HID, "AMDI5682")
+	Name (_UID, 1)
+	Name (_DDN, "I2S machine Driver")
+}
