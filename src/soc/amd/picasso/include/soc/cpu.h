@@ -44,4 +44,7 @@ void check_mca(void);
 #define PICASSO_CPUID			0x00810f81
 #define DALI_CPUID			0x00820f01
 
+#define PICASSO_VBIOS_VID_DID		0x100215d8
+#define DALI_VBIOS_VID_DID		0xffff15d8	/* Match value in Kconfig */
+
 #endif /* __PICASSO_CPU_H__ */

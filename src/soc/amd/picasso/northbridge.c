@@ -17,6 +17,7 @@
 #include <arch/ioapic.h>
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
+#include <arch/cpu.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <cpu/amd/mtrr.h>
@@ -304,4 +305,34 @@ void northbridge_init(void)
 void domain_set_resources(struct device *dev)
 {
 	assign_resources(dev->link_list);
+}
+
+/*
+ * Check for Zen2 video bios requirement
+ */
+u32 map_oprom_vendev(u32 vendev)
+{
+	u32 new_vendev = vendev;
+	u32 family_model;
+
+	if (! CONFIG(SECOND_VBIOS))
+		return vendev;
+
+	if (vendev != PICASSO_VBIOS_VID_DID) {
+		printk(BIOS_WARNING, "Warning: Unknown Vendor or Device ID.\n");
+		return vendev;
+	}
+
+	family_model = cpuid_eax(1);
+
+	if (family_model == DALI_CPUID) {
+		/* Update to Zen 2 vbios for Dali & Pollock */
+		printk(BIOS_SPEW, "Using Zen2 vBIOS.\n");
+		new_vendev = DALI_VBIOS_VID_DID;
+	} else if (family_model != PICASSO_CPUID) {
+		/* Verify ID as picasso or give warning */
+		printk(BIOS_WARNING, "Warning: Unknown CPUID.  Verify vBIOS.\n");
+	}
+
+	return new_vendev;
 }

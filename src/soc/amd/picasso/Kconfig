@@ -103,6 +103,23 @@ config VGA_BIOS_FILE
 	string
 	default "3rdparty/blobs/soc/amd/picasso/PicassoGenericVbios.bin"
 
+# Add Dali VBIOS to build
+config SECOND_VBIOS
+	def_bool y
+
+config SECOND_VBIOS_ID
+	string
+	default "ffff,15d8"
+	help
+	  Because Dali and Picasso need different video BIOSes, but have the
+	  same vendor/device IDs, we need an alternate method to determine the
+	  correct video BIOS. In map_oprom_vendev(), we look at the cpuid and
+	  decide which rom to load.
+
+config SECOND_VBIOS_FILE
+	string
+	default "3rdparty/blobs/soc/amd/picasso/Raven2GenericVbios.bin"
+
 config S3_VGA_ROM_RUN
 	bool
 	default n
