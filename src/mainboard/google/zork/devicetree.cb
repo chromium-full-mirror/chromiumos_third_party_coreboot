@@ -64,6 +64,7 @@ chip soc/amd/picasso
 			device generic a0.1 on end # - eSPI bus
 			device generic 0.0 off end # - LPC bus
 		end
+		device pci 14.6 off end # Non-Functional SDHCI
 		device pci 18.0 on  end # Data fabric [0-7]
 		device pci 18.1 on  end
 		device pci 18.2 on  end
