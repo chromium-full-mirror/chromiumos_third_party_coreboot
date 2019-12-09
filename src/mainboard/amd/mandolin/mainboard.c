@@ -180,7 +180,7 @@ static void mainboard_init(void *chip_info)
 	mainboard_program_gpios();
 }
 
-static const picasso_fsp_pcie_descriptor mandolin_pcie_descriptors[] =
+static const picasso_fsp_pcie_descriptor pco_pcie_descriptors[] =
 {
 	{ // MXM
 		.port_present = true,
@@ -271,7 +271,63 @@ static const picasso_fsp_pcie_descriptor mandolin_pcie_descriptors[] =
 	}
 };
 
-picasso_fsp_ddi_descriptor mandolin_ddi_descriptors[] =
+static const picasso_fsp_pcie_descriptor dali_pcie_descriptors[] =
+{
+	{ // MXM
+		.port_present = true,
+		.engine_type = PCIE_ENGINE,
+		.start_lane = 8,
+		.end_lane = 11,
+		.device_number = 1,
+		.function_number = 1,
+		.link_aspm = ASPM_L1,
+		.link_aspm_L1_1 = true,
+		.link_aspm_L1_2 = true,
+		.turn_off_unused_lanes = true,
+		.clk_req = CLK_REQ6
+	},
+	{ // SSD
+		.port_present = true,
+		.engine_type = PCIE_ENGINE,
+		.start_lane = 0,
+		.end_lane = 1,
+		.device_number = 1,
+		.function_number = 7,
+		.link_aspm = ASPM_L1,
+		.link_aspm_L1_1 = true,
+		.link_aspm_L1_2 = true,
+		.turn_off_unused_lanes = true,
+		.clk_req = CLK_REQ5
+	},
+	{ // WLAN
+		.port_present = true,
+		.engine_type = PCIE_ENGINE,
+		.start_lane = 4,
+		.end_lane = 4,
+		.device_number = 1,
+		.function_number = 2,
+		.link_aspm = ASPM_L1,
+		.link_aspm_L1_1 = true,
+		.link_aspm_L1_2 = true,
+		.turn_off_unused_lanes = true,
+		.clk_req = CLK_REQ0
+	},
+	{ // LAN
+		.port_present = true,
+		.engine_type = PCIE_ENGINE,
+		.start_lane = 5,
+		.end_lane = 5,
+		.device_number = 1,
+		.function_number = 3,
+		.link_aspm = ASPM_L1,
+		.link_aspm_L1_1 = true,
+		.link_aspm_L1_2 = true,
+		.turn_off_unused_lanes = true,
+		.clk_req = CLK_REQ1
+	}
+};
+
+picasso_fsp_ddi_descriptor pco_ddi_descriptors[] =
 {
 	{ // DDI0 - DP
 		.connector_type = DP,
@@ -295,23 +351,57 @@ picasso_fsp_ddi_descriptor mandolin_ddi_descriptors[] =
 	}
 };
 
+picasso_fsp_ddi_descriptor dali_ddi_descriptors[] =
+{
+	{ // DDI0 - DP
+		.connector_type = DP,
+		.aux_index = AUX1,
+		.hdp_index = HDP1
+	},
+	{ // DDI1 - eDP
+		.connector_type = EDP,
+		.aux_index = AUX2,
+		.hdp_index = HDP2
+	},
+	{ // DDI2 - DP
+		.connector_type = DP,
+		.aux_index = AUX3,
+		.hdp_index = HDP3,
+	}
+};
+
 void mainboard_fsp_silicon_init_params_cb(FSP_S_CONFIG *scfg)
 {
 	picasso_fsp_ddi_descriptor     *fsp_ddi;
 	picasso_fsp_pcie_descriptor    *fsp_pcie;
 	uint8_t                        counter;
+	uint32_t cpuinfo;
+
+	cpuinfo = cpuid_eax(1) >> 16;
 
 	fsp_pcie = (picasso_fsp_pcie_descriptor *)&(scfg->dxio_descriptor0);
 	fsp_ddi = (picasso_fsp_ddi_descriptor *)&(scfg->ddi_descriptor0);
 
-	for (counter = 0; counter < ARRAY_SIZE(mandolin_pcie_descriptors); counter++) {
-		fsp_pcie[counter] = mandolin_pcie_descriptors[counter];
-	}
+	// Dali
+	if (cpuinfo == 0x82) {
+		for (counter = 0; counter < ARRAY_SIZE(dali_pcie_descriptors); counter++) {
+			fsp_pcie[counter] = dali_pcie_descriptors[counter];
+		}
 
-	for (counter = 0; counter < ARRAY_SIZE(mandolin_ddi_descriptors); counter++) {
-		fsp_ddi[counter] = mandolin_ddi_descriptors[counter];
+		for (counter = 0; counter < ARRAY_SIZE(dali_ddi_descriptors); counter++) {
+			fsp_ddi[counter] = dali_ddi_descriptors[counter];
+		}
 	}
+	// Picasso and default
+	else {
+		for (counter = 0; counter < ARRAY_SIZE(pco_pcie_descriptors); counter++) {
+			fsp_pcie[counter] = pco_pcie_descriptors[counter];
+		}
 
+		for (counter = 0; counter < ARRAY_SIZE(pco_ddi_descriptors); counter++) {
+			fsp_ddi[counter] = pco_ddi_descriptors[counter];
+		}
+	}
 	if (!CONFIG(PICASSO_LPC_IOMUX))
 		scfg->emmc0_mode = 10;
 }
