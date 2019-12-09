@@ -21,7 +21,7 @@
 
 static const struct soc_amd_gpio gpio_set_stage_rom[] = {
 	/* H1_FCH_INT_ODL */
-	PAD_GPI(GPIO_3, PULL_UP),
+	PAD_INT(GPIO_3, PULL_UP, EDGE_LOW, STATUS),
 	/* PEN_POWER_EN - reset */
 	PAD_GPO(GPIO_5, LOW),
 	/* I2C3_SCL - H1 */
