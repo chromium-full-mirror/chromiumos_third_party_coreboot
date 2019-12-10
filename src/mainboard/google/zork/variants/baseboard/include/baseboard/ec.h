@@ -71,4 +71,10 @@
 #define SIO_EC_HOST_ENABLE	/* EC Host Interface Resources */
 #undef SIO_EC_ENABLE_PS2K	/* Enable PS/2 Keyboard */
 
+/*
+ * Enable EC sync interrupt via GPIO controller, EC_SYNC_IRQ is defined in
+ * variant/gpio.h
+ */
+#define EC_ENABLE_SYNC_IRQ_GPIO
+
 #endif
