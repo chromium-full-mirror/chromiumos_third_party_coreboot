@@ -68,6 +68,11 @@ static void enable_espi_early(void)
 		.flags = IORESOURCE_IO,
 		.base = 0x80,
 		.size = 1,
+		.next = ioports + 5
+	}, {
+		.flags = IORESOURCE_IO,
+		.base = 0x60,
+		.size = 1,
 		.next = NULL
 	} };
 
