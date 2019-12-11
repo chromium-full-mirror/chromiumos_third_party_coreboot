@@ -17,6 +17,7 @@
 #include <device/device.h>
 #include <arch/acpi.h>
 #include <amdblocks/amd_pci_util.h>
+#include <soc/cpu.h>
 #include <soc/espi.h>
 #include <soc/southbridge.h>
 #include <soc/pci_devs.h>
@@ -383,7 +384,7 @@ void mainboard_fsp_silicon_init_params_cb(FSP_S_CONFIG *scfg)
 	fsp_ddi = (picasso_fsp_ddi_descriptor *)&(scfg->ddi_descriptor0);
 
 	// Dali
-	if (cpuinfo == 0x82) {
+	if (cpuinfo == DALI_CPUID >> 16) {
 		for (counter = 0; counter < ARRAY_SIZE(dali_pcie_descriptors); counter++) {
 			fsp_pcie[counter] = dali_pcie_descriptors[counter];
 		}

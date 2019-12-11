@@ -22,6 +22,7 @@
 #include <boardid.h>
 #include <gpio.h>
 #include <smbios.h>
+#include <soc/cpu.h>
 #include <soc/gpio.h>
 #include <soc/nvs.h>
 #include <soc/pci_devs.h>
@@ -316,7 +317,7 @@ void mainboard_fsp_silicon_init_params_cb(FSP_S_CONFIG *scfg)
 	fsp_ddi = (picasso_fsp_ddi_descriptor *)&(scfg->ddi_descriptor0);
 
 	// Dali
-	if (cpuinfo == 0x82) {
+	if (cpuinfo == DALI_CPUID >> 16) {
 		for (counter = 0; counter < ARRAY_SIZE(dali_pcie_descriptors); counter++) {
 			fsp_pcie[counter] = dali_pcie_descriptors[counter];
 		}
