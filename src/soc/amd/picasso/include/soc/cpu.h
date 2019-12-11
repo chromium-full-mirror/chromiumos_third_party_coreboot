@@ -41,4 +41,7 @@ void check_mca(void);
 
 #define EARLY_RAMSTAGE_MTRR_SZ (32 * MiB + CONFIG_SMM_TSEG_SIZE)
 
+#define PICASSO_CPUID			0x00810f81
+#define DALI_CPUID			0x00820f01
+
 #endif /* __PICASSO_CPU_H__ */
