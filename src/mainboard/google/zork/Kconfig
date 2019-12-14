@@ -67,9 +67,7 @@ config MAINBOARD_PART_NUMBER
 
 config DEVICETREE
 	string
-	default "devicetree.cb"
-	# Update to variant specific devicetree files when needed.
-	# default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
+	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config MAINBOARD_FAMILY
 	string
