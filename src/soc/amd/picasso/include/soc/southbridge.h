@@ -313,6 +313,11 @@
 /* IO 0xf0 NCP Error */
 #define   NCP_WARM_BOOT			BIT(7) /* Write-once */
 
+/* ACP registers */
+#define ACP_I2S_PIN_CONFIG		0x1400
+#define ACP_I2S_WAKE_EN			0x1414
+#define ACP_PME_EN			0x1418
+
 typedef struct aoac_devs {
 	unsigned int :7;
 	unsigned int ic2e:1; /* 7: I2C2 */

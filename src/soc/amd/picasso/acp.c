@@ -47,7 +47,12 @@ static void enable(struct device *dev)
 	}
 
 	bar = (uintptr_t)res->base;
-	write32((void *)(bar + 0x1400), cfg->acp_pin_cfg);
+	write32((void *)(bar + ACP_I2S_PIN_CONFIG), cfg->acp_pin_cfg);
+
+	/* Enable ACP_PME_EN and ACP_I2S_WAKE_EN for I2S_WAKE event*/
+	write32((void *)(bar + ACP_I2S_WAKE_EN), 1);
+	write32((void *)(bar + ACP_PME_EN), 1);
+
 
 	if (cfg->acp_pin_cfg == I2S_PINS_I2S_TDM)
 		sb_clk_output_48Mhz(); /* Internal connection to I2S */
