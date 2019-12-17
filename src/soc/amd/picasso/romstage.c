@@ -176,7 +176,8 @@ asmlinkage void soc_hybrid_romstage_entry(uint32_t bist, uint64_t early_tsc)
 	if (on_bsp) {
 		post_code(0x42);
 		romstage_soc_early_init();
-		mainboard_romstage_early_init();
+		console_init();
+		mainboard_romstage_early_init(); /* espi + port 80 init */
 
 		post_code(0x43);
 		init_timer();
@@ -184,7 +185,6 @@ asmlinkage void soc_hybrid_romstage_entry(uint32_t bist, uint64_t early_tsc)
 		cmos_post_init();
 
 		post_code(0x44);
-		console_init();
 		exception_init();
 	}
 
