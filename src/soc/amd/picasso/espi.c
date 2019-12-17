@@ -20,6 +20,7 @@
 #include <string.h>
 #include <timer.h>
 #include <amdblocks/lpc.h>
+#include <amdblocks/lpc_espi_checker.h>
 #include <lib.h>
 #include <assert.h>
 
@@ -697,6 +698,8 @@ static void espi_write_resources(struct espi_resource_allocator *allocation)
 
 	printk(ESPI_DBG, "ESPI Decode reg: %08x", decode_enable);
 	write32(espi + ESPI_DECODE, decode_enable);
+
+	check_lpc_espi_overlap();
 }
 
 static int espi_allocate(struct espi_resource_allocator *allocation,

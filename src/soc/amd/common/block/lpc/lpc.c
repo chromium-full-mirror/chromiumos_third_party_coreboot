@@ -33,6 +33,7 @@
 #include <soc/southbridge.h>
 #include <soc/nvs.h>
 #include <soc/iomap.h>
+#include <amdblocks/lpc_espi_checker.h>
 
 /* Most systems should have already enabled the bridge */
 void __weak soc_late_lpc_bridge_enable(void) { }
@@ -311,6 +312,8 @@ void lpc_enable_childrens_resources(struct device *dev)
 	}
 	pci_write_config32(dev, LPC_IO_PORT_DECODE_ENABLE, reg);
 	pci_write_config32(dev, LPC_IO_OR_MEM_DECODE_ENABLE, reg_x);
+
+	check_lpc_espi_overlap();
 }
 
 static void lpc_enable_resources(struct device *dev)
