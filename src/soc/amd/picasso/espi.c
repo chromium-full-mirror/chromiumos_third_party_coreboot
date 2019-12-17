@@ -20,7 +20,9 @@
 #include <string.h>
 #include <timer.h>
 #include <amdblocks/lpc.h>
+#include <amdblocks/lpc_espi_checker.h>
 #include <lib.h>
+#include <assert.h>
 
 #if CONFIG(DEBUG_ESPI_INIT)
 # define ESPI_DBG BIOS_DEBUG
@@ -275,6 +277,9 @@ static uint32_t espi_wait_response(uint8_t *espi)
 			return status;
 
 	} while (!stopwatch_expired(&sw));
+	/* FIXME - this should either be an error/assert, or a Warning. Not mixed
+	 * https://b.corp.google.com/issues/143815890
+	*/
 	printk(BIOS_WARNING, "Error: eSPI timed out waiting for a response.\n");
 
 	return 0;
@@ -328,8 +333,12 @@ static uint32_t espi_send_command(uint8_t *espi, uint32_t cmd0, uint32_t cmd1,
 	write32_espi(espi, ESPI_DN_TXDR0, cmd0);
 
 	if (!espi_wait_ready(espi)){
-		printk(BIOS_WARNING,
-				"Error: eSPI timed out waiting for command to complete.\n");
+		/* FIXME - this should either be an error/assert, or a Warning. Not mixed
+		 * https://b.corp.google.com/issues/143815890
+		 */
+		printk(BIOS_WARNING, "Error: eSPI timed out waiting for command to complete\n");
+		printk(ESPI_DBG, "eSPI cmd0-cmd3: %08x %08x %08x %08x.\n",
+		       cmd0, cmd1, cmd2, cmd3);
 		return -1;
 	}
 	status = espi_wait_response(espi);
@@ -644,10 +653,12 @@ static void espi_write_resources(struct espi_resource_allocator *allocation)
 
 	for (i = 0; i < allocation->num_io_ranges; i++) {
 		if (allocation->io_ranges[i].size > 0x100) {
-			printk(BIOS_ERR, "Error: IO range has a max size of 0x100\n");
-			printk(BIOS_ERR, "IO_RANGE_%d has a size of 0x%04x\n", i,
+			printk(BIOS_EMERG, "Error: IO range has a max size of 0x100\n");
+			printk(BIOS_EMERG, "IO_RANGE_%d has a size of 0x%04x\n", i,
 					(unsigned int)allocation->io_ranges[i].size);
+			ASSERT_MSG(0, "IO size too big for ESPI");
 		}
+
 		decode_enable |= ESPI_DECODE_IO_RANGE_EN(i);
 		write16(espi + ESPI_IO_RANGE_BASE(i),
 			allocation->io_ranges[i].base);
@@ -665,6 +676,9 @@ static void espi_write_resources(struct espi_resource_allocator *allocation)
 			allocation->mmio_ranges[i].base);
 		write16(espi + ESPI_MMIO_RANGE_SIZE(i),
 			allocation->mmio_ranges[i].size - 1);
+		printk(ESPI_DBG, "ESPI MMIO range: %08llx, Size: %04llx",
+		       allocation->mmio_ranges[i].base,
+		       allocation->mmio_ranges[i].size-1);
 	}
 
 	if (allocation->enable_0x2e_0x2f) {
@@ -682,6 +696,7 @@ static void espi_write_resources(struct espi_resource_allocator *allocation)
 		decode_enable |= ESPI_DECODE_IO_0x80_EN;
 	}
 
+	printk(ESPI_DBG, "ESPI Decode reg: %08x", decode_enable);
 	write32(espi + ESPI_DECODE, decode_enable);
 }
 
@@ -706,7 +721,7 @@ static int espi_allocate(struct espi_resource_allocator *allocation,
 }
 
 /*
- * Enable resources specidied by resource_list.
+ * Enable resources specified by resource_list.
  * 'resource_list is a linked' list describing resources to be enabled. Only IO
  * and MEM resources are decoded. This function is not additive. Any previously
  * enabled ranges will be nullified.
