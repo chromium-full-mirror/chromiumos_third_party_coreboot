@@ -23,9 +23,10 @@ config CHROMEOS
 	default n
 	select ELOG if BOOT_DEVICE_SUPPORTS_WRITES
 	select COLLECT_TIMESTAMPS
-	select VBOOT
+	# TODO: ADD VBOOT BACK IN
+	# select VBOOT
 	select VPD
-	select VBOOT_SLOTS_RW_AB
+	# select VBOOT_SLOTS_RW_AB
 	help
 	  Enable ChromeOS specific features like the GPIO sub table in
 	  the coreboot table. NOTE: Enabling this option on an unsupported
