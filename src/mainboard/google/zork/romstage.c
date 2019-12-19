@@ -88,6 +88,8 @@ void mainboard_romstage_early_init(void)
 
 	gpios = variant_romstage_gpio_table(&num_gpios);
 	program_gpios(gpios, num_gpios);
+	gpios = variant_wifi_romstage_gpio_table(&num_gpios);
+	program_gpios(gpios, num_gpios);
 
 	enable_espi_early();
 

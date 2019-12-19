@@ -36,8 +36,6 @@ static const struct soc_amd_gpio gpio_set_stage_rom[] = {
 	PAD_NF(GPIO_26, PCIE_RST_L, PULL_NONE),
 	/* PCIE_RST1_L - Variable timings (May remove) */
 	PAD_NF(GPIO_27, PCIE_RST1_L, PULL_NONE),
-	/* EN_PWR_WIFI */
-	PAD_GPO(GPIO_29, HIGH),
 	/* FCH_ESPI_EC_CS_L */
 	PAD_NF(GPIO_30, ESPI_CS_L, PULL_NONE),
 	/* NVME_AUX_RESET_L */
@@ -78,6 +76,11 @@ static const struct soc_amd_gpio gpio_set_stage_rom[] = {
 	PAD_GPO(GPIO_140, HIGH),
 	/* SD_AUX_RESET_L */
 	PAD_GPO(GPIO_142, HIGH),
+};
+
+static const struct soc_amd_gpio gpio_set_wifi[] = {
+	/* EN_PWR_WIFI */
+	PAD_GPO(GPIO_29, HIGH),
 };
 
 static const struct soc_amd_gpio gpio_set_stage_ram[] = {
@@ -195,6 +198,13 @@ struct soc_amd_gpio *variant_romstage_gpio_table(size_t *size)
 {
 	*size = ARRAY_SIZE(gpio_set_stage_rom);
 	return gpio_set_stage_rom;
+}
+
+const __weak
+struct soc_amd_gpio *variant_wifi_romstage_gpio_table(size_t *size)
+{
+	*size = ARRAY_SIZE(gpio_set_wifi);
+	return gpio_set_wifi;
 }
 
 const __weak

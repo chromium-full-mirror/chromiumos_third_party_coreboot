@@ -24,6 +24,7 @@ uint8_t variant_memory_sku(void);
 uint8_t variant_board_sku(void);
 const struct soc_amd_gpio *variant_early_gpio_table(size_t *size);
 const struct soc_amd_gpio *variant_romstage_gpio_table(size_t *size);
+const struct soc_amd_gpio *variant_wifi_romstage_gpio_table(size_t *size);
 const struct soc_amd_gpio *variant_gpio_table(size_t *size);
 void variant_romstage_entry(int s3_resume);
 void variant_mainboard_suspend_resume(void);
