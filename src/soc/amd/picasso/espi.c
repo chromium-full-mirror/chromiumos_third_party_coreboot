@@ -20,7 +20,6 @@
 #include <string.h>
 #include <timer.h>
 #include <amdblocks/lpc.h>
-#include <amdblocks/lpc_espi_checker.h>
 #include <lib.h>
 #include <assert.h>
 
