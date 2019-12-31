@@ -47,7 +47,7 @@ Scope (EC0.CREC) {
 					,
 				)
 				/* Jack Detect CODEC_GPI */
-				GpioInt (Edge, ActiveLow, ExclusiveAndWake, PullNone,,
+				GpioInt (Edge, ActiveBoth, ExclusiveAndWake, PullNone,,
 					"\\_SB.GPIO") { 62 }
 			})
 
