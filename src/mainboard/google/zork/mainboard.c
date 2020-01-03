@@ -402,17 +402,18 @@ struct chip_operations mainboard_ops = {
 
 const char *smbios_system_sku(void)
 {
-	static char sku_str[7]; /* sku{0..255} */
+	static char sku_str[3 + 10 + 1];
 
-	snprintf(sku_str, sizeof(sku_str), "sku%hhd", variant_board_sku());
+	snprintf(sku_str, sizeof(sku_str), "sku%u", variant_board_sku());
 
 	return sku_str;
 }
 
 /* Variants may override these functions so see definitions in variants */
-uint8_t __weak variant_board_sku(void)
+uint32_t __weak variant_board_sku(void)
 {
-	return 0;
+	/* Magic value meaning not provisioned. */
+	return 0x7fffffff;
 }
 
 void __weak variant_mainboard_suspend_resume(void)

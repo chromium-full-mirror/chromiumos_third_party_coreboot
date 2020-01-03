@@ -32,7 +32,7 @@ uint32_t sku_id(void)
 	return sku;
 }
 
-uint8_t variant_board_sku(void)
+uint32_t variant_board_sku(void)
 {
 	return sku_id();
 }

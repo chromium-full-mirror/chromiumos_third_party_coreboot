@@ -20,8 +20,7 @@
 
 const struct sci_source *get_gpe_table(size_t *num);
 uint8_t variant_memory_sku(void);
-/* Return board SKU. Limited to uint8_t, so it fits into 3 decimal digits */
-uint8_t variant_board_sku(void);
+uint32_t variant_board_sku(void);
 const struct soc_amd_gpio *variant_early_gpio_table(size_t *size);
 const struct soc_amd_gpio *variant_romstage_gpio_table(size_t *size);
 const struct soc_amd_gpio *variant_wifi_romstage_gpio_table(size_t *size);
