@@ -52,6 +52,13 @@ struct soc_amd_picasso_config {
 	uint8_t  fadt_pm_profile;
 	uint16_t fadt_boot_arch;
 	uint32_t fadt_flags;
+	/*
+	 * STAPM Configuration
+	 */
+	uint32_t fast_ppt_limit;
+	uint32_t slow_ppt_limit;
+	uint32_t slow_ppt_time_constant;
+	uint32_t stapm_time_constant;
 };
 
 typedef struct soc_amd_picasso_config config_t;

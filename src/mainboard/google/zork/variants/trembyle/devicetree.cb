@@ -27,6 +27,12 @@ chip soc/amd/picasso
 
 	register "acp_pin_cfg" = "I2S_PINS_I2S_TDM"
 
+	# Set STAPM confiuration
+	register "slow_ppt_limit" = "25000" #mw
+	register "fast_ppt_limit" = "30000" #mw
+	register "slow_ppt_time_constant" = "5" #second
+	register "stapm_time_constant" = "200" #second
+
 	# Enable I2C2 for trackpad, touchscreen, pen at 400kHz
 	register "i2c[2]" = "{
 		.speed = I2C_SPEED_FAST,

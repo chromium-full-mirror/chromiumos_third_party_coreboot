@@ -144,6 +144,7 @@ static void set_mtrrs_for_ramstage(void)
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
 	FSP_M_CONFIG *mcfg = &mupd->FspmConfig;
+	const config_t *config = get_soc_config();
 
 	mcfg->pci_express_base_addr = CONFIG_MMCONF_BASE_ADDRESS;
 
@@ -153,6 +154,15 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	mcfg->serial_port_baudrate = get_uart_baudrate();
 	mcfg->serial_port_refclk = uart_platform_refclk();
 
+	if (config != NULL) {
+		if ((config->slow_ppt_limit) && (config->fast_ppt_limit) \
+			&& (config->slow_ppt_time_constant) && (config->stapm_time_constant)){
+			mcfg->slow_ppt_limit = config->slow_ppt_limit;
+			mcfg->fast_ppt_limit = config->fast_ppt_limit;
+			mcfg->slow_ppt_time_constant = config->slow_ppt_time_constant;
+			mcfg->stapm_time_constant = config->stapm_time_constant;
+		}
+	}
 	mainboard_fsp_memory_init_params_cb(mcfg, version);
 }
 
