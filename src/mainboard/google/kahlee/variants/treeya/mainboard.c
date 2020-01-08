@@ -20,7 +20,6 @@
 #include <gpio.h>
 #include <smbios.h>
 #include <variant/gpio.h>
-#include <device/mmio.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>
 #include <drivers/generic/bayhub/bh720.h>
@@ -109,7 +108,7 @@ const char *smbios_mainboard_manufacturer(void)
 	static char oem_bin_data[11];
 	static const char *manuf;
 
-	if (!CONFIG(USE_OEM_BIN))
+	if (!IS_ENABLED(CONFIG_USE_OEM_BIN))
 		return CONFIG_MAINBOARD_SMBIOS_MANUFACTURER;
 
 	if (manuf)
