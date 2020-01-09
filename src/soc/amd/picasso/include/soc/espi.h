@@ -31,6 +31,7 @@ struct espi_config {
 	unsigned int out_of_band_ch_en : 1;
 	unsigned int flash_ch_en : 1;
 	unsigned int update_slave : 1;
+	unsigned int subtractive_decode : 1;
 };
 
 struct espi_resource_allocator {
@@ -73,6 +74,11 @@ void dump_espi_regs(void);
 #define ESPI_DN_TXDR1				0x04
 #define ESPI_DN_TXDR2				0x08
 #define ESPI_DN_TXDR3				0x0C
+
+#define ESPI_GLOBAL_CONTROL_1			0x34
+#define  ESPI_SUB_DECODE_SLV_SHIFT		3
+#define  ESPI_SUB_DECODE_SLV_MASK		(0x3ul << ESPI_SUB_DECODE_SLV_SHIFT)
+#define  ESPI_SUB_DECODE_EN			BIT(2)
 
 #define ESPI_DECODE				0x40
 #define  ESPI_DECODE_MMIO_RANGE_EN(range)	(1 << (((range) & 3) + 12))

@@ -142,11 +142,14 @@ static void espi_show_host_configuration(void)
 	uint8_t *espi = espi_read_base_address();
 	uint32_t slave0_decode_en = read32(espi + ESPI_DECODE);
 	uint32_t slave0_config = read32(espi + ESPI_SLAVE0_CONFIG);
+	uint32_t global_ctrl_reg_1 = read32(espi + ESPI_GLOBAL_CONTROL_1);
 
 	if ((ESPI_DBG < (int)BIOS_EMERG) || (ESPI_DBG >= (int)BIOS_NEVER))
 		return;
 
 	printk(ESPI_DBG, "eSPI Host configuration:\n");
+	if (global_ctrl_reg_1 & ESPI_SUB_DECODE_EN)
+		printk(ESPI_DBG, "  eSPI subtractive decode enabled\n");
 	if (slave0_decode_en & ESPI_DECODE_IO_0X2E_0X2F_EN)
 		printk(ESPI_DBG, "  eSPI decode of 0x2e - 0x2f enabled\n");
 	if (slave0_decode_en & ESPI_DECODE_IO_0X60_0X64_EN)
@@ -677,7 +680,7 @@ static void set_generics(const struct espi_config *cfg, uint32_t *cfg_reg,
 
 void espi_setup(const struct espi_config *cfg)
 {
-	uint32_t cfg_reg = 0;
+	uint32_t cfg_reg = 0, global_ctrl_reg;
 	uint8_t *espi = espi_read_base_address();
 	uint32_t slave_supports, slave_cfg_reg;
 	uint32_t espi_initial_mode = ESPI_OP_FREQ_16_MHZ | ESPI_IO_MODE_SINGLE;
@@ -714,6 +717,17 @@ void espi_setup(const struct espi_config *cfg)
 	setup_periph_channel(espi, cfg, &cfg_reg, slave_supports);
 	setup_oob_channel(espi, cfg, &cfg_reg, slave_supports);
 	setup_flash_channel(espi, cfg, &cfg_reg, slave_supports);
+
+	/* Enable subtractive decode if configured */
+	global_ctrl_reg = read32_espi(espi, ESPI_GLOBAL_CONTROL_1);
+	if (cfg->subtractive_decode) {
+		global_ctrl_reg &= ~ESPI_SUB_DECODE_SLV_MASK;
+		global_ctrl_reg |= ESPI_SUB_DECODE_EN;
+
+	} else {
+		global_ctrl_reg &= ~ESPI_SUB_DECODE_EN;
+	}
+	write32_espi(espi, ESPI_GLOBAL_CONTROL_1, global_ctrl_reg);
 
 	/* just used for debug */
 	if (CONFIG(DEBUG_ESPI_INIT)) {
