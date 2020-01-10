@@ -55,6 +55,7 @@ struct soc_amd_picasso_config {
 	/*
 	 * STAPM Configuration
 	 */
+	uint32_t sustained_power_limit;
 	uint32_t fast_ppt_limit;
 	uint32_t slow_ppt_limit;
 	uint32_t slow_ppt_time_constant;

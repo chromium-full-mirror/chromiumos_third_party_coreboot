@@ -155,12 +155,16 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	mcfg->serial_port_refclk = uart_platform_refclk();
 
 	if (config != NULL) {
-		if ((config->slow_ppt_limit) && (config->fast_ppt_limit) \
-			&& (config->slow_ppt_time_constant) && (config->stapm_time_constant)){
+		if ((config->slow_ppt_limit) &&
+			(config->fast_ppt_limit) &&
+			(config->slow_ppt_time_constant) &&
+			(config->stapm_time_constant) &&
+			(config->sustained_power_limit)) {
 			mcfg->slow_ppt_limit = config->slow_ppt_limit;
 			mcfg->fast_ppt_limit = config->fast_ppt_limit;
 			mcfg->slow_ppt_time_constant = config->slow_ppt_time_constant;
 			mcfg->stapm_time_constant = config->stapm_time_constant;
+			mcfg->sustained_power_limit = config->sustained_power_limit;
 		}
 	}
 	mainboard_fsp_memory_init_params_cb(mcfg, version);
