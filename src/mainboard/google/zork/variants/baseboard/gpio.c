@@ -107,7 +107,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_GPI(GPIO_9, PULL_UP),
 	/* S0iX SLP - (unused - goes to EC & FPMCU */
 	PAD_GPI(GPIO_10, PULL_UP),
-	/* FPMCU_RST_ODL */
+	/* FPMCU_RST_L */
 	PAD_GPO(GPIO_11, HIGH),
 	/* USI_INT_ODL */
 	PAD_GPI(GPIO_12, PULL_UP),
@@ -129,8 +129,8 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_NF(GPIO_23, AC_PRES, PULL_UP),
 	/*  EC_AP_INT_ODL (Sensor Framesync) */
 	PAD_GPI(GPIO_31, PULL_UP),
-	/* TP_31 (unused) */
-	PAD_GPI(GPIO_32, PULL_UP),
+	/* EN_PWR_FP */
+	PAD_GPO(GPIO_32, HIGH),
 	/* EN_PWR_TOUCHPAD_PS2 */
 //	PAD_GPO(GPIO_67, HIGH), /* Set high later in boot sequence */
 	/* EMMC_RESET */
