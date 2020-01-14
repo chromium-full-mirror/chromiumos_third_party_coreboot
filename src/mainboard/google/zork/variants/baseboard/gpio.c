@@ -132,7 +132,11 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* EN_PWR_FP */
 	PAD_GPO(GPIO_32, HIGH),
 	/* EN_PWR_TOUCHPAD_PS2 */
-//	PAD_GPO(GPIO_67, HIGH), /* Set high later in boot sequence */
+	/*
+	 * EN_PWR_TOUCHPAD_PS2 - Make sure Ext ROM Sharing is disabled before
+	 * using this GPIO.  Otherwise SPI flash access will be very slow.
+	 */
+	PAD_GPO(GPIO_67, HIGH),
 	/* EMMC_RESET */
 	PAD_GPO(GPIO_68, LOW),
 	/* FPMCU_BOOT0 - TODO: Check this */

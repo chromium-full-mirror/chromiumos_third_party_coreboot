@@ -23,6 +23,8 @@
 /* PCI registers for D14F3 */
 #define LPC_PCI_CONTROL			0x40
 #define   LEGACY_DMA_EN			BIT(2)
+#define   VW_ROM_SHARING_EN		BIT(3)
+#define   EXT_ROM_SHARING_EN		BIT(4)
 
 #define LPC_IO_PORT_DECODE_ENABLE	0x44
 #define   DECODE_ENABLE_PARALLEL_PORT0	BIT(0)

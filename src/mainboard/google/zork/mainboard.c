@@ -384,9 +384,6 @@ static void mainboard_final(void *chip_info)
 		gnvs->tcrt = CRITICAL_TEMPERATURE;
 		gnvs->tpsv = PASSIVE_TEMPERATURE;
 	}
-
-	/* Enable trackpad & PS/2 power */
-	gpio_set(GPIO_67, 1);
 }
 
 void mainboard_suspend_resume(void)
