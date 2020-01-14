@@ -73,30 +73,26 @@ __weak void mtk_dsi_override_phy_timing(struct mtk_phy_timing *timing)
 
 static void mtk_dsi_phy_timing(int data_rate, struct mtk_phy_timing *phy_timing)
 {
-	u32 cycle_time, ui;
-
-	ui = 1000 / data_rate + 0x01;
-	cycle_time = 8000 / data_rate + 0x01;
-
 	memset(phy_timing, 0, sizeof(*phy_timing));
 
-	phy_timing->lpx = DIV_ROUND_UP(60, cycle_time);
-	phy_timing->da_hs_prepare = DIV_ROUND_UP((50 + 5 * ui), cycle_time);
-	phy_timing->da_hs_zero = DIV_ROUND_UP((110 + 6 * ui), cycle_time);
-	phy_timing->da_hs_trail = DIV_ROUND_UP(((4 * ui) + 77), cycle_time);
+	phy_timing->lpx = (60 * data_rate / (8 * 1000)) + 1;
+	phy_timing->da_hs_prepare = (80 * data_rate + 4 * 1000) / 8000;
+	phy_timing->da_hs_zero = (170 * data_rate + 10 * 1000) / 8000 -
+				  phy_timing->da_hs_prepare + 1;
+	phy_timing->da_hs_trail = phy_timing->da_hs_prepare + 1;
 
-	phy_timing->ta_go = 4U * phy_timing->lpx;
-	phy_timing->ta_sure = 3U * phy_timing->lpx / 2U;
-	phy_timing->ta_get = 5U * phy_timing->lpx;
-	phy_timing->da_hs_exit = 2U * phy_timing->lpx;
+	phy_timing->ta_go = 4 * phy_timing->lpx - 2;
+	phy_timing->ta_sure = phy_timing->lpx + 2;
+	phy_timing->ta_get = 4 * phy_timing->lpx;
+	phy_timing->da_hs_exit = 2 * phy_timing->lpx + 1;
 
 	phy_timing->da_hs_sync = 1;
-	phy_timing->clk_hs_zero = DIV_ROUND_UP(0x150U, cycle_time);
-	phy_timing->clk_hs_trail = DIV_ROUND_UP(0x64U, cycle_time) + 0xaU;
+	phy_timing->clk_hs_zero = phy_timing->clk_hs_trail * 4;
+	phy_timing->clk_hs_trail = phy_timing->clk_hs_prepare;
 
-	phy_timing->clk_hs_prepare = DIV_ROUND_UP(0x40U, cycle_time);
-	phy_timing->clk_hs_post = DIV_ROUND_UP(80U + 52U * ui, cycle_time);
-	phy_timing->clk_hs_exit = 2U * phy_timing->lpx;
+	phy_timing->clk_hs_prepare = 70 * data_rate / (8 * 1000);
+	phy_timing->clk_hs_post = phy_timing->clk_hs_prepare + 8;
+	phy_timing->clk_hs_exit = 2 * phy_timing->clk_hs_trail;
 
 	/* Allow board-specific tuning. */
 	mtk_dsi_override_phy_timing(phy_timing);
@@ -199,13 +195,13 @@ static void mtk_dsi_config_vdo_timing(u32 mode_flags, u32 format, u32 lanes,
 	if (mode_flags & MIPI_DSI_MODE_VIDEO_SYNC_PULSE)
 		hspw = edid->mode.hspw;
 
-	hbp_byte = (edid->mode.hbl - edid->mode.hso - hspw - edid->mode.hborder)
-			* bytes_per_pixel - 10;
+	hbp_byte = (edid->mode.hbl - edid->mode.hso - hspw -
+		    edid->mode.hborder) * bytes_per_pixel - 10;
 	hsync_active_byte = edid->mode.hspw * bytes_per_pixel - 10;
 	hfp_byte = (edid->mode.hso - edid->mode.hborder) * bytes_per_pixel;
 
 	data_phy_cycles = phy_timing->lpx + phy_timing->da_hs_prepare +
-		phy_timing->da_hs_zero + phy_timing->da_hs_exit + 2;
+			  phy_timing->da_hs_zero + phy_timing->da_hs_exit + 3;
 
 	u32 delta = 12;
 	if (mode_flags & MIPI_DSI_MODE_VIDEO_BURST)
@@ -214,11 +210,13 @@ static void mtk_dsi_config_vdo_timing(u32 mode_flags, u32 format, u32 lanes,
 	u32 d_phy = phy_timing->d_phy;
 	if (d_phy == 0)
 		d_phy = data_phy_cycles * lanes + delta;
-	if (hfp_byte > d_phy)
-		hfp_byte -= d_phy;
-	else
+	if ((hfp_byte + hbp_byte) > d_phy) {
+		hfp_byte -= (d_phy * hfp_byte) / (hfp_byte + hbp_byte);
+		hbp_byte -= (d_phy * hbp_byte) / (hfp_byte + hbp_byte);
+	} else {
 		printk(BIOS_ERR, "HFP is not greater than d-phy, FPS < 60Hz "
 		       "and the panel may not work properly.\n");
+	}
 
 	write32(&dsi0->dsi_hsa_wc, hsync_active_byte);
 	write32(&dsi0->dsi_hbp_wc, hbp_byte);
