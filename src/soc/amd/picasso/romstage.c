@@ -155,18 +155,35 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	mcfg->serial_port_refclk = uart_platform_refclk();
 
 	if (config != NULL) {
+		mcfg->system_config = config->system_config;
+
 		if ((config->slow_ppt_limit) &&
 			(config->fast_ppt_limit) &&
 			(config->slow_ppt_time_constant) &&
-			(config->stapm_time_constant) &&
-			(config->sustained_power_limit)) {
+			(config->stapm_time_constant)) {
 			mcfg->slow_ppt_limit = config->slow_ppt_limit;
 			mcfg->fast_ppt_limit = config->fast_ppt_limit;
 			mcfg->slow_ppt_time_constant = config->slow_ppt_time_constant;
 			mcfg->stapm_time_constant = config->stapm_time_constant;
-			mcfg->sustained_power_limit = config->sustained_power_limit;
 		}
+
+		mcfg->sustained_power_limit = config->sustained_power_limit;
+		mcfg->prochot_l_deassertion_ramp_time = config->prochot_l_deassertion_ramp_time;
+		mcfg->thermctl_limit = config->thermctl_limit;
+		mcfg->psi0_current_limit = config->psi0_current_limit;
+		mcfg->psi0_soc_current_limit = config->psi0_soc_current_limit;
+		mcfg->vddcr_soc_voltage_margin = config->vddcr_soc_voltage_margin;
+		mcfg->vddcr_vdd_voltage_margin = config->vddcr_vdd_voltage_margin;
+		mcfg->vrm_maximum_current_limit = config->vrm_maximum_current_limit;
+		mcfg->vrm_soc_maximum_current_limit = config->vrm_soc_maximum_current_limit;
+		mcfg->vrm_current_limit = config->vrm_current_limit;
+		mcfg->vrm_soc_current_limit = config->vrm_soc_current_limit;
+		mcfg->sb_tsi_alert_comparator_mode_en = config->sb_tsi_alert_comparator_mode_en;
+		mcfg->core_dldo_bypass = config->core_dldo_bypass;
+		mcfg->min_soc_vid_offset = config->min_soc_vid_offset;
+		mcfg->aclk_dpm0_freq_400MHz = config->aclk_dpm0_freq_400MHz;
 	}
+
 	mainboard_fsp_memory_init_params_cb(mcfg, version);
 }
 
