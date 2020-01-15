@@ -17,6 +17,7 @@
 #include <device/mmio.h>
 #include <arch/acpi.h>
 #include <amdblocks/amd_pci_util.h>
+#include <amdblocks/gpio_banks.h>
 #include <cbmem.h>
 #include <baseboard/variants.h>
 #include <boardid.h>
@@ -372,12 +373,19 @@ static void zork_enable(struct device *dev)
 	dev->ops->acpi_inject_dsdt_generator = chromeos_dsdt_generator;
 }
 
+static const struct soc_amd_gpio gpio_set_bl[] = {
+	PAD_GPO(GPIO_85, LOW),
+};
 
 static void mainboard_final(void *chip_info)
 {
 	struct global_nvs_t *gnvs;
 
 	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+
+	/* Re-Enable backlight - GPIO 85 active low */
+	/* TODO: Remove this after AGESA stops enabling the fan */
+	program_gpios(gpio_set_bl, ARRAY_SIZE(gpio_set_bl)); /*  APU_EDP_BL_DISABLE */
 
 	if (gnvs) {
 		gnvs->tmps = CTL_TDP_SENSOR_ID;
