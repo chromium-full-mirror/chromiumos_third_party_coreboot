@@ -291,15 +291,15 @@ picasso_fsp_ddi_descriptor dali_ddi_descriptors[] =
 		.aux_index = AUX1,
 		.hdp_index = HDP1
 	},
-	{ // DDI1 - eDP
+	{ // DDI1 - HDMI
 		.connector_type = HDMI,
 		.aux_index = AUX2,
 		.hdp_index = HDP2
 	},
 	{ // DDI2 - DP
 		.connector_type = DP,
-		.aux_index = AUX3,
-		.hdp_index = HDP3,
+		.aux_index = AUX4,
+		.hdp_index = HDP4,
 	}
 };
 
