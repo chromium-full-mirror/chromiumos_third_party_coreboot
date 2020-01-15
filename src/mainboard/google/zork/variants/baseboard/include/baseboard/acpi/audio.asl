@@ -63,12 +63,7 @@ Scope (EC0.CREC) {
 			})
 		}
 	}
-	Device (ECOD)
-	{
-		Name (_HID, "GOOG0013")
-		Name (_UID, 1)
-		Name (_DDN, "CROS EC CODEC")
-	}
+	#include <ec/google/chromeec/acpi/codec.asl>
 }
 
 /* machine driver */
