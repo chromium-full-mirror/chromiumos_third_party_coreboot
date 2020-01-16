@@ -144,9 +144,9 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* EMMC_CLK */
 	PAD_NF(GPIO_70, EMMC_CLK, PULL_NONE),
 	/* EMMC_DATA4 */
-	// PAD_NF(GPIO_74, EMMC_DATA4, PULL_NONE),
+	PAD_NF(GPIO_74, EMMC_DATA4, PULL_NONE),
 	/* EMMC_DATA6 */
-	// PAD_NF(GPIO_75, EMMC_DATA6, PULL_NONE),
+	PAD_NF(GPIO_75, EMMC_DATA6, PULL_NONE),
 	/* EN_PWR_CAMERA */
 	PAD_GPO(GPIO_76, HIGH),
 	/* DMIC_AD_EN */
@@ -156,9 +156,9 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* MST_GPIO_2 (Fw Update HDMI hub) */
 	PAD_GPI(GPIO_86, PULL_NONE),
 	/* EMMC_DATA7 */
-	// PAD_NF(GPIO_87, EMMC_DATA7, PULL_NONE),
+	PAD_NF(GPIO_87, EMMC_DATA7, PULL_NONE),
 	/* EMMC_DATA5 */
-	// PAD_NF(GPIO_88, EMMC_DATA5, PULL_NONE),
+	PAD_NF(GPIO_88, EMMC_DATA5, PULL_NONE),
 	/*  EN_DEV_BEEP_L */
 	PAD_GPO(GPIO_89, HIGH),
 	/* MST_GPIO_3 (Fw Update HDMI hub) */

@@ -53,7 +53,7 @@ Device (GPIO)
 
 Device (MMC0)
 {
-	Name (_HID, "PNP0D40")
+	Name (_HID, "AMDI0040")
 	Name (_UID, 0x0)
 	Name (_CRS, ResourceTemplate()
 	{
