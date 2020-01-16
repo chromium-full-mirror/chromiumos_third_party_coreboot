@@ -183,6 +183,17 @@ uint16_t gpio_acpi_pin(gpio_t gpio)
 	return gpio;
 }
 
+static int gevent_missing(uint8_t gpio, int gevent_num, const char *string)
+{
+	if (gevent_num < 0) {
+		printk(BIOS_WARNING, "Warning: GPIO pin %d has"
+			" no associated gevent!\n", gpio);
+		printk (BIOS_WARNING, "Not programming %s\n", string);
+		return 1;
+	}
+	return 0;
+}
+
 __weak void soc_gpio_hook(uint8_t gpio, uint8_t mux) {}
 
 void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
@@ -230,11 +241,6 @@ void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 
 		if (control_flags & GPIO_SPECIAL_FLAG) {
 			gevent_num = get_gpio_gevent(gpio, gev_tbl, gev_items);
-			if (gevent_num < 0) {
-				printk(BIOS_WARNING, "Warning: GPIO pin %d has"
-					" no associated gevent!\n", gpio);
-				continue;
-			}
 			switch (control_flags & GPIO_SPECIAL_MASK) {
 			case GPIO_DEBOUNCE_FLAG:
 				mem_read_write32(gpio_ptr, control,
@@ -249,11 +255,15 @@ void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 						AMD_GPIO_CONTROL_MASK);
 				break;
 			case GPIO_SMI_FLAG:
+				if (gevent_missing(gpio, gevent_num, "SMI Flag"))
+					break;
 				mem_read_write32(gpio_ptr, control,
 						INT_SCI_SMI_MASK);
 				program_smi(control_flags, gevent_num);
 				break;
 			case GPIO_SCI_FLAG:
+				if (gevent_missing(gpio, gevent_num, "SCI Flag"))
+					break;
 				mem_read_write32(gpio_ptr, control,
 						INT_SCI_SMI_MASK);
 				get_sci_config_bits(control_flags, &bit_edge,
