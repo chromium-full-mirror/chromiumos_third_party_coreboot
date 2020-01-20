@@ -23,6 +23,7 @@
 #include <console/console.h>
 #include <device/pci_ops.h>
 #include <amdblocks/psp.h>
+#include "psp_def.h"
 #include <soc/iomap.h>
 #include <soc/northbridge.h>
 
