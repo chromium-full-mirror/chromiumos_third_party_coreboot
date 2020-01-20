@@ -315,13 +315,12 @@ u32 map_oprom_vendev(u32 vendev)
 	u32 new_vendev = vendev;
 	u32 family_model;
 
-	if (! CONFIG(SECOND_VBIOS))
-		return vendev;
-
 	if (vendev != PICASSO_VBIOS_VID_DID) {
-		printk(BIOS_WARNING, "Warning: Unknown Vendor or Device ID.\n");
 		return vendev;
 	}
+
+	if (! CONFIG(SECOND_VBIOS))
+		return vendev;
 
 	family_model = cpuid_eax(1);
 
