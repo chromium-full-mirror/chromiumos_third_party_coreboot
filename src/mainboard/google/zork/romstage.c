@@ -35,7 +35,8 @@ static void enable_espi_early(void)
 	 * Trembyle EC supports standard eSPI speeds of 20MHz up to 50MHz.
 	 */
 	const struct espi_config cfg = {
-		.espi_initial_mode	= ESPI_OP_FREQ_33_MHZ | ESPI_ALERT_MODE,
+		.espi_initial_mode	=
+			ESPI_OP_FREQ_33_MHZ | ESPI_ALERT_MODE | ESPI_VIRTUAL_WIRE_CH_EN,
 		.bus_width		= ESPI_IO_MODE_SINGLE,
 		.espi_freq_mhz		= ESPI_OP_FREQ_33_MHZ,
 		.enable_crc_checking	= 1,
