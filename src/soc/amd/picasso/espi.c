@@ -277,10 +277,7 @@ static uint32_t espi_wait_response(uint8_t *espi)
 			return status;
 
 	} while (!stopwatch_expired(&sw));
-	/* FIXME - this should either be an error/assert, or a Warning. Not mixed
-	 * https://b.corp.google.com/issues/143815890
-	*/
-	printk(BIOS_WARNING, "Error: eSPI timed out waiting for a response.\n");
+	ASSERT_MSG(0, "Error: eSPI timed out waiting for a response.\n");
 
 	return 0;
 }
@@ -333,12 +330,9 @@ static uint32_t espi_send_command(uint8_t *espi, uint32_t cmd0, uint32_t cmd1,
 	write32_espi(espi, ESPI_DN_TXDR0, cmd0);
 
 	if (!espi_wait_ready(espi)){
-		/* FIXME - this should either be an error/assert, or a Warning. Not mixed
-		 * https://b.corp.google.com/issues/143815890
-		 */
-		printk(BIOS_WARNING, "Error: eSPI timed out waiting for command to complete\n");
 		printk(ESPI_DBG, "eSPI cmd0-cmd3: %08x %08x %08x %08x.\n",
 		       cmd0, cmd1, cmd2, cmd3);
+		ASSERT_MSG(0, "eSPI timed out waiting for command to complete\n");
 		return -1;
 	}
 	status = espi_wait_response(espi);
