@@ -94,7 +94,7 @@ config MMCONF_BUS_NUMBER
 
 config VGA_BIOS_ID
 	string
-	default "1002,15d8"
+	default "1002,15d8,c1"
 	help
 	  The default VGA BIOS PCI vendor/device ID should be set to the
 	  result of the map_oprom_vendev() function in northbridge.c.
@@ -109,7 +109,7 @@ config SECOND_VBIOS
 
 config SECOND_VBIOS_ID
 	string
-	default "ffff,15d8"
+	default "1002,15d8,c4"
 	help
 	  Because Dali and Picasso need different video BIOSes, but have the
 	  same vendor/device IDs, we need an alternate method to determine the
@@ -119,6 +119,13 @@ config SECOND_VBIOS_ID
 config SECOND_VBIOS_FILE
 	string
 	default "3rdparty/blobs/soc/amd/picasso/Raven2GenericVbios.bin"
+
+config CHECK_REV_IN_OPROM_NAME
+	bool
+	default y
+	help
+	  Select this in the platform BIOS or chipset if the option rom has a
+	   revision that needs to be checked when searching CBFS.
 
 config S3_VGA_ROM_RUN
 	bool
