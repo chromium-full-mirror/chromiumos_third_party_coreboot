@@ -25,6 +25,9 @@
 
 /* Return mapping of option ROM found in boot device. NULL on error. */
 void *cbfs_boot_map_optionrom(uint16_t vendor, uint16_t device);
+/* Return mapping of option ROM with revision number. Returns NULL on error. */
+void *cbfs_boot_map_optionrom_revision(uint16_t vendor, uint16_t device,
+	uint8_t rev);
 /* Load stage by name into memory. Returns entry address on success. NULL on
  * failure. */
 void *cbfs_boot_load_stage_by_name(const char *name);
