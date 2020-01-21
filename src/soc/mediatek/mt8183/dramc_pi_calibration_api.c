@@ -1590,10 +1590,10 @@ static void dramc_set_tx_best_dly(u8 chn, u8 rank, bool bypass_tx,
 
 
 	/*
-	* The clock rate should be (data rate/2 - 4),
-	* and the 4MHz is introduced to reduce interference from
-	* RF peripherals like modem, WiFi, BlueTooth.
-	*/
+	 * The clock rate is usually (frequency / 2 - delta), where the delta
+	 * is introduced to avoid interference from RF peripherals like
+	 * modem, WiFi, and Bluetooth.
+	 */
 	switch (freq_group) {
 	case LP4X_DDR1600:
 		clock_rate = 796;
@@ -1618,7 +1618,7 @@ static void dramc_set_tx_best_dly(u8 chn, u8 rank, bool bypass_tx,
 		use_delay_cell = 0;
 
 	if (fast_calib && bypass_tx) {
-		dramc_dbg("bypass TX, clock_rate:%d\n", clock_rate);
+		dramc_dbg("bypass TX, clock_rate: %d\n", clock_rate);
 		for (u8 byte = 0; byte < DQS_NUMBER; byte++) {
 			center_dly[byte].min_center = params->tx_center_min[chn][rank][byte];
 			center_dly[byte].max_center = params->tx_center_max[chn][rank][byte];
