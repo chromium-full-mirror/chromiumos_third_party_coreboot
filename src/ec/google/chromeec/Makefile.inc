@@ -31,6 +31,8 @@ verstage-$(CONFIG_EC_GOOGLE_CHROMEEC_BOARDID) += ec_boardid.c
 verstage-$(CONFIG_VBOOT) += vboot_storage.c
 verstage-$(CONFIG_EC_GOOGLE_CHROMEEC_SWITCHES) += switches.c
 
+ramstage-$(CONFIG_HAVE_ACPI_TABLES) += ec_chip.c
+
 ramstage-$(CONFIG_VBOOT) += vboot_storage.c
 smm-$(CONFIG_VBOOT) += vboot_storage.c
 romstage-$(CONFIG_VBOOT) += vboot_storage.c
