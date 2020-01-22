@@ -236,10 +236,6 @@ asmlinkage void soc_hybrid_romstage_entry(uint32_t bist, uint64_t early_tsc)
 	if (early_mtrr_err)
 		printk(BIOS_WARNING, "Early MTRRs were not set properly\n");
 
-	post_code(0x48);
-	if (!s3_resume && CONFIG(ELOG_BOOT_COUNT) && on_bsp)
-		boot_count_increment();
-
 	post_code(0x49);
 	fsp_memory_init(s3_resume);
 	/* APs do not return to here and continue  */
