@@ -162,11 +162,11 @@ struct vw_config_def {
 	uint8_t		index;
 	uint8_t		valid_bit;
 	uint8_t		enable_bit;
-	const char *	configname;
+	const char	*configname;
 };
 
 //					index,valid,enable,name
-#define VW_PLTRST_CONFIG 		0x03, 0x05, 0x01, "PLTRST"
+#define VW_PLTRST_CONFIG		0x03, 0x05, 0x01, "PLTRST"
 
 
 #endif /* AMD_PICASSO_ESPI_H */

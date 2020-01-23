@@ -36,7 +36,9 @@ static void enable_espi_early(void)
 	 */
 	const struct espi_config cfg = {
 		.espi_initial_mode	=
-			ESPI_OP_FREQ_33_MHZ | ESPI_ALERT_MODE | ESPI_VIRTUAL_WIRE_CH_EN,
+			ESPI_OP_FREQ_33_MHZ |
+			ESPI_ALERT_MODE |
+			ESPI_VIRTUAL_WIRE_CH_EN,
 		.bus_width		= ESPI_IO_MODE_SINGLE,
 		.espi_freq_mhz		= ESPI_OP_FREQ_33_MHZ,
 		.enable_crc_checking	= 1,
@@ -53,17 +55,17 @@ static void enable_espi_early(void)
 		.base = 0x62,
 		.size = 5,
 		.next = ioports + 1,
-	},{
+	}, {
 		.flags = IORESOURCE_IO,
 		.base = EC_HOST_CMD_REGION0,
 		.size = EC_HOST_CMD_REGION_SIZE * 2,
 		.next = ioports + 2
-	},{
+	}, {
 		.flags = IORESOURCE_IO,
 		.base = EC_LPC_ADDR_MEMMAP,
 		.size = EC_MEMMAP_SIZE + 1,
 		.next = ioports + 3
-	},{
+	}, {
 		.flags = IORESOURCE_IO,
 		.base = EC_LPC_ADDR_HOST_DATA,
 		.size = 8,

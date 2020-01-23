@@ -329,7 +329,7 @@ static uint32_t espi_send_command(uint8_t *espi, uint32_t cmd0, uint32_t cmd1,
 	/* Dword 0 must be last as this write triggers the transaction */
 	write32_espi(espi, ESPI_DN_TXDR0, cmd0);
 
-	if (!espi_wait_ready(espi)){
+	if (!espi_wait_ready(espi)) {
 		printk(ESPI_DBG, "eSPI cmd0-cmd3: %08x %08x %08x %08x.\n",
 		       cmd0, cmd1, cmd2, cmd3);
 		ASSERT_MSG(0, "eSPI timed out waiting for command to complete\n");
@@ -341,7 +341,8 @@ static uint32_t espi_send_command(uint8_t *espi, uint32_t cmd0, uint32_t cmd1,
 	return status;
 }
 
-static uint32_t espi_send_reset(uint8_t *espi) {
+static uint32_t espi_send_reset(uint8_t *espi)
+{
 	uint32_t tx_ctl;
 
 	tx_ctl = ESPI_TX_CMD_RESET;
@@ -409,7 +410,7 @@ static uint32_t espi_set_configuration(uint8_t *espi, uint16_t addr, uint32_t va
 {
 	uint32_t tx_ctl, status;
 	printk(ESPI_EXT_DBG, "Enter %s - addr: 0x%04hx, val 0x%08x\n", __func__,
-			addr,val);
+			addr, val);
 
 	tx_ctl = addr & 0x0f00;			/* HDATA0, Address [15:8].  [15:12]:0h */
 	tx_ctl |= (addr & 0xfc) << 16;		/* HDATA1, Address [7:0]. [1:0]:0h */
@@ -441,7 +442,7 @@ static uint32_t enable_channel(uint8_t *espi, const char *name, uint8_t addr, ui
 {
 	uint32_t config;
 
-	printk (ESPI_DBG, "Enabling %s channel\n", name);
+	printk(ESPI_DBG, "Enabling %s channel\n", name);
 	config = espi_get_configuration(espi, addr);
 	if (config == -1) {
 		printk(BIOS_WARNING, "eSPI Error: could not read %s channel configuration\n",
@@ -449,7 +450,7 @@ static uint32_t enable_channel(uint8_t *espi, const char *name, uint8_t addr, ui
 		return -1;
 	}
 
-	printk (ESPI_DBG, "%s channel configuration: 0x%08x\n", name, config);
+	printk(ESPI_DBG, "%s channel configuration: 0x%08x\n", name, config);
 	espi_set_configuration(espi, addr, config | ESPI_SLAVE_CHANNEL_ENABLE | val);
 	config = espi_wait_channel_ready(espi, addr);
 	return config;
@@ -503,7 +504,8 @@ static void espi_setup_slave(uint8_t *espi, const struct espi_config *cfg)
 	espi_set_configuration(espi, ESPI_SLAVE_GENERAL_CFG, slave_cfg_reg);
 }
 
-static void send_pltrst(uint8_t *espi) {
+static void send_pltrst(uint8_t *espi)
+{
 	uint32_t config;
 	const struct vw_config_def pltrst = {VW_PLTRST_CONFIG};
 
