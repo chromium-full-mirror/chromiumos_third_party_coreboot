@@ -24,6 +24,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select HAVE_ACPI_TABLES
 	select BOARD_ROMSIZE_KB_8192
 	select AZALIA_PLUGIN_SUPPORT
+	select HAVE_ACPI_RESUME
 
 config FSP_M_FILE
 	string "FSP-M (memory init) binary path and filename"
