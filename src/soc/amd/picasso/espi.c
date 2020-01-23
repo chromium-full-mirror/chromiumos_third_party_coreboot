@@ -504,25 +504,43 @@ static void espi_setup_slave(uint8_t *espi, const struct espi_config *cfg)
 	espi_set_configuration(espi, ESPI_SLAVE_GENERAL_CFG, slave_cfg_reg);
 }
 
+/* this provides sequence independent code to deassert PLTRST#
+ * this should be run (AMD recommended) after setting the speed/crc/io mode
+ * to SLAVE0_CONFIG, but you can also run it right after reset */
 static void send_pltrst(uint8_t *espi)
 {
-	uint32_t config;
+	uint32_t config, host_cfg;
 	const struct vw_config_def pltrst = {VW_PLTRST_CONFIG};
 
-	config = espi_get_configuration(espi, ESPI_SLAVE_CHAN1_CFG);
-	if (config == -1)
-		config = 0;
-	else
-		config = (config & 0x3f00) << 8;
+	printk(ESPI_DBG, "PLTRST# deassertion starts\n");
 
-	config = enable_channel(espi, "Virtual-wire", ESPI_SLAVE_CHAN1_CFG, config);
+	printk(ESPI_DBG, "Grabbing cfg for Host\n");
+	host_cfg = read32_espi(espi, ESPI_SLAVE0_CONFIG);
+
+	printk(ESPI_DBG, "Reading VW config for PLTRST#\n");
+	config = espi_get_configuration(espi, ESPI_SLAVE_CHAN1_CFG);
+
+	printk(ESPI_DBG, "Writing VW config (enabled) for PLTRST#\n");
+	espi_set_configuration(espi, ESPI_SLAVE_CHAN1_CFG, config | ESPI_SLAVE_CHANNEL_ENABLE);
+
+	printk(ESPI_DBG, "Waiting for ready\n");
+	config = espi_wait_channel_ready(espi, ESPI_SLAVE_CHAN1_CFG);
 
 	/* If the channel isn't ready, print an error but try to send PLTRST anyway */
 	if (config == -1)
 		printk(BIOS_ERR, "Error: Virtual-wire channel not ready when sending PLTRST\n");
 
+	printk(ESPI_DBG, "Enabling Host VW to clear PLTRST\n");
+	write32_espi(espi, ESPI_SLAVE0_CONFIG, host_cfg | ESPI_VIRTUAL_WIRE_CH_EN);
+
 	printk(ESPI_DBG, "Sending PLTRST\n");
 	espi_send_vw_cmd(espi, &pltrst, 1);
+
+	printk(ESPI_DBG, "Restoring channel settings\n");
+	espi_set_configuration(espi, ESPI_SLAVE_CHAN1_CFG, config);
+
+	printk(ESPI_DBG, "Restoring host cfg\n");
+	write32_espi(espi, ESPI_SLAVE0_CONFIG, host_cfg);
 }
 
 static bool is_0x2e_0x2f(uintptr_t base)
