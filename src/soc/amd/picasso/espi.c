@@ -459,17 +459,6 @@ static uint32_t enable_channel(uint8_t *espi, const char *name, uint8_t addr, ui
 static void espi_setup_slave(uint8_t *espi, const struct espi_config *cfg,
 			     uint32_t slave_cfg_reg)
 {
-	if (cfg->espi_freq_mhz == ESPI_OP_FREQ_66_MHZ) {
-		slave_cfg_reg |= ESPI_SLAVE_OP_FREQ_66_MHZ;
-		printk(ESPI_DBG, "Set slave bus to 66MHz\n");
-	} else if (cfg->espi_freq_mhz == ESPI_OP_FREQ_33_MHZ) {
-		slave_cfg_reg |= ESPI_SLAVE_OP_FREQ_33_MHZ;
-		printk(ESPI_DBG, "Set slave bus to 33MHz\n");
-	} else {
-		slave_cfg_reg |= ESPI_SLAVE_OP_FREQ_20_MHZ;
-		printk(ESPI_DBG, "Set slave bus to 20MHz\n");
-	}
-
 	if (cfg->bus_width == ESPI_IO_MODE_SINGLE) {
 		slave_cfg_reg |= ESPI_SLAVE_IO_MODE_SINGLE;
 		printk(ESPI_DBG, "Set slave single channel mode\n");
@@ -568,6 +557,36 @@ void *espi_read_base_address(void)
 }
 
 
+static void set_frequency(uint32_t req, uint32_t slave_supports, uint32_t *host_cfg_reg,
+			  uint32_t *slave_cfg_reg)
+{
+	if (req == ESPI_OP_FREQ_66_MHZ) {
+		if (slave_supports & ESPI_SLAVE_SUPP_FREQ_66_MHZ) {
+			*host_cfg_reg |= req;
+			*slave_cfg_reg |= ESPI_SLAVE_OP_FREQ_66_MHZ;
+			printk(ESPI_DBG, "Set slave bus to 66MHz\n");
+		} else {
+			printk(BIOS_WARNING, "Couldn't use 66MHz espi bus speed. Downgrading\n");
+			req = ESPI_OP_FREQ_33_MHZ;
+		}
+	}
+	if (req == ESPI_OP_FREQ_33_MHZ) {
+		if (slave_supports & ESPI_SLAVE_SUPP_FREQ_33_MHZ) {
+			*host_cfg_reg |= req;
+			*slave_cfg_reg |= ESPI_SLAVE_OP_FREQ_33_MHZ;
+			printk(ESPI_DBG, "Set slave bus to 33MHz\n");
+		} else {
+			printk(BIOS_WARNING, "Couldn't use 33MHz espi bus speed. Downgrading\n");
+			req = ESPI_OP_FREQ_16_MHZ;
+		}
+	}
+	if (req == ESPI_OP_FREQ_16_MHZ) {
+		*host_cfg_reg |= ESPI_OP_FREQ_16_MHZ; /* SOC version */
+		*slave_cfg_reg |= ESPI_SLAVE_OP_FREQ_20_MHZ; /* slave version */
+		printk(ESPI_DBG, "Set slave bus to 20MHz, SOC to 16MHz\n");
+	}
+}
+
 static void set_generics(const struct espi_config *cfg, uint32_t *cfg_reg,
 			 uint32_t *slave_cfg_reg)
 {
@@ -604,13 +623,13 @@ void espi_setup(const struct espi_config *cfg)
 	slave_cfg_reg = 0;
 
 	set_generics(cfg, &cfg_reg, &slave_cfg_reg);
+	set_frequency(cfg->espi_freq_mhz, slave_supports, &cfg_reg, &slave_cfg_reg);
 
 	/*
 	 * TODO: Make sure remote slave supports the requested configuration and
 	 *       adjust the configuration if it doesn't
 	 */
 	cfg_reg |= cfg->bus_width;
-	cfg_reg |= cfg->espi_freq_mhz;
 
 	cfg_reg |= cfg->peripheral_ch_en	? ESPI_PR_EN : 0;
 	cfg_reg |= cfg->virtual_wire_ch_en	? ESPI_VIRTUAL_WIRE_CH_EN : 0;
