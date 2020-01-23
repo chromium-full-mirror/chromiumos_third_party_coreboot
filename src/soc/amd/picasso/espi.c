@@ -456,13 +456,9 @@ static uint32_t enable_channel(uint8_t *espi, const char *name, uint8_t addr, ui
 	return config;
 }
 
-static void espi_setup_slave(uint8_t *espi, const struct espi_config *cfg)
+static void espi_setup_slave(uint8_t *espi, const struct espi_config *cfg,
+			     uint32_t slave_cfg_reg)
 {
-	uint32_t slave_cfg_reg = 0;
-
-	slave_cfg_reg |= cfg->enable_crc_checking ? ESPI_CRC_CHECKING_EN : 0;
-	slave_cfg_reg |= cfg->alert_pin_on_io1	? 0 : ESPI_ALERT_MODE;
-
 	if (cfg->espi_freq_mhz == ESPI_OP_FREQ_66_MHZ) {
 		slave_cfg_reg |= ESPI_SLAVE_OP_FREQ_66_MHZ;
 		printk(ESPI_DBG, "Set slave bus to 66MHz\n");
@@ -571,10 +567,26 @@ void *espi_read_base_address(void)
 	return (void *)espi;
 }
 
+
+static void set_generics(const struct espi_config *cfg, uint32_t *cfg_reg,
+			 uint32_t *slave_cfg_reg)
+{
+	/* clear the bits of interest just in case we have been requested to clear them */
+	*cfg_reg &= ~(ESPI_CRC_CHECKING_EN | ESPI_ALERT_MODE);
+	*slave_cfg_reg &= ~(ESPI_SLAVE_CRC_CHECKING_EN | ESPI_SLAVE_ALERT_MODE);
+
+	/* now set any bits of interest */
+	*cfg_reg |= cfg->enable_crc_checking	? ESPI_CRC_CHECKING_EN : 0;
+	*cfg_reg |= cfg->alert_pin_on_io1	? 0 : ESPI_ALERT_MODE;
+	*slave_cfg_reg |= cfg->enable_crc_checking ? ESPI_SLAVE_CRC_CHECKING_EN : 0;
+	*slave_cfg_reg |= cfg->alert_pin_on_io1	? 0 : ESPI_SLAVE_ALERT_MODE;
+}
+
 void espi_setup(const struct espi_config *cfg)
 {
 	uint32_t cfg_reg = 0;
 	uint8_t *espi = espi_read_base_address();
+	uint32_t slave_supports, slave_cfg_reg;
 
 	/* Set correct initial configuration to talk to the slave */
 	write32_espi(espi, ESPI_SLAVE0_CONFIG, cfg->espi_initial_mode);
@@ -587,8 +599,11 @@ void espi_setup(const struct espi_config *cfg)
 	send_pltrst(espi);
 	write32_espi(espi, ESPI_SLAVE0_CONFIG, cfg->espi_initial_mode);
 
-	cfg_reg |= cfg->enable_crc_checking	? ESPI_CRC_CHECKING_EN : 0;
-	cfg_reg |= cfg->alert_pin_on_io1	? 0 : ESPI_ALERT_MODE;
+	/* boot sequence 2) get_config for slave device */
+	slave_supports = espi_get_configuration(espi, ESPI_SLAVE_GENERAL_CFG);
+	slave_cfg_reg = 0;
+
+	set_generics(cfg, &cfg_reg, &slave_cfg_reg);
 
 	/*
 	 * TODO: Make sure remote slave supports the requested configuration and
@@ -604,7 +619,7 @@ void espi_setup(const struct espi_config *cfg)
 	write32_espi(espi, ESPI_SLAVE0_CONFIG, cfg_reg);
 
 	if (cfg->update_slave)
-		espi_setup_slave(espi, cfg);
+		espi_setup_slave(espi, cfg, slave_cfg_reg);
 
 	espi_get_configuration(espi, ESPI_SLAVE_GENERAL_CFG);
 
