@@ -625,17 +625,17 @@ void espi_setup(const struct espi_config *cfg)
 	uint32_t cfg_reg = 0;
 	uint8_t *espi = espi_read_base_address();
 	uint32_t slave_supports, slave_cfg_reg;
+	uint32_t espi_initial_mode = ESPI_OP_FREQ_16_MHZ | ESPI_IO_MODE_SINGLE;
 
-	/* Set correct initial configuration to talk to the slave */
-	write32_espi(espi, ESPI_SLAVE0_CONFIG, cfg->espi_initial_mode);
 
-	/* The resets affects both host and slave devices, so set initial config again */
+	/* Set correct initial configuration to talk to the slave
+	   boot sequence: 1a) Set to 16.7MHz */
+	write32_espi(espi, ESPI_SLAVE0_CONFIG, espi_initial_mode);
+
+	/* The resets affects both host and slave devices, so set initial config again
+	   boot sequence: 1b) send in band reset */
 	espi_send_reset(espi);
-	write32_espi(espi, ESPI_SLAVE0_CONFIG, cfg->espi_initial_mode);
-
-	/* Enable virtual wire channel and send PLTRST before setting anything else up */
-	send_pltrst(espi);
-	write32_espi(espi, ESPI_SLAVE0_CONFIG, cfg->espi_initial_mode);
+	write32_espi(espi, ESPI_SLAVE0_CONFIG, espi_initial_mode);
 
 	/* boot sequence 2) get_config for slave device */
 	slave_supports = espi_get_configuration(espi, ESPI_SLAVE_GENERAL_CFG);
@@ -644,6 +644,21 @@ void espi_setup(const struct espi_config *cfg)
 	set_generics(cfg, &cfg_reg, &slave_cfg_reg);
 	set_frequency(cfg->espi_freq_mhz, slave_supports, &cfg_reg, &slave_cfg_reg);
 	set_bus_width(cfg->bus_width, slave_supports, &cfg_reg, &slave_cfg_reg);
+
+	/* boot sequence 3) write slave device general config */
+	printk(ESPI_DBG, "Configure slave general cfg\n");
+	espi_set_configuration(espi, ESPI_SLAVE_GENERAL_CFG, slave_cfg_reg);
+
+	/* boot sequence 4) set the Master/host Slave0 config */
+	printk(ESPI_DBG, "Configure host - CRC, IO, Alert, Clk Freq\n");
+	write32_espi(espi, ESPI_SLAVE0_CONFIG, cfg_reg); /* host config */
+
+	/* boot sequence 5) PLTRST# deassertion */
+	if (slave_supports & ESPI_SLAVE_SUPP_VIRTUAL_WIRE_CH) {
+		send_pltrst(espi);
+	} else {
+		printk(ESPI_DBG, "Skipping PLTRST# deassertion since we don't have VW");
+	}
 
 	cfg_reg |= cfg->peripheral_ch_en	? ESPI_PR_EN : 0;
 	cfg_reg |= cfg->virtual_wire_ch_en	? ESPI_VIRTUAL_WIRE_CH_EN : 0;

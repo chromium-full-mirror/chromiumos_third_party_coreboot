@@ -22,7 +22,6 @@
  * match the slave's defaults.
  */
 struct espi_config {
-	unsigned long espi_initial_mode;
 	unsigned long bus_width;
 	unsigned long espi_freq_mhz;
 	unsigned int enable_crc_checking : 1;
