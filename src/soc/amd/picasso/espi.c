@@ -459,17 +459,6 @@ static uint32_t enable_channel(uint8_t *espi, const char *name, uint8_t addr, ui
 static void espi_setup_slave(uint8_t *espi, const struct espi_config *cfg,
 			     uint32_t slave_cfg_reg)
 {
-	if (cfg->bus_width == ESPI_IO_MODE_SINGLE) {
-		slave_cfg_reg |= ESPI_SLAVE_IO_MODE_SINGLE;
-		printk(ESPI_DBG, "Set slave single channel mode\n");
-	} else if (cfg->bus_width == ESPI_IO_MODE_DUAL) {
-		slave_cfg_reg |= ESPI_SLAVE_IO_MODE_DUAL;
-		printk(ESPI_DBG, "Set slave dual channel mode\n");
-	} else {
-		slave_cfg_reg |= ESPI_SLAVE_IO_MODE_QUAD;
-		printk(ESPI_DBG, "Set slave quad channel mode\n");
-	}
-
 	/* Enable the channels, then set the configuration to update the speed & width */
 
 	/* TODO: Configure the peripheral channel's modes and sizes */
@@ -587,6 +576,36 @@ static void set_frequency(uint32_t req, uint32_t slave_supports, uint32_t *host_
 	}
 }
 
+static void set_bus_width(uint32_t req, uint32_t slave_supports, uint32_t *host_cfg_reg,
+			  uint32_t *slave_cfg_reg)
+{
+	if (req == ESPI_IO_MODE_QUAD) {
+		if (slave_supports & ESPI_SLAVE_QUAD_IO_SUPPORTED) {
+			*host_cfg_reg |= req;
+			*slave_cfg_reg |= ESPI_SLAVE_IO_MODE_QUAD;
+			printk(ESPI_DBG, "Set slave IO Mode to Quad\n");
+		} else {
+			printk(BIOS_WARNING, "Couldn't use Quad mode IO. Downgrading\n");
+			req = ESPI_IO_MODE_DUAL;
+		}
+	}
+	if (req == ESPI_IO_MODE_DUAL) {
+		if (slave_supports & ESPI_SLAVE_DUAL_IO_SUPPORTED) {
+			*host_cfg_reg |= req;
+			*slave_cfg_reg |= ESPI_SLAVE_IO_MODE_DUAL;
+			printk(ESPI_DBG, "Set slave IO Mode to Dual\n");
+		} else {
+			printk(BIOS_WARNING, "Couldn't use Dual mode IO. Downgrading\n");
+			req = ESPI_IO_MODE_SINGLE;
+		}
+	}
+	if (req == ESPI_IO_MODE_SINGLE) {
+		*host_cfg_reg |= ESPI_IO_MODE_SINGLE;
+		*slave_cfg_reg |= ESPI_SLAVE_IO_MODE_SINGLE;
+		printk(ESPI_DBG, "Set IO Mode to Single\n");
+	}
+}
+
 static void set_generics(const struct espi_config *cfg, uint32_t *cfg_reg,
 			 uint32_t *slave_cfg_reg)
 {
@@ -624,12 +643,7 @@ void espi_setup(const struct espi_config *cfg)
 
 	set_generics(cfg, &cfg_reg, &slave_cfg_reg);
 	set_frequency(cfg->espi_freq_mhz, slave_supports, &cfg_reg, &slave_cfg_reg);
-
-	/*
-	 * TODO: Make sure remote slave supports the requested configuration and
-	 *       adjust the configuration if it doesn't
-	 */
-	cfg_reg |= cfg->bus_width;
+	set_bus_width(cfg->bus_width, slave_supports, &cfg_reg, &slave_cfg_reg);
 
 	cfg_reg |= cfg->peripheral_ch_en	? ESPI_PR_EN : 0;
 	cfg_reg |= cfg->virtual_wire_ch_en	? ESPI_VIRTUAL_WIRE_CH_EN : 0;
