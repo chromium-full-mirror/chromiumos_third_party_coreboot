@@ -65,7 +65,7 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "Ezkinil" if BOARD_GOOGLE_EZKINIL
 	default "Morphius" if BOARD_GOOGLE_MORPHIUS
-	default "Trembyle"
+	default "Trembyle" if BOARD_GOOGLE_TREMBYLE
 
 config DEVICETREE
 	string
