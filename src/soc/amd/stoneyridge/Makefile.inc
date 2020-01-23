@@ -69,6 +69,7 @@ romstage-y += southbridge.c
 romstage-y += nb_util.c
 romstage-$(CONFIG_SPI_FLASH) += spi.c
 romstage-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
+romstage-y += psp.c
 
 verstage-y += gpio.c
 verstage-y += i2c.c
@@ -112,6 +113,7 @@ ramstage-y += tsc_freq.c
 ramstage-$(CONFIG_SPI_FLASH) += spi.c
 ramstage-y += finalize.c
 ramstage-y += nb_util.c
+romstage-y += psp.c
 
 smm-y += monotonic_timer.c
 smm-y += smihandler.c
@@ -121,6 +123,7 @@ smm-$(CONFIG_DEBUG_SMI) += uart.c
 smm-$(CONFIG_SPI_FLASH) += spi.c
 smm-y += nb_util.c
 smm-y += gpio.c
+smm-y += psp.c
 
 CPPFLAGS_common += -I$(src)/soc/amd/stoneyridge
 CPPFLAGS_common += -I$(src)/soc/amd/stoneyridge/include
