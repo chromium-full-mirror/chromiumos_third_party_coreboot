@@ -51,6 +51,7 @@ romstage-y += tsc_freq.c
 romstage-y += southbridge.c
 romstage-$(CONFIG_SPI_FLASH) += spi.c
 romstage-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
+romstage-y += psp.c
 
 verstage-y += gpio.c
 verstage-y += i2c.c
@@ -84,6 +85,7 @@ ramstage-y += usb.c
 ramstage-y += tsc_freq.c
 ramstage-$(CONFIG_SPI_FLASH) += spi.c
 ramstage-y += finalize.c
+ramstage-y += psp.c
 
 smm-y += smihandler.c
 smm-y += smi_util.c
@@ -91,6 +93,7 @@ smm-y += tsc_freq.c
 smm-$(CONFIG_PICASSO_UART) += uart.c
 smm-$(CONFIG_SPI_FLASH) += spi.c
 smm-y += gpio.c
+smm-y += psp.c
 
 cbfs-files-y += etc/sdcard0
 etc/sdcard0-file = $(src)/soc/amd/picasso/sdcard0
