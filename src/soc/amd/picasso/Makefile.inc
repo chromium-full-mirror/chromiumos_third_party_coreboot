@@ -88,7 +88,7 @@ ramstage-y += finalize.c
 smm-y += smihandler.c
 smm-y += smi_util.c
 smm-y += tsc_freq.c
-smm-$(CONFIG_DEBUG_UART) += uart.c
+smm-$(CONFIG_PICASSO_UART) += uart.c
 smm-$(CONFIG_SPI_FLASH) += spi.c
 smm-y += gpio.c
 
