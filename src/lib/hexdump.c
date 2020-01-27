@@ -66,6 +66,9 @@ void hexdump32(char LEVEL, const void *d, size_t len)
 {
 	size_t count = 0;
 
+	if (!console_log_level(LEVEL))
+		return;
+
 	while (len > 0) {
 		if (count % 8 == 0) {
 			printk(LEVEL, "\n");
