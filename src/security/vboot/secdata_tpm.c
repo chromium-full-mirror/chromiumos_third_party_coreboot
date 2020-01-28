@@ -92,7 +92,7 @@ static uint32_t write_secdata(uint32_t index,
 			      const uint8_t *secdata,
 			      uint32_t len)
 {
-	uint8_t sd[32];
+	uint8_t sd[MAX(VB2_SECDATA_KERNEL_SIZE, VB2_SECDATA_FIRMWARE_SIZE)];
 	uint32_t rv;
 	int attempts = 3;
 
@@ -215,6 +215,8 @@ static uint32_t set_rec_hash_space(const uint8_t *data)
 
 static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
 {
+	vb2api_secdata_kernel_create(ctx);
+
 	RETURN_ON_FAILURE(tlcl_force_clear());
 
 	/*
@@ -297,6 +299,8 @@ static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
 	TPM_PERMANENT_FLAGS pflags;
 	uint32_t result;
 
+	vb2api_secdata_kernel_create_v0(ctx);
+
 	result = tlcl_get_permanent_flags(&pflags);
 	if (result != TPM_SUCCESS)
 		return result;
@@ -330,10 +334,10 @@ static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
 	/* Define and write secdata_kernel space. */
 	RETURN_ON_FAILURE(safe_define_space(KERNEL_NV_INDEX,
 					    TPM_NV_PER_PPWRITE,
-					    VB2_SECDATA_KERNEL_SIZE));
+					    VB2_SECDATA_KERNEL_SIZE_V02));
 	RETURN_ON_FAILURE(write_secdata(KERNEL_NV_INDEX,
 					ctx->secdata_kernel,
-					VB2_SECDATA_KERNEL_SIZE));
+					VB2_SECDATA_KERNEL_SIZE_V02));
 
 	/* Define and write secdata_firmware space. */
 	RETURN_ON_FAILURE(safe_define_space(FIRMWARE_NV_INDEX,
@@ -377,9 +381,11 @@ static uint32_t factory_initialize_tpm(struct vb2_context *ctx)
 {
 	uint32_t result;
 
-	/* Set initial values of secdata_firmware and secdata_kernel spaces. */
+	/*
+	 * Set initial values of secdata_firmware space.
+	 * kernel space is created in _factory_initialize_tpm().
+	 */
 	vb2api_secdata_firmware_create(ctx);
-	vb2api_secdata_kernel_create(ctx);
 
 	VBDEBUG("TPM: factory initialization\n");
 
