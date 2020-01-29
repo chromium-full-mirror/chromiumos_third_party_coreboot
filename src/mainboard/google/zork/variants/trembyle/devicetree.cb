@@ -128,6 +128,12 @@ chip soc/amd/picasso
 		device pci 18.6 on  end
 		device pci 18.7 on  end
 	end # domain
+	# This should be nested under the eSPI "bus" but we can't do that
+	# because the IO resources presented are too large and the espi driver
+	# does not know how to split the range into multiple smaller ranges.
+	chip ec/google/chromeec
+		device pnp 0c09.0 on end
+	end
 	chip drivers/generic/max98357a
 			register "sdmode_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_91)"
 			register "sdmode_delay" = "5"
