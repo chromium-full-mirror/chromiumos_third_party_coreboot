@@ -15,6 +15,7 @@
 
 #include <arch/mmio.h>
 #include <console/uart.h>
+#include <console/console.h>
 #include <commonlib/helpers.h>
 #include <amdblocks/gpio_banks.h>
 #include <amdblocks/acpimmio.h>
@@ -67,19 +68,34 @@ void set_uart_config(int idx)
 		sm_pci_write32(SMB_UART_CONFIG, uart_ctrl);
 	}
 
-	if (CONFIG(PICASSO_UART_LEGACY) && idx != 3) {
-		/* Force 3F8 if idx=0, 2F8 if idx=1, 3E8 if idx=2 */
+	if (CONFIG(PICASSO_LEGACY_UART)) {
+		uart_leg = read16((void *)FCH_LEGACY_UART_DECODE);
+		// Map UART0 to 3F8, UART1 to 3E8, UART2 to 2F8, UART3 to 2E8
+		uart_leg &= ~FCH_LEGACY_UART_WHICH_MASK;
+		uart_leg |= (0 << FCH_LEGACY_UART_3F8_WHICH_SHL) |
+			    (1 << FCH_LEGACY_UART_3E8_WHICH_SHL) |
+			    (2 << FCH_LEGACY_UART_2F8_WHICH_SHL) |
+			    (3 << FCH_LEGACY_UART_2E8_WHICH_SHL);
 
-		/* TODO: make clearer once PPR is updated */
-		uart_leg = (idx << 8) | (idx << 10) | (idx << 12) | (idx << 14);
-		if (idx == 0)
-			uart_leg |= 1 << FCH_LEGACY_3F8_SH;
-		else if (idx == 1)
-			uart_leg |= 1 << FCH_LEGACY_2F8_SH;
-		else if (idx == 2)
-			uart_leg |= 1 << FCH_LEGACY_3E8_SH;
-
-		write16((void *)FCH_UART_LEGACY_DECODE, uart_leg);
+		// Enable selected index
+		switch (idx) {
+		case 0:
+			uart_leg |= FCH_LEGACY_UART_3F8_EN;
+			break;
+		case 1:
+			uart_leg |= FCH_LEGACY_UART_3E8_EN;
+			break;
+		case 2:
+			uart_leg |= FCH_LEGACY_UART_2F8_EN;
+			break;
+		case 3:
+			uart_leg |= FCH_LEGACY_UART_2E8_EN;
+			break;
+		default:
+			//Invalid idx
+			return;
+		}
+		write16((void *)FCH_LEGACY_UART_DECODE, uart_leg);
 	}
 }
 
