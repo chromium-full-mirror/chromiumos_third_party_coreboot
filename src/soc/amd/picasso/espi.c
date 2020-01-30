@@ -463,17 +463,17 @@ static void espi_setup_slave(uint8_t *espi, const struct espi_config *cfg,
 
 	/* TODO: Configure the peripheral channel's modes and sizes */
 	if (cfg->peripheral_ch_en)
-		enable_channel(espi, "Peripheral", ESPI_SLAVE_CHAN0_CFG, BIT(2));
+		enable_channel(espi, "Peripheral", ESPI_SLAVE_PERIPH_CFG, BIT(2));
 
 	/* TODO: Configure the number of wires correctly */
 	if (cfg->virtual_wire_ch_en)
-		enable_channel(espi, "Virtual-wire", ESPI_SLAVE_CHAN1_CFG, 0x3f << 16);
+		enable_channel(espi, "Virtual-wire", ESPI_SLAVE_VW_CFG, 0x3f << 16);
 
 	if (cfg->out_of_band_ch_en)
-		enable_channel(espi, "Out-of-band", ESPI_SLAVE_CHAN2_CFG, 0);
+		enable_channel(espi, "Out-of-band", ESPI_SLAVE_OOB_CFG, 0);
 
 	if (cfg->flash_ch_en)
-		enable_channel(espi, "Flash", ESPI_SLAVE_CHAN3_CFG, 0);
+		enable_channel(espi, "Flash", ESPI_SLAVE_FLASH_CFG, 0);
 
 	espi_set_configuration(espi, ESPI_SLAVE_GENERAL_CFG, slave_cfg_reg);
 }
@@ -492,13 +492,13 @@ static void send_pltrst(uint8_t *espi)
 	host_cfg = read32_espi(espi, ESPI_SLAVE0_CONFIG);
 
 	printk(ESPI_DBG, "Reading VW config for PLTRST#\n");
-	config = espi_get_configuration(espi, ESPI_SLAVE_CHAN1_CFG);
+	config = espi_get_configuration(espi, ESPI_SLAVE_VW_CFG);
 
 	printk(ESPI_DBG, "Writing VW config (enabled) for PLTRST#\n");
-	espi_set_configuration(espi, ESPI_SLAVE_CHAN1_CFG, config | ESPI_SLAVE_CHANNEL_ENABLE);
+	espi_set_configuration(espi, ESPI_SLAVE_VW_CFG, config | ESPI_SLAVE_CHANNEL_ENABLE);
 
 	printk(ESPI_DBG, "Waiting for ready\n");
-	config = espi_wait_channel_ready(espi, ESPI_SLAVE_CHAN1_CFG);
+	config = espi_wait_channel_ready(espi, ESPI_SLAVE_VW_CFG);
 
 	/* If the channel isn't ready, print an error but try to send PLTRST anyway */
 	if (config == -1)
@@ -511,7 +511,7 @@ static void send_pltrst(uint8_t *espi)
 	espi_send_vw_cmd(espi, &pltrst, 1);
 
 	printk(ESPI_DBG, "Restoring channel settings\n");
-	espi_set_configuration(espi, ESPI_SLAVE_CHAN1_CFG, config);
+	espi_set_configuration(espi, ESPI_SLAVE_VW_CFG, config);
 
 	printk(ESPI_DBG, "Restoring host cfg\n");
 	write32_espi(espi, ESPI_SLAVE0_CONFIG, host_cfg);

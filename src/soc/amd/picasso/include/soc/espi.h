@@ -147,10 +147,10 @@ void dump_espi_regs(void);
 #define  ESPI_SLAVE_SUPP_OOB_CH				BIT(2)
 #define  ESPI_SLAVE_SUPP_FLASH_CH			BIT(3)
 
-#define ESPI_SLAVE_CHAN0_CFG				0x10	/* Peripheral channel */
-#define ESPI_SLAVE_CHAN1_CFG				0x20	/* Virtual Wire channel */
-#define ESPI_SLAVE_CHAN2_CFG				0x30	/* OOB Channel */
-#define ESPI_SLAVE_CHAN3_CFG				0x40	/* Flash Access channel */
+#define ESPI_SLAVE_PERIPH_CFG				0x10	/* Peripheral channel */
+#define ESPI_SLAVE_VW_CFG				0x20	/* Virtual Wire channel */
+#define ESPI_SLAVE_OOB_CFG				0x30	/* OOB Channel */
+#define ESPI_SLAVE_FLASH_CFG				0x40	/* Flash Access channel */
 #define  ESPI_SLAVE_CHANNEL_ENABLE			BIT(0)
 #define  ESPI_SLAVE_CHANNEL_READY			BIT(1)
 #define  ESPI_SLAVE_PERIPH_BM_ENABLE			BIT(2)
