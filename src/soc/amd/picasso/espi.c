@@ -465,10 +465,6 @@ static void espi_setup_slave(uint8_t *espi, const struct espi_config *cfg,
 	if (cfg->peripheral_ch_en)
 		enable_channel(espi, "Peripheral", ESPI_SLAVE_PERIPH_CFG, BIT(2));
 
-	/* TODO: Configure the number of wires correctly */
-	if (cfg->virtual_wire_ch_en)
-		enable_channel(espi, "Virtual-wire", ESPI_SLAVE_VW_CFG, 0x3f << 16);
-
 	if (cfg->out_of_band_ch_en)
 		enable_channel(espi, "Out-of-band", ESPI_SLAVE_OOB_CFG, 0);
 
@@ -476,45 +472,6 @@ static void espi_setup_slave(uint8_t *espi, const struct espi_config *cfg,
 		enable_channel(espi, "Flash", ESPI_SLAVE_FLASH_CFG, 0);
 
 	espi_set_configuration(espi, ESPI_SLAVE_GENERAL_CFG, slave_cfg_reg);
-}
-
-/* this provides sequence independent code to deassert PLTRST#
- * this should be run (AMD recommended) after setting the speed/crc/io mode
- * to SLAVE0_CONFIG, but you can also run it right after reset */
-static void send_pltrst(uint8_t *espi)
-{
-	uint32_t config, host_cfg;
-	const struct vw_config_def pltrst = {VW_PLTRST_CONFIG};
-
-	printk(ESPI_DBG, "PLTRST# deassertion starts\n");
-
-	printk(ESPI_DBG, "Grabbing cfg for Host\n");
-	host_cfg = read32_espi(espi, ESPI_SLAVE0_CONFIG);
-
-	printk(ESPI_DBG, "Reading VW config for PLTRST#\n");
-	config = espi_get_configuration(espi, ESPI_SLAVE_VW_CFG);
-
-	printk(ESPI_DBG, "Writing VW config (enabled) for PLTRST#\n");
-	espi_set_configuration(espi, ESPI_SLAVE_VW_CFG, config | ESPI_SLAVE_CHANNEL_ENABLE);
-
-	printk(ESPI_DBG, "Waiting for ready\n");
-	config = espi_wait_channel_ready(espi, ESPI_SLAVE_VW_CFG);
-
-	/* If the channel isn't ready, print an error but try to send PLTRST anyway */
-	if (config == -1)
-		printk(BIOS_ERR, "Error: Virtual-wire channel not ready when sending PLTRST\n");
-
-	printk(ESPI_DBG, "Enabling Host VW to clear PLTRST\n");
-	write32_espi(espi, ESPI_SLAVE0_CONFIG, host_cfg | ESPI_VIRTUAL_WIRE_CH_EN);
-
-	printk(ESPI_DBG, "Sending PLTRST\n");
-	espi_send_vw_cmd(espi, &pltrst, 1);
-
-	printk(ESPI_DBG, "Restoring channel settings\n");
-	espi_set_configuration(espi, ESPI_SLAVE_VW_CFG, config);
-
-	printk(ESPI_DBG, "Restoring host cfg\n");
-	write32_espi(espi, ESPI_SLAVE0_CONFIG, host_cfg);
 }
 
 static bool is_0x2e_0x2f(uintptr_t base)
@@ -606,6 +563,76 @@ static void set_bus_width(uint32_t req, uint32_t slave_supports, uint32_t *host_
 	}
 }
 
+static void finalize_channel(uint8_t *espi, uint32_t chan_addr, uint32_t host_chan_en,
+			     uint32_t *host_cfg_reg, uint32_t channel_reg)
+{
+	uint32_t result;
+	/* boot sequence 7) write channel capability */
+	espi_set_configuration(espi, chan_addr, channel_reg);
+
+	/* boot sequence 8) wait for channel ready */
+	if (channel_reg & ESPI_SLAVE_CHANNEL_ENABLE) {
+		result = espi_wait_channel_ready(espi, chan_addr);
+		if (result == -1) {
+			printk(BIOS_ERR, "ESPI Channel %08x did not go ready\n", chan_addr);
+			ASSERT_MSG(0, "ESPI Channel did not go to ready");
+
+			/* if the slave failed to go ready, don't enable master */
+			*host_cfg_reg &= ~host_chan_en;
+		}
+	}
+
+	/* boot sequence 9) enable channel in master/host */
+	write32_espi(espi, ESPI_SLAVE0_CONFIG, *host_cfg_reg);
+}
+
+
+static void setup_vw_channel(uint8_t *espi, const struct espi_config *cfg,
+			     uint32_t *host_cfg_reg, uint32_t slave_supports)
+{
+	/* boot sequence 6) read channel capability */
+	uint32_t channel_reg = espi_get_configuration(espi, ESPI_SLAVE_VW_CFG);
+	const struct vw_config_def pltrst_deassert = {VW_PLTRST_CONFIG};
+
+	if (cfg->virtual_wire_ch_en) {
+		if (slave_supports & ESPI_SLAVE_SUPP_VIRTUAL_WIRE_CH) {
+			*host_cfg_reg |= ESPI_VIRTUAL_WIRE_CH_EN;
+			channel_reg |= ESPI_SLAVE_CHANNEL_ENABLE;
+
+			/*
+			 * size the number of virtual wires allowed
+			 * current generation part supports 4b sizing, but espi 1.0 spec
+			 * supports 6b sizing. both start with value 0 => actual size of 1.
+			*/
+			uint32_t master_cap = read32_espi(espi, ESPI_MASTER_CAP);
+			uint8_t slave_vw_supported =
+				(channel_reg & ESPI_SLAVE_CHANNEL_SUPP_VW_COUNT) >>
+				ESPI_SLAVE_CHANNEL_SUPP_VW_COUNT_SHIFT;
+			uint8_t host_vw_supported =
+				(master_cap & ESPI_VW_MAX_SIZE) >> ESPI_VW_MAX_SIZE_SHIFT;
+
+			uint8_t selected_vw_count =
+				min(slave_vw_supported, host_vw_supported);
+			channel_reg |=
+				selected_vw_count << ESPI_SLAVE_CHANNEL_OP_VW_COUNT_SHIFT;
+		} else {
+			ASSERT_MSG(0, "Virtual Wire requested but slave does not support");
+		}
+	} else {
+		*host_cfg_reg &= ~ESPI_VIRTUAL_WIRE_CH_EN;
+		channel_reg &= ~ESPI_SLAVE_CHANNEL_ENABLE;
+	}
+
+	finalize_channel(espi, ESPI_SLAVE_VW_CFG, ESPI_VIRTUAL_WIRE_CH_EN,
+			 host_cfg_reg, channel_reg);
+
+	/* send pltrst# deassertion if we have a VW setup */
+	if (channel_reg & ESPI_SLAVE_CHANNEL_ENABLE) {
+		espi_send_vw_cmd(espi, &pltrst_deassert, 1);
+	}
+
+}
+
 static void set_generics(const struct espi_config *cfg, uint32_t *cfg_reg,
 			 uint32_t *slave_cfg_reg)
 {
@@ -629,15 +656,15 @@ void espi_setup(const struct espi_config *cfg)
 
 
 	/* Set correct initial configuration to talk to the slave
-	   boot sequence: 1a) Set to 16.7MHz */
+	   boot sequence: 1) Set to 16.7MHz */
 	write32_espi(espi, ESPI_SLAVE0_CONFIG, espi_initial_mode);
 
 	/* The resets affects both host and slave devices, so set initial config again
-	   boot sequence: 1b) send in band reset */
+	   boot sequence: 2) send in band reset */
 	espi_send_reset(espi);
 	write32_espi(espi, ESPI_SLAVE0_CONFIG, espi_initial_mode);
 
-	/* boot sequence 2) get_config for slave device */
+	/* boot sequence 3) get_config for slave device */
 	slave_supports = espi_get_configuration(espi, ESPI_SLAVE_GENERAL_CFG);
 	slave_cfg_reg = 0;
 
@@ -645,23 +672,19 @@ void espi_setup(const struct espi_config *cfg)
 	set_frequency(cfg->espi_freq_mhz, slave_supports, &cfg_reg, &slave_cfg_reg);
 	set_bus_width(cfg->bus_width, slave_supports, &cfg_reg, &slave_cfg_reg);
 
-	/* boot sequence 3) write slave device general config */
+	/* boot sequence 4) write slave device general config */
 	printk(ESPI_DBG, "Configure slave general cfg\n");
 	espi_set_configuration(espi, ESPI_SLAVE_GENERAL_CFG, slave_cfg_reg);
 
-	/* boot sequence 4) set the Master/host Slave0 config */
+	/* boot sequence 5) set the Master/host Slave0 config */
 	printk(ESPI_DBG, "Configure host - CRC, IO, Alert, Clk Freq\n");
 	write32_espi(espi, ESPI_SLAVE0_CONFIG, cfg_reg); /* host config */
 
-	/* boot sequence 5) PLTRST# deassertion */
-	if (slave_supports & ESPI_SLAVE_SUPP_VIRTUAL_WIRE_CH) {
-		send_pltrst(espi);
-	} else {
-		printk(ESPI_DBG, "Skipping PLTRST# deassertion since we don't have VW");
-	}
+	/* boot sequence 6-9 channel setup. Set up VW first so we can deassert PLTRST#,
+	   then do the other channels */
+	setup_vw_channel(espi, cfg, &cfg_reg, slave_supports);
 
 	cfg_reg |= cfg->peripheral_ch_en	? ESPI_PR_EN : 0;
-	cfg_reg |= cfg->virtual_wire_ch_en	? ESPI_VIRTUAL_WIRE_CH_EN : 0;
 	cfg_reg |= cfg->out_of_band_ch_en	? ESPI_OOB_CH_EN : 0;
 	cfg_reg |= cfg->flash_ch_en		? ESPI_FLASH_CH_EN : 0;
 	write32_espi(espi, ESPI_SLAVE0_CONFIG, cfg_reg);

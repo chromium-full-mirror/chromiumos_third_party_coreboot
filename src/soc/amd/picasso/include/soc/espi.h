@@ -81,6 +81,10 @@ void dump_espi_regs(void);
 #define  ESPI_DECODE_IO_0X60_0X64_EN		BIT(1)
 #define  ESPI_DECODE_IO_0X2E_0X2F_EN		BIT(0)
 
+#define ESPI_MASTER_CAP				0x2c
+#define ESPI_VW_MAX_SIZE_SHIFT			13
+#define ESPI_VW_MAX_SIZE			(0xf << ESPI_VW_MAX_SIZE_SHIFT)
+
 #define ESPI_IO_RANGE_BASE(range)		(0x44 + ((range) & 3) * 2)
 #define ESPI_IO_RANGE_SIZE(range)		(0x4c + ((range) & 3))
 #define ESPI_MMIO_RANGE_BASE(range)		(0x50 + ((range) & 3) * 4)
@@ -154,6 +158,10 @@ void dump_espi_regs(void);
 #define  ESPI_SLAVE_CHANNEL_ENABLE			BIT(0)
 #define  ESPI_SLAVE_CHANNEL_READY			BIT(1)
 #define  ESPI_SLAVE_PERIPH_BM_ENABLE			BIT(2)
+#define ESPI_SLAVE_CHANNEL_SUPP_VW_COUNT_SHIFT		8 /* p. 106 espi spec, 327432-004 */
+#define ESPI_SLAVE_CHANNEL_SUPP_VW_COUNT		\
+	(0x3f << ESPI_SLAVE_CHANNEL_SUPP_VW_COUNT_SHIFT)
+#define ESPI_SLAVE_CHANNEL_OP_VW_COUNT_SHIFT		16
 
 /* Virtual Wire definitions */
 
