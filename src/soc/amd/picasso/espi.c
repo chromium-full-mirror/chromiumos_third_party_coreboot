@@ -715,12 +715,14 @@ void espi_setup(const struct espi_config *cfg)
 	setup_oob_channel(espi, cfg, &cfg_reg, slave_supports);
 	setup_flash_channel(espi, cfg, &cfg_reg, slave_supports);
 
-	espi_show_host_configuration();
-	printk(ESPI_DBG, "Configure host\n");
-	write32_espi(espi, ESPI_SLAVE0_CONFIG, cfg_reg);
-	espi_show_host_configuration();
-
-	espi_get_configuration(espi, ESPI_SLAVE_GENERAL_CFG);
+	/* just used for debug */
+	if (CONFIG(DEBUG_ESPI_INIT)) {
+		espi_get_configuration(espi, ESPI_SLAVE_GENERAL_CFG);
+		for (int i = 0; i < 4; i++) {
+			espi_get_configuration(espi, ESPI_SLAVE_PERIPH_CFG * (i+1));
+		}
+		espi_show_host_configuration();
+	}
 }
 
 static int espi_allocate_io(struct espi_resource_allocator *allocation,
@@ -817,7 +819,7 @@ static void espi_write_resources(struct espi_resource_allocator *allocation)
 		decode_enable |= ESPI_DECODE_IO_0x80_EN;
 	}
 
-	printk(ESPI_DBG, "ESPI Decode reg: %08x", decode_enable);
+	printk(ESPI_DBG, "ESPI Decode reg: %08x\n", decode_enable);
 	write32(espi + ESPI_DECODE, decode_enable);
 
 	check_lpc_espi_overlap();
