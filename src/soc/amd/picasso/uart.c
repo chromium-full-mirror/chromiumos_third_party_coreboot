@@ -51,10 +51,28 @@ uintptr_t uart_platform_base(int idx)
 	return uart_info[idx].base;
 }
 
+
+void set_uart_legacy_config(int uart_idx, int range_idx)
+{
+	uint16_t uart_leg;
+	uint8_t uart_leg_which_offset;
+
+	if (uart_idx < 0 || uart_idx > 3 || range_idx < 0 || range_idx > 3)
+		return;
+
+	uart_leg = read16((void *)FCH_LEGACY_UART_DECODE);
+	// Map uart_idx to io range_idx
+	uart_leg_which_offset = range_idx * 2 + FCH_LEGACY_UART_WHICH_SHIFT;
+	uart_leg &= ~(0x3 << uart_leg_which_offset);
+	uart_leg |= uart_idx << uart_leg_which_offset;
+	// Enable io range
+	uart_leg |= 1 << range_idx;
+	write16((void *)FCH_LEGACY_UART_DECODE, uart_leg);
+}
+
 void set_uart_config(int idx)
 {
 	uint32_t uart_ctrl;
-	uint16_t uart_leg;
 
 	if (idx < 0 || idx > ARRAY_SIZE(uart_info))
 		return;
@@ -67,20 +85,6 @@ void set_uart_config(int idx)
 		sm_pci_write32(SMB_UART_CONFIG, uart_ctrl);
 	}
 
-	if (CONFIG(PICASSO_UART_LEGACY) && idx != 3) {
-		/* Force 3F8 if idx=0, 2F8 if idx=1, 3E8 if idx=2 */
-
-		/* TODO: make clearer once PPR is updated */
-		uart_leg = (idx << 8) | (idx << 10) | (idx << 12) | (idx << 14);
-		if (idx == 0)
-			uart_leg |= 1 << FCH_LEGACY_3F8_SH;
-		else if (idx == 1)
-			uart_leg |= 1 << FCH_LEGACY_2F8_SH;
-		else if (idx == 2)
-			uart_leg |= 1 << FCH_LEGACY_3E8_SH;
-
-		write16((void *)FCH_UART_LEGACY_DECODE, uart_leg);
-	}
 }
 
 unsigned int uart_platform_refclk(void)

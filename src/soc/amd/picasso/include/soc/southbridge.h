@@ -240,10 +240,8 @@
 #define   FCH_AOAC_STAT0		BIT(6)
 #define   FCH_AOAC_STAT1		BIT(7)
 
-#define FCH_UART_LEGACY_DECODE		0xfedc0020
-#define   FCH_LEGACY_3F8_SH		3
-#define   FCH_LEGACY_2F8_SH		1
-#define   FCH_LEGACY_3E8_SH		2
+#define FCH_LEGACY_UART_DECODE		0xfedc0020
+#define FCH_LEGACY_UART_WHICH_SHIFT	8
 
 #define PM1_LIMIT			16
 #define GPE0_LIMIT			28
@@ -353,6 +351,7 @@ void sb_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm);
 void fch_pre_init(void);
 void fch_early_init(void);
 void set_uart_config(int idx);
+void set_uart_legacy_config(int uart_idx, int range_idx);
 const struct soc_amd_picasso_config *get_soc_config(void);
 
 /* Initialize all the i2c buses that are marked with early init. */
