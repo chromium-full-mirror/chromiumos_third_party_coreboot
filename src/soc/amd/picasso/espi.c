@@ -198,7 +198,7 @@ static void espi_show_host_configuration(void)
 	else
 		printk(ESPI_DBG, "  Error: Invalid eSPI frequency\n");
 
-	if (slave0_config & ESPI_PR_EN)
+	if (slave0_config & ESPI_PR_CH_EN)
 		printk(ESPI_DBG, "  Peripheral Channel Enabled\n");
 
 	if (slave0_config & ESPI_VIRTUAL_WIRE_CH_EN)
@@ -438,42 +438,6 @@ static uint32_t espi_wait_channel_ready(uint8_t *espi, uint8_t channel)
 	return -1;
 }
 
-static uint32_t enable_channel(uint8_t *espi, const char *name, uint8_t addr, uint32_t val)
-{
-	uint32_t config;
-
-	printk(ESPI_DBG, "Enabling %s channel\n", name);
-	config = espi_get_configuration(espi, addr);
-	if (config == -1) {
-		printk(BIOS_WARNING, "eSPI Error: could not read %s channel configuration\n",
-				 name);
-		return -1;
-	}
-
-	printk(ESPI_DBG, "%s channel configuration: 0x%08x\n", name, config);
-	espi_set_configuration(espi, addr, config | ESPI_SLAVE_CHANNEL_ENABLE | val);
-	config = espi_wait_channel_ready(espi, addr);
-	return config;
-}
-
-static void espi_setup_slave(uint8_t *espi, const struct espi_config *cfg,
-			     uint32_t slave_cfg_reg)
-{
-	/* Enable the channels, then set the configuration to update the speed & width */
-
-	/* TODO: Configure the peripheral channel's modes and sizes */
-	if (cfg->peripheral_ch_en)
-		enable_channel(espi, "Peripheral", ESPI_SLAVE_PERIPH_CFG, BIT(2));
-
-	if (cfg->out_of_band_ch_en)
-		enable_channel(espi, "Out-of-band", ESPI_SLAVE_OOB_CFG, 0);
-
-	if (cfg->flash_ch_en)
-		enable_channel(espi, "Flash", ESPI_SLAVE_FLASH_CFG, 0);
-
-	espi_set_configuration(espi, ESPI_SLAVE_GENERAL_CFG, slave_cfg_reg);
-}
-
 static bool is_0x2e_0x2f(uintptr_t base)
 {
 	return ((base & ~0x01) == 0x2e);
@@ -633,6 +597,70 @@ static void setup_vw_channel(uint8_t *espi, const struct espi_config *cfg,
 
 }
 
+static void setup_generic_channel(uint8_t *espi,
+				  uint32_t enable_requested,
+				  uint32_t supported,
+				  uint32_t chan_addr,
+				  uint32_t extra_channel_bits,
+				  uint32_t host_chan_en,
+				  uint32_t *host_cfg_reg)
+{
+	uint32_t channel_reg = espi_get_configuration(espi, chan_addr);
+	if (enable_requested) {
+		if (supported) {
+			*host_cfg_reg |= host_chan_en;
+			channel_reg |= extra_channel_bits | ESPI_SLAVE_CHANNEL_ENABLE;
+		} else {
+			printk(BIOS_ERR,
+			       "ESPI Slave channel %08x not supported\n",
+			       chan_addr);
+			ASSERT_MSG(0, "espi slave channel not supported");
+		}
+	} else {
+		*host_cfg_reg &= ~host_chan_en;
+		channel_reg &= ~ESPI_SLAVE_CHANNEL_ENABLE;
+	}
+
+	finalize_channel(espi, chan_addr, host_chan_en, host_cfg_reg, channel_reg);
+
+}
+
+static void setup_periph_channel(uint8_t *espi, const struct espi_config *cfg,
+				 uint32_t *host_cfg_reg, uint32_t slave_supports)
+{
+	setup_generic_channel(espi,
+			      cfg->peripheral_ch_en,
+			      slave_supports & ESPI_SLAVE_SUPP_PERIPHERAL_CH,
+			      ESPI_SLAVE_PERIPH_CFG,
+			      ESPI_SLAVE_PERIPH_BM_ENABLE,
+			      ESPI_PR_CH_EN,
+			      host_cfg_reg);
+}
+
+static void setup_oob_channel(uint8_t *espi, const struct espi_config *cfg,
+				 uint32_t *host_cfg_reg, uint32_t slave_supports)
+{
+	setup_generic_channel(espi,
+			      cfg->out_of_band_ch_en,
+			      slave_supports & ESPI_SLAVE_SUPP_OOB_CH,
+			      ESPI_SLAVE_OOB_CFG,
+			      0x0,
+			      ESPI_OOB_CH_EN,
+			      host_cfg_reg);
+}
+
+static void setup_flash_channel(uint8_t *espi, const struct espi_config *cfg,
+				 uint32_t *host_cfg_reg, uint32_t slave_supports)
+{
+	setup_generic_channel(espi,
+			      cfg->flash_ch_en,
+			      slave_supports & ESPI_SLAVE_SUPP_FLASH_CH,
+			      ESPI_SLAVE_FLASH_CFG,
+			      0x0,
+			      ESPI_FLASH_CH_EN,
+			      host_cfg_reg);
+}
+
 static void set_generics(const struct espi_config *cfg, uint32_t *cfg_reg,
 			 uint32_t *slave_cfg_reg)
 {
@@ -683,16 +711,9 @@ void espi_setup(const struct espi_config *cfg)
 	/* boot sequence 6-9 channel setup. Set up VW first so we can deassert PLTRST#,
 	   then do the other channels */
 	setup_vw_channel(espi, cfg, &cfg_reg, slave_supports);
-
-	cfg_reg |= cfg->peripheral_ch_en	? ESPI_PR_EN : 0;
-	cfg_reg |= cfg->out_of_band_ch_en	? ESPI_OOB_CH_EN : 0;
-	cfg_reg |= cfg->flash_ch_en		? ESPI_FLASH_CH_EN : 0;
-	write32_espi(espi, ESPI_SLAVE0_CONFIG, cfg_reg);
-
-	if (cfg->update_slave)
-		espi_setup_slave(espi, cfg, slave_cfg_reg);
-
-	espi_get_configuration(espi, ESPI_SLAVE_GENERAL_CFG);
+	setup_periph_channel(espi, cfg, &cfg_reg, slave_supports);
+	setup_oob_channel(espi, cfg, &cfg_reg, slave_supports);
+	setup_flash_channel(espi, cfg, &cfg_reg, slave_supports);
 
 	espi_show_host_configuration();
 	printk(ESPI_DBG, "Configure host\n");

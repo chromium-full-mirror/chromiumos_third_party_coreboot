@@ -99,7 +99,7 @@ void dump_espi_regs(void);
 #define  ESPI_OP_FREQ_16_MHZ			(0x0 << 25)
 #define  ESPI_OP_FREQ_33_MHZ			(0x1 << 25)
 #define  ESPI_OP_FREQ_66_MHZ			(0x2 << 25)
-#define  ESPI_PR_EN				BIT(3)
+#define  ESPI_PR_CH_EN				BIT(3)
 #define  ESPI_VIRTUAL_WIRE_CH_EN		BIT(2)
 #define  ESPI_OOB_CH_EN				BIT(1)
 #define  ESPI_FLASH_CH_EN			BIT(0)
