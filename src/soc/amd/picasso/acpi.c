@@ -24,6 +24,7 @@
 #include <arch/acpigen.h>
 #include <device/pci_ops.h>
 #include <arch/ioapic.h>
+#include <arch/smp/mpspec.h>
 #include <cpu/x86/smm.h>
 #include <cbmem.h>
 #include <device/device.h>
@@ -38,6 +39,12 @@
 #include <soc/nvs.h>
 #include <soc/gpio.h>
 #include <version.h>
+
+unsigned long __weak acpi_mb_madt_irqoverride(unsigned long current)
+{
+	/* Add any additional overrides */
+	return current;
+}
 
 unsigned long acpi_fill_madt(unsigned long current)
 {
@@ -54,8 +61,11 @@ unsigned long acpi_fill_madt(unsigned long current)
 	/* 5 mean: 0101 --> Edge-triggered, Active high */
 	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)
 						current, 0, 0, 2, 0);
-	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)
-						current, 0, 9, 9, 0xf);
+	current += acpi_create_madt_irqoverride(
+		(acpi_madt_irqoverride_t *)current, 0, 9, 9,
+		MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW);
+
+	current = acpi_mb_madt_irqoverride(current);
 
 	/* create all subtables for processors */
 	current += acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *)current,

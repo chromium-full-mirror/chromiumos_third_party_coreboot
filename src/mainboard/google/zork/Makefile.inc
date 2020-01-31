@@ -16,6 +16,7 @@ romstage-y += ec.c
 
 ramstage-y += chromeos.c
 ramstage-y += ec.c
+ramstage-y += acpi.c
 
 verstage-y += chromeos.c
 verstage-y += ec.c

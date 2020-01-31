@@ -44,4 +44,6 @@ void southbridge_inject_dsdt(struct device *device);
 
 const char *soc_acpi_name(const struct device *dev);
 
+unsigned long acpi_mb_madt_irqoverride(unsigned long current);
+
 #endif /* __SOC_PICASSO_ACPI_H__ */
