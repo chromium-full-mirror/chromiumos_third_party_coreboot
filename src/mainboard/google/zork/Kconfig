@@ -61,12 +61,14 @@ config VARIANT_DIR
 	default "ezkinil" if BOARD_GOOGLE_EZKINIL
 	default "morphius" if BOARD_GOOGLE_MORPHIUS
 	default "trembyle" if BOARD_GOOGLE_TREMBYLE
+	default "dalboz" if BOARD_GOOGLE_DALBOZ
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "Ezkinil" if BOARD_GOOGLE_EZKINIL
 	default "Morphius" if BOARD_GOOGLE_MORPHIUS
 	default "Trembyle" if BOARD_GOOGLE_TREMBYLE
+	default "Dalboz" if BOARD_GOOGLE_DALBOZ
 
 config DEVICETREE
 	string

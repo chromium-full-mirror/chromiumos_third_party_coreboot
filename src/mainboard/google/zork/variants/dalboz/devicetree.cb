@@ -1,0 +1,184 @@
+#
+# This file is part of the coreboot project.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+chip soc/amd/picasso
+
+	# Set FADT Configuration
+	register "fadt_pm_profile" = "PM_MOBILE"
+	register "fadt_boot_arch" = "ACPI_FADT_LEGACY_DEVICES | ACPI_FADT_8042"
+	register "fadt_flags" = "ACPI_FADT_WBINVD | /* See table 5-34 ACPI 6.3 spec */
+				ACPI_FADT_C1_SUPPORTED |
+				ACPI_FADT_SLEEP_BUTTON |
+				ACPI_FADT_S4_RTC_WAKE |
+				ACPI_FADT_32BIT_TIMER |
+				ACPI_FADT_RESET_REGISTER |
+				ACPI_FADT_SEALED_CASE |
+				ACPI_FADT_PCI_EXPRESS_WAKE |
+				ACPI_FADT_REMOTE_POWER_ON"
+
+	register "acp_pin_cfg" = "I2S_PINS_I2S_TDM"
+
+        # Start : OPN Performance Configuration
+        # See devhub #55593 Chapter 3.2 for documentation
+        # For the below fields, 0 indicates use SOC default
+
+        # System config index
+	register "system_config" = "3"
+
+	# Set STAPM confiuration. All fields in this group must be set >0 for effect
+	register "slow_ppt_limit" = "25000" #mw
+	register "fast_ppt_limit" = "30000" #mw
+	register "slow_ppt_time_constant" = "5" #second
+	register "stapm_time_constant" = "200" #second
+	register "sustained_power_limit" = "25000" #mw
+
+        # PROCHOT_L de-assertion Ramp Time
+	register "prochot_l_deassertion_ramp_time" = "20" #mS
+
+        # Lower die temperature limit
+	register "thermctl_limit" = "85" #degrees C
+
+        # FP5 Processor Voltage Supply PSI Currents
+        register "psi0_current_limit" = "18000" #mA
+	register "psi0_soc_current_limit" = "12000"  #mA
+	register "vddcr_soc_voltage_margin" = "0" #mV
+	register "vddcr_vdd_voltage_margin" = "0" #mV
+
+        # VRM Limits
+	register "vrm_maximum_current_limit" = "0"  #mA
+	register "vrm_soc_maximum_current_limit" = "0"  #mA
+	register "vrm_current_limit" = "0"  #mA
+	register "vrm_soc_current_limit" = "0" #mA
+
+        # Misc SMU settings
+	register "sb_tsi_alert_comparator_mode_en" = "0"
+	register "core_dldo_bypass" = "1"
+	register "min_soc_vid_offset" = "0"
+	register "aclk_dpm0_freq_400MHz" = "0"
+
+        # End : OPN Performance Configuration
+
+	# Enable I2C2 for trackpad, touchscreen, pen at 400kHz
+	register "i2c[2]" = "{
+		.speed = I2C_SPEED_FAST,
+		.rise_time_ns = 3,
+		.fall_time_ns = 2,
+	}"
+
+	# Enable I2C3 for H1 400kHz
+	register "i2c[3]" = "{
+		.speed = I2C_SPEED_FAST,
+		.rise_time_ns = 16,
+		.fall_time_ns = 8,
+	}"
+
+	register "i2c_scl_reset" = "GPIO_I2C2_SCL | GPIO_I2C3_SCL"
+
+
+	device cpu_cluster 0 on
+		device lapic 0 on end
+	end
+	device domain 0 on
+		subsystemid 0x1022 0x1510 inherit
+		device pci 0.0 on  end # Root Complex
+		device pci 0.2 on  end # IOMMU
+		device pci 1.0 on  end # Unused, but must be enabled
+		device pci 1.1 off end
+		device pci 1.2 on  end # Bridge to Wifi
+		device pci 1.3 on  end # Bridge to SD
+		device pci 1.4 off end
+		device pci 1.5 off end
+		device pci 1.6 off end
+		device pci 1.7 on  end # Bridge to NVME
+		device pci 8.0 on  end # Dummy Host Bridge
+		device pci 8.1 on      # Bridge to Bus A
+			device pci 0.0 on  end # Internal GPU
+			device pci 0.1 on  end # Display HDA
+			device pci 0.2 on  end # Crypto Coprocesor
+			device pci 0.3 on  end # USB 3.1
+			device pci 0.4 on  end # USB 3.1
+			device pci 0.5 on  end # Audio
+			device pci 0.6 on  end # HDA
+			device pci 0.7 on  end # non-Sensor Fusion Hub device
+		end
+		device pci 8.2 on      # Bridge to Bus B
+			device pci 0.0 on  end # AHCI
+		end
+		device pci 14.0 on  end # SM
+		device pci 14.3 on  # - D14F3 bridge
+			device generic a0.1 on end # - eSPI bus
+			device generic 0.0 off end # - LPC bus
+		end
+		device pci 14.6 off end # Non-Functional SDHCI
+		device pci 18.0 on  end # Data fabric [0-7]
+		device pci 18.1 on  end
+		device pci 18.2 on  end
+		device pci 18.3 on  end
+		device pci 18.4 on  end
+		device pci 18.5 on  end
+		device pci 18.6 on  end
+		device pci 18.7 on  end
+	end # domain
+	chip drivers/generic/max98357a
+			register "sdmode_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_91)"
+			register "sdmode_delay" = "5"
+			device generic 0.1 on end
+	end
+
+	device mmio 0xfedc5000 on
+		chip drivers/i2c/tpm
+			register "hid" = ""GOOG0005""
+			register "desc" = ""Cr50 TPM""
+			register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_LOW(GPIO_3)"
+			device i2c 50 on end
+		end
+	end
+	device mmio 0xfedc4000 on
+		chip drivers/i2c/generic
+			register "hid" = ""ELAN0000""
+			register "desc" = ""ELAN Touchpad""
+			register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_12)"
+			register "wake" = "7"
+			register "probed" = "1"
+			device i2c 15 on end
+		end
+		chip drivers/i2c/hid
+			register "generic.hid" = ""PNP0C50""
+			register "generic.desc" = ""Synaptics Touchpad""
+			register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_12)"
+			register "generic.wake" = "7"
+			register "generic.probed" = "1"
+			register "hid_desc_reg_offset" = "0x20"
+			device i2c 2c on end
+		end
+		chip drivers/i2c/generic
+			register "hid" = ""RAYD0001""
+			register "desc" = ""Raydium Touchscreen""
+			register "probed" = "1"
+			register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_LOW(GPIO_12)"
+			register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_140)"
+			register "reset_delay_ms" = "20"
+			register "has_power_resource" = "1"
+			device i2c 39 on end
+		end
+		chip drivers/i2c/generic
+			register "hid" = ""ELAN0001""
+			register "desc" = ""ELAN Touchscreen""
+			register "probed" = "1"
+			register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_LOW(GPIO_12)"
+			register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_140)"
+			register "reset_delay_ms" = "20"
+			register "has_power_resource" = "1"
+			device i2c 10 on end
+		end
+	end
+end	# chip soc/amd/picasso
