@@ -23,6 +23,11 @@
 #include <string.h>
 #include <spi-generic.h>
 #include <spi_flash.h>
+#include <baytrail/spi.h>
+#if CONFIG_CHROMEOS
+#include <vendorcode/google/chromeos/chromeos.h>
+#include <vendorcode/google/chromeos/fmap.h>
+#endif
 #include <baytrail/nvm.h>
 
 /* This module assumes the flash is memory mapped just below 4GiB in the
@@ -80,3 +85,66 @@ int nvm_write(void *start, const void *data, size_t size)
 		return -1;
 	return flash->write(flash, to_flash_offset(start), size, data);
 }
+
+/* Read flash status register to determine if write protect is active */
+int nvm_is_write_protected(void)
+{
+	u8 sr1;
+	u8 wp_gpio;
+	u8 wp_spi;
+
+	if (!IS_ENABLED(CONFIG_CHROMEOS))
+		return 0;
+
+	if (nvm_init() < 0)
+		return -1;
+
+	/* Read Write Protect GPIO if available */
+	wp_gpio = get_write_protect_state();
+
+	/* Read Status Register 1 */
+	if (spi_flash_status(flash, &sr1) < 0) {
+		printk(BIOS_ERR, "Failed to read SPI status register 1\n");
+		return -1;
+	}
+	wp_spi = !!(sr1 & 0x80);
+
+	printk(BIOS_DEBUG, "SPI flash protection: WPSW=%d SRP0=%d\n",
+	       wp_gpio, wp_spi);
+
+	return wp_gpio && wp_spi;
+}
+
+/* Apply protection to a range of flash */
+int nvm_protect(void *start, size_t size)
+{
+	if (nvm_init() < 0)
+		return -1;
+	return spi_flash_protect(to_flash_offset(start), size);
+}
+
+/* Protect a region of flash */
+int nvm_region_protect(const char name[])
+{
+	if (!IS_ENABLED(CONFIG_CHROMEOS))
+		return -1;
+
+	if (nvm_init() < 0)
+		return -1;
+
+	if (!developer_mode_enabled())
+	{
+		uint32_t wp_ro_size;
+		void *wp_ro_base;
+		wp_ro_size = find_fmap_entry(name, &wp_ro_base);
+		if (wp_ro_size < 0) {
+			printk(BIOS_ERR, "Could not find region %s\n", name);
+			return -1;
+		} else if (nvm_protect((void *)wp_ro_base, wp_ro_size) < 0) {
+			printk(BIOS_ERR, "Could not write protect region %s\n", name);
+			return -1;
+		}
+	}
+	return 0;
+}
+
