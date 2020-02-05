@@ -263,22 +263,22 @@ static const picasso_fsp_pcie_descriptor dali_pcie_descriptors[] =
 
 picasso_fsp_ddi_descriptor pco_ddi_descriptors[] =
 {
-	{ // DDI0 - DP
+	{ // DDI0, DP0, eDP
 		.connector_type = EDP,
 		.aux_index = AUX1,
 		.hdp_index = HDP1
 	},
-	{ // DDI1 - eDP
+	{ // DDI1, DP1, DB OPT1 HDMI
 		.connector_type = HDMI,
 		.aux_index = AUX2,
 		.hdp_index = HDP2
 	},
-	{ // DDI2 - DP
+	{ // DDI2, DP2, DB OPT1 USB-C1
 		.connector_type = DP,
 		.aux_index = AUX3,
 		.hdp_index = HDP3,
 	},
-	{ // DDI3 - DP
+	{ // DDI3, DP3, USB-C0
 		.connector_type = DP,
 		.aux_index = AUX4,
 		.hdp_index = HDP4,
@@ -287,17 +287,18 @@ picasso_fsp_ddi_descriptor pco_ddi_descriptors[] =
 
 picasso_fsp_ddi_descriptor dali_ddi_descriptors[] =
 {
-	{ // DDI0 - DP
+	{ // DDI0, DP0, eDP
 		.connector_type = EDP,
 		.aux_index = AUX1,
 		.hdp_index = HDP1
 	},
-	{ // DDI1 - HDMI
-		.connector_type = HDMI,
+	{ // DDI1, DP1, DB OPT2 USB-C1 / DB OPT3 MST hub
+		.connector_type = DP,
 		.aux_index = AUX2,
 		.hdp_index = HDP2
 	},
-	{ // DDI2 - DP
+	// DP2 pins not connected on Dali
+	{ // DDI2, DP3, USB-C0
 		.connector_type = DP,
 		.aux_index = AUX4,
 		.hdp_index = HDP4,
