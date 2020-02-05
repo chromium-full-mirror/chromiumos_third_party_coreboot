@@ -310,28 +310,31 @@ void domain_set_resources(struct device *dev)
 /*
  * Check for Zen2 video bios requirement
  */
-u32 map_oprom_vendev(u32 vendev)
+void map_oprom_vendev_rev(u32 *vendev, u8 *rev)
 {
-	u32 new_vendev = vendev;
-	u32 family_model;
-
-	if (vendev != PICASSO_VBIOS_VID_DID) {
-		return vendev;
+	if (*vendev != PICASSO_VBIOS_VID_DID) {
+		return;
 	}
 
-	if (! CONFIG(SECOND_VBIOS))
-		return vendev;
-
-	family_model = cpuid_eax(1);
-
-	if (family_model == DALI_CPUID) {
-		/* Update to Zen 2 vbios for Dali & Pollock */
+	switch (*rev) {
+	case 0xc1:	/* Picasso - Ryzen 7 3700C */
+	case 0xc2:	/* Picasso - Ryzen 5 3500C */
+		printk(BIOS_SPEW, "Using Zen+ vBIOS.\n");
+		*rev = PICASSO_VBIOS_REV;
+		break;
+	case 0xc4:	/* Dali - Ryzen 3 3250C */
+	case 0xcd:	/* Dali - Athlon Silver 3050C */
+	case 0xce:	/* Dali - Athlon Gold 3150C */
+	case 0xe9:	/* Pollock - Samples */
+	case 0xea:	/* Pollock - Production */
 		printk(BIOS_SPEW, "Using Zen2 vBIOS.\n");
-		new_vendev = DALI_VBIOS_VID_DID;
-	} else if (family_model != PICASSO_CPUID) {
-		/* Verify ID as picasso or give warning */
-		printk(BIOS_WARNING, "Warning: Unknown CPUID.  Verify vBIOS.\n");
+		*vendev = DALI_VBIOS_VID_DID;
+		*rev = DALI_VBIOS_REV;
+		break;
+	default:
+		printk(BIOS_WARNING, "Warning: Unknown device. Verify vBIOS.\n");
+		break;
 	}
 
-	return new_vendev;
+	return;
 }

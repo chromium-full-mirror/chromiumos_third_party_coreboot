@@ -45,6 +45,8 @@ void check_mca(void);
 #define DALI_CPUID			0x00820f01
 
 #define PICASSO_VBIOS_VID_DID		0x100215d8
+#define PICASSO_VBIOS_REV		0xc1
 #define DALI_VBIOS_VID_DID		0x100215dd  /* Match value in rom */
+#define DALI_VBIOS_REV			0xc4
 
 #endif /* __PICASSO_CPU_H__ */

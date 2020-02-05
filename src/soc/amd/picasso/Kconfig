@@ -111,12 +111,15 @@ config SECOND_VBIOS
 
 config SECOND_VBIOS_ID
 	string
-	default "1002,15d8,c4"
+	default "1002,15dd,c4"
 	help
 	  Because Dali and Picasso need different video BIOSes, but have the
 	  same vendor/device IDs, we need an alternate method to determine the
 	  correct video BIOS. In map_oprom_vendev(), we look at the cpuid and
 	  decide which rom to load.
+
+	  Even though the hardware has the same vendor/device IDs, the vBIOS
+	  contains a *different* device ID, confusing the situation even more.
 
 config SECOND_VBIOS_FILE
 	string
