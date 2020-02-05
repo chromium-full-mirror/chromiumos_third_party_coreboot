@@ -40,6 +40,8 @@
 #include <baytrail/pmc.h>
 #include <baytrail/ramstage.h>
 #include <baytrail/spi.h>
+#include <baytrail/nvm.h>
+#include <baytrail/mrc_cache.h>
 #include "chip.h"
 
 #if IS_ENABLED(CONFIG_CHROMEOS)
@@ -504,6 +506,14 @@ static void finalize_chipset(void *unused)
 	const unsigned long etr = PMC_BASE_ADDRESS + ETR;
 	const unsigned long spi = SPI_BASE_ADDRESS;
 	struct spi_config cfg;
+
+	/* Protect WP RO range */
+	if (IS_ENABLED(CONFIG_PRR_RO_PROTECT))
+		nvm_region_protect("WP_RO");
+
+	/* Protect MRC Cache range */
+	if (IS_ENABLED(CONFIG_MRC_SETTINGS_PROTECT))
+		nvm_region_protect("RW_MRC_CACHE");
 
 	/* Set the lock enable on the BIOS control register. */
 	write32(bcr, read32(bcr) | BCR_LE);

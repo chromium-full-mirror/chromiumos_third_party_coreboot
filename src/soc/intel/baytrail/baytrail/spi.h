@@ -57,6 +57,12 @@
 # define BCR_LE				(0x1 << 1)
 # define BCR_WPD			(0x1 << 0)
 
+#define SPI_PRR_MAX			5
+#define SPI_PRR_SHIFT			12
+#define SPI_PRR_MASK			0x1fff
+#define SPI_PRR_LIMIT_SHIFT		16
+#define SPI_PRR_WPE			(1 << 31)
+
 /*
  * SPI lockdown configuration.
  */
@@ -70,6 +76,9 @@ struct spi_config {
 
 /* Return 0 on success < 0 on failure. */
 int mainboard_get_spi_config(struct spi_config *cfg);
+
+/* Return 0 on success < 0 on failure. */
+int spi_flash_protect(u32 start, u32 size);
 
 #endif /* _BAYTRAIL_SPI_H_ */
 

@@ -32,6 +32,7 @@
 
 #include <baytrail/lpc.h>
 #include <baytrail/pci_devs.h>
+#include <baytrail/spi.h>
 
 #ifdef __SMM__
 #define pci_read_config_byte(dev, reg, targ)\
@@ -113,6 +114,7 @@ typedef struct ich_spi_controller {
 	uint8_t *status;
 	uint16_t *control;
 	uint32_t *bbar;
+	uint32_t *pr;
 } ich_spi_controller;
 
 static ich_spi_controller cntlr;
@@ -320,6 +322,7 @@ void spi_init(void)
 	cntlr.control = (uint16_t *)ich9_spi->ssfc;
 	cntlr.bbar = &ich9_spi->bbar;
 	cntlr.preop = &ich9_spi->preop;
+	cntlr.pr = (uint32_t *)ich9_spi->pr;
 	ich_set_bbar(0);
 }
 
@@ -652,3 +655,49 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 
 	return 0;
 }
+
+/* Use first empty Protected Range Register to cover region of flash */
+int spi_flash_protect(u32 start, u32 size)
+{
+	u32 end = start + size - 1;
+	u32 reg;
+	int prr;
+
+	/* Sanity checks */
+	if (size == 0 || (size & 0xFFF) != 0 || (start & 0xFFF) != 0) {
+		printk(BIOS_ERR, "%s: invalid range for flash protect 0x%08x-0x%08x\n",
+			__func__, start, end);
+		return -1;
+	}
+
+	/* Find first empty PRR */
+	for (prr = 0; prr < SPI_PRR_MAX; prr++) {
+		reg = readl_(&cntlr.pr[prr]);
+		if (reg == 0)
+			break;
+	}
+	if (prr >= SPI_PRR_MAX) {
+		printk(BIOS_ERR, "ERROR: No SPI PRR free!\n");
+		return -1;
+	}
+
+	/* Set protected range base and limit */
+	reg = ((end >> SPI_PRR_SHIFT) & SPI_PRR_MASK);
+	reg <<= SPI_PRR_LIMIT_SHIFT;
+	reg |= ((start >> SPI_PRR_SHIFT) & SPI_PRR_MASK);
+	reg |= SPI_PRR_WPE;
+
+	/* Set the PRR register and verify it is protected */
+	writel_(reg, &cntlr.pr[prr]);
+	reg = readl_(&cntlr.pr[prr]);
+	if (!(reg & SPI_PRR_WPE)) {
+		printk(BIOS_ERR, "ERROR: Unable to set SPI PRR %d. Value returned: 0x%08x\n",
+			prr, reg);
+		return -1;
+	}
+
+	printk(BIOS_INFO, "%s: PRR %d is enabled for range 0x%08x-0x%08x\n",
+	       __func__, prr, start, end);
+	return 0;
+}
+

@@ -141,7 +141,7 @@ static int eon_erase(struct spi_flash *flash, u32 offset, size_t len)
 
 static int eon_status(struct spi_flash *flash, u8 *reg)
 {
-	return spi_flash_cmd(flash->spi, CMD_EN25Q128_RDSR, reg, sizeof(*reg));
+	return spi_flash_cmd(flash->spi, CMD_EN25_RDSR, reg, sizeof(*reg));
 }
 
 struct spi_flash *spi_flash_probe_eon(struct spi_slave *spi, u8 *idcode)

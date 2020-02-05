@@ -31,4 +31,13 @@ int nvm_erase(void *start, size_t size);
 /* Write data to NVM. Returns 0 on success < 0 on error.  */
 int nvm_write(void *start, const void *data, size_t size);
 
+/* Determine if flash device is write protected */
+int nvm_is_write_protected(void);
+
+/* Apply protection to a range of flash */
+int nvm_protect(void *start, size_t size);
+
+/* Protect RO range of Flash */
+int nvm_region_protect(const char name[]);
+
 #endif /* _NVM_H_ */
