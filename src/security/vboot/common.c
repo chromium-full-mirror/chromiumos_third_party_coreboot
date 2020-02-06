@@ -39,31 +39,35 @@ void vb2ex_printf(const char *func, const char *fmt, ...)
 	va_end(args);
 }
 
-static void *vboot_get_workbuf(void)
+static void vboot_get_workbuf(void **wb, uint32_t *size)
 {
-	void *wb = NULL;
+	*wb = NULL;
+	*size = 0;
 
-	if (cbmem_possibly_online())
-		wb = cbmem_find(CBMEM_ID_VBOOT_WORKBUF);
+	if (cbmem_possibly_online()) {
+		*wb = cbmem_find(CBMEM_ID_VBOOT_WORKBUF);
+		*size = VB2_KERNEL_WORKBUF_RECOMMENDED_SIZE;
+	}
 
-	if (wb == NULL && CONFIG(VBOOT_STARTS_IN_BOOTBLOCK) &&
-	    preram_symbols_available())
-		wb = _vboot2_work;
+	if (*wb == NULL && CONFIG(VBOOT_STARTS_IN_BOOTBLOCK)
+	    && preram_symbols_available()) {
+		*wb = _vboot2_work;
+		*size = VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE;
+	}
 
-	assert(wb != NULL);
-
-	return wb;
+	assert(*wb != NULL);
 }
 
 struct vb2_context *vboot_get_context(void)
 {
 	void *wb;
+	uint32_t size;
 
 	/* Return if context has already been initialized/restored. */
 	if (vboot_ctx)
 		return vboot_ctx;
 
-	wb = vboot_get_workbuf();
+	vboot_get_workbuf(&wb, &size);
 
 	/* Restore context from a previous stage. */
 	if (vboot_logic_executed()) {
@@ -74,7 +78,7 @@ struct vb2_context *vboot_get_context(void)
 	assert(verification_should_run());
 
 	/* Initialize vb2_shared_data and friends. */
-	assert(vb2api_init(wb, VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE,
+	assert(vb2api_init(wb, size,
 			   &vboot_ctx) == VB2_SUCCESS);
 
 	return vboot_ctx;
