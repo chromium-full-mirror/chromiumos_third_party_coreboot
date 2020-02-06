@@ -11,4 +11,4 @@
  * GNU General Public License for more details.
  */
 
-#include <baseboard/acpi/mainboard.asl>
+#include <baseboard/acpi/audio.asl>
