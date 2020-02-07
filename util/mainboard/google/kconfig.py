@@ -41,7 +41,7 @@ def main():
                       help='Name of the board variant')
   args = parser.parse_args()
 
-  if args.board not in ['hatch', 'volteer', 'zork']:
+  if args.board not in ['hatch', 'volteer', 'trembyle']:
     print('Unsupported baseboard "' + args.board + '"')
     sys.exit(1)
 
@@ -130,10 +130,10 @@ def add_to_Kconfig_name(baseboard_name, variant_name):
         print('\tbool "-> ' + capitalized + '"', file=outfile)
         print('\tselect BOARD_GOOGLE_BASEBOARD_VOLTEER', file=outfile)
 
-      if baseboard_name == 'zork':
+      if baseboard_name == 'trembyle':
         print('\nconfig ' + 'BOARD_GOOGLE_' + uppercase, file=outfile)
         print('\tbool "-> ' + capitalized + '"', file=outfile)
-        print('\tselect BOARD_GOOGLE_BASEBOARD_ZORK', file=outfile)
+        print('\tselect BOARD_GOOGLE_BASEBOARD_TREMBYLE', file=outfile)
 
 
 if __name__ == '__main__':
