@@ -69,11 +69,7 @@ static void setup_preram_cache(struct mem_region_device *cache_mrdev)
 		return;
 	}
 
-	struct fmap *fmap = NULL;
-
-#if !CONFIG(NO_FMAP_CACHE)
-	fmap = (struct fmap *)_fmap_cache;
-#endif
+	struct fmap *fmap = (struct fmap *)_fmap_cache;
 
 	if (!ENV_BOOTBLOCK) {
 		/* NOTE: This assumes that for all platforms running this code,
