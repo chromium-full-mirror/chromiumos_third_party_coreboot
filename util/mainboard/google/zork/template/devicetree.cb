@@ -84,6 +84,18 @@ chip soc/amd/picasso
 
 	register "i2c_scl_reset" = "GPIO_I2C2_SCL | GPIO_I2C3_SCL"
 
+	# SPI Configuration
+	# If spi_override_defaults is true, the values in
+	# "spi_{normal|fast|altio|tpm}_speed" and "spi_read_mode" will be used
+	# to configure the SPI bus, otherwise hardcoded defaults will be used.
+	register "spi_override_defaults" = "true"
+	# Speeds: 66M, 33M, 22M, 16M, 100M, 800K
+	register "spi_normal_speed" = "SPI_SPEED_66M" #Mhz
+	register "spi_fast_speed" = "SPI_SPEED_66M" #Mhz
+	register "spi_altio_speed" = "SPI_SPEED_66M" #Mhz
+	register "spi_tpm_speed" = "SPI_SPEED_66M" #Mhz
+	# Modes: NOM, DUAL112, DUAL114, DUAL122, QUAD144, NORMAL66, FAST
+	register "spi_read_mode" = "SPI_READ_MODE_DUAL112"
 
 	device cpu_cluster 0 on
 		device lapic 0 on end

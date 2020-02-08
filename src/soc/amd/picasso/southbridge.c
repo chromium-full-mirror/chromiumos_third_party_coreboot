@@ -275,6 +275,41 @@ void sb_read_mode(u32 mode)
 					& ~SPI_READ_MODE_MASK) | mode);
 }
 
+static void sb_spi_init(void)
+{
+	lpc_enable_spi_prefetch();
+	sb_init_spi_base();
+	sb_disable_4dw_burst();
+
+	if (CONFIG(EM100)) {
+		/*
+		 * We should be able to rely on defaults, but it seems safer
+		 * to explicitly set up these registers.
+		 */
+		sb_read_mode(SPI_READ_MODE_NOM);
+		sb_set_spi100(SPI_SPEED_16M,		/* Normal */
+				SPI_SPEED_16M,		/* Fast   */
+				SPI_SPEED_16M,		/* AltIO  */
+				SPI_SPEED_16M);		/* TPM    */
+	} else {
+		const config_t *config = get_soc_config();
+		if(config != NULL && config->spi_override_defaults) {
+			sb_read_mode(config->spi_read_mode);
+			sb_set_spi100(config->spi_normal_speed,
+					config->spi_fast_speed,
+					config->spi_altio_speed,
+					config->spi_tpm_speed);
+		}
+		else {
+			sb_read_mode(SPI_READ_MODE_NOM);
+			sb_set_spi100(SPI_SPEED_16M,
+					SPI_SPEED_16M,
+					SPI_SPEED_16M,
+					SPI_SPEED_16M);
+		}
+	}
+}
+
 static void fch_smbus_init(void)
 {
 	pm_write8(SMB_ASF_IO_BASE, SMB_BASE_ADDR >> 8);
@@ -297,11 +332,7 @@ void fch_pre_init(void)
 	if (CONFIG(POST_IO) && (CONFIG_POST_IO_PORT == 0x80)
 					&& CONFIG(PICASSO_LPC_IOMUX))
 		lpc_enable_port80();
-	lpc_enable_spi_prefetch();
-	sb_init_spi_base();
-	sb_disable_4dw_burst();
-	sb_set_spi100(SPI_SPEED_33M, SPI_SPEED_33M,
-			SPI_SPEED_16M, SPI_SPEED_16M);
+	sb_spi_init();
 	enable_acpimmio_decode();
 	fch_smbus_init();
 	sb_enable_cf9_io();
