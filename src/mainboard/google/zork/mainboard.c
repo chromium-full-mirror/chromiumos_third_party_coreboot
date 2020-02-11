@@ -29,6 +29,7 @@
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>
 #include <soc/smi.h>
+#include <soc/soc_util.h>
 #include <amdblocks/acpimmio.h>
 #include <variant/ec.h>
 #include <variant/thermal.h>
@@ -311,15 +312,12 @@ void mainboard_fsp_silicon_init_params_cb(FSP_S_CONFIG *scfg)
 	picasso_fsp_ddi_descriptor     *fsp_ddi;
 	picasso_fsp_pcie_descriptor    *fsp_pcie;
 	uint8_t                        counter;
-	uint32_t cpuinfo;
-
-	cpuinfo = cpuid_eax(1) >> 16;
 
 	fsp_pcie = (picasso_fsp_pcie_descriptor *)(scfg->dxio_descriptor0);
 	fsp_ddi = (picasso_fsp_ddi_descriptor *)&(scfg->ddi_descriptor0);
 
-	// Dali
-	if (cpuinfo == DALI_CPUID >> 16) {
+	// Dali and Pollock
+	if (soc_is_raven2()) {
 		for (counter = 0; counter < ARRAY_SIZE(dali_pcie_descriptors); counter++) {
 			fsp_pcie[counter] = dali_pcie_descriptors[counter];
 		}
@@ -330,6 +328,9 @@ void mainboard_fsp_silicon_init_params_cb(FSP_S_CONFIG *scfg)
 	}
 	// Picasso and default
 	else {
+		if (!soc_is_picasso())
+			printk(BIOS_WARNING, "Warning: Unrecognized Processor in %s", __FILE__);
+
 		for (counter = 0; counter < ARRAY_SIZE(pco_pcie_descriptors); counter++) {
 			fsp_pcie[counter] = pco_pcie_descriptors[counter];
 		}
