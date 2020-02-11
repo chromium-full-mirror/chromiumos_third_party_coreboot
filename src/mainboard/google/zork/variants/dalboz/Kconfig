@@ -17,14 +17,16 @@ menu "APCB Config options"
 
 config PSP_APCB_FILE
 	string "APCB file for SPD0"
-	default "3rdparty/blobs/mainboard/google/zork/APCB_HMAA1GS6CMR6N-VK.bin"
+	# HMA851S6CJR6N-VK - 0000b
+	default "3rdparty/blobs/mainboard/google/zork/APCB_HMA851S6CJR6N-VK_x1.bin"
 	help
 	  The name of the AGESA Parameter Customization Block.  This image is
 	  instance ID 0 in the PSP's BIOS Directory Table.
 
 config PSP_APCB1_FILE
 	string "APCB file for SPD1"
-	default "3rdparty/blobs/mainboard/google/zork/APCB_HMA851S6CJR6N-VK.bin"
+	# HMAA1GS6CMR6N-VK - 0001b
+	default "3rdparty/blobs/mainboard/google/zork/APCB_HMAA1GS6CMR6N-VK_x2.bin"
 	help
 	  If specified, this image is instance ID 1 in the PSP's BIOS
 	  Directory Table.
