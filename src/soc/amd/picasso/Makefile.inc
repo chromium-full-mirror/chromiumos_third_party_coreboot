@@ -52,6 +52,7 @@ romstage-y += southbridge.c
 romstage-$(CONFIG_SPI_FLASH) += spi.c
 romstage-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
 romstage-y += psp.c
+romstage-y += soc_util.c
 
 verstage-y += gpio.c
 verstage-y += i2c.c
@@ -86,6 +87,7 @@ ramstage-y += tsc_freq.c
 ramstage-$(CONFIG_SPI_FLASH) += spi.c
 ramstage-y += finalize.c
 ramstage-y += psp.c
+ramstage-y += soc_util.c
 
 smm-y += smihandler.c
 smm-y += smi_util.c
