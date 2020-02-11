@@ -48,9 +48,11 @@ static int mtk_dsi_get_data_rate(u32 bits_per_pixel, u32 lanes,
 	 * for older platforms which do not have complete implementation in HFP.
 	 * Newer platforms should just set that to 1.0 (100 / 100).
 	 */
-	int data_rate = (u64)edid->mode.pixel_clock * bits_per_pixel *
-			MTK_DSI_MIPI_RATIO_NUMERATOR /
-			(1000 * lanes * MTK_DSI_MIPI_RATIO_DENOMINATOR);
+	int data_rate = DIV_ROUND_UP((u64)edid->mode.pixel_clock *
+				     bits_per_pixel *
+				     MTK_DSI_MIPI_RATIO_NUMERATOR,
+				     (u64)lanes * 1000 *
+				     MTK_DSI_MIPI_RATIO_DENOMINATOR);
 	printk(BIOS_INFO, "DSI data_rate: %d Mbps\n", data_rate);
 
 	if (data_rate < MTK_DSI_DATA_RATE_MIN_MHZ) {
