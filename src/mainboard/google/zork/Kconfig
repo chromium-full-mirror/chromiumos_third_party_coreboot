@@ -113,13 +113,6 @@ config CHROMEOS
 	# Use default libpayload config
 	select LP_DEFCONFIG_OVERRIDE if PAYLOAD_DEPTHCHARGE
 
-config GBB_HWID
-	string
-	depends on CHROMEOS && VBOOT
-	default "EZKINIL TEST" if BOARD_GOOGLE_EZKINIL
-	default "MORPHIUS TEST 9467" if BOARD_GOOGLE_MORPHIUS
-	default "TREMBYLE TEST 4197" if BOARD_GOOGLE_TREMBYLE
-
 config AMD_FWM_POSITION_INDEX
 	int
 	default 2
