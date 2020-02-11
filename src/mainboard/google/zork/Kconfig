@@ -70,6 +70,11 @@ config MAINBOARD_PART_NUMBER
 	default "Trembyle" if BOARD_GOOGLE_TREMBYLE
 	default "Dalboz" if BOARD_GOOGLE_DALBOZ
 
+config AMD_FT5
+	bool
+	default y if BOARD_GOOGLE_DALBOZ
+	default n
+
 config DEVICETREE
 	string
 	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
