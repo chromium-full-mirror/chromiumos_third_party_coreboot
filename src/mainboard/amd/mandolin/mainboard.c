@@ -380,7 +380,7 @@ void mainboard_fsp_silicon_init_params_cb(FSP_S_CONFIG *scfg)
 
 	cpuinfo = cpuid_eax(1) >> 16;
 
-	fsp_pcie = (picasso_fsp_pcie_descriptor *)&(scfg->dxio_descriptor0);
+	fsp_pcie = (picasso_fsp_pcie_descriptor *)(scfg->dxio_descriptor0);
 	fsp_ddi = (picasso_fsp_ddi_descriptor *)&(scfg->ddi_descriptor0);
 
 	// Dali
