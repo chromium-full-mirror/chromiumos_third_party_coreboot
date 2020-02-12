@@ -161,15 +161,6 @@ config HAVE_APCB_BLOB
 	  redistributing the APCB blob extracted from UEFI.
 	  TODO: Add the ability to construct APCB on the fly for any mainboard.
 
-config PSP_APCB_FILE
-	string "APCB file"
-	depends on HAVE_APCB_BLOB
-	default "3rdparty/blobs/mainboard/google/zork/apcb.bin"
-	help
-	  The name of the AGESA Parameter Customization Block.  TODO: will we
-	  be able to generate this at build-time?  Build it offline for
-	  inclusion?
-
 config PAYLOAD_CONFIGFILE
 	string
 	depends on PAYLOAD_SEABIOS
