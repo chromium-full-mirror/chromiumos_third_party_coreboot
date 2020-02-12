@@ -28,5 +28,10 @@ unsigned long acpi_mb_madt_irqoverride(unsigned long current)
 		(acpi_madt_irqoverride_t *)current, 0, 1, 1,
 		MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW);
 
+	/* PS/2 mouse IRQ12 override */
+	current += acpi_create_madt_irqoverride(
+		(acpi_madt_irqoverride_t *)current, 0, 0xc, 0xc,
+		MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW);
+
 	return current;
 }
