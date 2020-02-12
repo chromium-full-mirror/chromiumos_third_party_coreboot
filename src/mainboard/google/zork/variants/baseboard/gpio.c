@@ -42,8 +42,6 @@ static const struct soc_amd_gpio gpio_set_stage_rom[] = {
 	PAD_GPO(GPIO_40, HIGH),
 	/* WIFI_AUX_RESET_L */
 	PAD_GPO(GPIO_42, HIGH),
-	/* GPIO for HP_INT_ODL, SCI */
-	PAD_SCI(GPIO_62, PULL_UP, EDGE_LOW),
 	/* EN_PWR_TOUCHPAD_PS2 - reset */
 	PAD_GPO(GPIO_67, LOW),
 	/* EMMC_RESET - reset (default stuffing unused)*/

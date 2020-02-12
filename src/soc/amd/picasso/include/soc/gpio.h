@@ -60,7 +60,6 @@
 #define GPIO_32				32
 #define GPIO_40				40
 #define GPIO_42				42
-#define GPIO_62				62
 
 /* Bank 1: GPIO_64 - GPIO_127 */
 #define GPIO_67				67
@@ -188,7 +187,6 @@
 #define GPIO_40_IOMUX_SGPIO_DATAIN 1
 #define GPIO_40_IOMUX_MDIO0_SDA 2
 #define GPIO_42_IOMUX_GPIOxx 0
-#define GPIO_62_IOMUX_GPIOxx 0
 #define GPIO_67_IOMUX_SPI_ROM_REQ 0
 #define GPIO_67_IOMUX_GPIOxx 1
 #define GPIO_68_IOMUX_GPIOxx 0
