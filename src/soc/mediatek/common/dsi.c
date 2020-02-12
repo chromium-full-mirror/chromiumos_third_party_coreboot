@@ -174,6 +174,8 @@ static void mtk_dsi_config_vdo_timing(u32 mode_flags, u32 format, u32 lanes,
 				      const struct mtk_phy_timing *phy_timing)
 {
 	u32 hsync_active_byte;
+	u32 hbp;
+	u32 hfp;
 	u32 hbp_byte;
 	u32 hfp_byte;
 	u32 vbp_byte;
@@ -193,14 +195,17 @@ static void mtk_dsi_config_vdo_timing(u32 mode_flags, u32 format, u32 lanes,
 	write32(&dsi0->dsi_vfp_nl, vfp_byte);
 	write32(&dsi0->dsi_vact_nl, edid->mode.va);
 
-	unsigned int hspw = 0;
-	if (mode_flags & MIPI_DSI_MODE_VIDEO_SYNC_PULSE)
-		hspw = edid->mode.hspw;
-
-	hbp_byte = (edid->mode.hbl - edid->mode.hso - hspw -
-		    edid->mode.hborder) * bytes_per_pixel - 10;
 	hsync_active_byte = edid->mode.hspw * bytes_per_pixel - 10;
-	hfp_byte = (edid->mode.hso - edid->mode.hborder) * bytes_per_pixel;
+
+	hbp = edid->mode.hbl - edid->mode.hso - edid->mode.hspw -
+	      edid->mode.hborder;
+	hfp = edid->mode.hso - edid->mode.hborder;
+
+	if (mode_flags & MIPI_DSI_MODE_VIDEO_SYNC_PULSE)
+		hbp_byte = hbp * bytes_per_pixel - 10;
+	else
+		hbp_byte = (hbp + edid->mode.hspw) * bytes_per_pixel - 10;
+	hfp_byte = hfp * bytes_per_pixel;
 
 	data_phy_cycles = phy_timing->lpx + phy_timing->da_hs_prepare +
 			  phy_timing->da_hs_zero + phy_timing->da_hs_exit + 3;
@@ -212,12 +217,13 @@ static void mtk_dsi_config_vdo_timing(u32 mode_flags, u32 format, u32 lanes,
 	u32 d_phy = phy_timing->d_phy;
 	if (d_phy == 0)
 		d_phy = data_phy_cycles * lanes + delta;
-	if ((hfp_byte + hbp_byte) > d_phy) {
-		hfp_byte -= (d_phy * hfp_byte) / (hfp_byte + hbp_byte);
-		hbp_byte -= (d_phy * hbp_byte) / (hfp_byte + hbp_byte);
+
+	if ((hfp + hbp) * bytes_per_pixel > d_phy) {
+		hfp_byte -= d_phy * hfp / (hfp + hbp);
+		hbp_byte -= d_phy * hbp / (hfp + hbp);
 	} else {
-		printk(BIOS_ERR, "HFP is not greater than d-phy, FPS < 60Hz "
-		       "and the panel may not work properly.\n");
+		printk(BIOS_ERR, "HFP plus HBP is not greater than d-phy, "
+		       "FPS < 60Hz and the panel may not work properly.\n");
 	}
 
 	write32(&dsi0->dsi_hsa_wc, hsync_active_byte);
