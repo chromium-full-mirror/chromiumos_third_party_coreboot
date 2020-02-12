@@ -216,7 +216,7 @@ PSP_APOB_BASE=$(CONFIG_PSP_APOB_DESTINATION)
 PSP_BIOSBIN_FILE=$(obj)/amd_biospsp.img
 PSP_ELF_FILE=$(obj)/cbfs/fallback/romstage.elf
 PSP_BIOSBIN_DEST=$(CONFIG_ROMSTAGE_ADDR)
-PSP_BIOSBIN_SIZE=$(shell printf "%x" $(call int-subtract, $(call int-add, $(CONFIG_X86_RESET_VECTOR) 0x10) $(PSP_BIOSBIN_DEST)))
+PSP_BIOSBIN_SIZE=$(shell printf "0x%x" $(call int-subtract, $(call int-add, $(CONFIG_X86_RESET_VECTOR) 0x10) $(PSP_BIOSBIN_DEST)))
 
 # type = 0x63
 PSP_APOBNV_BASE=$(CONFIG_PSP_APOB_NV_ADDRESS)
