@@ -55,15 +55,15 @@ _Static_assert(sizeof(fch_pic_routing) == sizeof(fch_apic_routing),
 	"PIC and APIC FCH interrupt tables must be the same size");
 
 static const struct pirq_struct mainboard_pirq_data[] = {
-	{ PCIE0_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } },
-	{ PCIE1_DEVFN,	{ PIRQ_E, PIRQ_F, PIRQ_G, PIRQ_H } },
-	{ PCIE2_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } },
-	{ PCIE3_DEVFN,	{ PIRQ_E, PIRQ_F, PIRQ_G, PIRQ_H } },
-	{ PCIE4_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } },
-	{ PCIE5_DEVFN,	{ PIRQ_E, PIRQ_F, PIRQ_G, PIRQ_H } },
-	{ PCIE6_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } },
-	{ PCIE7_DEVFN,	{ PIRQ_E, PIRQ_F, PIRQ_G, PIRQ_H } },
-	{ PCIE8_DEVFN,	{ PIRQ_G, PIRQ_H, PIRQ_E, PIRQ_F } },
+	{ PCIE0_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } }, // Bridge 0
+	{ PCIE1_DEVFN,	{ PIRQ_E, PIRQ_F, PIRQ_G, PIRQ_H } }, // Bridge 1 - Wifi
+	{ PCIE2_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } }, // Bridge 2 - SD
+	{ PCIE3_DEVFN,	{ PIRQ_E, PIRQ_F, PIRQ_G, PIRQ_H } }, // Bridge 3
+	{ PCIE4_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } }, // Bridge 4
+	{ PCIE5_DEVFN,	{ PIRQ_E, PIRQ_F, PIRQ_G, PIRQ_H } }, // Bridge 5
+	{ PCIE6_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } }, // Bridge 6 - NVME
+	{ PCIE7_DEVFN,	{ PIRQ_E, PIRQ_F, PIRQ_G, PIRQ_H } }, // Bridge to Bus A
+	{ PCIE8_DEVFN,	{ PIRQ_G, PIRQ_H, PIRQ_E, PIRQ_F } }, // Bridge to Bus B
 	{ SMBUS_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } },
 };
 

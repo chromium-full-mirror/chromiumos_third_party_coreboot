@@ -30,7 +30,7 @@ Name(PR0, Package(){
 })
 
 Name(APR0, Package(){
-	/* NB devices are behind PCI bridges. Not in here, KTHXBYE */
+	/* NB devices are behind PCI bridges. */
 
 	/* SB devices in APIC mode */
 	/* Bus 0, Dev 20 - F0:SMBus F3:LPC */

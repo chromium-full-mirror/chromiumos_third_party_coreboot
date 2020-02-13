@@ -77,7 +77,8 @@ External(PS6)
 External(PS7)
 External(PS8)
 
-/* 00:01.2 - GPP Bridge 0 */
+/* See AMD 55570-B1 Table 13: PCI Device ID Assignments */
+/* 00:01.1 - GPP Bridge 0 */
 Device(PBR0) {
 	Name(_ADR, 0x00010001)
 	Method(_PRT, 0) {

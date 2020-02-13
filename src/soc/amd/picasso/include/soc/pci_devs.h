@@ -25,6 +25,8 @@
 #define _SOC_DEV(slot, func)	PCI_DEV(0, slot, func)
 #endif
 
+/* See AMD 55570-B1 Table 13: PCI Device ID Assignments.*/
+
 /* GNB Root Complex */
 #define GNB_DEV			0x0
 #define GNB_FUNC		0
