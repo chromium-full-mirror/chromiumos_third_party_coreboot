@@ -12,7 +12,15 @@
 #
 
 config BOARD_GOOGLE_BASEBOARD_TREMBYLE
-	bool
+	def_bool n
+
+config BOARD_GOOGLE_BASEBOARD_DALBOZ
+	def_bool n
+
+if BOARD_GOOGLE_BASEBOARD_TREMBYLE || BOARD_GOOGLE_BASEBOARD_DALBOZ
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
 	select SOC_AMD_PICASSO
 	select VGA_BIOS
 	select ALWAYS_LOAD_OPROM
@@ -42,8 +50,6 @@ config BOARD_GOOGLE_BASEBOARD_TREMBYLE
 	select DRIVERS_GENERIC_MAX98357A
 	select HAVE_ACPI_RESUME
 
-if BOARD_GOOGLE_BASEBOARD_TREMBYLE
-
 source "src/mainboard/google/zork/variants/*/Kconfig"
 
 config MAINBOARD_DIR
@@ -72,7 +78,7 @@ config MAINBOARD_PART_NUMBER
 
 config AMD_FT5
 	bool
-	default y if BOARD_GOOGLE_DALBOZ
+	default y if BOARD_GOOGLE_BASEBOARD_DALBOZ
 	default n
 
 config DEVICETREE
@@ -171,4 +177,4 @@ config PAYLOAD_CONFIGFILE
 	depends on PAYLOAD_SEABIOS
 	default "$(top)/src/mainboard/google/zork/config_seabios"
 
-endif # BOARD_GOOGLE_BASEBOARD_TREMBYLE
+endif # BOARD_GOOGLE_BASEBOARD_TREMBYLE || BOARD_GOOGLE_BASEBOARD_DALBOZ

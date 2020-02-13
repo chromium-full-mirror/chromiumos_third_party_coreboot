@@ -11,14 +11,17 @@
 # GNU General Public License for more details.
 #
 
-bootblock-y += gpio.c
+bootblock-$(CONFIG_AMD_FP5) += gpio_fp5.c
+bootblock-$(CONFIG_AMD_FT5) += gpio_ft5.c
 
 verstage-y += tpm_tis.c
 
-romstage-y += gpio.c
+romstage-$(CONFIG_AMD_FP5) += gpio_fp5.c
+romstage-$(CONFIG_AMD_FT5) += gpio_ft5.c
 romstage-y += tpm_tis.c
 
-ramstage-y += gpio.c
+ramstage-$(CONFIG_AMD_FP5) += gpio_fp5.c
+ramstage-$(CONFIG_AMD_FT5) += gpio_ft5.c
 ramstage-y += tpm_tis.c
 
 # Add OEM ID table

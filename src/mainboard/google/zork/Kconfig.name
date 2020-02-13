@@ -1,5 +1,9 @@
 comment "Zork"
 
+config BOARD_GOOGLE_DALBOZ
+	bool "->  Dalboz"
+	select BOARD_GOOGLE_BASEBOARD_DALBOZ
+
 config BOARD_GOOGLE_EZKINIL
 	bool "->  Ezkinil"
 	select BOARD_GOOGLE_BASEBOARD_TREMBYLE
@@ -10,8 +14,4 @@ config BOARD_GOOGLE_MORPHIUS
 
 config BOARD_GOOGLE_TREMBYLE
 	bool "->  Trembyle"
-	select BOARD_GOOGLE_BASEBOARD_TREMBYLE
-
-config BOARD_GOOGLE_DALBOZ
-	bool "-> Dalboz"
 	select BOARD_GOOGLE_BASEBOARD_TREMBYLE
