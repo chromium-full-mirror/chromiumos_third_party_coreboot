@@ -39,27 +39,28 @@ static unsigned int mtk_dsi_get_bits_per_pixel(u32 format)
 	return 24;
 }
 
-static int mtk_dsi_get_data_rate(u32 bits_per_pixel, u32 lanes,
+static u32 mtk_dsi_get_data_rate(u32 bits_per_pixel, u32 lanes,
 				 const struct edid *edid)
 {
 	/* data_rate = pixel_clock * bits_per_pixel * mipi_ratio / lanes
-	 * Note pixel_clock comes in kHz and returned data_rate is in Mbps.
+	 * Note pixel_clock comes in kHz and returned data_rate is in bps.
 	 * mipi_ratio is the clk coefficient to balance the pixel clk in MIPI
 	 * for older platforms which do not have complete implementation in HFP.
 	 * Newer platforms should just set that to 1.0 (100 / 100).
 	 */
-	int data_rate = DIV_ROUND_UP((u64)edid->mode.pixel_clock *
-				     bits_per_pixel *
+	u32 data_rate = DIV_ROUND_UP((u64)edid->mode.pixel_clock *
+				     bits_per_pixel * 1000 *
 				     MTK_DSI_MIPI_RATIO_NUMERATOR,
-				     (u64)lanes * 1000 *
+				     (u64)lanes *
 				     MTK_DSI_MIPI_RATIO_DENOMINATOR);
-	printk(BIOS_INFO, "DSI data_rate: %d Mbps\n", data_rate);
+	printk(BIOS_INFO, "DSI data_rate: %u bps\n", data_rate);
 
-	if (data_rate < MTK_DSI_DATA_RATE_MIN_MHZ) {
-		printk(BIOS_ERR, "data rate (%dMbps) must be >=%dMbps. "
-		       "Please check the pixel clock (%u), bits per pixel(%u), "
+	if (data_rate < MTK_DSI_DATA_RATE_MIN_MHZ * MHz) {
+		printk(BIOS_ERR, "data rate (%ubps) must be >= %ubps. "
+		       "Please check the pixel clock (%u), "
+		       "bits per pixel (%u), "
 		       "mipi_ratio (%d%%) and number of lanes (%d)\n",
-		       data_rate, MTK_DSI_DATA_RATE_MIN_MHZ,
+		       data_rate, MTK_DSI_DATA_RATE_MIN_MHZ * MHz,
 		       edid->mode.pixel_clock, bits_per_pixel,
 		       (100 * MTK_DSI_MIPI_RATIO_NUMERATOR /
 			MTK_DSI_MIPI_RATIO_DENOMINATOR), lanes);
@@ -73,9 +74,10 @@ __weak void mtk_dsi_override_phy_timing(struct mtk_phy_timing *timing)
 	/* Do nothing. */
 }
 
-static void mtk_dsi_phy_timing(int data_rate_mhz, struct mtk_phy_timing *timing)
+static void mtk_dsi_phy_timing(u32 data_rate, struct mtk_phy_timing *timing)
 {
 	u32 timcon0, timcon1, timcon2, timcon3;
+	u32 data_rate_mhz = DIV_ROUND_UP(data_rate, MHz);
 
 	memset(timing, 0, sizeof(*timing));
 
@@ -407,11 +409,11 @@ static void mtk_dsi_reset_dphy(void)
 int mtk_dsi_init(u32 mode_flags, u32 format, u32 lanes, const struct edid *edid,
 		 const u8 *init_commands)
 {
-	int data_rate;
+	u32 data_rate;
 	u32 bits_per_pixel = mtk_dsi_get_bits_per_pixel(format);
 
 	data_rate = mtk_dsi_get_data_rate(bits_per_pixel, lanes, edid);
-	if (data_rate < 0)
+	if (!data_rate)
 		return -1;
 
 	mtk_dsi_configure_mipi_tx(data_rate, lanes);
