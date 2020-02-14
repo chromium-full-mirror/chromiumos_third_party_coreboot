@@ -67,18 +67,24 @@ chip soc/amd/picasso
 
         # End : OPN Performance Configuration
 
-	# Enable I2C2 for trackpad, touchscreen, pen at 400kHz
-	register "i2c[2]" = "{
+	# I2C0 for Audio
+	register "i2c[0]" = "{
 		.speed = I2C_SPEED_FAST,
-		.rise_time_ns = 3,
-		.fall_time_ns = 2,
 	}"
 
-	# Enable I2C3 for H1 400kHz
+	# I2C1 for touchpad
+	register "i2c[1]" = "{
+		.speed = I2C_SPEED_FAST,
+	}"
+
+	# I2C2 for touchscreen
+	register "i2c[2]" = "{
+		.speed = I2C_SPEED_FAST,
+	}"
+
+	# I2C3 for H1
 	register "i2c[3]" = "{
 		.speed = I2C_SPEED_FAST,
-		.rise_time_ns = 16,
-		.fall_time_ns = 8,
 		.early_init = true,
 	}"
 
@@ -141,7 +147,7 @@ chip soc/amd/picasso
 			device generic 0.1 on end
 	end
 
-	device mmio 0xfedc5000 on
+	device mmio 0xfedc5000 on # APU_I2C3_BASE
 		chip drivers/i2c/tpm
 			register "hid" = ""GOOG0005""
 			register "desc" = ""Cr50 TPM""
@@ -149,24 +155,7 @@ chip soc/amd/picasso
 			device i2c 50 on end
 		end
 	end
-	device mmio 0xfedc4000 on
-		chip drivers/i2c/generic
-			register "hid" = ""ELAN0000""
-			register "desc" = ""ELAN Touchpad""
-			register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_LOW(GPIO_9)"
-			register "wake" = "7"
-			register "probed" = "1"
-			device i2c 15 on end
-		end
-		chip drivers/i2c/hid
-			register "generic.hid" = ""PNP0C50""
-			register "generic.desc" = ""Synaptics Touchpad""
-			register "generic.irq_gpio" = "ACPI_GPIO_IRQ_EDGE_LOW(GPIO_9)"
-			register "generic.wake" = "7"
-			register "generic.probed" = "1"
-			register "hid_desc_reg_offset" = "0x20"
-			device i2c 2c on end
-		end
+	device mmio 0xfedc4000 on # APU_I2C2_BASE
 		chip drivers/i2c/generic
 			register "hid" = ""RAYD0001""
 			register "desc" = ""Raydium Touchscreen""
@@ -186,6 +175,39 @@ chip soc/amd/picasso
 			register "reset_delay_ms" = "20"
 			register "has_power_resource" = "1"
 			device i2c 10 on end
+		end
+	end
+	device mmio 0xfedc3000 on # APU_I2C1_BASE
+		chip drivers/i2c/generic
+			register "hid" = ""ELAN0000""
+			register "desc" = ""ELAN Touchpad""
+			register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_LOW(GPIO_9)"
+			register "wake" = "7"
+			register "probed" = "1"
+			device i2c 15 on end
+		end
+		chip drivers/i2c/hid
+			register "generic.hid" = ""PNP0C50""
+			register "generic.desc" = ""Synaptics Touchpad""
+			register "generic.irq_gpio" = "ACPI_GPIO_IRQ_EDGE_LOW(GPIO_9)"
+			register "generic.wake" = "7"
+			register "generic.probed" = "1"
+			register "hid_desc_reg_offset" = "0x20"
+			device i2c 2c on end
+		end
+	end
+	device mmio 0xfedc2000 on # APU_I2C0_BASE
+		chip drivers/i2c/generic
+			register "hid" = ""10EC5682""
+			register "desc" = ""Realtek RT5682""
+			register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(62)"
+			register "wake" = "7"
+			register "probed" = "1"
+			register "property_count" = "1"
+			register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+			register "property_list[0].name" = ""realtek,jd-src""
+			register "property_list[0].integer" = "1"
+			device i2c 1a on end
 		end
 	end
 end	# chip soc/amd/picasso

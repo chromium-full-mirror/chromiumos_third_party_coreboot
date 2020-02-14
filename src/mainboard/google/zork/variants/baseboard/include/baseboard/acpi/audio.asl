@@ -12,6 +12,7 @@
  */
 
 Scope (EC0.CREC) {
+	/* TODO: Generate this via Device Tree and remove from here */
 	Device (I2CT)
 	{
 		Name (_HID, "GOOG0012")
