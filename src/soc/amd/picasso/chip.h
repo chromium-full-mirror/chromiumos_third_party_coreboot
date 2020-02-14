@@ -85,6 +85,10 @@ struct soc_amd_picasso_config {
 	uint8_t core_dldo_bypass;
 	uint8_t min_soc_vid_offset;
 	uint8_t aclk_dpm0_freq_400MHz;
+	uint32_t telemetry_vddcr_vdd_slope;
+	uint32_t telemetry_vddcr_vdd_offset;
+	uint32_t telemetry_vddcr_soc_slope;
+	uint32_t telemetry_vddcr_soc_offset;
 };
 
 typedef struct soc_amd_picasso_config config_t;

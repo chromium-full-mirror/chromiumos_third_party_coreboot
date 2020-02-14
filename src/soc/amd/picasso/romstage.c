@@ -44,6 +44,17 @@
 void __weak mainboard_romstage_early_init(void) {}
 void __weak mainboard_romstage_entry_s3(int s3_resume) {}
 
+static uint8_t telemetry_config_used(const config_t *config)
+{
+	if ((config->telemetry_vddcr_vdd_slope) ||
+		(config->telemetry_vddcr_vdd_offset) ||
+		(config->telemetry_vddcr_soc_slope) ||
+		(config->telemetry_vddcr_soc_offset))
+		return 1;
+
+	return 0;
+}
+
 static void romstage_soc_early_init(void)
 {
 	msr_t mmconf;
@@ -182,6 +193,13 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 		mcfg->core_dldo_bypass = config->core_dldo_bypass;
 		mcfg->min_soc_vid_offset = config->min_soc_vid_offset;
 		mcfg->aclk_dpm0_freq_400MHz = config->aclk_dpm0_freq_400MHz;
+
+		if (telemetry_config_used(config)) {
+			mcfg->telemetry_vddcr_vdd_slope = config->telemetry_vddcr_vdd_slope;
+			mcfg->telemetry_vddcr_vdd_offset = config->telemetry_vddcr_vdd_offset;
+			mcfg->telemetry_vddcr_soc_slope = config->telemetry_vddcr_soc_slope;
+			mcfg->telemetry_vddcr_soc_offset = config->telemetry_vddcr_soc_offset;
+		}
 	}
 
 	mainboard_fsp_memory_init_params_cb(mcfg, version);
