@@ -51,15 +51,15 @@
 
 /* Reserved				0xfecd1000-0xfedc3fff */
 
+/* I2C0 and I2C1 are only available on Pollock */
+#define APU_I2C0_BASE			0xfedc2000
+#define APU_I2C1_BASE			0xfedc3000
 #define APU_I2C2_BASE			0xfedc4000
 #define APU_I2C3_BASE			0xfedc5000
 #define APU_I2C4_BASE			0xfedc6000
-#define   APU_I2C_MIN_BUS		2
-#define   APU_I2C_MAX_BUS		4
-#define   APU_I2C_BLOCK_SIZE		0x1000
-#define   I2C_BASE_ADDRESS		APU_I2C2_BASE
+#define   I2C_BASE_ADDRESS		APU_I2C0_BASE
 #define   I2C_DEVICE_SIZE		0x00001000
-#define   I2C_DEVICE_COUNT		3
+#define   I2C_DEVICE_COUNT		5
 
 #define APU_DMAC0_BASE			0xfedc7000
 #define APU_DMAC1_BASE			0xfedc8000
