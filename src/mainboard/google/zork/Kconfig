@@ -46,6 +46,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select SYSTEM_TYPE_LAPTOP
 	select DRIVERS_GENERIC_MAX98357A
 	select HAVE_ACPI_RESUME
+	select DRIVERS_USB_ACPI
 
 source "src/mainboard/google/zork/variants/*/Kconfig"
 
