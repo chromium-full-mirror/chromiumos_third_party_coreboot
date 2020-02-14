@@ -54,16 +54,8 @@ static const struct soc_amd_gpio gpio_set_stage_rom[] = {
 	PAD_NF(GPIO_108, ESPI_ALERT_L, PULL_UP),
 	/* CLK_REQ1_L - SD Card */
 	PAD_NF(GPIO_115, CLK_REQ1_L, PULL_UP),
-	/*  RAM_ID_3  */
-	PAD_GPI(GPIO_116, PULL_NONE),
-	/* RAM_ID_1  */
-	PAD_GPI(GPIO_120, PULL_NONE),
-	/* RAM_ID_0  */
-	PAD_GPI(GPIO_121, PULL_NONE),
-	/* RAM_ID_2 */
-	PAD_GPI(GPIO_131, PULL_NONE),
-	/* CLK_REQ4_L - SSD */
-	PAD_NF(GPIO_132, CLK_REQ4_L, PULL_UP),
+	/* CLK_REQ2_L - NVMe */
+	PAD_NF(GPIO_116, CLK_REQ2_L, PULL_UP),
 	/* UART0_RXD - DEBUG */
 	PAD_NF(GPIO_136, UART0_RXD, PULL_NONE),
 	/* BIOS_FLASH_WP_ODL */
@@ -72,6 +64,8 @@ static const struct soc_amd_gpio gpio_set_stage_rom[] = {
 	PAD_NF(GPIO_138, UART0_TXD, PULL_NONE),
 	/* USI_RESET - reset */
 	PAD_GPO(GPIO_140, HIGH),
+	/* USB_HUB_RST_L - reset*/
+	PAD_GPO(GPIO_141, LOW),
 	/* SD_AUX_RESET_L */
 	PAD_GPO(GPIO_142, HIGH),
 };
@@ -93,9 +87,8 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_GPI(GPIO_4, PULL_UP),
 	/* PEN_POWER_EN - Enabled*/
 	PAD_GPO(GPIO_5, HIGH),
-	/* FPMCU_INT_L */
-	PAD_GPI(GPIO_6, PULL_UP),
-	PAD_WAKE(GPIO_6, PULL_UP, EDGE_LOW, S3_S4_S5),
+	/* DMIC_SEL */
+	PAD_GPO(GPIO_6, LOW), // Select Camera 1 Dmic
 	/* I2S_SDIN */
 	PAD_NF(GPIO_7, ACP_I2S_SDIN, PULL_NONE),
 	/* I2S_LRCLK - Bit banged in depthcharge */
@@ -105,19 +98,15 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_GPI(GPIO_9, PULL_UP),
 	/* S0iX SLP - (unused - goes to EC & FPMCU */
 	PAD_GPI(GPIO_10, PULL_UP),
-	/* FPMCU_RST_L */
-	PAD_GPO(GPIO_11, HIGH),
+	/* EC_IN_RW_OD */
+	PAD_GPI(GPIO_11, PULL_UP),
 	/* USI_INT_ODL */
 	PAD_GPI(GPIO_12, PULL_UP),
 	/* DMIC_SEL */
-	PAD_GPO(GPIO_13, LOW), // Select Camera 1 Dmic
-	/* USB_OC4_L - USB_A1 */
-	PAD_NF(GPIO_14, USB_OC4_L, PULL_UP),
-	/* USB_OC0_L - USB C0 */
 	PAD_NF(GPIO_16, USB_OC0_L, PULL_UP),
 	/* USB_OC1_L - USB C1 */
 	PAD_NF(GPIO_17, USB_OC1_L, PULL_UP),
-	/* USB_OC2_L - USB A0 */
+	/* USB_OC2_L - USB A0 & A1*/
 	PAD_NF(GPIO_18, USB_OC2_L, PULL_UP),
 	/* EMMC_CMD */
 	PAD_NF(GPIO_21, EMMC_CMD, PULL_UP),
@@ -127,8 +116,8 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_NF(GPIO_23, AC_PRES, PULL_UP),
 	/*  EC_AP_INT_ODL (Sensor Framesync) */
 	PAD_GPI(GPIO_31, PULL_UP),
-	/* EN_PWR_FP */
-	PAD_GPO(GPIO_32, HIGH),
+	/*  */
+	PAD_GPI(GPIO_32, PULL_DOWN),
 	/* EN_PWR_TOUCHPAD_PS2 */
 	/*
 	 * EN_PWR_TOUCHPAD_PS2 - Make sure Ext ROM Sharing is disabled before
@@ -137,8 +126,8 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_GPO(GPIO_67, HIGH),
 	/* EMMC_RESET */
 	PAD_GPO(GPIO_68, LOW),
-	/* FPMCU_BOOT0 - TODO: Check this */
-	PAD_GPO(GPIO_69, LOW),
+	/* RAM ID 3*/
+	PAD_GPI(GPIO_69, PULL_NONE),
 	/* EMMC_CLK */
 	PAD_NF(GPIO_70, EMMC_CLK, PULL_NONE),
 	/* EMMC_DATA4 */
@@ -151,7 +140,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_GPO(GPIO_84, HIGH),
 	/* APU_EDP_BL_DISABLE TODP: Set low in depthcharge */
 	PAD_GPO(GPIO_85, HIGH),
-	/* MST_GPIO_2 (Fw Update HDMI hub) */
+	/* RAM ID 2 */
 	PAD_GPI(GPIO_86, PULL_NONE),
 	/* EMMC_DATA7 */
 	PAD_NF(GPIO_87, EMMC_DATA7, PULL_NONE),
@@ -159,7 +148,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_NF(GPIO_88, EMMC_DATA5, PULL_NONE),
 	/*  EN_DEV_BEEP_L */
 	PAD_GPO(GPIO_89, HIGH),
-	/* MST_GPIO_3 (Fw Update HDMI hub) */
+	/* RAM ID 1 */
 	PAD_GPI(GPIO_90, PULL_NONE),
 	/* EN_SPKR TODO: Verify driver enables this (add to ACPI) */
 	PAD_GPO(GPIO_91, LOW),
@@ -179,18 +168,18 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_NF(GPIO_114, I2C2_SDA, PULL_UP),
 	/* KBRST_L */
 	PAD_NF(GPIO_129, KBRST_L, PULL_UP),
-	/* EC_IN_RW_OD */
-	PAD_GPI(GPIO_130, PULL_UP),
+	/* RAM ID 0 */
+	PAD_GPI(GPIO_132, PULL_NONE),
 	/* DEV_BEEP_CODEC_IN (Dev beep Data out) */
 	PAD_GPI(GPIO_135, PULL_NONE),
 	/* DEV_BEEP_BCLK */
 	PAD_GPI(GPIO_139, PULL_NONE),
 	/* USI_RESET */
 	PAD_GPO(GPIO_140, LOW),
-	/* UART1_RXD - FPMCU */
-	PAD_NF(GPIO_141, UART1_RXD, PULL_NONE),
-	/* UART1_TXD - FPMCU */
-	PAD_NF(GPIO_143, UART1_TXD, PULL_NONE),
+	/* USB_HUB_RST_L */
+	PAD_GPO(GPIO_141, HIGH),
+	/*  */
+	PAD_GPI(GPIO_143, PULL_DOWN),
 	/*  USI_REPORT_EN - TODO: Driver resets this later.  Do we want it high or low initially? */
 	PAD_GPO(GPIO_144, HIGH),
 };

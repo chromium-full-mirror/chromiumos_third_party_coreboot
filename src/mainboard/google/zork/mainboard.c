@@ -188,7 +188,7 @@ static const picasso_fsp_pcie_descriptor pco_pcie_descriptors[] =
 		.link_aspm_L1_1 = true,
 		.link_aspm_L1_2 = true,
 		.turn_off_unused_lanes = true,
-		.clk_req = CLK_REQ4,
+		.clk_req = NVME_CLKREQ,
 	},
 	{ // WLAN
 		.port_present = true,
@@ -201,7 +201,7 @@ static const picasso_fsp_pcie_descriptor pco_pcie_descriptors[] =
 		.link_aspm_L1_1 = true,
 		.link_aspm_L1_2 = true,
 		.turn_off_unused_lanes = true,
-		.clk_req = CLK_REQ0,
+		.clk_req = WLAN_CLKREQ,
 	},
 	{ // SD Reader
 		.port_present = true,
@@ -214,7 +214,7 @@ static const picasso_fsp_pcie_descriptor pco_pcie_descriptors[] =
 		.link_aspm_L1_1 = true,
 		.link_aspm_L1_2 = true,
 		.turn_off_unused_lanes = true,
-		.clk_req = CLK_REQ1,
+		.clk_req = SD_CLKREQ,
 	}
 };
 
@@ -231,7 +231,7 @@ static const picasso_fsp_pcie_descriptor dali_pcie_descriptors[] =
 		.link_aspm_L1_1 = true,
 		.link_aspm_L1_2 = true,
 		.turn_off_unused_lanes = true,
-		.clk_req = CLK_REQ4,
+		.clk_req = NVME_CLKREQ,
 	},
 	{ // WLAN
 		.port_present = true,
@@ -244,7 +244,7 @@ static const picasso_fsp_pcie_descriptor dali_pcie_descriptors[] =
 		.link_aspm_L1_1 = true,
 		.link_aspm_L1_2 = true,
 		.turn_off_unused_lanes = true,
-		.clk_req = CLK_REQ0,
+		.clk_req = WLAN_CLKREQ,
 	},
 	{ // SD Reader
 		.port_present = true,
@@ -257,7 +257,7 @@ static const picasso_fsp_pcie_descriptor dali_pcie_descriptors[] =
 		.link_aspm_L1_1 = true,
 		.link_aspm_L1_2 = true,
 		.turn_off_unused_lanes = true,
-		.clk_req = CLK_REQ1,
+		.clk_req = SD_CLKREQ,
 	}
 };
 
