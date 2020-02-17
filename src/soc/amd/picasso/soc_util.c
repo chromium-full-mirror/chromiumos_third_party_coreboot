@@ -22,7 +22,7 @@ int soc_is_picasso(void)
 
 int soc_is_raven2(void)
 {
-	return cpuid_eax(1) >> 8 == DALI_CPUID >> 8;
+	return cpuid_eax(1) >> 8 == RAVEN2_CPUID >> 8;
 }
 
 int soc_is_zen_plus(void)

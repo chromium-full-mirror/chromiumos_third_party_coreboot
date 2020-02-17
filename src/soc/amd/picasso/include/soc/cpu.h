@@ -42,7 +42,7 @@ void check_mca(void);
 #define EARLY_RAMSTAGE_MTRR_SZ (32 * MiB + CONFIG_SMM_TSEG_SIZE)
 
 #define PICASSO_CPUID			0x00810f81
-#define DALI_CPUID			0x00820f01
+#define RAVEN2_CPUID			0x00820f01
 
 #define PICASSO_VBIOS_VID_DID		0x100215d8
 #define PICASSO_VBIOS_REV		0xc1
