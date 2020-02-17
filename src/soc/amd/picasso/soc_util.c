@@ -12,7 +12,7 @@ int soc_is_pollock(void)
 
 int soc_is_dali(void)
 {
-	return soc_is_zen2() && CONFIG(AMD_FP5);
+	return soc_is_raven2() && CONFIG(AMD_FP5);
 }
 
 int soc_is_picasso(void)
@@ -20,7 +20,7 @@ int soc_is_picasso(void)
 	return soc_is_zen_plus() && CONFIG(AMD_FP5);
 }
 
-int soc_is_zen2(void)
+int soc_is_raven2(void)
 {
 	return cpuid_eax(1) >> 8 == DALI_CPUID >> 8;
 }
