@@ -31,7 +31,7 @@ config PSP_APCB1_FILE
 
 config PSP_APCB2_FILE
 	string "APCB file for SPD2"
-	default "3rdparty/blobs/mainboard/google/zork/APCB_K4AAG165WA-BCWE_x2.bin"
+	default "3rdparty/blobs/mainboard/google/zork/APCB_K4A8G165WC-BCWE_x1.bin"
 	help
 	  If specified, this image is instance ID 2 in the PSP's BIOS
 	  Directory Table.
