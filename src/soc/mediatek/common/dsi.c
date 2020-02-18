@@ -64,7 +64,7 @@ static u32 mtk_dsi_get_data_rate(u32 bits_per_pixel, u32 lanes,
 		       edid->mode.pixel_clock, bits_per_pixel,
 		       (100 * MTK_DSI_MIPI_RATIO_NUMERATOR /
 			MTK_DSI_MIPI_RATIO_DENOMINATOR), lanes);
-		return -1;
+		return 0;
 	}
 	return data_rate;
 }
@@ -224,8 +224,8 @@ static void mtk_dsi_config_vdo_timing(u32 mode_flags, u32 format, u32 lanes,
 		hfp_byte -= d_phy * hfp / (hfp + hbp);
 		hbp_byte -= d_phy * hbp / (hfp + hbp);
 	} else {
-		printk(BIOS_ERR, "HFP plus HBP is not greater than d-phy, "
-		       "FPS < 60Hz and the panel may not work properly.\n");
+		printk(BIOS_ERR, "HFP plus HBP is not greater than d_phy, "
+		       "the panel may not work properly.\n");
 	}
 
 	write32(&dsi0->dsi_hsa_wc, hsync_active_byte);
