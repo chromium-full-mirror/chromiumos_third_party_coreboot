@@ -99,6 +99,9 @@ static void pciexp_enable_common_clock(struct device *root, unsigned root_cap,
 {
 	u16 root_scc, endp_scc, lnkctl;
 
+	if (root->path.type != DEVICE_PATH_PCI)
+		return;
+
 	/* Get Slot Clock Configuration for root port */
 	root_scc = pci_read_config16(root, root_cap + PCI_EXP_LNKSTA);
 	root_scc &= PCI_EXP_LNKSTA_SLC;
@@ -165,6 +168,9 @@ static bool pciexp_is_ltr_supported(struct device *dev, unsigned int cap)
 static void pciexp_configure_ltr(struct device *dev)
 {
 	unsigned int cap;
+
+	if (dev->path.type != DEVICE_PATH_PCI)
+		return;
 
 	cap = pci_find_capability(dev, PCI_CAP_ID_PCIE);
 
