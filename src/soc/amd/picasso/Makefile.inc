@@ -132,6 +132,7 @@ FIRMWARE_LOCATE=$(dir $(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)))
 
 # type = 0x1
 PSPBTLDR_FILE=$(top)/$(FIRMWARE_LOCATE)/$(CONFIG_PSP_BOOTLOADER_NAME)
+$(info Adding PSP $(shell md5sum $(PSPBTLDR_FILE)))
 
 # type = 0x5
 PUBSIGNEDKEY_FILE=$(top)/$(FIRMWARE_LOCATE)/RtmPubSignedRV.key
