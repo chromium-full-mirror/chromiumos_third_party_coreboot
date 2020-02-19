@@ -6,6 +6,7 @@
 #include <console/console.h>
 #include <edid.h>
 #include <device/pci_def.h>
+#include <framebuffer_info.h>
 
 #include "ast_drv.h"
 
@@ -196,7 +197,7 @@ int ast_driver_framebuffer_init(struct drm_device *dev, int flags)
 		return ret;
 	}
 
-	/* Updated edid for set_vbe_mode_info_valid */
+	/* Updated edid for fb_fill_framebuffer_info */
 	edid.x_resolution = edid.mode.ha;
 	edid.y_resolution = edid.mode.va;
 	edid.framebuffer_bits_per_pixel = format.cpp[0] * 8;
@@ -223,7 +224,7 @@ int ast_driver_framebuffer_init(struct drm_device *dev, int flags)
 	ast_hide_cursor(&crtc);
 
 	/* Advertise new mode */
-	set_vbe_mode_info_valid(&edid, fb.mmio_addr);
+	fb_new_framebuffer_info_from_edid(&edid, fb.mmio_addr);
 
 	/* Clear display */
 	memset((void *)fb.mmio_addr, 0, edid.bytes_per_line * edid.y_resolution);
