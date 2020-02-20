@@ -25,22 +25,24 @@ config PSP_APCB_FILE
 
 config PSP_APCB1_FILE
 	string "APCB file for SPD1"
-	# HMAA1GS6CMR6N-VK - 0001b
-	default "3rdparty/blobs/mainboard/google/zork/APCB_FT5_hynix_HMAA1GS6CMR6N-VK_x1.bin"
+	# H5ANAG6NCMR-VKC - 0001b
+	default "3rdparty/blobs/mainboard/google/zork/APCB_FT5_hynix_H5ANAG6NCMR-VKC_x1.bin"
 	help
 	  If specified, this image is instance ID 1 in the PSP's BIOS
 	  Directory Table.
 
 config PSP_APCB2_FILE
 	string "APCB file for SPD2"
-	default ""
+	# K4A8G165WC-BCTD - 0010b
+	default "3rdparty/blobs/mainboard/google/zork/APCB_FT5_samsung_K4A8G165WC-BCTD_x1.bin"
 	help
 	  If specified, this image is instance ID 2 in the PSP's BIOS
 	  Directory Table.
 
 config PSP_APCB3_FILE
 	string "APCB file for SPD3"
-	default ""
+	# K4AAG165WB-MCTD - 0011b
+	default "3rdparty/blobs/mainboard/google/zork/APCB_FT5_samsung_K4AAG165WB-MCTD_x1.bin"
 	help
 	  If specified, this image is instance ID 3 in the PSP's BIOS
 	  Directory Table.
