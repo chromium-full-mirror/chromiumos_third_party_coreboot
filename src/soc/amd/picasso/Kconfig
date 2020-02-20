@@ -368,6 +368,17 @@ config AMD_PUBKEY_FILE
 	string "AMD public Key"
 	default "3rdparty/blobs/soc/amd/picasso/PSP/AmdPubKeyRV.bin"
 
+config PSP_BOOTLOADER_NAME
+	string "Specify the PSP Bootloader filename (without path)"
+	default "PspBootLoader_WL_RV.sbin" if HAVE_PSP_WHITELIST_FILE
+	default "PspBootLoader_prod_RV.sbin"
+	help
+	  Supply the name of the PSP bootloader file. The AMD_PUBKEY_FILE
+	  path is used.
+
+	  Note that this option may conflict with the whitelist file if a
+	  different PSP bootloader binary is specified.
+
 config PSP_APCB_FILE
 	string "APCB file"
 	help
@@ -455,7 +466,7 @@ config HAVE_PSP_WHITELIST_FILE
 	  If unsure, answer 'n'
 
 config PSP_WHITELIST_FILE
-	string "Debug whitelist file name"
+	string "Debug whitelist path and file name"
 	depends on HAVE_PSP_WHITELIST_FILE
 	default "3rdparty/blobs/soc/amd/picasso/PSP/wtl-rvn.sbin"
 

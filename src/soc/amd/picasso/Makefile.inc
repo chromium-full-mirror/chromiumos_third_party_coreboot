@@ -131,11 +131,7 @@ PICASSO_FWM_POSITION=$(call int-add, \
 FIRMWARE_LOCATE=$(dir $(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)))
 
 # type = 0x1
-ifeq ($(CONFIG_HAVE_PSP_WHITELIST_FILE),y)
-PSPBTLDR_FILE=$(top)/$(FIRMWARE_LOCATE)/PspBootLoader_WL_RV.sbin
-else
-PSPBTLDR_FILE=$(top)/$(FIRMWARE_LOCATE)/PspBootLoader_prod_RV.sbin
-endif
+PSPBTLDR_FILE=$(top)/$(FIRMWARE_LOCATE)/$(CONFIG_PSP_BOOTLOADER_NAME)
 
 # type = 0x5
 PUBSIGNEDKEY_FILE=$(top)/$(FIRMWARE_LOCATE)/RtmPubSignedRV.key
