@@ -107,6 +107,9 @@ amdcompobj += xdr.o
 TOOLCFLAGS ?= -Werror -Wall -Wextra
 TOOLCFLAGS += -Wcast-qual -Wmissing-prototypes -Wredundant-decls -Wshadow
 TOOLCFLAGS += -Wstrict-prototypes -Wwrite-strings
+# Suppress the warning to fix the coreboot-zork build.
+# TODO(crbug.com/1054665): Remove when the warning is fixed.
+TOOLCFLAGS += -Wno-misleading-indentation
 TOOLCFLAGS += -O2
 TOOLCPPFLAGS ?= -D_DEFAULT_SOURCE # memccpy() from string.h
 TOOLCPPFLAGS += -D_XOPEN_SOURCE=700 # strdup() from string.h
