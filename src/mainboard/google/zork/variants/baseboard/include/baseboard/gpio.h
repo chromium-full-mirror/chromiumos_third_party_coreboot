@@ -36,6 +36,22 @@
 #define WLAN_CLKREQ		CLK_REQ0
 #define SD_CLKREQ		CLK_REQ1
 
+#if CONFIG(BOARD_GOOGLE_BASEBOARD_DALBOZ)
+#define NVME_START_LANE 4
+#define NVME_END_LANE 5
+#define WLAN_START_LANE 0
+#define WLAN_END_LANE 0
+#define SD_START_LANE 1
+#define SD_END_LANE 1
+#else
+#define NVME_START_LANE 0
+#define NVME_END_LANE 1
+#define WLAN_START_LANE 4
+#define WLAN_END_LANE 4
+#define SD_START_LANE 5
+#define SD_END_LANE 5
+#endif
+
 #if CONFIG(AMD_FP5)
 #define FPMCU_INT_L		GPIO_6
 #define FPMCU_RST_ODL		GPIO_11
