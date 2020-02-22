@@ -7,7 +7,7 @@
 
 int soc_is_pollock(void)
 {
-	return soc_is_zen_plus() && CONFIG(AMD_FT5);
+	return soc_is_raven2() && CONFIG(AMD_FT5);
 }
 
 int soc_is_dali(void)
