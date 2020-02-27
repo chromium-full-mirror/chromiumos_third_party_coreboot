@@ -23,11 +23,17 @@ Scope (EC0.CREC) {
 		Name (_DSD, Package ()
 		{
 			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+#if CONFIG(BOARD_GOOGLE_BASEBOARD_DALBOZ)
+			Package ()
+			{
+				Package () { "google,remote-bus", 5 },
+			}
+#else
 			Package ()
 			{
 				Package () { "google,remote-bus", 8 },
 			}
-
+#endif
 		})
 		Device (RT58)
 		{
