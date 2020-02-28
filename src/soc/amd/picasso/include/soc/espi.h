@@ -32,6 +32,7 @@ struct espi_config {
 	unsigned int flash_ch_en : 1;
 	unsigned int update_slave : 1;
 	unsigned int subtractive_decode : 1;
+	unsigned int irq_polarity;
 };
 
 struct espi_resource_allocator {

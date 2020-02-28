@@ -175,6 +175,9 @@ static void espi_show_host_configuration(void)
 		}
 	}
 
+	printk(ESPI_DBG, "  IRQ_POLARITY: 0x%08x\n",
+					read32(espi + ESPI_RXVW_POLARITY));
+
 	if (slave0_config & ESPI_CRC_CHECKING_EN)
 		printk(ESPI_DBG, "  CRC Check Enabled\n");
 
@@ -711,8 +714,13 @@ void espi_setup(const struct espi_config *cfg)
 	printk(ESPI_DBG, "Configure host - CRC, IO, Alert, Clk Freq\n");
 	write32_espi(espi, ESPI_SLAVE0_CONFIG, cfg_reg); /* host config */
 
-	/* boot sequence 6-9 channel setup. Set up VW first so we can deassert PLTRST#,
-	   then do the other channels */
+	/* boot sequence 6-9 channel setup. */
+
+	/* Setup polarity before enabling the VW channel so any interrupts
+	   received will have the correct polarity. */
+	write32_espi(espi, ESPI_RXVW_POLARITY, cfg->irq_polarity);
+
+	 /* Set up VW first so we can deassert PLTRST#. */
 	setup_vw_channel(espi, cfg, &cfg_reg, slave_supports);
 	setup_periph_channel(espi, cfg, &cfg_reg, slave_supports);
 	setup_oob_channel(espi, cfg, &cfg_reg, slave_supports);
