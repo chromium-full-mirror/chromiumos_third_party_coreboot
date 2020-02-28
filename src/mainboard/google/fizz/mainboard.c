@@ -21,6 +21,7 @@
 #include <ec/google/chromeec/ec.h>
 #include <gpio.h>
 #include <mainboard/google/fizz/gpio.h>
+#include <sar.h>
 #include <smbios.h>
 #include <soc/gpio.h>
 #include <soc/pci_devs.h>
@@ -41,6 +42,9 @@
 #define FIZZ_PSYSPL2_U42    90
 #define FIZZ_MAX_TIME_WINDOW 6
 #define FIZZ_MIN_DUTYCYCLE   4
+
+#define FIZZ_OEM_ID_EXCELSIOR 10
+
 /*
  * For type-C chargers, set PL2 to 90% of max power to account for
  * cable loss and FET Rdson loss in the path from the source.
@@ -184,6 +188,18 @@ const char *smbios_mainboard_sku(void)
 	snprintf(sku_str, sizeof(sku_str), "sku%d", board_oem_id());
 
 	return sku_str;
+}
+
+const char *get_wifi_sar_cbfs_filename(void)
+{
+	uint8_t oem_id = board_oem_id();
+
+	switch (oem_id) {
+	case FIZZ_OEM_ID_EXCELSIOR:
+		return "wifi_sar-excelsior.hex";
+	default:
+		return NULL;
+	}
 }
 
 static void mainboard_init(device_t dev)
