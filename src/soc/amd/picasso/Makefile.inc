@@ -206,7 +206,7 @@ PSP_APCB_FILES=$(foreach f, $(APCB_SOURCES), \
 	$(top)/3rdparty/blobs/mainboard/$(MAINBOARDDIR))/APCB_$(f).bin)
 
 # type = 0x61
-PSP_APOB_BASE=$(CONFIG_PSP_APOB_DESTINATION)
+PSP_APOB_BASE=$(CONFIG_PSP_APOB_DRAM_ADDRESS)
 
 # type = 0x62
 PSP_BIOSBIN_FILE=$(obj)/amd_biospsp.img

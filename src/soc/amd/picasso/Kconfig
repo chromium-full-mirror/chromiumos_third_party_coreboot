@@ -380,7 +380,7 @@ config PSP_BOOTLOADER_NAME
 	  Note that this option may conflict with the whitelist file if a
 	  different PSP bootloader binary is specified.
 
-config PSP_APOB_DESTINATION
+config PSP_APOB_DRAM_ADDRESS
 	hex
 	default 0x9f00000
 	help
