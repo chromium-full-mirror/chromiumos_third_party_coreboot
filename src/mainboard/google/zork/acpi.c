@@ -17,21 +17,15 @@
 
 unsigned long acpi_mb_madt_irqoverride(unsigned long current)
 {
-	/*
-	 * IRQ 1 is used by the keyboard. The keyboard is provided by the EC
-	 * via eSPI. The EC is configured to send a Active Level High interrupt.
-	 * We need to override the default Active Edge Low default.
-	 * The eSPI message the IOAPIC receives is actually inverted, so we
-	 * set this as an Active Low interrupt.
-	 */
+	/* PS/2 keyboard IRQ1 override */
 	current += acpi_create_madt_irqoverride(
 		(acpi_madt_irqoverride_t *)current, 0, 1, 1,
-		MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW);
+		MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_HIGH);
 
 	/* PS/2 mouse IRQ12 override */
 	current += acpi_create_madt_irqoverride(
 		(acpi_madt_irqoverride_t *)current, 0, 0xc, 0xc,
-		MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW);
+		MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_HIGH);
 
 	return current;
 }
