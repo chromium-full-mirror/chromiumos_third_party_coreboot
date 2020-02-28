@@ -18,3 +18,6 @@
 
 /* Enable Tablet switch */
 #define EC_ENABLE_TBMC_DEVICE
+
+/* Enable PS/2 Mouse */
+#define SIO_EC_ENABLE_PS2M
