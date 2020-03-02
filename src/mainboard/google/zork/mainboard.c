@@ -359,9 +359,9 @@ void mainboard_fsp_silicon_init_params_cb(FSP_S_CONFIG *scfg)
 #define EMMC_HS300		11
 
 	if (variant_has_emmc(variant_board_sku())) {
-		if (CONFIG(AMD_FT5)) {
-			printk(BIOS_WARNING, "Warning: using low speed eMMC on Dalboz!\n");
-			scfg->emmc0_mode = EMMC_DDR_52;
+		if (CONFIG(BOARD_GOOGLE_BASEBOARD_DALBOZ)) {
+			printk(BIOS_WARNING, "Warning: using speed: HS200 on Dalboz!\n");
+			scfg->emmc0_mode = EMMC_HS200;
 		} else {
 			scfg->emmc0_mode = EMMC_HS400;
 		}
