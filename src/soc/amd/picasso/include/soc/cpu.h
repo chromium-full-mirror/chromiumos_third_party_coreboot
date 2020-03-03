@@ -19,7 +19,8 @@
 #include <device/device.h>
 #include <commonlib/helpers.h>
 
-#define CSTATE_BASE_REG 0xc0010073
+#define MSR_CSTATE_ADDRESS 0xC0010073
+#define CSTATE_IO_BASE_ADDRESS 0x413
 
 void picasso_init_cpus(struct device *dev);
 int get_cpu_count(void);
