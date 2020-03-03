@@ -13,48 +13,4 @@
 
 if BOARD_GOOGLE_EZKINIL
 
-menu "APCB Config options"
-
-config PSP_APCB_FILE
-	string "APCB file for SPD0"
-	# H5AN8G6NCJR-VKC -  0000b
-	default "3rdparty/blobs/mainboard/google/zork/APCB_H5AN8G6NCJR-VKC_x2.bin"
-	help
-	  The name of the AGESA Parameter Customization Block.  This image is
-	  instance ID 0 in the PSP's BIOS Directory Table.
-
-config PSP_APCB1_FILE
-	string "APCB file for SPD1"
-	# HMAA1GS6CMR6N-VK - 0001b
-	default "3rdparty/blobs/mainboard/google/zork/APCB_HMAA1GS6CMR6N-VK_x2.bin"
-	help
-	  If specified, this image is instance ID 1 in the PSP's BIOS
-	  Directory Table.
-
-config PSP_APCB2_FILE
-	string "APCB file for SPD2"
-	# MT40A512M16TB-062E:J - 0010b
-	default "3rdparty/blobs/mainboard/google/zork/APCB_MT40A512M16TB-062E_x2.bin"
-	help
-	  If specified, this image is instance ID 2 in the PSP's BIOS
-	  Directory Table.
-
-config PSP_APCB3_FILE
-	string "APCB file for SPD3"
-	# MT40A1G16KNR-075-E - 0011b
-	default "3rdparty/blobs/mainboard/google/zork/APCB_micron-MT40A1G16KNR-075-E_x2.bin"
-	help
-	  If specified, this image is instance ID 3 in the PSP's BIOS
-	  Directory Table.
-
-config PSP_APCB4_FILE
-	string "APCB file for SPD4"
-	# K4A8G165WC-BCTD  - 0100b
-	default "3rdparty/blobs/mainboard/google/zork/APCB_samsung-K4A8G165WC-BCTD_x2.bin"
-	help
-	  If specified, this image is instance ID 4 in the PSP's BIOS
-	  Directory Table.
-
-endmenu
-
 endif #BOARD_GOOGLE_EZKINIL

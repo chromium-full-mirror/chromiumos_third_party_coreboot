@@ -379,36 +379,6 @@ config PSP_BOOTLOADER_NAME
 	  Note that this option may conflict with the whitelist file if a
 	  different PSP bootloader binary is specified.
 
-config PSP_APCB_FILE
-	string "APCB file"
-	help
-	  The name of the AGESA Parameter Customization Block.  This image is
-	  instance ID 0 in the PSP's BIOS Directory Table.
-
-config PSP_APCB1_FILE
-	string
-	help
-	  If specified, this image is instance ID 1 in the PSP's BIOS
-	  Directory Table.
-
-config PSP_APCB2_FILE
-	string
-	help
-	  If specified, this image is instance ID 2 in the PSP's BIOS
-	  Directory Table.
-
-config PSP_APCB3_FILE
-	string
-	help
-	  If specified, this image is instance ID 3 in the PSP's BIOS
-	  Directory Table.
-
-config PSP_APCB4_FILE
-	string
-	help
-	  If specified, this image is instance ID 4 in the PSP's BIOS
-	  Directory Table.
-
 config PSP_APOB_DESTINATION
 	hex
 	default 0x9f00000
@@ -469,6 +439,13 @@ config PSP_WHITELIST_FILE
 	string "Debug whitelist path and file name"
 	depends on HAVE_PSP_WHITELIST_FILE
 	default "3rdparty/blobs/soc/amd/picasso/PSP/wtl-rvn.sbin"
+
+config APCB_BLOB_DIR
+	string "Directory containing APCB blobs"
+	help
+	  APCB blob files in directory should be named APCB_*.bin.
+
+	  If unsure, leave empty.
 
 endmenu
 

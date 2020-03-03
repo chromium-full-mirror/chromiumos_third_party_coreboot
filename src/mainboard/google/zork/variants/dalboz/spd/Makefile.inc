@@ -29,3 +29,25 @@ SPD_SOURCES += empty				# 0b1100
 SPD_SOURCES += empty				# 0b1101
 SPD_SOURCES += empty				# 0b1110
 SPD_SOURCES += empty				# 0b1111
+
+# APCB_SOURCES should be the same as SPD_SOURCES, except _x[channels] suffix
+# and FT5_ prefix. The prefix is required to distinguish from Fp5 APCB data.
+# Name should correlate to a file in:
+# picasso-pi/AGESA/AgesaPkg/Addendum/Apcb/RavenFt5Dalboz/ApcbData/
+# TODO: Remove channel suffix when b:141434940 is fixed
+APCB_SOURCES =  FT5_hynix-HMA851S6CJR6N-VK_x1	# 0b0000
+APCB_SOURCES += FT5_hynix-H5ANAG6NCMR-VKC_x1	# 0b0001
+APCB_SOURCES += FT5_samsung-K4A8G165WC-BCTD_x1	# 0b0010
+APCB_SOURCES += FT5_samsung-K4AAG165WB-MCTD_x1	# 0b0011
+APCB_SOURCES += FT5_samsung-K4A8G165WC-BCWE_x1	# 0b0100
+APCB_SOURCES += empty				# 0b0101
+APCB_SOURCES += empty				# 0b0110
+APCB_SOURCES += empty				# 0b0111
+APCB_SOURCES += empty				# 0b1000
+APCB_SOURCES += empty				# 0b1001
+APCB_SOURCES += empty				# 0b1010
+APCB_SOURCES += empty				# 0b1011
+APCB_SOURCES += empty				# 0b1100
+APCB_SOURCES += empty				# 0b1101
+APCB_SOURCES += empty				# 0b1110
+APCB_SOURCES += empty				# 0b1111

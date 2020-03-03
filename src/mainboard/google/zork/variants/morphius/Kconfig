@@ -13,43 +13,4 @@
 
 if BOARD_GOOGLE_MORPHIUS
 
-menu "APCB Config options"
-
-config PSP_APCB_FILE
-	string "APCB file for SPD0"
-	default "3rdparty/blobs/mainboard/google/zork/APCB_K4AAG165WA-BCWE_x2.bin"
-	help
-	  The name of the AGESA Parameter Customization Block.  This image is
-	  instance ID 0 in the PSP's BIOS Directory Table.
-
-config PSP_APCB1_FILE
-	string "APCB file for SPD1"
-	default ""
-	help
-	  If specified, this image is instance ID 1 in the PSP's BIOS
-	  Directory Table.
-
-config PSP_APCB2_FILE
-	string "APCB file for SPD2"
-	default "3rdparty/blobs/mainboard/google/zork/APCB_K4A8G165WC-BCWE_x1.bin"
-	help
-	  If specified, this image is instance ID 2 in the PSP's BIOS
-	  Directory Table.
-
-config PSP_APCB3_FILE
-	string "APCB file for SPD3"
-	default "3rdparty/blobs/mainboard/google/zork/APCB_MT40A1G16KD-062E_x2.bin"
-	help
-	  If specified, this image is instance ID 3 in the PSP's BIOS
-	  Directory Table.
-
-config PSP_APCB4_FILE
-	string "APCB file for SPD4"
-	default "3rdparty/blobs/mainboard/google/zork/APCB_K4A8G165WC-BCWE_x1.bin"
-	help
-	  If specified, this image is instance ID 4 in the PSP's BIOS
-	  Directory Table.
-
-endmenu
-
 endif #BOARD_GOOGLE_MORPHIUS

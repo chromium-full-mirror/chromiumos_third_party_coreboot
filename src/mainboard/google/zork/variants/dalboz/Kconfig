@@ -13,47 +13,5 @@
 
 if BOARD_GOOGLE_DALBOZ
 
-menu "APCB Config options"
-
-config PSP_APCB_FILE
-	string "APCB file for SPD0"
-	# HMA851S6CJR6N-VK - 0000b
-	default "3rdparty/blobs/mainboard/google/zork/APCB_FT5_hynix_HMA851S6CJR6N-VK_x1.bin"
-	help
-	  The name of the AGESA Parameter Customization Block.  This image is
-	  instance ID 0 in the PSP's BIOS Directory Table.
-
-config PSP_APCB1_FILE
-	string "APCB file for SPD1"
-	# H5ANAG6NCMR-VKC - 0001b
-	default "3rdparty/blobs/mainboard/google/zork/APCB_FT5_hynix_H5ANAG6NCMR-VKC_x1.bin"
-	help
-	  If specified, this image is instance ID 1 in the PSP's BIOS
-	  Directory Table.
-
-config PSP_APCB2_FILE
-	string "APCB file for SPD2"
-	# K4A8G165WC-BCTD - 0010b
-	default "3rdparty/blobs/mainboard/google/zork/APCB_FT5_samsung_K4A8G165WC-BCTD_x1.bin"
-	help
-	  If specified, this image is instance ID 2 in the PSP's BIOS
-	  Directory Table.
-
-config PSP_APCB3_FILE
-	string "APCB file for SPD3"
-	# K4AAG165WB-MCTD - 0011b
-	default "3rdparty/blobs/mainboard/google/zork/APCB_FT5_samsung_K4AAG165WB-MCTD_x1.bin"
-	help
-	  If specified, this image is instance ID 3 in the PSP's BIOS
-	  Directory Table.
-
-config PSP_APCB4_FILE
-	string "APCB file for SPD4"
-	default ""
-	help
-	  If specified, this image is instance ID 4 in the PSP's BIOS
-	  Directory Table.
-
-endmenu
 
 endif #BOARD_GOOGLE_DALBOZ
