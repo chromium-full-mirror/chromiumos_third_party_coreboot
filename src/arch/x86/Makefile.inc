@@ -57,12 +57,6 @@ cbfs-files-$(CONFIG_VGA_BIOS_DGPU) += pci$(stripped_vgabios_dgpu_id).rom
 pci$(stripped_vgabios_dgpu_id).rom-file := $(call strip_quotes,$(CONFIG_VGA_BIOS_DGPU_FILE))
 pci$(stripped_vgabios_dgpu_id).rom-type := optionrom
 
-verstage-$(CONFIG_HAVE_CF9_RESET) += cf9_reset.c
-bootblock-$(CONFIG_HAVE_CF9_RESET) += cf9_reset.c
-romstage-$(CONFIG_HAVE_CF9_RESET) += cf9_reset.c
-ramstage-$(CONFIG_HAVE_CF9_RESET) += cf9_reset.c
-postcar-$(CONFIG_HAVE_CF9_RESET) += cf9_reset.c
-
 ###############################################################################
 # common support for early assembly includes
 ###############################################################################
@@ -118,6 +112,7 @@ bootblock-y += memcpy.c
 bootblock-y += memset.c
 bootblock-$(CONFIG_COLLECT_TIMESTAMPS_TSC) += timestamp.c
 bootblock-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
+bootblock-$(CONFIG_HAVE_CF9_RESET) += cf9_reset.c
 
 bootblock-y += id.S
 $(call src-to-obj,bootblock,$(dir)/id.S): $(obj)/build.h
@@ -197,6 +192,7 @@ verstage-y += boot.c
 verstage-$(CONFIG_VBOOT_SEPARATE_VERSTAGE) += gdt_init.S
 verstage-$(CONFIG_IDT_IN_EVERY_STAGE) += exception.c
 verstage-$(CONFIG_IDT_IN_EVERY_STAGE) += idt.S
+verstage-$(CONFIG_HAVE_CF9_RESET) += cf9_reset.c
 
 verstage-y += cpu_common.c
 verstage-y += memset.c
@@ -248,6 +244,7 @@ romstage-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 romstage-y += postcar_loader.c
 romstage-$(CONFIG_COLLECT_TIMESTAMPS_TSC) += timestamp.c
 romstage-$(CONFIG_ARCH_ROMSTAGE_X86_32) += walkcbfs.S
+romstage-$(CONFIG_HAVE_CF9_RESET) += cf9_reset.c
 
 romstage-srcs += $(wildcard $(src)/mainboard/$(MAINBOARDDIR)/romstage.c)
 romstage-libs ?=
@@ -293,6 +290,7 @@ postcar-y += memlayout.ld
 postcar-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 postcar-y += postcar.c
 postcar-$(CONFIG_COLLECT_TIMESTAMPS_TSC) += timestamp.c
+postcar-$(CONFIG_HAVE_CF9_RESET) += cf9_reset.c
 
 LDFLAGS_postcar += -Map $(objcbfs)/postcar.map
 
@@ -346,6 +344,7 @@ ramstage-$(CONFIG_COOP_MULTITASKING) += thread.c
 ramstage-$(CONFIG_COOP_MULTITASKING) += thread_switch.S
 ramstage-$(CONFIG_COLLECT_TIMESTAMPS_TSC) += timestamp.c
 ramstage-$(CONFIG_HAVE_ACPI_RESUME) += wakeup.S
+ramstage-$(CONFIG_HAVE_CF9_RESET) += cf9_reset.c
 
 ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
 rmodules_x86_32-y += memcpy.c
