@@ -64,7 +64,6 @@ static const struct pirq_struct mainboard_pirq_data[] = {
 	{ PCIE6_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } },
 	{ PCIE7_DEVFN,	{ PIRQ_E, PIRQ_F, PIRQ_G, PIRQ_H } },
 	{ PCIE8_DEVFN,	{ PIRQ_G, PIRQ_H, PIRQ_E, PIRQ_F } },
-	{ PCIE8_DEVFN,	{ PIRQ_G, PIRQ_H, PIRQ_E, PIRQ_F } },
 	{ SMBUS_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } },
 };
 
