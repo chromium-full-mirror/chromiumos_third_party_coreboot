@@ -452,7 +452,11 @@ static struct device_operations ops = {
 	.init             = lpc_ec_init,
 	.read_resources   = lpc_ec_read_resources,
 	.enable_resources = DEVICE_NOOP,
-	.set_resources    = DEVICE_NOOP
+	.set_resources    = DEVICE_NOOP,
+#if CONFIG(HAVE_ACPI_TABLES)
+	.acpi_name			= google_chromeec_acpi_name,
+	.acpi_fill_ssdt_generator	= google_chromeec_fill_ssdt_generator,
+#endif
 };
 
 static struct pnp_info pnp_dev_info[] = {
