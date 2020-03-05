@@ -18,7 +18,7 @@
 #define PSP_MAILBOX_OFFSET		0x10570
 #define MSR_CU_CBBCFG			0xc00110a2
 
-struct psp_mbox *soc_get_mbox_address(void)
+void *soc_get_mbox_address(void)
 {
 	uintptr_t psp_mmio;
 
@@ -28,5 +28,5 @@ struct psp_mbox *soc_get_mbox_address(void)
 		return 0;
 	}
 
-	return (struct psp_mbox *)(psp_mmio + PSP_MAILBOX_OFFSET);
+	return (void *)(psp_mmio + PSP_MAILBOX_OFFSET);
 }

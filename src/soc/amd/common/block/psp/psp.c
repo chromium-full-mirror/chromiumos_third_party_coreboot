@@ -55,92 +55,195 @@ static const char *status_to_string(int err)
 	}
 }
 
-static u32 rd_mbox_sts(struct psp_mbox *mbox)
+static u32 v1_rd_mbox_sts(struct pspv1_mbox *mbox)
 {
 	return read32(&mbox->mbox_status);
 }
 
-static void wr_mbox_cmd(struct psp_mbox *mbox, u32 cmd)
+static void v1_wr_mbox_cmd(struct pspv1_mbox *mbox, u32 cmd)
 {
 	write32(&mbox->mbox_command, cmd);
 }
 
-static u32 rd_mbox_cmd(struct psp_mbox *mbox)
+static u32 v1_rd_mbox_cmd(struct pspv1_mbox *mbox)
 {
 	return read32(&mbox->mbox_command);
 }
 
-static void wr_mbox_cmd_resp(struct psp_mbox *mbox, void *buffer)
+static void v1_wr_mbox_cmd_resp(struct pspv1_mbox *mbox, void *buffer)
 {
 	write64(&mbox->cmd_response, (uintptr_t)buffer);
 }
 
-static u32 rd_resp_sts(struct mbox_default_buffer *buffer)
-{
-	return read32(&buffer->header.status);
-}
-
-static int wait_initialized(struct psp_mbox *mbox)
+static int v1_wait_initialized(struct pspv1_mbox *mbox)
 {
 	struct stopwatch sw;
 
 	stopwatch_init_msecs_expire(&sw, PSP_INIT_TIMEOUT);
 
 	do {
-		if (rd_mbox_sts(mbox) & STATUS_INITIALIZED)
+		if (v1_rd_mbox_sts(mbox) & PSPV1_STATUS_INITIALIZED)
 			return 0;
 	} while (!stopwatch_expired(&sw));
 
 	return -PSPSTS_INIT_TIMEOUT;
 }
 
-static int wait_command(struct psp_mbox *mbox)
+static int v1_wait_command(struct pspv1_mbox *mbox)
 {
 	struct stopwatch sw;
 
 	stopwatch_init_msecs_expire(&sw, PSP_CMD_TIMEOUT);
 
 	do {
-		if (!rd_mbox_cmd(mbox))
+		if (!v1_rd_mbox_cmd(mbox))
 			return 0;
 	} while (!stopwatch_expired(&sw));
 
 	return -PSPSTS_CMD_TIMEOUT;
 }
 
-static int send_psp_command(u32 command, void *buffer)
+static int do_command_v1(u32 command, void *buffer)
 {
-	struct psp_mbox *mbox = soc_get_mbox_address();
+	struct pspv1_mbox *mbox = soc_get_mbox_address();
 	if (!mbox)
 		return -PSPSTS_NOBASE;
 
 	/* check for PSP error conditions */
-	if (rd_mbox_sts(mbox) & STATUS_HALT)
+	if (v1_rd_mbox_sts(mbox) & PSPV1_STATUS_HALT)
 		return -PSPSTS_HALTED;
 
-	if (rd_mbox_sts(mbox) & STATUS_RECOVERY)
+	if (v1_rd_mbox_sts(mbox) & PSPV1_STATUS_RECOVERY)
 		return -PSPSTS_RECOVERY;
 
 	/* PSP must be finished with init and ready to accept a command */
-	if (wait_initialized(mbox))
+	if (v1_wait_initialized(mbox))
 		return -PSPSTS_INIT_TIMEOUT;
 
-	if (wait_command(mbox))
+	if (v1_wait_command(mbox))
 		return -PSPSTS_CMD_TIMEOUT;
 
 	/* set address of command-response buffer and write command register */
-	wr_mbox_cmd_resp(mbox, buffer);
-	wr_mbox_cmd(mbox, command);
+	v1_wr_mbox_cmd_resp(mbox, buffer);
+	v1_wr_mbox_cmd(mbox, command);
 
 	/* PSP clears command register when complete */
-	if (wait_command(mbox))
+	if (v1_wait_command(mbox))
 		return -PSPSTS_CMD_TIMEOUT;
 
 	/* check delivery status */
-	if (rd_mbox_sts(mbox) & (STATUS_ERROR | STATUS_TERMINATED))
+	if (v1_rd_mbox_sts(mbox) & (PSPV1_STATUS_ERROR | PSPV1_STATUS_TERMINATED))
 		return -PSPSTS_SEND_ERROR;
 
 	return 0;
+}
+
+static u16 v2_rd_mbox_sts(struct pspv2_mbox *mbox)
+{
+	union {
+		u32 val;
+		struct pspv2_mbox_cmd_fields fields;
+	} tmp = { 0 };
+
+	tmp.val = read32(&mbox->val);
+	return tmp.fields.mbox_status;
+}
+
+static void v2_wr_mbox_cmd(struct pspv2_mbox *mbox, u8 cmd)
+{
+	union {
+		u32 val;
+		struct pspv2_mbox_cmd_fields fields;
+	} tmp = { 0 };
+
+	/* Write entire 32-bit area to begin command execution */
+	tmp.fields.mbox_command = cmd;
+	write32(&mbox->val, tmp.val);
+}
+
+static u8 v2_rd_mbox_recovery(struct pspv2_mbox *mbox)
+{
+	union {
+		u32 val;
+		struct pspv2_mbox_cmd_fields fields;
+	} tmp = { 0 };
+
+	tmp.val = read32(&mbox->val);
+	return !!tmp.fields.recovery;
+}
+
+static void v2_wr_mbox_cmd_resp(struct pspv2_mbox *mbox, void *buffer)
+{
+	write64(&mbox->cmd_response, (uintptr_t)buffer);
+}
+
+static int v2_wait_command(struct pspv2_mbox *mbox, bool wait_for_ready)
+{
+	struct pspv2_mbox and_mask = { .val = ~0 };
+	struct pspv2_mbox expected = { .val = 0 };
+	struct stopwatch sw;
+	u32 tmp;
+
+	/* Zero fields from and_mask that should be kept */
+	and_mask.fields.mbox_command = 0;
+	and_mask.fields.ready = wait_for_ready ? 0 : 1;
+
+	/* Expect mbox_cmd == 0 but ready depends */
+	if (wait_for_ready)
+		expected.fields.ready = 1;
+
+	stopwatch_init_msecs_expire(&sw, PSP_CMD_TIMEOUT);
+
+	do {
+		tmp = read32(&mbox->val);
+		tmp &= ~and_mask.val;
+		if (tmp == expected.val)
+			return 0;
+	} while (!stopwatch_expired(&sw));
+
+	return -PSPSTS_CMD_TIMEOUT;
+}
+
+static int do_command_v2(u32 command, void *buffer)
+{
+	struct pspv2_mbox *mbox = soc_get_mbox_address();
+	if (!mbox)
+		return -PSPSTS_NOBASE;
+
+	if (v2_rd_mbox_recovery(mbox))
+		return -PSPSTS_RECOVERY;
+
+	if (v2_wait_command(mbox, true))
+		return -PSPSTS_CMD_TIMEOUT;
+
+	/* set address of command-response buffer and write command register */
+	v2_wr_mbox_cmd_resp(mbox, buffer);
+	v2_wr_mbox_cmd(mbox, command);
+
+	/* PSP clears command register when complete.  All commands except
+	 * SxInfo set the Ready bit. */
+	if (v2_wait_command(mbox,
+			command == MBOX_BIOS_CMD_SX_INFO ? false : true))
+		return -PSPSTS_CMD_TIMEOUT;
+
+	/* check delivery status */
+	if (v2_rd_mbox_sts(mbox))
+		return -PSPSTS_SEND_ERROR;
+
+	return 0;
+}
+
+static int send_psp_command(u32 command, void *buffer)
+{
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_PSP_GEN1))
+		return do_command_v1(command, buffer);
+
+	return do_command_v2(command, buffer);
+}
+
+static u32 rd_resp_sts(struct mbox_default_buffer *buffer)
+{
+	return read32(&buffer->header.status);
 }
 
 /*
