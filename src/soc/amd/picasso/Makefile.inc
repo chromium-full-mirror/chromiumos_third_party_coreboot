@@ -272,7 +272,7 @@ OPT_WHITELIST_FILE=$(call add_opt_prefix, $(PSP_WHITELIST_FILE), --whitelist)
 
 OPT_PSP_APCB_FILES=$(foreach i, $(shell seq $(words $(PSP_APCB_FILES))), \
 	$(call add_opt_prefix, $(word $(i), $(PSP_APCB_FILES)), \
-	--instance $$(($(i)-1)) --apcb ))
+	--instance $(shell printf "%x" $$(($(i)-1))) --apcb ))
 
 OPT_APOB_ADDR=$(call add_opt_prefix, $(PSP_APOB_BASE), --apob-base)
 OPT_PSP_BIOSBIN_FILE=$(call add_opt_prefix, $(PSP_BIOSBIN_FILE), --bios-bin)
