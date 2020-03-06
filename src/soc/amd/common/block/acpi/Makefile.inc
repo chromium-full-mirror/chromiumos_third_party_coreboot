@@ -1,5 +1,7 @@
 bootblock-$(CONFIG_SOC_AMD_COMMON_BLOCK_ACPI) += acpi.c
+ifneq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
 verstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_ACPI) += acpi.c
+endif
 romstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_ACPI) += acpi.c
 ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_ACPI) += acpi.c
 postcar-$(CONFIG_SOC_AMD_COMMON_BLOCK_ACPI) += acpi.c

@@ -58,7 +58,9 @@ verstage-y += fmap.c
 verstage-y += libgcc.c
 verstage-y += memcmp.c
 verstage-y += string.c
+ifneq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
 verstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
+endif
 verstage-y += boot_device.c
 verstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 

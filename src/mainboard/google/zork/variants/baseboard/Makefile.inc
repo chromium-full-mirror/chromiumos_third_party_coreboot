@@ -14,7 +14,9 @@
 bootblock-$(CONFIG_AMD_FP5) += gpio_fp5.c
 bootblock-$(CONFIG_AMD_FT5) += gpio_ft5.c
 
+ifneq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
 verstage-y += tpm_tis.c
+endif
 
 romstage-$(CONFIG_AMD_FP5) += gpio_fp5.c
 romstage-$(CONFIG_AMD_FT5) += gpio_ft5.c

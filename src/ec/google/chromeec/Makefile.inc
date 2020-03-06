@@ -1,7 +1,6 @@
 ifeq ($(CONFIG_EC_GOOGLE_CHROMEEC),y)
 
 bootblock-$(CONFIG_EC_GOOGLE_CHROMEEC_BOARDID) += ec_boardid.c
-verstage-$(CONFIG_EC_GOOGLE_CHROMEEC_BOARDID) += ec_boardid.c
 romstage-$(CONFIG_EC_GOOGLE_CHROMEEC_BOARDID) += ec_boardid.c
 ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC_BOARDID) += ec_boardid.c
 smm-$(CONFIG_EC_GOOGLE_CHROMEEC_BOARDID) += ec_boardid.c
@@ -20,17 +19,21 @@ romstage-y += ec.c crosec_proto.c vstore.c
 romstage-$(CONFIG_EC_GOOGLE_CHROMEEC_I2C) += ec_i2c.c
 romstage-$(CONFIG_EC_GOOGLE_CHROMEEC_LPC) += ec_lpc.c
 romstage-$(CONFIG_EC_GOOGLE_CHROMEEC_SPI) += ec_spi.c
+
+ifneq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
 verstage-y += ec.c crosec_proto.c vstore.c
 verstage-$(CONFIG_EC_GOOGLE_CHROMEEC_I2C) += ec_i2c.c
 verstage-$(CONFIG_EC_GOOGLE_CHROMEEC_LPC) += ec_lpc.c
 verstage-$(CONFIG_EC_GOOGLE_CHROMEEC_SPI) += ec_spi.c
+verstage-$(CONFIG_EC_GOOGLE_CHROMEEC_BOARDID) += ec_boardid.c
+verstage-$(CONFIG_VBOOT) += vboot_storage.c
+verstage-$(CONFIG_EC_GOOGLE_CHROMEEC_SWITCHES) += switches.c
+endif
 
 ramstage-$(CONFIG_VBOOT) += vboot_storage.c
 smm-$(CONFIG_VBOOT) += vboot_storage.c
 romstage-$(CONFIG_VBOOT) += vboot_storage.c
-verstage-$(CONFIG_VBOOT) += vboot_storage.c
 
-verstage-$(CONFIG_EC_GOOGLE_CHROMEEC_SWITCHES) += switches.c
 romstage-$(CONFIG_EC_GOOGLE_CHROMEEC_SWITCHES) += switches.c
 ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC_SWITCHES) += switches.c
 

@@ -1,5 +1,7 @@
 bootblock-$(CONFIG_SOC_AMD_COMMON_BLOCK_ACPIMMIO) += mmio_util.c
+ifneq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
 verstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_ACPIMMIO) += mmio_util.c
+endif
 romstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_ACPIMMIO) += mmio_util.c
 postcar-$(CONFIG_SOC_AMD_COMMON_BLOCK_ACPIMMIO) += mmio_util.c
 ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_ACPIMMIO) += mmio_util.c

@@ -54,6 +54,7 @@ romstage-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
 romstage-y += psp.c
 romstage-y += soc_util.c
 
+ifneq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
 verstage-y += gpio.c
 verstage-y += i2c.c
 verstage-y += pmutil.c
@@ -61,6 +62,7 @@ verstage-y += reset.c
 verstage-$(CONFIG_PICASSO_UART) += uart.c
 verstage-y += tsc_freq.c
 verstage-$(CONFIG_SPI_FLASH) += spi.c
+endif
 
 ramstage-y += d14_f3_bridge.c
 ramstage-y += i2c.c

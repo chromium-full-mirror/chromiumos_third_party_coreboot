@@ -20,7 +20,6 @@ ramstage-y += device_const.c
 
 ifeq ($(CONFIG_PCI),y)
 bootblock-y += pci_early.c
-verstage-y += pci_early.c
 romstage-y += pci_early.c
 postcar-y += pci_early.c
 
@@ -29,11 +28,15 @@ ramstage-y += pci_device.c
 ramstage-y += pci_rom.c
 
 bootblock-y += pci_ops.c
-verstage-y += pci_ops.c
 romstage-y += pci_ops.c
 postcar-y += pci_ops.c
 ramstage-y += pci_ops.c
 smm-y += pci_ops.c
+
+ifneq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
+verstage-y += pci_early.c
+verstage-y += pci_ops.c
+endif
 
 ramstage-$(CONFIG_HYPERTRANSPORT_PLUGIN_SUPPORT) += hypertransport.c
 ramstage-$(CONFIG_PCIX_PLUGIN_SUPPORT) += pcix_device.c
