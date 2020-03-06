@@ -523,7 +523,7 @@ static void invalidate_normal_cache(void)
 	/* Invalidate only on recovery mode with retraining enabled. */
 	if (!vboot_recovery_mode_enabled())
 		return;
-	if (!vboot_recovery_mode_memory_retrain())
+	if (!get_recovery_mode_retrain_switch())
 		return;
 
 	if (fmap_locate_area_as_rdev_rw(name, &rdev) < 0) {
