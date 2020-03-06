@@ -23,7 +23,6 @@ if SOC_AMD_PICASSO
 config CPU_SPECIFIC_OPTIONS
 	def_bool y
 	select ARCH_BOOTBLOCK_X86_32
-	select ARCH_VERSTAGE_X86_32
 	select ARCH_ROMSTAGE_X86_32
 	select ARCH_RAMSTAGE_X86_32
 	select RESET_VECTOR_IN_RAM
@@ -65,12 +64,8 @@ config CPU_SPECIFIC_OPTIONS
 	select HAVE_ESPI_INIT_DEBUG
 	select NO_STAGE_CACHE
 	select NO_FMAP_CACHE # Picasso doesn't have Cache as RAM
-
-config VBOOT
+	select HAVE_PRE_BOOTBLOCK_VBOOT_SUPPORT
 	select VBOOT_STARTS_IN_ROMSTAGE
-	select VBOOT_SAVE_RECOVERY_REASON_ON_REBOOT
-	select VBOOT_VBNV_CMOS
-	select VBOOT_VBNV_CMOS_BACKUP_TO_FLASH
 
 config HAVE_BOOTBLOCK
 	bool
@@ -440,5 +435,25 @@ config APCB_BLOB_DIR
 	  If unsure, leave empty.
 
 endmenu
+
+config VBOOT_STARTS_IN_ROMSTAGE
+	bool "Verstage runs on X86"
+	depends on VBOOT
+	select VBOOT_SAVE_RECOVERY_REASON_ON_REBOOT
+	select VBOOT_VBNV_CMOS
+	select VBOOT_VBNV_CMOS_BACKUP_TO_FLASH
+	select ARCH_VERSTAGE_X86_32
+	help
+	  Runs verstage on the X86 processor as with the
+	  typical vboot flow
+
+config VBOOT_STARTS_BEFORE_BOOTBLOCK
+	bool "Verstage runs on PSP"
+	depends on VBOOT && !VBOOT_STARTS_IN_ROMSTAGE
+	select VBOOT_SEPARATE_VERSTAGE
+	select ARCH_VERSTAGE_ARMV7
+	help
+	  Runs verstage on the PSP.  Only available on
+	  certain Chrome OS branded parts from AMD.
 
 endif # SOC_AMD_PICASSO
