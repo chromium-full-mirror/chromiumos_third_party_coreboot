@@ -20,7 +20,7 @@
 #include <device/device.h>
 #include <pc80/mc146818rtc.h>
 #include <smp/spinlock.h>
-#if CONFIG(POST_IO)
+#if CONFIG(POST_IO) && !(CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK) && ENV_VERSTAGE)
 #include <arch/io.h>
 #endif
 
@@ -151,7 +151,7 @@ void post_code(uint8_t value)
 #if CONFIG(CMOS_POST)
 	cmos_post_code(value);
 #endif
-#if CONFIG(POST_IO)
+#if CONFIG(POST_IO) && !(CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK) && ENV_VERSTAGE)
 	outb(value, CONFIG_POST_IO_PORT);
 #endif
 #endif

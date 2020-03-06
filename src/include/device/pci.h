@@ -15,7 +15,7 @@
 #ifndef PCI_H
 #define PCI_H
 
-#if CONFIG(PCI)
+#if CONFIG(PCI) && !(CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK) && ENV_VERSTAGE)
 
 #include <stdint.h>
 #include <stddef.h>

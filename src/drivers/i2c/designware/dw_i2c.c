@@ -15,7 +15,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpigen.h>
 #include <device/mmio.h>
 #include <console/console.h>
 #include <device/device.h>
@@ -759,6 +758,8 @@ int dw_i2c_init(unsigned int bus, const struct dw_i2c_bus_config *bcfg)
 
 	return 0;
 }
+#if !(CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK) && ENV_VERSTAGE)
+#include <arch/acpigen.h>
 
 /*
  * Write ACPI object to describe speed configuration.
@@ -869,3 +870,5 @@ static int dw_i2c_dev_transfer(struct device *dev,
 const struct i2c_bus_operations dw_i2c_bus_ops = {
 	.transfer = dw_i2c_dev_transfer,
 };
+
+#endif /* !(CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK) && ENV_VERSTAGE) */

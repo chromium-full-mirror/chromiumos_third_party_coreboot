@@ -55,7 +55,8 @@ void die_notify(void);
 #define __CONSOLE_ENABLE__ \
 	((ENV_BOOTBLOCK && CONFIG(BOOTBLOCK_CONSOLE)) || \
 	(ENV_POSTCAR && CONFIG(POSTCAR_CONSOLE)) || \
-	ENV_VERSTAGE || ENV_ROMSTAGE || ENV_RAMSTAGE || ENV_LIBAGESA || \
+	(ENV_VERSTAGE && !CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK)) || \
+	ENV_ROMSTAGE || ENV_RAMSTAGE || ENV_LIBAGESA || \
 	(ENV_SMM && CONFIG(DEBUG_SMI)))
 
 #if __CONSOLE_ENABLE__
@@ -81,11 +82,17 @@ static inline int get_console_loglevel(void)
 }
 #endif
 #else
+// TODO: Find a better solution
+#if ENV_VERSTAGE && CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK)
+void printk(int LEVEL, const char *fmt, ...);
+#else
+static inline void printk(int LEVEL, const char *fmt, ...) {}
+#endif
 static inline void console_init(void) {}
 static inline int console_log_level(int msg_level) { return 0; }
-static inline void printk(int LEVEL, const char *fmt, ...) {}
 static inline void vprintk(int LEVEL, const char *fmt, va_list args) {}
 static inline void do_putchar(unsigned char byte) {}
+static inline int get_console_loglevel(void) { return -1; }
 #endif
 
 int do_printk(int msg_level, const char *fmt, ...)

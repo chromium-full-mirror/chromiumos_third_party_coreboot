@@ -97,6 +97,8 @@ static inline int vboot_logic_executed(void)
 #else
 		return 1;
 #endif
+	} else if (CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK)) {
+		return 0;
 	} else {
 		dead_code();
 	}
