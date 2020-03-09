@@ -18,7 +18,9 @@ ramstage-y += chromeos.c
 ramstage-y += ec.c
 ramstage-y += acpi.c
 
-ifneq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
+ifeq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
+verstage-y += memlayout.ld
+else
 verstage-y += chromeos.c
 verstage-y += ec.c
 endif
