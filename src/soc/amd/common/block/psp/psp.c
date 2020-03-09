@@ -181,27 +181,27 @@ int psp_notify_dram(void)
 	return cmd_status;
 }
 
-///*
-// * Notify the PSP that the system is completing the boot process.  Upon
-// * receiving this command, the PSP will only honor commands where the buffer
-// * is in SMM space.
-// */
-//static void psp_notify_boot_done(void *unused)
-//{
-//	int cmd_status;
-//	struct mbox_default_buffer buffer = {
-//		.header = {
-//			.size = sizeof(buffer)
-//		}
-//	};
-//
-//	printk(BIOS_DEBUG, "PSP: Notify that POST is finishing... ");
-//
-//	cmd_status = send_psp_command(MBOX_BIOS_CMD_BOOT_DONE, &buffer);
-//
-//	/* buffer's status shouldn't change but report it if it does */
-//	print_cmd_status(cmd_status, &buffer);
-//}
+/*
+ * Notify the PSP that the system is completing the boot process.  Upon
+ * receiving this command, the PSP will only honor commands where the buffer
+ * is in SMM space.
+ */
+static void psp_notify_boot_done(void *unused)
+{
+	int cmd_status;
+	struct mbox_default_buffer buffer = {
+		.header = {
+			.size = sizeof(buffer)
+		}
+	};
+
+	printk(BIOS_DEBUG, "PSP: Notify that POST is finishing... ");
+
+	cmd_status = send_psp_command(MBOX_BIOS_CMD_BOOT_DONE, &buffer);
+
+	/* buffer's status shouldn't change but report it if it does */
+	print_cmd_status(cmd_status, &buffer);
+}
 
 /* Notify PSP the system is going to a sleep state. */
 void psp_notify_sx_info(u8 sleep_type)
@@ -278,5 +278,5 @@ int psp_load_named_blob(enum psp_blob_type type, const char *name)
 	return cmd_status;
 }
 
-//BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY,
-//		psp_notify_boot_done, NULL);
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY,
+		psp_notify_boot_done, NULL);
