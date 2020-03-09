@@ -54,10 +54,12 @@ util/crossgcc/xgcc
 site-local
 
 *.\#
+*.a
 *.bin
 *.debug
 *.elf
 *.o
+*.o.d
 *.out
 *.pyc
 *.sw[po]
