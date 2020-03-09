@@ -59,7 +59,7 @@
 #define APU_I2C4_BASE			0xfedc6000
 #define   I2C_BASE_ADDRESS		APU_I2C0_BASE
 #define   I2C_DEVICE_SIZE		0x00001000
-#define   I2C_DEVICE_COUNT		5
+#define   I2C_DEVICE_COUNT		4
 
 #define APU_DMAC0_BASE			0xfedc7000
 #define APU_DMAC1_BASE			0xfedc8000

@@ -30,12 +30,15 @@
 /* Global to provide access to chip.c */
 const char *i2c_acpi_name(const struct device *dev);
 
+/*
+ * i2c4 is slave device only, do not list it here,
+ * otherwise this slave device will not be able to work.
+ */
 static const uintptr_t i2c_bus_address[] = {
 	APU_I2C0_BASE,
 	APU_I2C1_BASE,
 	APU_I2C2_BASE,
 	APU_I2C3_BASE,
-	APU_I2C4_BASE, /* slave device only */
 };
 
 _Static_assert(ARRAY_SIZE(i2c_bus_address) == I2C_DEVICE_COUNT,
