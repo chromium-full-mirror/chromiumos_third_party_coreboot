@@ -54,37 +54,52 @@ static uint8_t fch_apic_routing[0x80];
 _Static_assert(sizeof(fch_pic_routing) == sizeof(fch_apic_routing),
 	"PIC and APIC FCH interrupt tables must be the same size");
 
+/*
+ * This table doesn't actually perform any routing. It only populates the
+ * PCI_INTERRUPT_LINE register on the PCI device with the PIC value specified
+ * in fch_apic_routing. The linux kernel only looks at this field as a backup
+ * if ACPI routing fails to describe the PCI routing correctly. The linux kernel
+ * also uses the APIC by default, so the value coded into the registers will be
+ * wrong.
+ *
+ * This table is also confusing because PCI Interrupt routing happens at the
+ * device/slot level, not the function level.
+ */
 static const struct pirq_struct mainboard_pirq_data[] = {
 	{ PCIE0_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } }, // Bridge 0
-	{ PCIE1_DEVFN,	{ PIRQ_E, PIRQ_F, PIRQ_G, PIRQ_H } }, // Bridge 1 - Wifi
+	{ PCIE1_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } }, // Bridge 1 - Wifi
 	{ PCIE2_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } }, // Bridge 2 - SD
-	{ PCIE3_DEVFN,	{ PIRQ_E, PIRQ_F, PIRQ_G, PIRQ_H } }, // Bridge 3
+	{ PCIE3_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } }, // Bridge 3
 	{ PCIE4_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } }, // Bridge 4
-	{ PCIE5_DEVFN,	{ PIRQ_E, PIRQ_F, PIRQ_G, PIRQ_H } }, // Bridge 5
+	{ PCIE5_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } }, // Bridge 5
 	{ PCIE6_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } }, // Bridge 6 - NVME
-	{ PCIE7_DEVFN,	{ PIRQ_E, PIRQ_F, PIRQ_G, PIRQ_H } }, // Bridge to Bus A
-	{ PCIE8_DEVFN,	{ PIRQ_G, PIRQ_H, PIRQ_E, PIRQ_F } }, // Bridge to Bus B
-	{ SMBUS_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } },
+	{ PCIE7_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } }, // Bridge to Bus A
+	{ PCIE8_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } }, // Bridge to Bus B
+	{ SMBUS_DEVFN,	{ PIRQ_SMBUS, PIRQ_NC, PIRQ_NC, PIRQ_NC } },
 };
 
+/*
+ * This controls the device -> IRQ routing.
+ * The PIC values are limited to 0,1, 3 - 12, 14, 15.
+ */
 static const struct fch_apic_routing {
 	uint8_t intr_index;
 	uint8_t pic_irq_num;
 	uint8_t apic_irq_num;
 } fch_pirq[] = {
-	{ PIRQ_A,	3,		16 },
-	{ PIRQ_B,	4,		17 },
-	{ PIRQ_C,	5,		18 },
-	{ PIRQ_D,	7,		19 },
-	{ PIRQ_E,	11,		20 },
-	{ PIRQ_F,	10,		21 },
-	{ PIRQ_G,	3,		22 },
-	{ PIRQ_H,	4,		23 },
+	{ PIRQ_A,	6,		16 },
+	{ PIRQ_B,	6,		17 },
+	{ PIRQ_C,	14,		18 },
+	{ PIRQ_D,	15,		19 },
+	{ PIRQ_E,	PIRQ_NC,	PIRQ_NC },
+	{ PIRQ_F,	PIRQ_NC,	PIRQ_NC },
+	{ PIRQ_G,	PIRQ_NC,	PIRQ_NC },
+	{ PIRQ_H,	PIRQ_NC,	PIRQ_NC },
 	{ PIRQ_SIRQA,	PIRQ_NC,	PIRQ_NC },
 	{ PIRQ_SIRQB,	PIRQ_NC,	PIRQ_NC },
 	{ PIRQ_SIRQC,	PIRQ_NC,	PIRQ_NC },
 	{ PIRQ_SIRQD,	PIRQ_NC,	PIRQ_NC },
-	{ PIRQ_SCI,	PIRQ_NC,	9 },
+	{ PIRQ_SCI,	9,		9 },
 	{ PIRQ_SMBUS,	PIRQ_NC,	PIRQ_NC },
 	{ PIRQ_ASF,	PIRQ_NC,	PIRQ_NC },
 	{ PIRQ_PMON,	PIRQ_NC,	PIRQ_NC },

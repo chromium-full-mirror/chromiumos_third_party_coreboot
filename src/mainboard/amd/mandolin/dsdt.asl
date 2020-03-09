@@ -62,9 +62,6 @@ DefinitionBlock (
 		/* global utility methods expected within the \_SB scope */
 		#include <arch/x86/acpi/globutil.asl>
 
-		/* IRQ Routing mapping for this platform (in \_SB scope) */
-		#include "acpi/routing.asl"
-
 		Device(PWRB) {
 			Name(_HID, EISAID("PNP0C0C"))
 			Name(_UID, 0xAA)

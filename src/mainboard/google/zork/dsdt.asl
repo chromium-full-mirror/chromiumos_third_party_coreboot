@@ -53,9 +53,6 @@ DefinitionBlock (
 		/* global utility methods expected within the \_SB scope */
 		#include <arch/x86/acpi/globutil.asl>
 
-		/* IRQ Routing mapping for this platform (in \_SB scope) */
-		#include <variant/acpi/routing.asl>
-
 		/* Describe the SOC */
 		#include <soc.asl>
 

@@ -33,13 +33,36 @@ Method(_STA, 0, NotSerialized)
 	Return(0x0B)	/* Status is visible */
 }
 
+/* PCI Routing Table */
+Name(PR0, Package(){
+	/* Bus 0, Dev 0x00 - F2: IOMMU */
+	Package() { 0x0000FFFF, 0, INTA, 0 },
+	Package() { 0x0000FFFF, 0, INTB, 0 },
+	Package() { 0x0000FFFF, 0, INTC, 0 },
+	Package() { 0x0000FFFF, 0, INTD, 0 },
+
+	/* Bus 0, Dev 0x01 - F[1-7]: GPP PCI Bridge */
+	Package() { 0x0001FFFF, 0, INTA, 0 },
+	Package() { 0x0001FFFF, 1, INTB, 0 },
+	Package() { 0x0001FFFF, 2, INTC, 0 },
+	Package() { 0x0001FFFF, 3, INTD, 0 },
+
+	/* Bus 0, Dev 0x08 - F1:PCI Bridge to Bus A, F2: PCI Bridge to Bus B */
+	Package() { 0x0008FFFF, 0, INTA, 0 },
+	Package() { 0x0008FFFF, 1, INTB, 0 },
+	Package() { 0x0008FFFF, 2, INTC, 0 },
+	Package() { 0x0008FFFF, 3, INTD, 0 },
+
+	/* Bus 0, Dev 0x14 - F0:SMBus F3:LPC */
+	Package() { 0x0014FFFF, 0, INTA, 0 },
+	Package() { 0x0014FFFF, 1, INTB, 0 },
+	Package() { 0x0014FFFF, 2, INTC, 0 },
+	Package() { 0x0014FFFF, 3, INTD, 0 },
+})
+
 Method(_PRT,0, NotSerialized)
 {
-	If(PMOD)
-	{
-		Return(APR0)	/* APIC mode */
-	}
-	Return (PR0)		/* PIC Mode */
+	Return(PR0)
 }
 
 Device(AMRT) {
@@ -49,114 +72,6 @@ Device(AMRT) {
 /* Internal Graphics */
 Device(IGFX) {
 	Name(_ADR, 0x00010000)
-}
-
-/*
- * Routing definitions:
- * These would, by convention, be provided by mainboard code. On picasso, they
- * can also be generated automatically by northbridge code. When they are
- * dynamically generated, they will become part of the SSDT. IN the latter case,
- * the External() declaration is required.
- */
-External(APS0)
-External(APS1)
-External(APS2)
-External(APS3)
-External(APS4)
-External(APS5)
-External(APS6)
-External(APS7)
-External(APS8)
-External(PS0)
-External(PS1)
-External(PS2)
-External(PS3)
-External(PS4)
-External(PS5)
-External(PS6)
-External(PS7)
-External(PS8)
-
-/* See AMD 55570-B1 Table 13: PCI Device ID Assignments */
-/* 00:01.1 - GPP Bridge 0 */
-Device(PBR0) {
-	Name(_ADR, 0x00010001)
-	Method(_PRT, 0) {
-		If(PMOD) { Return(APS0) }	/* APIC mode */
-		Return (PS0)			/* PIC Mode */
-	}
-}
-
-/* 00:01.2 - GPP Bridge 1 */
-Device(PBR1) {
-	Name(_ADR, 0x00010002)
-	Method(_PRT, 0) {
-		If(PMOD) { Return(APS1) }	/* APIC mode */
-		Return (PS0)			/* PIC Mode */
-	}
-}
-
-/* 00:01.3 - GPP Bridge 2 */
-Device(PBR2) {
-	Name(_ADR, 0x00010003)
-	Method(_PRT, 0) {
-		If(PMOD) { Return(APS2) }	/* APIC mode */
-		Return (PS0)			/* PIC Mode */
-	}
-}
-
-/* 00:01.4 - GPP Bridge 3 */
-Device(PBR3) {
-	Name(_ADR, 0x00010004)
-	Method(_PRT, 0) {
-		If(PMOD) { Return(APS3) }	/* APIC mode */
-		Return (PS0)			/* PIC Mode */
-	}
-}
-
-/* 00:01.5 - GPP Bridge 4 */
-Device(PBR4) {
-	Name(_ADR, 0x00010005)
-	Method(_PRT, 0) {
-		If(PMOD) { Return(APS4) }	/* APIC mode */
-		Return (PS4)			/* PIC Mode */
-	}
-}
-
-/* 00:01.6 - GPP Bridge 5 */
-Device(PBR5) {
-	Name(_ADR, 0x00010006)
-	Method(_PRT, 0) {
-		If(PMOD) { Return(APS5) }	/* APIC mode */
-		Return (PS5)			/* PIC Mode */
-	}
-}
-
-/* 00:01.7 - GPP Bridge 6 */
-Device(PBR6) {
-	Name(_ADR, 0x00010007)
-	Method(_PRT, 0) {
-		If(PMOD) { Return(APS6) }	/* APIC mode */
-		Return (PS6)			/* PIC Mode */
-	}
-}
-
-/* 00:08.1 - GPP Internal bridge to bus A */
-Device(PBR7) {
-	Name(_ADR, 0x00080001)
-	Method(_PRT, 0) {
-		If(PMOD) { Return(APS7) }	/* APIC mode */
-		Return (PS7)			/* PIC Mode */
-	}
-}
-
-/* 00:08.2 - GPP Internal bridge to bus B */
-Device(PBR8) {
-	Name(_ADR, 0x00080002)
-	Method(_PRT, 0) {
-		If(PMOD) { Return(APS8) }	/* APIC mode */
-		Return (PS8)			/* PIC Mode */
-	}
 }
 
 Device(AZHD) {	/* 0:9.2 - HD Audio */
