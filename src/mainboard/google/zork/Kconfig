@@ -23,8 +23,6 @@ config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select SOC_AMD_PICASSO
 	select VGA_BIOS
-	select ALWAYS_LOAD_OPROM
-	select ALWAYS_RUN_OPROM
 	select BOARD_ROMSIZE_KB_16384
 	select DRIVERS_I2C_GENERIC
 	select DRIVERS_I2C_HID
@@ -38,7 +36,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select GOOGLE_SMBIOS_MAINBOARD_VERSION
 	select MAINBOARD_HAS_CHROMEOS
 	select PICASSO_UART
-	#select HAVE_ACPI_RESUME
 	select MAINBOARD_HAS_I2C_TPM_CR50
 	select MAINBOARD_HAS_TPM2
 	select PCIEXP_ASPM
@@ -49,7 +46,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select SYSTEM_TYPE_LAPTOP
 	select DRIVERS_GENERIC_MAX98357A
 	select HAVE_ACPI_RESUME
-	select GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC
 
 source "src/mainboard/google/zork/variants/*/Kconfig"
 
@@ -102,9 +98,23 @@ config ONBOARD_VGA_IS_PRIMARY
 	bool
 	default y
 
+config VGA_ROM_RUN
+	select HAVE_VGA_TEXT_FRAMEBUFFER
+	select ALWAYS_LOAD_OPROM
+	select ALWAYS_RUN_OPROM
+	help
+	  Execute VGA Option ROMs in coreboot if found. This can be used
+	  to enable PCI/AGP/PCI-E video cards when not using a SeaBIOS
+	  payload.
+
+	  When using a SeaBIOS payload it runs all option ROMs with much
+	  more complete BIOS interrupt services available than coreboot,
+	  which some option ROMs require in order to function correctly.
+
 config VBOOT
 	select EC_GOOGLE_CHROMEEC_SWITCHES
 	select VBOOT_LID_SWITCH
+	select GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC
 
 config VBOOT_VBNV_OFFSET
 	hex
