@@ -30,6 +30,7 @@
 #ifndef _BL_SYSCALL_PUBLIC_H_
 #define _BL_SYSCALL_PUBLIC_H_
 
+#include <stdint.h>
 
 #define SVC_EXIT			0x00
 #define SVC_MAP_USER_STACK		0x01
@@ -44,7 +45,9 @@
 #define SVC_MAP_SPIROM_DEVICE		0x38
 #define SVC_UNMAP_SPIROM_DEVICE		0x39
 #define SVC_UPDATE_PSP_BIOS_DIR		0x40
-
+#define SVC_COPY_DATA_FROM_UAPP		0x41
+#define SVC_READ_TIMER_VAL		0x42
+#define SVC_RESET_SYSTEM		0x43
 
 typedef enum _PSP_BOOT_MODE
 {
@@ -99,85 +102,101 @@ typedef enum FCH_I2C_CONTROLLER_ID_E
 	FCH_I2C_CONTROLLER_ID_MAX,
 } FCH_I2C_CONTROLLER_ID;
 
+typedef enum UAPP_COPYBUF
+{
+	UAPP_COPYBUF_CHROME_WORKBUF = 0x0,
+	UAPP_COPYBUF_MAX = 0x1,
+} UAPP_COPYBUF;
+
 typedef struct SPIROM_INFO
 {
-	unsigned int SpiBiosSysHubBase;
-	unsigned int SpiBiosSmnBase;
-	unsigned int SpiBiosSize;
+	void *SpiBiosSysHubBase;
+	void *SpiBiosSmnBase;
+	uint32_t SpiBiosSize;
 } SPIROM_INFO;
 
 typedef struct SYSHUB_RW_PARMS_EX_E
 {
-	unsigned int SyshubAddressLo;
-	unsigned int SyshubAddressHi;
-	unsigned int *pValue;
-	unsigned int Size;
+	uint32_t SyshubAddressLo;
+	uint32_t SyshubAddressHi;
+	uint32_t *pValue;
+	uint32_t Size;
 	SYSHUB_TARGET_TYPE TargetType;
 } SYSHUB_RW_PARMS_EX;
 
+typedef enum PSP_TIMER_TYPE {
+	PSP_TIMER_TYPE_CHRONO     = 0,
+	PSP_TIMER_TYPE_RTC        = 1,
+	PSP_TIMER_TYPE_MAX        = 2,
+} PSP_TIMER_TYPE;
+
+typedef enum RESET_TYPE
+{
+	RESET_TYPE_COLD    = 0,
+	RESET_TYPE_WARM    = 1,
+	RESET_TYPE_MAX     = 2,
+} RESET_TYPE;
 
 /* Exit to the main Boot Loader. This does not return back to user application.
  *
  * Parameters:
- *     Status  -   either Ok or error code defined by AGESA
+ *     status  -   either Ok or error code defined by AGESA
  */
-__svc(SVC_EXIT) void Svc_Exit(unsigned int Status);
+void svc_exit(uint32_t status);
 
 
 /* Maps buffer for stack usage.
  *
  * Parameters:
- *     StartAddr   -   start address of the stack buffer
- *     EndAddr     -   end of the stack buffer
- *     pStackVa    -   [out] mapped stack Virtual Address
+ *     start_addr   -   start address of the stack buffer
+ *     end_addr     -   end of the stack buffer
+ *     stack_va     -   [out] mapped stack Virtual Address
  *
  * Return value: BL_OK or error code
  */
-__svc(SVC_MAP_USER_STACK) unsigned int Svc_MapUserStack(unsigned int StartAddr,
-		unsigned int EndAddr, unsigned int *pStackVa);
+uint32_t svc_map_user_stack(void *start_addr,
+		void *end_addr, void *stack_va);
 
 
 /* Print debug message into serial console.
  *
  * Parameters:
- *     pString     -   null-terminated string
+ *     string     -   null-terminated string
  */
-__svc(SVC_DEBUG_PRINT) void Svc_DebugPrint(char *pString);
+void svc_debug_print(const char *string);
 
 
 /* Print 4 DWORD values in hex to serial console
  *
  * Parameters:
- *     Dword0...Dword3 - 32-bit DWORD to print
+ *     dword0...dword3 - 32-bit DWORD to print
  */
-__svc(SVC_DEBUG_PRINT_EX) void Svc_DebugPrintEx(unsigned int Dword0,
-		unsigned int Dword1, unsigned int Dword2, unsigned int Dword3);
-
+void svc_debug_print_ex(uint32_t dword0,
+		uint32_t dword1, uint32_t dword2, uint32_t dword3);
 
 /* Waits in a blocking call for multiples of 10ns (100MHz timer) before returning
  *
  * Parameters:
- *     Multiple    - The number of multiples of 10ns to wait
+ *     multiple    - The number of multiples of 10ns to wait
  *
  * Return value: BL_OK, or BL_ERR_TIMER_PARAM_OVERFLOW
  */
-__svc(SVC_WAIT_10NS_MULTIPLE) unsigned int Svc_Wait10nsMultiple(unsigned int Multiple);
+uint32_t svc_wait_10ns_multiple(uint32_t multiple);
 
 
 /* Description     - Returns the current boot mode from the type PSP_BOOT_MODE found in
  *                   bl_public.h.
  *
- * Inputs          - pBootMode - Output parameter passed in R0
+ * Inputs          - boot_mode - Output parameter passed in R0
  *
- * Outputs         - The boot mode in pBootMode.
+ * Outputs         - The boot mode in boot_mode.
  *                   See Return Values.
  *
  * Return Values   - BL_OK
  *                   BL_ERR_NULL_PTR
  *                   Other BL_ERRORs lofted up from called functions
  */
-__svc(SVC_GET_BOOT_MODE) unsigned int Svc_GetBootMode(unsigned int *pBootMode);
-
+uint32_t svc_get_boot_mode(uint32_t *boot_mode);
 
 /* Add delay in micro seconds
  *
@@ -186,44 +205,40 @@ __svc(SVC_GET_BOOT_MODE) unsigned int Svc_GetBootMode(unsigned int *pBootMode);
  *
  * Return value: NONE
  */
-__svc(SVC_DELAY_IN_MICRO_SECONDS) void Svc_DelayInMicroSeconds(unsigned int delay);
-
+void svc_delay_in_usec(uint32_t delay);
 
 /* Get the SPI-ROM information
  *
  * Parameters:
- *     SpiRomInfo  - SPI-ROM information
+ *     spi_rom_iInfo  - SPI-ROM information
  *
  * Return value: BL_OK or error code
  */
-__svc(SVC_GET_SPI_INFO) unsigned int Svc_GetSpiRomInfo(SPIROM_INFO *pSpiRomInfo);
-
+uint32_t svc_get_spi_rom_info(SPIROM_INFO *spi_rom_info);
 
 /* Map the FCH IO device register space (SPI/I2C/GPIO/eSPI/etc...)
  *
  * Parameters:
- *     IODevice          - ID for respective FCH IO controller register space to be mapped
- *     Agr1              - Based on IODevice ID, interpretation of this argument changes.
- *     Arg2              - Based on IODevice ID, interpretation of this argument changes.
- *     ppIODeviceAddrAxi - AXI address, for respective FCH IO device register space
+ *     io_device         - ID for respective FCH IO controller register space to be mapped
+ *     arg1              - Based on IODevice ID, interpretation of this argument changes.
+ *     arg2              - Based on IODevice ID, interpretation of this argument changes.
+ *     io_device_axi_addr    - AXI address for respective FCH IO device register space
  *
  * Return value: BL_OK or error code
  */
-__svc(SVC_MAP_FCH_IO_DEVICE) unsigned int Svc_MapFchIODevice(FCH_IO_DEVICE IODevice,
-		unsigned int Arg1, unsigned int Arg2, void **ppIODeviceAddrAxi);
-
+uint32_t svc_map_fch_dev(FCH_IO_DEVICE io_device,
+		uint32_t arg1, uint32_t arg2, void **io_device_axi_addr);
 
 /* Unmap the FCH IO device register space mapped earlier using Svc_MapFchIODevice()
  *
  * Parameters:
- *     IODevice        - ID for respective FCH IO controller register space to be unmapped
- *     IODeviceAddrAxi - AXI address, for respective FCH IO device register space
+ *     io_device        - ID for respective FCH IO controller register space to be unmapped
+ *     io_device_addr   - AXI address for respective FCH IO device register space
  *
  * Return value: BL_OK or error code
  */
-__svc(SVC_UNMAP_FCH_IO_DEVICE) unsigned int Svc_UnMapFchIODevice(FCH_IO_DEVICE IODevice,
-		void *IODeviceAddrAxi);
-
+uint32_t svc_unmap_fch_dev(FCH_IO_DEVICE io_device,
+		void *io_device_axi_addr);
 
 /* Map the SPIROM FLASH device address space
  *
@@ -234,9 +249,8 @@ __svc(SVC_UNMAP_FCH_IO_DEVICE) unsigned int Svc_UnMapFchIODevice(FCH_IO_DEVICE I
  *
  * Return value: BL_OK or error code
  */
-__svc(SVC_MAP_SPIROM_DEVICE) unsigned int Svc_MapSpiRomDevice(unsigned int SpiRomAddr,
-		unsigned int size, void **ppSpiRomAddrAxi);
-
+uint32_t svc_map_spi_rom(void *spi_rom_addr,
+		uint32_t size, void **spi_rom_axi_addr);
 
 /* Unmap the SPIROM FLASH device address space mapped earlier using Svc_MapSpiRomDevice()
  *
@@ -245,25 +259,56 @@ __svc(SVC_MAP_SPIROM_DEVICE) unsigned int Svc_MapSpiRomDevice(unsigned int SpiRo
  *
  * Return value: BL_OK or error code
  */
-__svc(SVC_UNMAP_SPIROM_DEVICE) unsigned int Svc_UnMapSpiRomDevice(void *pSpiRomAddrAxi);
-
+uint32_t svc_unmap_spi_rom(void *spi_rom_addr);
 
 /* Updates the offset at which PSP or BIOS Directory can be found in the
  * SPI flash
  *
  * Parameters:
- *     pPspDirOffset  - [in/out] Offset at which PSP Directory can be
+ *     psp_dir_offset - [in/out] Offset at which PSP Directory can be
  *                      found in the SPI Flash. Same pointer is used
- *                      to return the offset in case of GET opertaion
- *     pBiosDirOffset - [in/out] Offset at which BIOS Directory can be
- *                      found in the SPI Flash. Same pointer is used
- *                      to return the offset in case of GET opertaion
- *     Operation      - [in] Specifies whether this call is used for
+ *                      to return the offset in case of GET operation
+ *     bios_dir_offset - [in/out] Offset at which BIOS Directory can be
+ *                       found in the SPI Flash. Same pointer is used
+ *                       to return the offset in case of GET operation
+ *     operation      - [in] Specifies whether this call is used for
  *                      getting or setting the offset.
  *
  * Return value: BL_OK or error code
  */
-__svc(SVC_UPDATE_PSP_BIOS_DIR) unsigned int Svc_UpdatePspBiosDir(unsigned int *pPspDirOffset,
-		unsigned int *pBiosDirOffset, DIR_OFFSET_OPERATION Operation);
+uint32_t svc_update_psp_bios_dir(uint32_t *psp_dir_offset,
+		uint32_t *bios_dir_offset, DIR_OFFSET_OPERATION operation);
+
+/* Copies the data that is shared by verstage to the PSP BL owned memory
+ *
+ * Parameters:
+ *     type    - enum
+ *     address - Address in UAPP controlled/owned memory
+ *     size    - Total size of memory to copy (max 16Kbytes)
+ */
+uint32_t svc_save_uapp_data(UAPP_COPYBUF type, void *address,
+		uint32_t size);
+
+/*-----------------------------------------------------------------------------
+ *    Read timer raw (currently CHRONO and RTC) value
+ *
+ *    Parameters:
+ *		Type		- Type of timer UAPP would like to read from
+ *				(currently CHRONO and RTC)
+ *		counter_value	- [out] return the raw counter value read from
+ *				RTC or CHRONO_LO/HI counter register
+ */
+void svc_read_timer_val( PSP_TIMER_TYPE type, uint64_t *counter_value );
+
+/*-----------------------------------------------------------------------------
+ *    Reset the system
+ *
+ *   Parameters:
+ *      reset_type -   Cold or Warm reset
+ */
+void svc_reset_system(RESET_TYPE reset_type);
+
+/* C entry point for the Bootloader Userspace Application */
+void Main(void);
 
 #endif /* _BL_SYSCALL__PUBLIC_H_ */
