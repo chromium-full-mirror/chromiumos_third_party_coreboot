@@ -203,7 +203,7 @@ endif
 # type = 0x60
 PSP_APCB_FILES=$(foreach f, $(APCB_SOURCES), \
 	$(or $(call strip_quotes, $(CONFIG_APCB_BLOB_DIR)), \
-	$(top)/3rdparty/blobs/mainboard/$(MAINBOARDDIR))/APCB_$(f).bin)
+	$(top)/3rdparty/blobs)/mainboard/$(MAINBOARDDIR)/APCB_$(f).bin)
 
 # type = 0x61
 PSP_APOB_BASE=$(CONFIG_PSP_APOB_DRAM_ADDRESS)

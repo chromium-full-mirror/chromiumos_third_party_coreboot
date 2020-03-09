@@ -45,7 +45,7 @@ declare -a CLEANUP
 
 function finish {
 	local dir
-	for dir in "${CLEANUP[@]}"; do
+	for dir in "${CLEANUP[@]+"${CLEANUP[@]}"}"; do
 		if [[ -e "$dir" ]]; then
 			rm -r "$dir"
 		fi
@@ -70,7 +70,9 @@ function replace-paths() {
 			replace+=(-e "s|^${key}=.*|${key}=\"${full_path}\"|")
 		fi
 	done <<<"$(sed -En -e 's/^([A-Z0-9_]+)="(3rdparty\/blobs\/.*)"$/\1 \2/p' "$full_config")"
-	sed -iE "${replace[@]}" "$full_config"
+	if [[ "${replace[@]+"${#replace[@]}"}" -gt 0 ]]; then
+		sed -iE "${replace[@]}" "$full_config"
+	fi
 }
 
 # $1: cache_dir
@@ -83,6 +85,7 @@ function build-coreboot-rom() {
 	{
 		echo CONFIG_CONSOLE_SERIAL=y
 		echo CONFIG_FATAL_ASSERTS=y
+		echo CONFIG_APCB_BLOB_DIR=\""$FIRMWARE_ROOT/coreboot-private/3rdparty/blobs"\"
 	} >> "$work_dir/.config"
 	make \
 		obj="$work_dir" \

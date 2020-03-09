@@ -431,9 +431,11 @@ config PSP_WHITELIST_FILE
 	default "3rdparty/blobs/soc/amd/picasso/PSP/wtl-rvn.sbin"
 
 config APCB_BLOB_DIR
-	string "Directory containing APCB blobs"
+	string "Directory containing mainboard APCB blobs"
 	help
-	  APCB blob files in directory should be named APCB_*.bin.
+	  Specifies the directory that contains the mainboard APCB blobs.
+
+	  i.e., $(APCB_BLOB_DIR)/$(MAINBOARDDIR)/APCB_*.bin.
 
 	  If unsure, leave empty.
 
