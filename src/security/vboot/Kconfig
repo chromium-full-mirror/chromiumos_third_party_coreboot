@@ -112,8 +112,6 @@ config VBOOT_STARTS_BEFORE_BOOTBLOCK
 	bool
 	default n
 	depends on HAVE_PRE_BOOTBLOCK_VBOOT_SUPPORT
-	depends on !VBOOT_STARTS_IN_BOOTBLOCK
-	depends on !VBOOT_STARTS_IN_ROMSTAGE
 	help
 	  Firmware verification happens before the main processor is brought
 	  online.

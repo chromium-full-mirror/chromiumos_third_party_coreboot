@@ -65,7 +65,6 @@ config CPU_SPECIFIC_OPTIONS
 	select NO_STAGE_CACHE
 	select NO_FMAP_CACHE # Picasso doesn't have Cache as RAM
 	select HAVE_PRE_BOOTBLOCK_VBOOT_SUPPORT
-	select VBOOT_STARTS_IN_ROMSTAGE
 
 config HAVE_BOOTBLOCK
 	bool
@@ -438,6 +437,7 @@ endmenu
 
 config VBOOT_STARTS_IN_ROMSTAGE
 	bool "Verstage runs on X86"
+	default y if !VBOOT_STARTS_BEFORE_BOOTBLOCK
 	depends on VBOOT
 	select VBOOT_SAVE_RECOVERY_REASON_ON_REBOOT
 	select VBOOT_VBNV_CMOS
@@ -449,7 +449,7 @@ config VBOOT_STARTS_IN_ROMSTAGE
 
 config VBOOT_STARTS_BEFORE_BOOTBLOCK
 	bool "Verstage runs on PSP"
-	depends on VBOOT && !VBOOT_STARTS_IN_ROMSTAGE
+	depends on VBOOT
 	select VBOOT_SEPARATE_VERSTAGE
 	select ARCH_VERSTAGE_ARMV7
 	help
