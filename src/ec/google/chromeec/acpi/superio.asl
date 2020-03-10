@@ -172,7 +172,6 @@ Device (PS2K)		// Keyboard
 Device (PS2M)		// Mouse
 {
 	Name (_UID, 0)
-	Name (_ADR, 0)
 	Name (_HID, "GOOG0015")
 	Name (_CID, Package() { EISAID("PNP0F13") } )
 
