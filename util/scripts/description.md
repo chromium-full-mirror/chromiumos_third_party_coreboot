@@ -12,6 +12,7 @@ __scripts__
                                        some false positives, but it
                                        serves as a starting point
                                        `Shell`
+  * _gen_spd.sh_ - Injects specified fields into an SPD `Bash`
   * _gerrit-rebase_ - Applies all commits that from-branch has over
                       to-branch, based on a common ancestor and gerrit
                       meta-data `Bash`
