@@ -28,18 +28,18 @@ chip soc/amd/picasso
 	register "acp_pin_cfg" = "I2S_PINS_I2S_TDM"
 
         # Start : OPN Performance Configuration
-        # See devhub #55593 Chapter 3.2 for documentation
+        # See devhub #56670 Chapter 5 for documentation
         # For the below fields, 0 indicates use SOC default
 
         # System config index
-	register "system_config" = "3"
+	register "system_config" = "2"
 
 	# Set STAPM confiuration. All of these fields must be set >0 to take affect
-	register "slow_ppt_limit" = "25000" #mw
-	register "fast_ppt_limit" = "30000" #mw
+	register "slow_ppt_limit" = "7800" #mw
+	register "fast_ppt_limit" = "12000" #mw
 	register "slow_ppt_time_constant" = "5" #second
 	register "stapm_time_constant" = "200" #second
-	register "sustained_power_limit" = "25000" #mw
+	register "sustained_power_limit" = "6000" #mw
 
         # PROCHOT_L de-assertion Ramp Time
 	register "prochot_l_deassertion_ramp_time" = "20" #mS
