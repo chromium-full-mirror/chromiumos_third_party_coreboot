@@ -15,17 +15,46 @@
 
 #include <device/mmio.h>
 #include <cpu/x86/msr.h>
+#include <cpu/amd/msr.h>
 #include <cbfs.h>
 #include <region_file.h>
 #include <timer.h>
 #include <device/pci_def.h>
 #include <bootstate.h>
+#include <rules.h>
 #include <console/console.h>
 #include <device/pci_ops.h>
 #include <amdblocks/psp.h>
 #include "psp_def.h"
 #include <soc/iomap.h>
 #include <soc/northbridge.h>
+
+struct _c2p_buffer {
+	u8 buffer[C2P_BUFFER_MAXSIZE];
+} __attribute__((aligned(32)));
+
+struct _p2c_buffer {
+	u8 buffer[P2C_BUFFER_MAXSIZE];
+} __attribute__((aligned(32)));
+
+static struct _p2c_buffer p2c_buffer;
+static struct _c2p_buffer c2p_buffer;
+
+static uint32_t smm_flag; /* Non-zero for SMM, clear when not */
+
+static void set_smm_flag(void)
+{
+	if (!(ENV_SMM))
+		return;
+	smm_flag = 1;
+}
+
+static void clear_smm_flag(void)
+{
+	if (!(ENV_SMM))
+		return;
+	smm_flag = 0;
+}
 
 static const char *psp_status_nobase = "error: PSP BAR3 not assigned";
 static const char *psp_status_halted = "error: PSP in halted state";
@@ -123,13 +152,18 @@ static int do_command_v1(u32 command, void *buffer)
 	if (v1_wait_command(mbox))
 		return -PSPSTS_CMD_TIMEOUT;
 
-	/* set address of command-response buffer and write command register */
+	/* set smm flag, address of command-response buffer and write command */
+	set_smm_flag();
 	v1_wr_mbox_cmd_resp(mbox, buffer);
 	v1_wr_mbox_cmd(mbox, command);
 
 	/* PSP clears command register when complete */
-	if (v1_wait_command(mbox))
+	if (v1_wait_command(mbox)) {
+		clear_smm_flag();
 		return -PSPSTS_CMD_TIMEOUT;
+	}
+
+	clear_smm_flag();
 
 	/* check delivery status */
 	if (v1_rd_mbox_sts(mbox) & (PSPV1_STATUS_ERROR | PSPV1_STATUS_TERMINATED))
@@ -216,15 +250,20 @@ static int do_command_v2(u32 command, void *buffer)
 	if (v2_wait_command(mbox, true))
 		return -PSPSTS_CMD_TIMEOUT;
 
-	/* set address of command-response buffer and write command register */
+	/* set smm flag, address of command-response buffer and write command */
+	set_smm_flag();
 	v2_wr_mbox_cmd_resp(mbox, buffer);
 	v2_wr_mbox_cmd(mbox, command);
 
 	/* PSP clears command register when complete.  All commands except
 	 * SxInfo set the Ready bit. */
 	if (v2_wait_command(mbox,
-			command == MBOX_BIOS_CMD_SX_INFO ? false : true))
+			command == MBOX_BIOS_CMD_SX_INFO ? false : true)) {
+		clear_smm_flag();
 		return -PSPSTS_CMD_TIMEOUT;
+	}
+
+	clear_smm_flag();
 
 	/* check delivery status */
 	if (v2_rd_mbox_sts(mbox))
@@ -304,6 +343,48 @@ static void psp_notify_boot_done(void *unused)
 
 	/* buffer's status shouldn't change but report it if it does */
 	print_cmd_status(cmd_status, &buffer);
+}
+
+int psp_notify_smm(void)
+{
+	msr_t msr;
+	int cmd_status;
+	struct mbox_cmd_smm_info_buffer buffer = {
+		.header = {
+			.size = sizeof(buffer)
+		}
+	};
+
+	if (!(ENV_SMM)) {
+		printk (BIOS_ERR, "PSP: Error, cannot send SMM info from outside SMM\n");
+		return PSPSTS_UNSUPPORTED;
+	}
+
+	msr = rdmsr(SMM_ADDR_MSR);
+	buffer.req.smm_base = ((uint64_t)msr.hi << 32) | msr.lo;
+	msr = rdmsr(SMM_MASK_MSR);
+	msr.lo &= 0xfffff000;
+	buffer.req.smm_mask = ((uint64_t)msr.hi << 32) | msr.lo;
+
+	soc_fill_smm_trig_info(&buffer.req.smm_trig_info);
+#if (CONFIG(SOC_AMD_COMMON_BLOCK_PSP_GEN2))
+	soc_fill_smm_reg_info(&buffer.req.smm_reg_info);
+#endif
+
+	buffer.req.psp_smm_data_region = (uintptr_t)p2c_buffer.buffer;
+	buffer.req.psp_smm_data_length = sizeof(p2c_buffer);
+
+	buffer.req.psp_mbox_smm_buffer_address = (uintptr_t)c2p_buffer.buffer;
+	buffer.req.psp_mbox_smm_flag_address = (uintptr_t)&smm_flag;
+
+	printk(BIOS_DEBUG, "PSP: Notify SMM info... ");
+
+	cmd_status = send_psp_command(MBOX_BIOS_CMD_SMM_INFO, &buffer);
+
+	/* buffer's status shouldn't change but report it if it does */
+	print_cmd_status(cmd_status, (struct mbox_default_buffer *)&buffer);
+
+	return cmd_status;
 }
 
 /* Notify PSP the system is going to a sleep state. */

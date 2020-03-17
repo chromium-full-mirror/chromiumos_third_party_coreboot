@@ -27,6 +27,7 @@
 #include <soc/southbridge.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/acpi.h>
+#include <amdblocks/psp.h>
 #include <elog.h>
 
 /* bits in smm_io_trap   */
