@@ -88,6 +88,7 @@
 #define SMITYPE_NB_GPP_HOT_PLUG		30
 /* 31 Reserved */
 #define SMITYPE_WAKE_L2			32
+#define SMITYPE_PSP			33
 /* 33 - 38 Reserved */
 #define SMITYPE_AZPME			39
 #define SMITYPE_USB_PD_I2C4		40

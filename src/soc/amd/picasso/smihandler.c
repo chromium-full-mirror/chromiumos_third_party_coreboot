@@ -104,6 +104,9 @@ static void sb_apmc_smi_handler(void)
 		if (CONFIG(ELOG_GSMI))
 			southbridge_smi_gsmi();
 		break;
+	case APM_CNT_SMMINFO:
+		psp_notify_smm();
+		break;
 	}
 
 	mainboard_smi_apmc(cmd);

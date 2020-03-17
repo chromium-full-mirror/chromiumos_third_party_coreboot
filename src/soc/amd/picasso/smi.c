@@ -18,6 +18,7 @@
  * Utilities for SMM setup
  */
 
+#include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <amdblocks/acpimmio.h>
@@ -36,4 +37,6 @@ void enable_smi_generation(void)
 	reg &= ~SMITRG0_SMIENB;	/* Enable SMI generation */
 	reg |= SMITRG0_EOS;	/* Set EOS bit */
 	smi_write32(SMI_REG_SMITRIG0, reg);
+
+	outb(APM_CNT_SMMINFO, APM_CNT);
 }
