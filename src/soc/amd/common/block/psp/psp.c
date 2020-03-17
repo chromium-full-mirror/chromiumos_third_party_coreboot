@@ -391,11 +391,11 @@ int psp_notify_smm(void)
 void psp_notify_sx_info(u8 sleep_type)
 {
 	int cmd_status;
-	struct mbox_cmd_sx_info_buffer buffer = {
-		.header = {
-			.size = sizeof(buffer)
-		}
-	};
+	struct mbox_cmd_sx_info_buffer *buffer;
+
+	buffer = (struct mbox_cmd_sx_info_buffer *)c2p_buffer.buffer;
+	memset(buffer, 0, sizeof(*buffer));
+	buffer->header.size = sizeof(*buffer);
 
 	if (sleep_type > 7) {
 		printk(BIOS_ERR, "PSP: Bug: sleep type 0x%x requested\n", sleep_type);
@@ -404,11 +404,11 @@ void psp_notify_sx_info(u8 sleep_type)
 
 	printk(BIOS_DEBUG, "PSP: Prepare to enter sleep state %d\n ", sleep_type);
 
-	buffer.sleep_type = sleep_type;
-	cmd_status = send_psp_command(MBOX_BIOS_CMD_SX_INFO, &buffer);
+	buffer->sleep_type = sleep_type;
+	cmd_status = send_psp_command(MBOX_BIOS_CMD_SX_INFO, buffer);
 
 	/* buffer's status shouldn't change but report it if it does */
-	print_cmd_status(cmd_status, (struct mbox_default_buffer *)&buffer);
+	print_cmd_status(cmd_status, (struct mbox_default_buffer *)buffer);
 }
 
 /*
