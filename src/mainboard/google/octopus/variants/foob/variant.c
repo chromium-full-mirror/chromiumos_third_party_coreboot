@@ -17,6 +17,7 @@
 #include <soc/pci_devs.h>
 #include <string.h>
 #include <ec/google/chromeec/ec.h>
+#include <sar.h>
 
 #define SKU_UNKNOWN     0xFFFFFFFF
 
@@ -34,4 +35,16 @@ void variant_update_devtree(struct device *dev)
 	google_chromeec_cbi_get_sku_id(&sku_id);
 	if (no_touchscreen_sku(sku_id))
 		touchscreen_i2c_host->enabled = 0;
+}
+
+const char *get_wifi_sar_cbfs_filename(void)
+{
+	const char *filename = NULL;
+	uint32_t sku_id = SKU_UNKNOWN;
+
+	google_chromeec_cbi_get_sku_id(&sku_id);
+	if (sku_id == 9)
+		filename = "wifi_sar-foob360.hex";
+
+	return filename;
 }
