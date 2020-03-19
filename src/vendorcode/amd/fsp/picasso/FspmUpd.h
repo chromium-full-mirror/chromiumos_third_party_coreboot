@@ -30,9 +30,9 @@ typedef struct {
 	/** Offset 0x0070**/	uint32_t                    telemetry_vddcr_soc_slope;
 	/** Offset 0x0074**/	uint32_t                    telemetry_vddcr_soc_offset;
 	/** Offset 0x0078**/	uint8_t                     aa_mode_en;
-	/** Offset 0x0079**/	uint8_t                     reserved2;
-	/** Offset 0x007A**/	uint8_t                     reserved3;
-	/** Offset 0x007B**/	uint8_t                     reserved4;
+	/** Offset 0x0079**/	uint8_t                     unused2;
+	/** Offset 0x007A**/	uint8_t                     unused3;
+	/** Offset 0x007B**/	uint8_t                     unused4;
 	/** Offset 0x007C**/	uint32_t                    fast_ppt_limit;
 	/** Offset 0x0080**/	uint32_t                    slow_ppt_limit;
 	/** Offset 0x0084**/	uint32_t                    slow_ppt_time_constant;
@@ -55,7 +55,13 @@ typedef struct {
 	/** Offset 0x00C2**/	uint8_t                     core_dldo_bypass;
 	/** Offset 0x00C3**/	uint8_t                     min_soc_vid_offset;
 	/** Offset 0x00C4**/	uint8_t                     aclk_dpm0_freq_400MHz;
-	/** Offset 0x00C5**/	uint8_t                     UnusedUpdSpace0[59];
+	/** Offset 0x00C5**/	uint8_t                     unused5;
+	/** Offset 0x00C6**/	uint8_t                     unused6;
+	/** Offset 0x00C7**/	uint8_t                     unused7;
+	/** Offset 0x00C8**/	uint32_t                    tseg_size;
+	/** Offset 0x00CC**/	uint8_t                     pspp_policy;
+	/** Offset 0x00CD**/	uint8_t                     audio_soundwire;
+	/** Offset 0x00CE**/	uint8_t                     UnusedUpdSpace0[50];
 	/** Offset 0x0100**/	uint16_t                    Reserved100;
 	/** Offset 0x0102**/	uint16_t                    UpdTerminator;
 } FSP_M_CONFIG;
