@@ -15,7 +15,7 @@
 #include <cpu/x86/msr.h>
 #include <amdblocks/psp.h>
 
-#define PSP_MAILBOX_OFFSET		0x70
+#define PSP_MAILBOX_OFFSET		0x10570
 #define MSR_CU_CBBCFG			0xc00110a2
 
 struct psp_mbox *soc_get_mbox_address(void)
