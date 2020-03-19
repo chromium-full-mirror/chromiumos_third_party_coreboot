@@ -1,8 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright 2020 The coreboot project Authors.
- *
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
@@ -178,18 +176,13 @@ static void add_usb_port_references(struct acpi_dp *dsd, int port_number)
 	}
 }
 
-static void fill_ssdt_typec_device(struct device *dev)
+static void fill_ssdt_typec_device(int num_ports)
 {
 	struct usb_pd_port_caps port_caps;
 	char con_name[] = "CONx";
 	struct acpi_dp *dsd;
-	int num_ports;
 	int rv;
 	int i;
-
-	rv = google_chromeec_get_num_pd_ports(&num_ports);
-	if (rv)
-		return;
 
 	acpigen_write_device(GOOGLE_CHROMEEC_USBC_DEVICE_NAME);
 	acpigen_write_name_string("_HID", GOOGLE_CHROMEEC_USBC_DEVICE_HID);
@@ -221,8 +214,12 @@ static void fill_ssdt_typec_device(struct device *dev)
 
 void google_chromeec_fill_ssdt_generator(struct device *dev)
 {
+	int num_ports;
+	if (google_chromeec_get_num_pd_ports(&num_ports))
+		return;
+
 	/* Reference the existing device's scope */
 	acpigen_write_scope(acpi_device_path(dev));
-	fill_ssdt_typec_device(dev);
+	fill_ssdt_typec_device(num_ports);
 	acpigen_pop_len(); /* Scope */
 }
