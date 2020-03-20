@@ -244,8 +244,11 @@ static void vbe_get_ctrl_info(vbe_info_block *info)
 	X86_EAX = realmode_interrupt(0x10, VESA_GET_INFO, 0x0000, 0x0000,
 			0x0000, buffer_seg, buffer_adr);
 	/* If the VBE function completed successfully, 0x0 is returned in AH */
-	if (X86_AH)
-		die("\nError: In %s function\n", __func__);
+	if (X86_AH) {
+		printk(BIOS_ERR, "\nError: In %s function\n", __func__);
+		return;
+	}
+
 	memcpy(info, buffer, sizeof(vbe_info_block));
 }
 
@@ -322,8 +325,11 @@ static u8 vbe_get_mode_info(vbe_mode_info_t * mi)
 	u16 buffer_adr = ((unsigned long)buffer) & 0xffff;
 	X86_EAX = realmode_interrupt(0x10, VESA_GET_MODE_INFO, 0x0000,
 			mi->video_mode, 0x0000, buffer_seg, buffer_adr);
-	if (vbe_check_for_failure(X86_AH))
-		die("\nError: In %s function\n", __func__);
+	if (vbe_check_for_failure(X86_AH)) {
+		printk(BIOS_ERR, "\nError: In %s function\n", __func__);
+		mi->video_mode = 0;
+		return 0xff;
+	}
 	memcpy(mi->mode_info_block, buffer, sizeof(mi->mode_info_block));
 	mode_info_valid = 1;
 	return 0;
@@ -338,8 +344,11 @@ static u8 vbe_set_mode(vbe_mode_info_t * mi)
 	mi->video_mode &= ~(1 << 15);
 	X86_EAX = realmode_interrupt(0x10, VESA_SET_MODE, mi->video_mode,
 			0x0000, 0x0000, 0x0000, 0x0000);
-	if (vbe_check_for_failure(X86_AH))
-		die("\nError: In %s function\n", __func__);
+	if (vbe_check_for_failure(X86_AH)) {
+		printk(BIOS_ERR,"\nError: In %s function\n", __func__);
+		mi->video_mode = 0;
+		return 0xff;
+	}
 	return 0;
 }
 
@@ -349,7 +358,11 @@ static u8 vbe_set_mode(vbe_mode_info_t * mi)
 void vbe_set_graphics(void)
 {
 	mode_info.video_mode = (1 << 14) | CONFIG_FRAMEBUFFER_VESA_MODE;
-	vbe_get_mode_info(&mode_info);
+	if (vbe_get_mode_info(&mode_info)) {
+		printk(BIOS_ERR, "VBE: Requested mode not supported./n");
+		return;
+	}
+
 	unsigned char *framebuffer =
 		(unsigned char *)mode_info.vesa.phys_base_ptr;
 	printk(BIOS_DEBUG, "VBE: resolution:  %dx%d@%d\n",
@@ -373,7 +386,7 @@ void vbe_textmode_console(void)
 	X86_EAX = realmode_interrupt(0x10, 0x0003, 0x0000, 0x0000,
 				0x0000, 0x0000, 0x0000);
 	if (vbe_check_for_failure(X86_AH))
-		die("\nError: In %s function\n", __func__);
+		printk(BIOS_ERR, "\nError: In %s function\n", __func__);
 }
 
 int fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
