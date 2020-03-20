@@ -32,7 +32,9 @@ SPD_SOURCES += empty				# 0b1111
 
 APCB_SOURCES =  samsung-K4AAG165WA-BCWE_x2	# 0b0000
 APCB_SOURCES += empty				# 0b0001
-APCB_SOURCES += micron-MT40A512M16TB-062E-J_x2	# 0b0010
+# b/149596178: We can't use dual channel channel until the PSP supports missing
+# channels.
+APCB_SOURCES += micron-MT40A512M16TB-062E-J_x1	# 0b0010
 APCB_SOURCES += micron-MT40A1G16KD-062E-E_x2	# 0b0011
 APCB_SOURCES += samsung-K4A8G165WC-BCWE_x1	# 0b0100
 APCB_SOURCES += hynix-H5AN8G6NDJR-XNC_x1	# 0b0101
