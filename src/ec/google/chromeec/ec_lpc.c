@@ -463,7 +463,7 @@ static struct pnp_info pnp_dev_info[] = {
 	{ NULL, 0, 0, 0, }
 };
 
-void google_ec_enable_extra(struct device *dev)
+static void enable_dev(struct device *dev)
 {
 	pnp_enable_devices(dev, &ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
@@ -497,3 +497,8 @@ u8 google_chromeec_get_event(void)
 	/* Event (or 0 if none) is returned directly in the data byte */
 	return read_byte(EC_LPC_ADDR_ACPI_DATA);
 }
+
+struct chip_operations ec_google_chromeec_ops = {
+	CHIP_NAME("Google Chrome EC")
+	.enable_dev = enable_dev,
+};
