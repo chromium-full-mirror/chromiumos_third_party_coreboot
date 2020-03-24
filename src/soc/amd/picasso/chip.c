@@ -51,12 +51,25 @@ const char *soc_acpi_name(const struct device *dev)
 		case 0:
 			/* Root Hub */
 			return "RHUB";
+		case 2:
+			/* USB2 ports */
+			switch (dev->path.usb.port_id) {
+			case 0: return "HS01";
+			case 1: return "HS02";
+			case 2: return "HS03";
+			case 3: return "HS04";
+			case 4: return "HS05";
+			case 5: return "HS06";
+			}
+			break;
 		case 3:
 			/* USB3 ports */
 			switch (dev->path.usb.port_id) {
 			case 0: return "SS01";
 			case 1: return "SS02";
 			case 2: return "SS03";
+			case 3: return "SS04";
+			case 4: return "SS05";
 			}
 			break;
 		}
@@ -67,30 +80,45 @@ const char *soc_acpi_name(const struct device *dev)
 		return NULL;
 
 	switch (dev->path.pci.devfn) {
-	case GFX_DEVFN:
+	case GNB_DEVID: 	// GNB Root Complex
+		return "GNB";
+	case IOMMU_DEVID: 	// IOMMU
+		return "IOMM";
+	case GFX_DEVFN: 	// Internal Graphics
 		return "IGFX";
-	case PCIE0_DEVFN:
+	/* PCIe GPP Bridges PCIE_GPP_#_DEVFN*/
+	case PCIE_GPP_0_DEVFN:
+		return "PBR0";
+	case PCIE_GPP_1_DEVFN:
+		return "PBR1";
+	case PCIE_GPP_2_DEVFN:
+		return "PBR2";
+	case PCIE_GPP_3_DEVFN:
+		return "PBR3";
+	case PCIE_GPP_4_DEVFN:
 		return "PBR4";
-	case PCIE1_DEVFN:
+	case PCIE_GPP_5_DEVFN:
 		return "PBR5";
-	case PCIE2_DEVFN:
+	case PCIE_GPP_6_DEVFN:
 		return "PBR6";
-	case PCIE3_DEVFN:
-		return "PBR7";
-	case PCIE4_DEVFN:
-		return "PBR8";
-	case HDA1_DEVFN:
+	case PCIE_A_DEVFN:
+		return "PBRA";
+	case PCIE_B_DEVFN:
+		return "PBRB";
+	case HDA1_DEVFN: 	// HD Audio
 		return "AZHD";
-	case LPC_DEVFN:
+	case LPC_DEVFN: 	// LPC Bus
 		return "LPCB";
-	case SATA_DEVFN:
+	case SATA_DEVFN: 	// Sata
 		return "STCR";
-	case SMBUS_DEVFN:
+	case SMBUS_DEVFN: 	// SMBUS
 		return "SBUS";
-	case XHCI0_DEVFN:
+	case XHCI0_DEVFN: 	// xHCI Controller 1
 		return "XHC0";
-	case XHCI1_DEVFN:
+	case XHCI1_DEVFN: 	// xHCI Controller 2
 		return "XHC1";
+	case DF_F0_DEVFN:
+		return "DFBS";	// Data Fabric Bus
 	default:
 		return NULL;
 	}

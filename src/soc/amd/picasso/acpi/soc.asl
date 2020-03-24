@@ -13,19 +13,11 @@
  * GNU General Public License for more details.
  */
 
-Device(PCI0) {
-	/* Describe the AMD Northbridge */
-	#include "northbridge.asl"
-
-	/* Describe the AMD Fusion Controller Hub */
-	#include "sb_pci0_fch.asl"
-}
+/* PCIe Devices, Methods, Named Objects, more */
+#include "pci0.asl"
 
 /* Describe PCI INT[A-H] for the Southbridge */
 #include "pci_int.asl"
 
-/* Describe the devices in the Southbridge */
-#include <sb_fch.asl>
-
-/* Add GPIO library */
-#include <soc/amd/common/acpi/gpio_bank_lib.asl>
+/* Non-PCIe Devices */
+#include "fch.asl"

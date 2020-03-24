@@ -82,15 +82,15 @@ _Static_assert(sizeof(fch_pic_routing) == sizeof(fch_apic_routing),
  * device/slot level, not the function level.
  */
 static const struct pirq_struct mainboard_pirq_data[] = {
-	{ PCIE0_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } }, // Bridge 0
-	{ PCIE1_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } }, // Bridge 1 - Wifi
-	{ PCIE2_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } }, // Bridge 2 - SD
-	{ PCIE3_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } }, // Bridge 3
-	{ PCIE4_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } }, // Bridge 4
-	{ PCIE5_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } }, // Bridge 5
-	{ PCIE6_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } }, // Bridge 6 - NVME
-	{ PCIE7_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } }, // Bridge to Bus A
-	{ PCIE8_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } }, // Bridge to Bus B
+	{ PCIE_GPP_0_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } }, // Bridge 0
+	{ PCIE_GPP_1_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } }, // Bridge 1 - Wifi
+	{ PCIE_GPP_2_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } }, // Bridge 2 - SD
+	{ PCIE_GPP_3_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } }, // Bridge 3
+	{ PCIE_GPP_4_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } }, // Bridge 4
+	{ PCIE_GPP_5_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } }, // Bridge 5
+	{ PCIE_GPP_6_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } }, // Bridge 6 - NVME
+	{ PCIE_A_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } }, // Bridge to Bus A
+	{ PCIE_B_DEVFN,	{ PIRQ_A, PIRQ_B, PIRQ_C, PIRQ_D } }, // Bridge to Bus B
 	{ SMBUS_DEVFN,	{ PIRQ_SMBUS, PIRQ_NC, PIRQ_NC, PIRQ_NC } },
 };
 
