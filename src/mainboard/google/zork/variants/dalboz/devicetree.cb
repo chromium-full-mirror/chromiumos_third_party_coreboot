@@ -67,14 +67,18 @@ chip soc/amd/picasso
 
         # End : OPN Performance Configuration
 
-	# I2C2 for touchscreen
+	# I2C2 for touchscreen and trackpad
 	register "i2c[2]" = "{
 		.speed = I2C_SPEED_FAST,
+		.rise_time_ns = 18,  /* 0 to 2.31 (3.3 * .7) */
+		.fall_time_ns = 57,  /* 2.31 to 0 */
 	}"
 
 	# I2C3 for H1
 	register "i2c[3]" = "{
 		.speed = I2C_SPEED_FAST,
+		.rise_time_ns = 184, /* 0 to 1.26v (1.8 * .7) */
+		.fall_time_ns = 42,  /* 1.26v to 0 */
 		.early_init = true,
 	}"
 
@@ -204,8 +208,6 @@ chip soc/amd/picasso
 			register "hid_desc_reg_offset" = "0x01"
 			device i2c 5d on end
 		end
-	end
-	device mmio 0xfedc3000 on # APU_I2C1_BASE
 		chip drivers/i2c/generic
 			register "hid" = ""ELAN0000""
 			register "desc" = ""ELAN Touchpad""
