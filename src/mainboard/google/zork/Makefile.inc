@@ -21,6 +21,8 @@ ramstage-y += acpi.c
 verstage-y += chromeos.c
 verstage-y += ec.c
 
+smm-y += smihandler.c
+
 subdirs-y += variants/baseboard
 subdirs-y += spd
 
