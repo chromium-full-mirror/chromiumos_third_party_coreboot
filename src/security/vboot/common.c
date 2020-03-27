@@ -34,8 +34,9 @@ static void *vboot_get_workbuf(void)
 	if (cbmem_possibly_online())
 		wb = cbmem_find(CBMEM_ID_VBOOT_WORKBUF);
 
-	if (wb == NULL && CONFIG(VBOOT_STARTS_IN_BOOTBLOCK) &&
-	    preram_symbols_available())
+	if (wb == NULL && (CONFIG(VBOOT_STARTS_IN_BOOTBLOCK) ||
+			(CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK))) &&
+			preram_symbols_available())
 		wb = _vboot2_work;
 
 	assert(wb != NULL);
