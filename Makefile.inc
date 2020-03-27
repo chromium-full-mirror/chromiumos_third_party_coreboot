@@ -569,6 +569,8 @@ $(AMDFWTOOL): $(top)/util/amdfwtool/amdfwtool.c
 	@printf "    HOSTCC     $(subst $(obj)/,,$(@))\n"
 	$(HOSTCC) $(HOSTCFLAGS) -DCONFIG_ROM_SIZE=$(CONFIG_ROM_SIZE) -o $@ $<
 
+APCB_EDIT_TOOL:=$(top)/util/apcb/apcb_edit.py
+
 CBOOTIMAGE:=$(objutil)/cbootimage/cbootimage
 
 FUTILITY?=$(objutil)/futility/futility

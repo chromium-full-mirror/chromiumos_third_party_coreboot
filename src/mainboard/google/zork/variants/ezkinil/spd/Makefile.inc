@@ -11,29 +11,14 @@
 ## GNU General Public License for more details.
 ##
 
-LIB_SPD_DEPS = $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/spd/$(f).spd.hex)
-
-SPD_SOURCES =  hynix-H5AN8G6NCJR-VKC		# 0b0000
-SPD_SOURCES += hynix-HMAA1GS6CMR6N-VK		# 0b0001
-SPD_SOURCES += micron-MT40A512M16TB-062E-J	# 0b0010
-SPD_SOURCES += micron-MT40A1G16KNR-075-E	# 0b0011
-SPD_SOURCES += samsung-K4A8G165WC-BCTD		# 0b0100
-SPD_SOURCES += empty				# 0b0101
-SPD_SOURCES += empty				# 0b0110
-SPD_SOURCES += empty				# 0b0111
-SPD_SOURCES += empty				# 0b1000
-SPD_SOURCES += empty				# 0b1001
-SPD_SOURCES += empty				# 0b1010
-SPD_SOURCES += empty				# 0b1011
-SPD_SOURCES += empty				# 0b1100
-SPD_SOURCES += empty				# 0b1101
-SPD_SOURCES += empty				# 0b1110
-SPD_SOURCES += empty				# 0b1111
-
-# APCB_SOURCES should be the same as SPD_SOURCES, except _x[channels] suffix
-# must be included. Name should correlate to a file in:
-# picasso-pi/AGESA/AgesaPkg/Addendum/Apcb/RavenFp5Trembyle/ApcbData/
+# Ordered List of APCB entries, upto 16.
+# Entries should match this pattern {NAME}_x{1,2}
+# There should be a matching SPD hex file in SPD_SOURCES_DIR
+# matching the pattern {NAME}.spd.hex
+# The _x{1,2} suffix denotes single or dual channel
 # TODO: Remove channel suffix when b:141434940 is fixed
+# Alternatively, generated APCBs stored at
+# CONFIG_APCB_BLOB_DIR/APCB_{NAME}.bin can be included.
 APCB_SOURCES =  hynix-H5AN8G6NCJR-VKC_x2	# 0b0000
 APCB_SOURCES += hynix-HMAA1GS6CMR6N-VK_x2	# 0b0001
 APCB_SOURCES += micron-MT40A512M16TB-062E-J_x2	# 0b0010

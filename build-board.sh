@@ -107,7 +107,8 @@ function build-coreboot-rom() {
 
 		cat "${serial_config}"
 
-		echo CONFIG_APCB_BLOB_DIR=\""$FIRMWARE_ROOT/coreboot-private/3rdparty/blobs"\"
+		echo CONFIG_APCB_BLOB_DIR=\"\
+		    "$FIRMWARE_ROOT/coreboot-private/3rdparty/blobs/mainboard"\"
 	} >> "$work_dir/.config"
 	make \
 		obj="$work_dir" \
