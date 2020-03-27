@@ -28,5 +28,10 @@ const struct soc_amd_gpio *variant_gpio_table(size_t *size);
 void variant_romstage_entry(int s3_resume);
 void variant_mainboard_suspend_resume(void);
 int variant_has_emmc(uint8_t sku);
+/* Return board SKU */
+uint32_t get_board_sku(void);
+/* Modify devictree settings during ramstage. */
+void variant_devtree_update(void);
+void mainboard_fsp_silicon_update_params_pci_ddi(FSP_S_CONFIG *scfg);
 
 #endif /* __BASEBOARD_VARIANTS_H__ */

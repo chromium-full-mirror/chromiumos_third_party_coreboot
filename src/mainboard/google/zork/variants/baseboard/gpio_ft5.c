@@ -180,7 +180,10 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_GPO(GPIO_141, HIGH),
 	/*  */
 	PAD_GPI(GPIO_143, PULL_DOWN),
-	/*  USI_REPORT_EN - TODO: Driver resets this later.  Do we want it high or low initially? */
+	/*
+	 * USI_REPORT_EN - TODO: Driver resets this later.
+	 * Do we want it high or low initially?
+	 */
 	PAD_GPO(GPIO_144, HIGH),
 };
 
