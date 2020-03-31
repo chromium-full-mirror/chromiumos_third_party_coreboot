@@ -16,6 +16,9 @@
 romstage-y += gpio.c
 ramstage-y += gpio.c
 
+# APCB_mandolin.bin
+APCB_SOURCES = mandolin
+
 PHONY+=add_mchp_fw
 INTERMEDIATE+=add_mchp_fw
 
