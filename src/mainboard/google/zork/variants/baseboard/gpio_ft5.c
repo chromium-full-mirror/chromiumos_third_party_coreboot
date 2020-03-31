@@ -111,7 +111,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* EMMC_CMD */
 	PAD_NF(GPIO_21, EMMC_CMD, PULL_UP),
 	/* EC_FCH_SCI_ODL */
-	PAD_GPI(GPIO_22, PULL_UP),
+	PAD_SCI(GPIO_22, PULL_UP, EDGE_LOW),
 	/* AC_PRES */
 	PAD_NF(GPIO_23, AC_PRES, PULL_UP),
 	/*  EC_AP_INT_ODL (Sensor Framesync) */
@@ -208,15 +208,6 @@ struct soc_amd_gpio *variant_gpio_table(size_t *size)
 	return gpio_set_stage_ram;
 }
 
-static const struct sci_source sci_sources[] = {
-	{
-		.scimap = SMITYPE_ESPI_SYS,
-		.gpe = GEVENT_24,
-		.direction = 1,
-		.level = 0
-	}
-};
-
 /*
  * This function is still needed for boards that sets gevents above 23
  * that will generate SCI or SMI. Normally this function
@@ -226,6 +217,5 @@ static const struct sci_source sci_sources[] = {
  */
 const __weak struct sci_source *get_gpe_table(size_t *num)
 {
-	*num = ARRAY_SIZE(sci_sources);
-	return sci_sources;
+	return NULL;
 }
