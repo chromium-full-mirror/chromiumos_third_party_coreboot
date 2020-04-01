@@ -2,12 +2,12 @@
 
 set -eu
 
-# These are used by the coreboot build system
-export VBOOT_SOURCE=$HOME/trunk/src/platform/vboot_reference/
-
 declare FIRMWARE_ROOT=/build/zork/firmware
 declare KEYDIR=/usr/share/vboot/devkeys
-
+: "${CACHE_DIR:=/tmp/coreboot}"
+: "${VBOOT_SOURCE:=/mnt/host/source//src/platform/vboot_reference}"
+: "${HOSTCC:=x86_64-pc-linux-gnu-clang}"
+: "${HOSTPKGCONFIG:=x86_64-pc-linux-gnu-pkg-config}"
 
 if [[ "$#" -eq 0 ]]; then
 	echo "Usage: $0 <board|config file>..."
@@ -90,9 +90,9 @@ function build-coreboot-rom() {
 	make \
 		obj="$work_dir" \
 		DOTCONFIG="$work_dir/.config" \
-		HOSTCC="x86_64-pc-linux-gnu-clang"\
-		HOSTPKGCONFIG="x86_64-pc-linux-gnu-pkg-config" \
-		VBOOT_SOURCE="$HOME/trunk/src/platform/vboot_reference" \
+		HOSTCC="$HOSTCC"\
+		HOSTPKGCONFIG="$HOSTPKGCONFIG" \
+		VBOOT_SOURCE="$VBOOT_SOURCE" \
 		olddefconfig
 
 	replace-paths "$work_dir/.config"
@@ -111,9 +111,9 @@ function build-coreboot-rom() {
 	make -j \
 		obj="$cache_dir" \
 		DOTCONFIG="$cache_dir/.config" \
-		HOSTCC="x86_64-pc-linux-gnu-clang"\
-		HOSTPKGCONFIG="x86_64-pc-linux-gnu-pkg-config" \
-		VBOOT_SOURCE="$HOME/trunk/src/platform/vboot_reference"
+		HOSTCC="$HOSTCC"\
+		HOSTPKGCONFIG="$HOSTPKGCONFIG" \
+		VBOOT_SOURCE="$VBOOT_SOURCE"
 
 	# Kconfig generates a dummy file that doesn't get removed.
 	rm -f ..config.tmp.*
@@ -201,7 +201,7 @@ function build-boot-image() {
 	local work_dir build_name cache_dir image_name
 	work_dir="$(mktemp -d)" && CLEANUP+=("$work_dir")
 	build_name="${config_path##*.}"
-	cache_dir="/tmp/coreboot/$build_name"
+	cache_dir="$CACHE_DIR/$build_name"
 	image_name="image-$build_name.serial.bin"
 
 	echo "Building $config_path"
