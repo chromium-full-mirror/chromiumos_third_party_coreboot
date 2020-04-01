@@ -51,6 +51,10 @@ Device (PBRA){
     Device(XHC0) {
         Name(_ADR, 0x00000003)
         Name(_PRW, Package() { 0xb, 3 })
+        Device (RHUB) {
+            Name (_ADR, 0x0)
+            /* Devices dynamically generated at boot */
+        }
 
         Method(_S0W,0) {
             Return(0)
@@ -70,6 +74,12 @@ Device (PBRA){
     Device(XHC1) {
         Name(_ADR, 0x00000004)
         Name(_PRW, Package() { 0xb, 3 })
+        Device (RHUB) {
+            Name (_ADR, Zero)
+            Device (HS05) { Name (_ADR, 1) }
+            Device (HS06) { Name (_ADR, 2) }
+            Device (SS05) { Name (_ADR, 3) }
+        }
 
         Method(_S0W,0) {
             Return(0)
