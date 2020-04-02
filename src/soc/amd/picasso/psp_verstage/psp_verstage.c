@@ -119,11 +119,14 @@ static uintptr_t *map_spi_rom(void)
 	return addr;
 }
 
+extern char _bss_start, _bss_end;
+
 void Main(void)
 {
 	uint32_t retval = 0;
 
 	printk(BIOS_DEBUG,"Entering verstage on PSP\n");
+	memset(&_bss_start, '\0', &_bss_end - &_bss_start);
 
 	verstage_mainboard_init();
 	verstage_main();

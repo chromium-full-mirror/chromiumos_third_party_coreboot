@@ -46,7 +46,9 @@ SECTIONS
 		.data : { *(.data) }
 		.data : { *(PSP_FOOTER_DATA) }
 
+		_bss_start = .;
 		.bss : { *(.bss*) }
+		_bss_end = .;
 
 	_everstage = _verstage + VERSTAGE_SIZE;
 	. = VBOOT_WORK_START;
