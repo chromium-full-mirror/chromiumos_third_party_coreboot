@@ -11,6 +11,7 @@
  * (CONFIG_VBOOT), please see vboot_logic.c.
  */
 
+#if !CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK) || !ENV_VERSTAGE
 void vb2ex_printf(const char *func, const char *fmt, ...)
 {
 	va_list args;
@@ -22,6 +23,7 @@ void vb2ex_printf(const char *func, const char *fmt, ...)
 	vprintk(BIOS_INFO, fmt, args);
 	va_end(args);
 }
+#endif
 
 void vb2ex_abort(void)
 {
