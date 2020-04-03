@@ -22,7 +22,13 @@ declare -a CONFIG_PATHS=(
 	"./configs"
 )
 
-for arg in "$@"; do
+while [[ "$#" -gt 0 ]]; do
+	arg="$1"
+	shift
+
+	if [[ "$arg" = "--" ]]; then
+		break;
+	fi
 	if [[ -e "$arg" ]]; then
 		CONFIGS+=("$arg")
 		continue
@@ -40,6 +46,8 @@ for arg in "$@"; do
 		exit 1
 	fi
 done
+
+declare -a MAKE_OPTS=("$@")
 
 declare -a CLEANUP
 
@@ -127,7 +135,8 @@ function build-coreboot-rom() {
 		DOTCONFIG="$cache_dir/.config" \
 		HOSTCC="$HOSTCC"\
 		HOSTPKGCONFIG="$HOSTPKGCONFIG" \
-		VBOOT_SOURCE="$VBOOT_SOURCE"
+		VBOOT_SOURCE="$VBOOT_SOURCE" \
+		"${MAKE_OPTS[@]+${MAKE_OPTS[@]}}"
 
 	# Kconfig generates a dummy file that doesn't get removed.
 	rm -f ..config.tmp.*
