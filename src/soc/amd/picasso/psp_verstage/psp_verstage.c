@@ -22,12 +22,13 @@
 #include <assert.h>
 #include <stdint.h>
 #include <security/vboot/symbols.h>
+#include <soc/iomap.h>
 
 #define RUN_PSP_SVC_TESTS 1
 
 static struct mem_region_device boot_dev =
 		MEM_REGION_DEV_RO_INIT(NULL, CONFIG_ROM_SIZE);
-
+static void *i2c_bus_addr[I2C_DEVICE_COUNT];
 
 void __weak verstage_mainboard_init(void)
 {
@@ -103,6 +104,20 @@ static void test_svc_calls(void)
 
 }
 
+/* Unmap the I2C ports so that they can be used in coreboot */
+static void unmap_i2c(void)
+{
+	for (int i = 0; i < I2C_DEVICE_COUNT; i++) {
+		if (i2c_bus_addr[i] != NULL) {
+			if (svc_unmap_fch_dev(FCH_IO_DEVICE_I2C, i2c_bus_addr[i])) {
+				printk(BIOS_ERR, "Error unmapping I2c %d.\n", i);
+			} else {
+				i2c_bus_addr[i] = NULL;
+			}
+		}
+	}
+}
+
 static uintptr_t *map_spi_rom(void)
 {
 	uintptr_t *addr = NULL;
@@ -152,6 +167,7 @@ void Main(void)
 			printk(BIOS_ERR,"Error unmapping SPI rom\n");
 	}
 
+	unmap_i2c();
 	printk(BIOS_DEBUG,"Leaving verstage on PSP\n");
 	svc_exit(retval);
 	return;
@@ -219,9 +235,14 @@ void timer_monotonic_get(struct mono_time *mt)
 
 uintptr_t dw_i2c_base_address(uint32_t bus)
 {
-	// Map it using the svc_map_fch_dev call
+	if (bus < 2 || bus > 3)
+		return 0;
 
-	return 0;
+	if (i2c_bus_addr[bus] == NULL)
+		if (svc_map_fch_dev(FCH_IO_DEVICE_I2C, bus, 0, &i2c_bus_addr[bus]))
+			printk(BIOS_ERR, "Error: Could not map I2c bus %d.", bus);
+
+	return (uintptr_t)i2c_bus_addr[bus];
 }
 
 void do_board_reset(void)
