@@ -118,7 +118,19 @@ const char *soc_acpi_name(const struct device *dev)
 	case XHCI1_DEVFN: 	// xHCI Controller 2
 		return "XHC1";
 	case DF_F0_DEVFN:
-		return "DFBS";	// Data Fabric Bus
+		return "DFD1";	// Data Fabric 0
+	case DF_F1_DEVFN:
+		return "DFD2";	// Data Fabric 1
+	case DF_F2_DEVFN:
+		return "DFD3";	// Data Fabric 2
+	case DF_F3_DEVFN:
+		return "DFD3";	// Data Fabric 3
+	case DF_F4_DEVFN:
+		return "DFD4";	// Data Fabric 4
+	case DF_F5_DEVFN:
+		return "DFD5";	// Data Fabric 5
+	case DF_F6_DEVFN:
+		return "DFD6";	// Data Fabric 6
 	default:
 		return NULL;
 	}

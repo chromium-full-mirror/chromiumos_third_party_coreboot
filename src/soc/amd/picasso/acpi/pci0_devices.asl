@@ -142,7 +142,38 @@ Device(SBUS) {
 // 0:14.3   # D14F3 bridge/LPC Bus
 #include <soc/amd/common/acpi/lpc.asl>
 
-//0:18.0    # Data Fabric Bus
-Device(DFBS) {
+/* Data Fabric Devices */
+// 0:18.0
+Device(DFD0) {
     Name(_ADR, 0x00180000)
+}
+
+// 0:18.1
+Device(DFD1) {
+    Name(_ADR, 0x00180001)
+}
+
+// 0:18.2
+Device(DFD2) {
+    Name(_ADR, 0x00180002)
+}
+
+// 0:18.3
+Device(DFD3) {
+    Name(_ADR, 0x00180003)
+}
+
+// 0:18.4
+Device(DFD4) {
+    Name(_ADR, 0x00180004)
+}
+
+// 0:18.5
+Device(DFD5) {
+    Name(_ADR, 0x00180005)
+}
+
+// 0:18.6
+Device(DFD6) {
+    Name(_ADR, 0x00180006)
 }
