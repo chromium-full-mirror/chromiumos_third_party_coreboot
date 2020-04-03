@@ -68,8 +68,20 @@ function replace-paths() {
 		full_path="$private/$val"
 		if [[ -e $full_path ]]; then
 			replace+=(-e "s|^${key}=.*|${key}=\"${full_path}\"|")
+		elif [[ "$key" = "CONFIG_PSP_BOOTLOADER_NAME" ]]; then
+			# We need this because the binary assumes it's relative
+			# to all the other AMD blobs
+
+			local relative="3rdparty/blobs/soc/amd/picasso/PSP/$val"
+			if [[ -e "$private/$relative" ]]; then
+				full_path="$(realpath --relative-to="$relative" "$private/$relative")"
+				replace+=(-e "s|^${key}=.*|${key}=\"${full_path}\"|")
+			fi
 		fi
-	done <<<"$(sed -En -e 's/^([A-Z0-9_]+)="(3rdparty\/blobs\/.*)"$/\1 \2/p' "$full_config")"
+	done <<<"$(sed -En \
+		-e 's/^([A-Z0-9_]+)="(3rdparty\/blobs\/.*)"$/\1 \2/p' \
+		-e 's/^(CONFIG_PSP_BOOTLOADER_NAME)="(.*)"$/\1 \2/p' \
+		"$full_config")"
 	if [[ "${replace[@]+"${#replace[@]}"}" -gt 0 ]]; then
 		sed -iE "${replace[@]}" "$full_config"
 	fi
@@ -83,8 +95,10 @@ function build-coreboot-rom() {
 
 	cp "$config_path" "$work_dir/.config"
 	{
-		echo CONFIG_CONSOLE_SERIAL=y
-		echo CONFIG_FATAL_ASSERTS=y
+		declare serial_config="$HOME/trunk/src/overlays/overlay-zork/sys-boot/coreboot-zork/files/configs/fwserial.zork"
+
+		cat "${serial_config}"
+
 		echo CONFIG_APCB_BLOB_DIR=\""$FIRMWARE_ROOT/coreboot-private/3rdparty/blobs"\"
 	} >> "$work_dir/.config"
 	make \
