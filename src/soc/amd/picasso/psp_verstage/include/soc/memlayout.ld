@@ -41,9 +41,10 @@ SECTIONS
 		.text : { *(PSP_HEADER_DATA) }
 		.text : { *(.text._psp_vs_start) }
 		.text : { *(.text.Main) }
-		.text : { *(.text) }
+		.text : { *(.text*) }
+		.rodata : { *(.rodata*) }
 
-		.data : { *(.data) }
+		.data : { *(.data*) }
 		.data : { *(PSP_FOOTER_DATA) }
 
 		_bss_start = .;
