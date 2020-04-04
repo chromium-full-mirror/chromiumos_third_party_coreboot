@@ -48,10 +48,16 @@ static int check_signature(const struct fmap *fmap)
 
 static void report(const struct fmap *fmap)
 {
+	uint64_t base;
+	uint32_t size;
+
 	print_once(BIOS_DEBUG, "FMAP: Found \"%s\" version %d.%d at %#x.\n",
 	       fmap->name, fmap->ver_major, fmap->ver_minor, FMAP_OFFSET);
+	/* Avoid unaligned access */
+	memcpy(&base, &fmap->base, sizeof(fmap->base));
+	memcpy(&size, &fmap->size, sizeof(fmap->size));
 	print_once(BIOS_DEBUG, "FMAP: base = %#llx size = %#x #areas = %d\n",
-	       (long long)fmap->base, fmap->size, fmap->nareas);
+		   base, size, fmap->nareas);
 	fmap_print_once = 1;
 }
 
@@ -169,6 +175,7 @@ int fmap_locate_area(const char *name, struct region *ar)
 
 	while (1) {
 		struct fmap_area *area;
+		uint32_t area_offset, area_size;
 
 		area = rdev_mmap(&fmrd, offset, sizeof(*area));
 
@@ -180,12 +187,14 @@ int fmap_locate_area(const char *name, struct region *ar)
 			offset += sizeof(struct fmap_area);
 			continue;
 		}
+		memcpy(&area_offset, &area->offset, sizeof(area->offset));
+		memcpy(&area_size, &area->size, sizeof(area->size));
 
 		printk(BIOS_DEBUG, "FMAP: area %s found @ %x (%d bytes)\n",
-		       name, area->offset, area->size);
+		       name, area_offset, area_size);
 
-		ar->offset = area->offset;
-		ar->size = area->size;
+		ar->offset = area_offset;
+		ar->size = area_size;
 
 		rdev_munmap(&fmrd, area);
 
