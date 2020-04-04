@@ -22,12 +22,18 @@ declare -a CONFIG_PATHS=(
 	"./configs"
 )
 
+em100=
 while [[ "$#" -gt 0 ]]; do
 	arg="$1"
 	shift
 
 	if [[ "$arg" = "--" ]]; then
 		break;
+	fi
+	if [[ "$arg" = "-e" ]]; then
+		em100=y
+		echo "Using em100 mode"
+		continue
 	fi
 	if [[ -e "$arg" ]]; then
 		CONFIGS+=("$arg")
@@ -109,6 +115,9 @@ function build-coreboot-rom() {
 
 		echo CONFIG_APCB_BLOB_DIR=\"\
 		    "$FIRMWARE_ROOT/coreboot-private/3rdparty/blobs/mainboard"\"
+		if [[ -n "${em100}" ]]; then
+			echo CONFIG_EM100=y
+		fi
 	} >> "$work_dir/.config"
 	make \
 		obj="$work_dir" \
