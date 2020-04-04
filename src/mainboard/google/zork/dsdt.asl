@@ -73,6 +73,8 @@ DefinitionBlock (
 		#include <ec/google/chromeec/acpi/ec.asl>
 		/* ACPI code for EC I2C Audio Tunnel */
 		#include <variant/acpi/audio.asl>
+		/* ACPI code for EC I2C MST Hub Tunnel */
+		#include <variant/acpi/mst_hub.asl>
 	}
 }
 /* End of ASL file */
