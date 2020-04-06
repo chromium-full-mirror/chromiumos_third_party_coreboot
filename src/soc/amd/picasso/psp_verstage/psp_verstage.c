@@ -225,19 +225,6 @@ void __noreturn die(const char *fmt, ...)
 	halt();
 }
 
-void vb2ex_printf(const char *func, const char *fmt, ...)
-{
-	va_list args;
-	char buf[128];
-
-	if (func)
-		printk(BIOS_INFO, "VB2:%s() ", func);
-
-	va_start(args, fmt);
-	vsnprintf(buf, sizeof(buf), fmt, args);
-	va_end(args);
-	svc_debug_print(buf);
-}
 
 /* Stubs that still need to be implemented */
 
