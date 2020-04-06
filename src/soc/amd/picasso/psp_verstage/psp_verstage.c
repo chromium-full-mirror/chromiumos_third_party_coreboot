@@ -6,8 +6,10 @@
 #include <stdio.h>
 #include <arch/exception.h>
 #include <arch/hlt.h>
+#include <arch/io.h>
 #include <security/vboot/vboot_common.h>
 #include <vendorcode/amd/fsp/picasso/bl_syscall_public.h>
+#include <vendorcode/amd/fsp/picasso/bl_errorcodes_public.h>
 #include <delay.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <reset.h>
@@ -15,6 +17,7 @@
 #include <console/console.h>
 #include <console/streams.h>
 #include <security/vboot/vboot_common.h>
+#include <amdblocks/acpimmio.h>
 #include <bootmode.h>
 #include <timer.h>
 #include <halt.h>
@@ -23,7 +26,7 @@
 #include <assert.h>
 #include <stdint.h>
 #include <security/vboot/symbols.h>
-#include <soc/iomap.h>
+#include <soc/espi.h>
 
 #define RUN_PSP_SVC_TESTS 0
 
@@ -31,10 +34,7 @@ static struct mem_region_device boot_dev =
 		MEM_REGION_DEV_RO_INIT(NULL, CONFIG_ROM_SIZE);
 static void *i2c_bus_addr[I2C_DEVICE_COUNT];
 
-void __weak verstage_mainboard_init(void)
-{
-	console_init();
-}
+void __weak verstage_mainboard_init(void) { }
 
 static void test_svc_calls(void)
 {
@@ -134,6 +134,66 @@ static uintptr_t *map_spi_rom(void)
 	return addr;
 }
 
+static struct {
+	const char *name;
+	FCH_IO_DEVICE device;
+	void (*set_bar)(void *bar);
+	void *_bar;
+} bar_map[] = {
+	{"IOMUX", FCH_IO_DEVICE_IOMUX, iomux_set_bar},
+	{"MISC", FCH_IO_DEVICE_MISC, misc_set_bar},
+	{"GPIO", FCH_IO_DEVICE_GPIO, gpio_set_bar},
+	{"IO", FCH_IO_DEVICE_IOPORT, io_set_bar},
+	{"eSPI", FCH_IO_DEVICE_ESPI, espi_set_bar},
+};
+
+static uint32_t unmap_fch_devices(void)
+{
+	void *bar;
+	uint32_t err, rtn = BL_UAPP_OK;
+	unsigned int i;
+
+	for (i = 0; i < ARRAY_SIZE(bar_map); ++i) {
+		bar = bar_map[i]._bar;
+		if (!bar)
+			continue;
+
+		err = svc_unmap_fch_dev(bar_map[i].device, bar);
+		if (err) {
+			printk(BIOS_ERR, "Failed to unmap %s: %u\n", bar_map[i].name, err);
+			rtn = err;
+		} else {
+			printk(BIOS_DEBUG, "%s unmapped\n", bar_map[i].name);
+			bar_map[i]._bar = NULL;
+			bar_map[i].set_bar(NULL);
+		}
+	}
+
+	return rtn;
+}
+
+static uint32_t map_fch_devices(void)
+{
+	void *bar;
+	uint32_t err;
+	unsigned int i;
+
+	for (i = 0; i < ARRAY_SIZE(bar_map); ++i) {
+		printk(BIOS_DEBUG, "Mapping %s\n", bar_map[i].name);
+		err = svc_map_fch_dev(bar_map[i].device, 0, 0, &bar);
+		if (err) {
+			printk(BIOS_ERR, "Failed to map %s: %u\n", bar_map[i].name, err);
+			return err;
+		}
+
+		printk(BIOS_DEBUG, "%s mapped to 0x%p\n", bar_map[i].name, bar);
+		bar_map[i]._bar = bar;
+		bar_map[i].set_bar(bar);
+	}
+
+	return BL_UAPP_OK;
+}
+
 extern char _bss_start, _bss_end;
 
 void Main(void)
@@ -144,8 +204,25 @@ void Main(void)
 	svc_debug_print("Entering verstage on PSP\n");
 	memset(&_bss_start, '\0', &_bss_end - &_bss_start);
 
+	console_init();
+
+	printk(BIOS_DEBUG, "Mapping devices\n");
+
+	retval = map_fch_devices();
+	if (retval) {
+		printk(BIOS_DEBUG, "Failed to map FCH devices: %u\n", retval);
+		goto err;
+	}
+
+	svc_write_postcode(0x01);
+
 	verstage_mainboard_init();
+
+	svc_write_postcode(0x02);
+
 	verstage_main();
+
+	svc_write_postcode(0x03);
 
 	#if 0 //TODO
 	uint32_t *psp_dir_offset = NULL;
@@ -162,14 +239,22 @@ void Main(void)
 	if (RUN_PSP_SVC_TESTS)
 		test_svc_calls();
 
+err:
 	if (boot_dev.base){
 		printk(BIOS_DEBUG,"Unmapping SPI rom\n");
 		if (svc_unmap_spi_rom((void *)boot_dev.base))
 			printk(BIOS_ERR,"Error unmapping SPI rom\n");
 	}
 
+	svc_write_postcode(0xF1);
+	unmap_fch_devices();
+
+	svc_write_postcode(0xF2);
 	unmap_i2c();
-	printk(BIOS_DEBUG,"Leaving verstage on PSP\n");
+
+	svc_write_postcode(0xF3);
+
+	printk(BIOS_DEBUG, "Leaving verstage on PSP\n");
 	svc_exit(retval);
 	return;
 }
