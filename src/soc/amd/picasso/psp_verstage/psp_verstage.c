@@ -13,6 +13,7 @@
 #include <reset.h>
 #include <boot_device.h>
 #include <console/console.h>
+#include <console/streams.h>
 #include <security/vboot/vboot_common.h>
 #include <bootmode.h>
 #include <timer.h>
@@ -32,14 +33,13 @@ static void *i2c_bus_addr[I2C_DEVICE_COUNT];
 
 void __weak verstage_mainboard_init(void)
 {
-	/* Default empty implementation. */
+	console_init();
 }
 
 static void test_svc_calls(void)
 {
 	struct SPIROM_INFO spi = {0};
 	uint32_t *addr = NULL;
-
 
 	/* Test svc_get_spi_rom_info & svc_map_spi_rom */
 	svc_debug_print("\nTest: Getting SPI ROM info.\n");
@@ -50,10 +50,10 @@ static void test_svc_calls(void)
 		if (svc_map_spi_rom(spi.SpiBiosSmnBase, CONFIG_ROM_SIZE, (void **)&addr))
 			svc_debug_print("Error mapping SPI ROM to address.\n");
 	printk(BIOS_DEBUG,"SPI ROM info:\n");
-	printk(BIOS_DEBUG,"SpiBiosSysHubBase: 0x%08x\n", spi.SpiBiosSysHubBase);
-	printk(BIOS_DEBUG,"SpiBiosSmnBase: 0x%08x\n", spi.SpiBiosSmnBase);
+	printk(BIOS_DEBUG, "SpiBiosSysHubBase: %p\n", spi.SpiBiosSysHubBase);
+	printk(BIOS_DEBUG, "SpiBiosSmnBase: %p\n", spi.SpiBiosSmnBase);
 	printk(BIOS_DEBUG,"SpiBiosSize: 0x%08x\n", spi.SpiBiosSize);
-	printk(BIOS_DEBUG,"addr: 0x%08x\n", addr);
+	printk(BIOS_DEBUG, "addr: %p\n", addr);
 
 	/* Test svc_debug_print_ex, svc_read_timer_val, svc_wait_10ns_multiple, and svc_delay_in_usec */
 	uint64_t timer1;
@@ -201,30 +201,36 @@ const struct region_device *boot_device_ro(void)
 	return &boot_dev.rdev;
 }
 
-void printk(int LEVEL, const char *fmt, ...)
-{
-	if (LEVEL > CONFIG_DEFAULT_CONSOLE_LOGLEVEL)
-		return;
-
-	va_list args;
-	char buf[128];
-
-	va_start(args, fmt);
-	vsnprintf(buf, sizeof(buf), fmt, args);
-	svc_debug_print(buf);
-}
-
-void __noreturn die(const char *fmt, ...)
+int do_printk(int msg_level, const char *fmt, ...)
 {
 	va_list args;
-	char buf[128];
+	int i;
 
 	va_start(args, fmt);
-	vsnprintf(buf, sizeof(buf), fmt, args);
-	svc_debug_print(buf);
-	halt();
+	i = do_vprintk(msg_level, fmt, args);
+	va_end(args);
+
+	return i;
 }
 
+int do_vprintk(int msg_level, const char *fmt, va_list args)
+{
+	int i, log_this;
+	char buf[256];
+
+	log_this = console_log_level(msg_level);
+	if (log_this < CONSOLE_LOG_FAST)
+		return 0;
+
+	i = vsnprintf(buf, sizeof(buf), fmt, args);
+	svc_debug_print(buf);
+	return i;
+}
+
+void console_hw_init(void)
+{
+	// Nothing to init for svc_debug_print
+}
 
 /* Stubs that still need to be implemented */
 

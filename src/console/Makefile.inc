@@ -12,12 +12,12 @@ smm-y += die.c
 smm-y += post.c
 
 ifneq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
-verstage-y += init.c
 verstage-y += printk.c
 verstage-y += console.c
 verstage-y += post.c
-verstage-y += die.c
 endif
+verstage-y += die.c
+verstage-y += init.c
 verstage-y += vtxprintf.c vsprintf.c
 
 romstage-y += vtxprintf.c printk.c vsprintf.c
