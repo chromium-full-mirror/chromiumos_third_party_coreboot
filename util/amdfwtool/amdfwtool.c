@@ -222,6 +222,7 @@ static void usage(void)
 		MIN_ROM_KB);
 	printf("                               and must a multiple of 1024\n");
 	printf("-l | --location                Location of Directory\n");
+	printf("-q | --anywhere                Use any 64-byte aligned addr for Directory\n");
 	printf("-h | --help                    show this help\n");
 }
 
@@ -1010,8 +1011,8 @@ static void integrate_bios_firmwares(context *ctx,
 
 	fill_dir_header(biosdir, count, cookie);
 }
-// Unused values: CDEPqR
-static const char *optstring  = "x:i:g:AMS:p:b:s:r:k:c:n:d:t:u:w:m:T:z:J:B:K:L:Y:N:UW:I:a:Q:V:e:v:j:y:G:O:X:F:H:o:f:l:hZ:";
+// Unused values: CDEPR
+static const char *optstring  = "x:i:g:AMS:p:b:s:r:k:c:n:d:t:u:w:m:T:z:J:B:K:L:Y:N:UW:I:a:Q:V:e:v:j:y:G:O:X:F:H:o:f:l:hZ:q";
 
 static struct option long_options[] = {
 	{"xhci",             required_argument, 0, 'x' },
@@ -1062,6 +1063,7 @@ static struct option long_options[] = {
 	{"output",           required_argument, 0, 'o' },
 	{"flashsize",        required_argument, 0, 'f' },
 	{"location",         required_argument, 0, 'l' },
+	{"anywhere",         no_argument,       0, 'q' },
 	{"help",             no_argument,       0, 'h' },
 	{NULL,               0,                 0,  0  }
 };
@@ -1166,6 +1168,7 @@ int main(int argc, char **argv)
 	uint8_t sub = 0, instance = 0;
 	int abl_image = 0;
 	uint32_t dir_location = 0;
+	uint8_t any_location = 0;
 	uint32_t romsig_offset;
 	uint32_t rom_base_address;
 	int multi = 0;
@@ -1381,6 +1384,9 @@ int main(int argc, char **argv)
 				retval = 1;
 			}
 			break;
+		case 'q':
+			any_location = 1;
+			break;
 
 		case 'h':
 			usage();
@@ -1423,20 +1429,28 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	switch (dir_location) {
-	case 0:          /* Fall through */
-	case 0xFFFA0000: /* Fall through */
-	case 0xFFF20000: /* Fall through */
-	case 0xFFE20000: /* Fall through */
-	case 0xFFC20000: /* Fall through */
-	case 0xFF820000: /* Fall through */
-	case 0xFF020000: /* Fall through */
-		break;
-	default:
-		printf("Error: Invalid Directory location.\n");
-		printf("  Valid locations are 0xFFFA0000, 0xFFF20000,\n");
-		printf("  0xFFE20000, 0xFFC20000, 0xFF820000, 0xFF020000\n");
-		return 1;
+	if (any_location) {
+		if (dir_location & 0x3f) {
+			printf("Error: Invalid Directory location.\n");
+			printf("  Valid locations are 64-byte aligned\n");
+			return 1;
+		}
+	} else {
+		switch (dir_location) {
+		case 0:          /* Fall through */
+		case 0xFFFA0000: /* Fall through */
+		case 0xFFF20000: /* Fall through */
+		case 0xFFE20000: /* Fall through */
+		case 0xFFC20000: /* Fall through */
+		case 0xFF820000: /* Fall through */
+		case 0xFF020000: /* Fall through */
+			break;
+		default:
+			printf("Error: Invalid Directory location.\n");
+			printf("  Valid locations are 0xFFFA0000, 0xFFF20000,\n");
+			printf("  0xFFE20000, 0xFFC20000, 0xFF820000, 0xFF020000\n");
+			return 1;
+		}
 	}
 
 	ctx.rom = malloc(ctx.rom_size);
