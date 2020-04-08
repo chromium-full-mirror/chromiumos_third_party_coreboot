@@ -16,7 +16,7 @@
 	: [result] "=r" (Ret) /* output */ \
 	: [id] "i" (SVC_ID), [reg0] "r" (R0), [reg1] "r" (R1), [reg2] "r" (R2), \
 		[reg3] "r" (R3) /* input(s) */ \
-	: /* list of clobbered registers */);
+	: "r0", "r1", "r2", "r3", "memory", "cc" /* list of clobbered registers */);
 
 #define SVC_CALL3(SVC_ID, R0,  R1, R2, Ret) \
 	__asm__ __volatile__ ( \
@@ -27,7 +27,7 @@
 	"mov %[result], r0\n\t" \
 	: [result] "=r" (Ret) /* output */ \
 	: [id] "i" (SVC_ID), [reg0] "r" (R0), [reg1] "r" (R1) , [reg2] "r" (R2) \
-	: /* list of clobbered registers */);
+	: "r0", "r1", "r2", "memory", "cc" /* list of clobbered registers */);
 
 #define SVC_CALL2(SVC_ID, R0, R1, Ret) \
 	__asm__ __volatile__ ( \
@@ -37,7 +37,7 @@
 	"mov %[result], r0\n\t" \
 	: [result] "=r" (Ret) /* output */ \
 	: [id] "i" (SVC_ID), [reg0] "r" (R0), [reg1] "r" (R1)/* input(s) */ \
-	: /* list of clobbered registers */);
+	: "r0", "r1", "memory", "cc" /* list of clobbered registers */);
 
 #define SVC_CALL1(SVC_ID, R0, Ret) \
 	__asm__ __volatile__ ( \
@@ -46,7 +46,7 @@
 	"mov %[result], r0\n\t" \
 	: [result] "=r" (Ret) /* output */ \
 	: [id] "i" (SVC_ID), [reg0] "r" (R0) /* input(s) */ \
-	: /* list of clobbered registers */);
+	: "r0", "memory", "cc" /* list of clobbered registers */);
 
 #define SVC_CALL0(SVC_ID, Ret) \
 	__asm__ __volatile__ ( \
@@ -54,6 +54,6 @@
 	"mov %[result], r0\n\t" \
 	: [result] "=r" (Ret) /* output */ \
 	: [id] "I" (SVC_ID) /* input(s) */ \
-	: /* list of clobbered registers */);
+	: "memory", "cc" /* list of clobbered registers */);
 
 #endif /* PSP_VERSTAGE_SVC_H */
