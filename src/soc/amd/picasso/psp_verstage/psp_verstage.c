@@ -25,7 +25,7 @@
 #include <security/vboot/symbols.h>
 #include <soc/iomap.h>
 
-#define RUN_PSP_SVC_TESTS 1
+#define RUN_PSP_SVC_TESTS 0
 
 static struct mem_region_device boot_dev =
 		MEM_REGION_DEV_RO_INIT(NULL, CONFIG_ROM_SIZE);
@@ -56,8 +56,8 @@ static void test_svc_calls(void)
 	printk(BIOS_DEBUG, "addr: %p\n", addr);
 
 	/* Test svc_debug_print_ex, svc_read_timer_val, svc_wait_10ns_multiple, and svc_delay_in_usec */
-	uint64_t timer1;
-	uint64_t timer2;
+	uint64_t timer1 = 0;
+	uint64_t timer2 = 0;
 	printk(BIOS_DEBUG,"\nTest: Reading chrono timer twice, delaying 10 uSec, then printing both values\n");
 	svc_read_timer_val(PSP_TIMER_TYPE_CHRONO, &timer1);
 	svc_wait_10ns_multiple(10000);
@@ -70,9 +70,9 @@ static void test_svc_calls(void)
 	svc_debug_print_ex((uint32_t)(timer1>>32),(uint32_t)timer1,(uint32_t)(timer2>>32),(uint32_t)timer2);
 
 	printk(BIOS_DEBUG,"\nTest: Reading RTC timer twice, delaying 1 Sec, then printing both values\n");
-	svc_read_timer_val(PSP_TIMER_TYPE_CHRONO, &timer1);
+	svc_read_timer_val(PSP_TIMER_TYPE_RTC, &timer1);
 	svc_delay_in_usec(1000000);
-	svc_read_timer_val(PSP_TIMER_TYPE_CHRONO, &timer2);
+	svc_read_timer_val(PSP_TIMER_TYPE_RTC, &timer2);
 
 	printk(BIOS_DEBUG,"RTC timer info:\n");
 	printk(BIOS_DEBUG,"Initial timer: 0x%08x_%08x\n", (uint32_t)(timer1>>32),(uint32_t)timer1);
@@ -87,7 +87,7 @@ static void test_svc_calls(void)
 		printk(BIOS_DEBUG,"Error getting boot mode.\n");
 
 	if (bootmode == PSP_BOOT_MODE_S0)
-		printk(BIOS_DEBUG,"Platform is NOT resuming.  What does this value even mean?\n");
+		printk(BIOS_DEBUG,"Platform is NOT resuming.  Booting From S0?\n");
 	else if (bootmode == PSP_BOOT_MODE_S5_COLD)
 		printk(BIOS_DEBUG,"Platform is NOT resuming. Cold boot\n");
 	else if (bootmode == PSP_BOOT_MODE_S5_COLD)
