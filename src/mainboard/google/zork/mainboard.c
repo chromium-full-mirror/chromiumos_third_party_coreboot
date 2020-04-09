@@ -27,6 +27,7 @@
 #include <soc/gpio.h>
 #include <soc/nvs.h>
 #include <soc/pci_devs.h>
+#include <soc/platform_descriptors.h>
 #include <soc/southbridge.h>
 #include <soc/smi.h>
 #include <soc/soc_util.h>
@@ -35,7 +36,6 @@
 #include <variant/thermal.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <commonlib/helpers.h>
-#include <platform_descriptors.h>
 #include <ec/google/chromeec/ec.h>
 
 #define SKU_UNKNOWN		0xFFFFFFFF
@@ -439,21 +439,6 @@ void mainboard_fsp_silicon_init_params_cb(FSP_S_CONFIG *scfg)
 			fsp_ddi[counter] = pco_ddi_descriptors[counter];
 		}
 	}
-
-// Possible definition of the SD/EMMC values
-// TODO: Remove when we get official definitions
-#define SD_DISABLE		0
-#define SD_LOW_SPEED		1
-#define SD_HIGH_SPEED		2
-#define SD_UHS_I_SDR_50		3
-#define SD_UHS_I_DDR_50		4
-#define SD_UHS_I_SDR_104	5
-#define EMMC_SDR_26		6
-#define EMMC_SDR_52		7
-#define EMMC_DDR_52		8
-#define EMMC_HS200		9
-#define EMMC_HS400		10
-#define EMMC_HS300		11
 
 	if (variant_has_emmc(variant_board_sku())) {
 		if (CONFIG(BOARD_GOOGLE_BASEBOARD_DALBOZ)) {
