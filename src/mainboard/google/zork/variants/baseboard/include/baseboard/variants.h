@@ -16,7 +16,7 @@
 #define __BASEBOARD_VARIANTS_H__
 
 #include <stddef.h>
-#include <soc/southbridge.h>
+#include <FspsUpd.h>
 
 const struct sci_source *get_gpe_table(size_t *num);
 uint8_t variant_memory_sku(void);
