@@ -243,26 +243,29 @@ void hpet_write8(uint8_t reg, uint8_t value);
 void hpet_write16(uint8_t reg, uint16_t value);
 void hpet_write32(uint8_t reg, uint32_t value);
 
-/* Access GPIO MUX registers at 0xfed80d00 */
+/* Access GPIO MUX registers */
 uint8_t iomux_read8(uint8_t reg);
 uint16_t iomux_read16(uint8_t reg);
 uint32_t iomux_read32(uint8_t reg);
 void iomux_write8(uint8_t reg, uint8_t value);
 void iomux_write16(uint8_t reg, uint16_t value);
 void iomux_write32(uint8_t reg, uint32_t value);
+void iomux_set_bar(void *bar);
 
-/* Access Miscellaneous registers at 0xfed80e00 */
+/* Access Miscellaneous registers */
 uint8_t misc_read8(uint8_t reg);
 uint16_t misc_read16(uint8_t reg);
 uint32_t misc_read32(uint8_t reg);
 void misc_write8(uint8_t reg, uint8_t value);
 void misc_write16(uint8_t reg, uint16_t value);
 void misc_write32(uint8_t reg, uint32_t value);
+void misc_set_bar(void *bar);
 
 /* Access GPIO registers */
 void *gpio_get_bar(void);
+void gpio_set_bar(void *bar);
 
-/* Access xHCI Power Management registers at 0xfed81c00 */
+/* Access xHCI Power Management registers */
 uint8_t xhci_pm_read8(uint8_t reg);
 uint16_t xhci_pm_read16(uint8_t reg);
 uint32_t xhci_pm_read32(uint8_t reg);
@@ -270,8 +273,9 @@ void xhci_pm_write8(uint8_t reg, uint8_t value);
 void xhci_pm_write16(uint8_t reg, uint16_t value);
 void xhci_pm_write32(uint8_t reg, uint32_t value);
 
-/* Access Always On Always Connect registers at 0xfed81e00 */
+/* Access Always On Always Connect registers */
 uint8_t aoac_read8(uint8_t reg);
 void aoac_write8(uint8_t reg, uint8_t value);
+void aoac_set_bar(void *bar);
 
 #endif /* __AMDBLOCKS_ACPIMMIO_H__ */
