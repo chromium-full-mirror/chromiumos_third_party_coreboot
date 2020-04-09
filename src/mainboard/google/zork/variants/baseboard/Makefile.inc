@@ -11,19 +11,19 @@
 # GNU General Public License for more details.
 #
 
-bootblock-$(CONFIG_AMD_FP5) += gpio_fp5.c
-bootblock-$(CONFIG_AMD_FT5) += gpio_ft5.c
+bootblock-$(CONFIG_BOARD_GOOGLE_BASEBOARD_TREMBYLE) += gpio_baseboard_trembyle.c
+bootblock-$(CONFIG_BOARD_GOOGLE_BASEBOARD_DALBOZ) += gpio_baseboard_dalboz.c
 
 ifneq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
 verstage-y += tpm_tis.c
 endif
 
-romstage-$(CONFIG_AMD_FP5) += gpio_fp5.c
-romstage-$(CONFIG_AMD_FT5) += gpio_ft5.c
+romstage-$(CONFIG_BOARD_GOOGLE_BASEBOARD_TREMBYLE) += gpio_baseboard_trembyle.c
+romstage-$(CONFIG_BOARD_GOOGLE_BASEBOARD_DALBOZ) += gpio_baseboard_dalboz.c
 romstage-y += tpm_tis.c
 
-ramstage-$(CONFIG_AMD_FP5) += gpio_fp5.c
-ramstage-$(CONFIG_AMD_FT5) += gpio_ft5.c
+ramstage-$(CONFIG_BOARD_GOOGLE_BASEBOARD_TREMBYLE) += gpio_baseboard_trembyle.c
+ramstage-$(CONFIG_BOARD_GOOGLE_BASEBOARD_DALBOZ) += gpio_baseboard_dalboz.c
 ramstage-y += tpm_tis.c
 
 # Add OEM ID table
