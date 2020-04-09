@@ -26,7 +26,6 @@ const struct soc_amd_gpio *variant_romstage_gpio_table(size_t *size);
 const struct soc_amd_gpio *variant_wifi_romstage_gpio_table(size_t *size);
 const struct soc_amd_gpio *variant_gpio_table(size_t *size);
 void variant_romstage_entry(int s3_resume);
-void variant_mainboard_suspend_resume(void);
 /* Return board SKU */
 uint32_t get_board_sku(void);
 /* Modify devictree settings during ramstage. */

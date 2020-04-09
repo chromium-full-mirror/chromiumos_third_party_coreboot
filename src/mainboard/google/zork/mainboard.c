@@ -261,11 +261,6 @@ static void mainboard_final(void *chip_info)
 	}
 }
 
-void mainboard_suspend_resume(void)
-{
-	variant_mainboard_suspend_resume();
-}
-
 struct chip_operations mainboard_ops = {
 	.init = mainboard_init,
 	.enable_dev = zork_enable,
@@ -292,10 +287,6 @@ uint32_t __weak variant_board_sku(void)
 {
 	/* Magic value meaning not provisioned. */
 	return 0x7fffffff;
-}
-
-void __weak variant_mainboard_suspend_resume(void)
-{
 }
 
 void __weak variant_devtree_update(void)

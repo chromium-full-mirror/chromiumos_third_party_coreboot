@@ -37,12 +37,6 @@ uint32_t variant_board_sku(void)
 	return sku_id();
 }
 
-void variant_mainboard_suspend_resume(void)
-{
-	/* Enable backlight - GPIO 85 active low */
-	gpio_set(GPIO_85, 0); /*  APU_EDP_BL_DISABLE */
-}
-
 
 
 const char *smbios_mainboard_manufacturer(void)
