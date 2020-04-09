@@ -127,3 +127,10 @@ uint32_t svc_reset_system(RESET_TYPE reset_type)
 	SVC_CALL1(SVC_RESET_SYSTEM, reset_type, retval);
 	return retval;
 }
+
+uint32_t svc_write_postcode(uint32_t postcode)
+{
+	uint32_t retval = 0;
+	SVC_CALL1(SVC_WRITE_POSTCODE, postcode, retval);
+	return retval;
+}

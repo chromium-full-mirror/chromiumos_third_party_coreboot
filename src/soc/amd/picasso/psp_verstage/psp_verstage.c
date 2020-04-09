@@ -260,6 +260,14 @@ void do_board_reset(void)
 	svc_reset_system(RESET_TYPE_WARM);
 }
 
+void post_code(u8 value)
+{
+	if (CONFIG(CONSOLE_POST))
+		printk(BIOS_WARNING, "Post code: 0x%02x", value);
+	if (CONFIG(POST_IO) && CONFIG_POST_IO_PORT == 0x80)
+		svc_write_postcode(value);
+}
+
 /* Stubs that still need to be implemented */
 
 int get_recovery_mode_switch(void)
@@ -271,11 +279,6 @@ int get_lid_switch(void)
 	return 0;
 }
 
-void post_code(u8 value)
-{
-	printk(BIOS_WARNING, "Post code: 0x%02x", value);
-	return;
-}
 
 void timestamp_add_now(enum timestamp_id id)
 {
