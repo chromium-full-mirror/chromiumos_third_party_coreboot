@@ -66,14 +66,8 @@
 #ifndef SUPPORTS_ACPIMMIO_DPVGA_BASE
   #define SUPPORTS_ACPIMMIO_DPVGA_BASE		0
 #endif
-#ifndef SUPPORTS_ACPIMMIO_GPIO0_BASE
-  #define SUPPORTS_ACPIMMIO_GPIO0_BASE		0
-#endif
-#ifndef SUPPORTS_ACPIMMIO_GPIO1_BASE
-  #define SUPPORTS_ACPIMMIO_GPIO1_BASE		0
-#endif
-#ifndef SUPPORTS_ACPIMMIO_GPIO2_BASE
-  #define SUPPORTS_ACPIMMIO_GPIO2_BASE		0
+#ifndef SUPPORTS_ACPIMMIO_GPIO_BASE
+  #define SUPPORTS_ACPIMMIO_GPIO_BASE		0
 #endif
 #ifndef SUPPORTS_ACPIMMIO_XHCIPM_BASE
   #define SUPPORTS_ACPIMMIO_XHCIPM_BASE		0
@@ -264,6 +258,9 @@ uint32_t misc_read32(uint8_t reg);
 void misc_write8(uint8_t reg, uint8_t value);
 void misc_write16(uint8_t reg, uint16_t value);
 void misc_write32(uint8_t reg, uint32_t value);
+
+/* Access GPIO registers */
+void *gpio_get_bar(void);
 
 /* Access xHCI Power Management registers at 0xfed81c00 */
 uint8_t xhci_pm_read8(uint8_t reg);

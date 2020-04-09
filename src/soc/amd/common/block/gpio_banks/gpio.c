@@ -95,61 +95,60 @@ static void get_sci_config_bits(uint32_t flag, uint32_t *edge, uint32_t *level)
 	}
 }
 
-uintptr_t gpio_get_address(gpio_t gpio_num)
+static uint16_t gpio_get_offset(gpio_t gpio_num)
 {
-	uintptr_t gpio_address;
+	uint16_t block_offset = GPIO_BLOCK_SIZE * (gpio_num / GPIO_PINS_PER_BLOCK);
+	uint16_t pin_offset = (gpio_num % GPIO_PINS_PER_BLOCK) * sizeof(uint32_t);
 
-	if (gpio_num < 64)
-		gpio_address = GPIO_BANK0_CONTROL(gpio_num);
-	else if (gpio_num < 128)
-		gpio_address = GPIO_BANK1_CONTROL(gpio_num);
-	else
-		gpio_address = GPIO_BANK2_CONTROL(gpio_num);
+	return block_offset + pin_offset;
+}
 
-	return gpio_address;
+uint32_t *gpio_get_address(gpio_t gpio_num)
+{
+	uintptr_t bar = (uintptr_t)gpio_get_bar();
+	bar += gpio_get_offset(gpio_num);
+
+	return (uint32_t *)bar;
 }
 
 int gpio_get(gpio_t gpio_num)
 {
-	uint32_t reg;
-	uintptr_t gpio_address = gpio_get_address(gpio_num);
-
-	reg = read32((void *)gpio_address);
+	uint32_t reg = read32(gpio_get_address(gpio_num));
 
 	return !!(reg & GPIO_PIN_STS);
 }
 
 void gpio_set(gpio_t gpio_num, int value)
 {
-	mem_read_write32((void *)gpio_get_address(gpio_num),
+	mem_read_write32(gpio_get_address(gpio_num),
 			 !!value << GPIO_OUTPUT_VALUE_SHIFT,
 			 GPIO_OUTPUT_VALUE_MASK);
 }
 
 void gpio_input_pulldown(gpio_t gpio_num)
 {
-	mem_read_write32((void *)gpio_get_address(gpio_num),
+	mem_read_write32(gpio_get_address(gpio_num),
 			 GPIO_PULLDOWN_ENABLE,
 			 GPIO_PULL_DIR_MASK);
 }
 
 void gpio_input_pullup(gpio_t gpio_num)
 {
-	mem_read_write32((void *)gpio_get_address(gpio_num),
+	mem_read_write32(gpio_get_address(gpio_num),
 			 GPIO_PULLUP_ENABLE,
 			 GPIO_PULL_DIR_MASK);
 }
 
 void gpio_input(gpio_t gpio_num)
 {
-	mem_read_write32((void *)gpio_get_address(gpio_num),
+	mem_read_write32(gpio_get_address(gpio_num),
 			 GPIO_INPUT_ENABLE,
 			 GPIO_DIR_MASK);
 }
 
 void gpio_output(gpio_t gpio_num, int value)
 {
-	mem_read_write32((void *)gpio_get_address(gpio_num),
+	mem_read_write32(gpio_get_address(gpio_num),
 			 GPIO_OUTPUT_ENABLE
 				 | !!value << GPIO_OUTPUT_VALUE_SHIFT,
 			 GPIO_OUTPUT_VALUE_MASK | GPIO_DIR_MASK);
@@ -188,8 +187,8 @@ void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 	const struct soc_amd_event *gev_tbl;
 	size_t gev_items;
 
-	inter_master = (uint32_t *)(uintptr_t)(ACPIMMIO_GPIO0_BASE
-					       + GPIO_MASTER_SWITCH);
+	inter_master = (uint32_t *)((uintptr_t)gpio_get_bar() + GPIO_MASTER_SWITCH);
+
 	direction = 0;
 	edge_level = 0;
 	mask = 0;
@@ -219,7 +218,7 @@ void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 
 		soc_gpio_hook(gpio, mux);
 
-		gpio_ptr = (uint32_t *)gpio_get_address(gpio);
+		gpio_ptr = gpio_get_address(gpio);
 
 		if (control_flags & GPIO_SPECIAL_FLAG) {
 			gevent_num = get_gpio_gevent(gpio, gev_tbl, gev_items);
@@ -288,13 +287,13 @@ void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 
 int gpio_interrupt_status(gpio_t gpio)
 {
-	uintptr_t gpio_address = gpio_get_address(gpio);
-	uint32_t reg = read32((void *)gpio_address);
+	uint32_t *gpio_ptr = gpio_get_address(gpio);
+	uint32_t reg = read32(gpio_ptr);
 
 	if (reg & GPIO_INT_STATUS) {
 		/* Clear interrupt status, preserve wake status */
 		reg &= ~GPIO_WAKE_STATUS;
-		write32((void *)gpio_address, reg);
+		write32(gpio_ptr, reg);
 		return 1;
 	}
 

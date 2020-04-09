@@ -205,7 +205,7 @@ static void save_i2c_pin_registers(uint8_t gpio,
 {
 	uint32_t *gpio_ptr;
 
-	gpio_ptr = (uint32_t *)gpio_get_address(gpio);
+	gpio_ptr = gpio_get_address(gpio);
 	save_table->mux_value = iomux_read8(gpio);
 	save_table->control_value = read32(gpio_ptr);
 }
@@ -215,7 +215,7 @@ static void restore_i2c_pin_registers(uint8_t gpio,
 {
 	uint32_t *gpio_ptr;
 
-	gpio_ptr = (uint32_t *)gpio_get_address(gpio);
+	gpio_ptr = gpio_get_address(gpio);
 	iomux_write8(gpio, save_table->mux_value);
 	iomux_read8(gpio);
 	write32(gpio_ptr, save_table->control_value);
@@ -229,6 +229,13 @@ void sb_reset_i2c_slaves(void)
 	const struct device *dev = pcidev_path_on_root(GNB_DEVFN);
 	struct soc_amd_i2c_save save_table[saved_pins_count];
 	uint8_t i, j, control;
+	/* I2C0-1 is not accessible from the x86. */
+	uint32_t *i2c_gpio_ptr[] = {
+		NULL,
+		NULL,
+		gpio_get_address(I2C2_SCL_PIN),
+		gpio_get_address(I2C3_SCL_PIN),
+	};
 
 	if (!dev || !dev->chip_info)
 		return;
@@ -248,19 +255,19 @@ void sb_reset_i2c_slaves(void)
 	 */
 	for (j = 0; j < 9; j++) {
 		if (control & GPIO_I2C2_SCL)
-			write32((uint32_t *)GPIO_I2C2_ADDRESS, GPIO_SCL_LOW);
+			write32(i2c_gpio_ptr[2], GPIO_SCL_LOW);
 		if (control & GPIO_I2C3_SCL)
-			write32((uint32_t *)GPIO_I2C3_ADDRESS, GPIO_SCL_LOW);
+			write32(i2c_gpio_ptr[3], GPIO_SCL_LOW);
 
-		read32((uint32_t *)GPIO_I2C3_ADDRESS); /* Flush posted write */
+		read32(i2c_gpio_ptr[3]); /* Flush posted write */
 		udelay(4); /* 4usec gets 85KHz for 1 pin, 70KHz for 4 pins */
 
 		if (control & GPIO_I2C2_SCL)
-			write32((uint32_t *)GPIO_I2C2_ADDRESS, GPIO_SCL_HIGH);
+			write32(i2c_gpio_ptr[2], GPIO_SCL_HIGH);
 		if (control & GPIO_I2C3_SCL)
-			write32((uint32_t *)GPIO_I2C3_ADDRESS, GPIO_SCL_HIGH);
+			write32(i2c_gpio_ptr[3], GPIO_SCL_HIGH);
 
-		read32((uint32_t *)GPIO_I2C3_ADDRESS); /* Flush posted write */
+		read32(i2c_gpio_ptr[3]); /* Flush posted write */
 		udelay(4);
 	}
 

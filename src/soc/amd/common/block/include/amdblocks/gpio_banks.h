@@ -31,9 +31,8 @@ struct soc_amd_event {
 	uint8_t event;
 };
 
-#define GPIO_BANK0_CONTROL(gpio) (ACPIMMIO_GPIO0_BASE + ((gpio) * 4))
-#define GPIO_BANK1_CONTROL(gpio) (ACPIMMIO_GPIO1_BASE + (((gpio) - 64) * 4))
-#define GPIO_BANK2_CONTROL(gpio) (ACPIMMIO_GPIO2_BASE + (((gpio) - 128) * 4))
+#define GPIO_BLOCK_SIZE		0x100
+#define GPIO_PINS_PER_BLOCK	64
 
 #define GPIO_MASTER_SWITCH	0xFC
 #define   GPIO_MASK_STS_EN	BIT(28)
@@ -290,8 +289,10 @@ enum {
 
 typedef uint32_t gpio_t;
 
-/* Get the address of the control register of a particular pin */
-uintptr_t gpio_get_address(gpio_t gpio_num);
+/*
+ * Gets the raw memory address of the control register of a particular pin.
+ */
+uint32_t *gpio_get_address(gpio_t gpio_num);
 
 /**
  * @brief program a particular set of GPIO

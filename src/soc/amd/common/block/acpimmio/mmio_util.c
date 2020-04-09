@@ -380,17 +380,15 @@ void misc_write32(u8 reg, u32 value)
 /* dpvga read/write - access registers at 0xfed81400 - not currently used by any soc */
 #endif
 
-#if SUPPORTS_ACPIMMIO_GPIO0_BASE || SUPPORTS_ACPIMMIO_GPIO1_BASE \
-				 || SUPPORTS_ACPIMMIO_GPIO2_BASE
-/*
- * No helpers are currently in use however common/block//gpio.c accesses
- * the registers directly.
- */
+#if SUPPORTS_ACPIMMIO_GPIO_BASE
+/* gpio read/write - access registers at 0xfed81500 */
 
-/* gpio bk 0 read/write - access registers at 0xfed81500 */
-/* gpio bk 1 read/write - access registers at 0xfed81600 */
-/* gpio bk 2 read/write - access registers at 0xfed81700 */
-#endif
+void *gpio_get_bar(void)
+{
+	return (void *)ACPIMMIO_GPIO_BASE;
+}
+
+#endif /* SUPPORTS_ACPIMMIO_GPIO_BASE */
 
 #if SUPPORTS_ACPIMMIO_XHCIPM_BASE
 /* xhci_pm read/write - access registers at 0xfed81c00 */
