@@ -91,6 +91,7 @@ ramstage-$(CONFIG_SPI_FLASH) += spi.c
 ramstage-y += finalize.c
 ramstage-y += psp.c
 ramstage-y += soc_util.c
+ramstage-y += fsp_params.c
 
 smm-y += smihandler.c
 smm-y += smi_util.c

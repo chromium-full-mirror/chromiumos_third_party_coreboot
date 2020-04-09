@@ -4,6 +4,7 @@
 #ifndef __PICASSO_PLATFORM_DESCRIPTORS_H__
 #define __PICASSO_PLATFORM_DESCRIPTORS_H__
 
+#include <types.h>
 #include <platform_descriptors.h>
 #include <FspsUpd.h>
 
@@ -21,5 +22,11 @@
 #define EMMC_HS200		9
 #define EMMC_HS400		10
 #define EMMC_HS300		11
+
+/* Fill in the FSP_S_CONFIG structure with the provided descriptors. */
+void soc_fill_pcie_descriptors(FSP_S_CONFIG *scfg,
+			const picasso_fsp_pcie_descriptor *descs, size_t num);
+void soc_fill_ddi_descriptors(FSP_S_CONFIG *scfg,
+			const picasso_fsp_ddi_descriptor *descs, size_t num);
 
 #endif /* __PICASSO_PLATFORM_DESCRIPTORS_H__ */
