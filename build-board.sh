@@ -23,6 +23,7 @@ declare -a CONFIG_PATHS=(
 )
 
 em100=
+psp_verstage=
 while [[ "$#" -gt 0 ]]; do
 	arg="$1"
 	shift
@@ -33,6 +34,11 @@ while [[ "$#" -gt 0 ]]; do
 	if [[ "$arg" = "-e" ]]; then
 		em100=y
 		echo "Using em100 mode"
+		continue
+	fi
+	if [[ "$arg" = "--psp-verstage" ]]; then
+		psp_verstage=y
+		echo "Building PSP verstage"
 		continue
 	fi
 	if [[ -e "$arg" ]]; then
@@ -113,10 +119,12 @@ function build-coreboot-rom() {
 
 		cat "${serial_config}"
 
-		echo CONFIG_APCB_BLOB_DIR=\"\
-		    "$FIRMWARE_ROOT/coreboot-private/3rdparty/blobs/mainboard"\"
+		echo CONFIG_APCB_BLOB_DIR=\""$FIRMWARE_ROOT/coreboot-private/3rdparty/blobs/mainboard"\"
 		if [[ -n "${em100}" ]]; then
 			echo CONFIG_EM100=y
+		fi
+		if [[ -n "${psp_verstage}" ]]; then
+			echo CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK=y
 		fi
 	} >> "$work_dir/.config"
 	make \
