@@ -18,13 +18,11 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <arch/acpi.h>
 #include <commonlib/helpers.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <soc/i2c.h>
 #include <soc/iomap.h>
 #include <soc/southbridge.h>
-#include <arch/acpi_device.h>
 #include <FspsUpd.h>
 
 struct soc_amd_picasso_config {
