@@ -44,11 +44,16 @@ uint32_t get_board_sku(void)
 {
 	static uint32_t sku_id = SKU_UNKNOWN;
 
-	if (sku_id != SKU_UNKNOWN)
-		return sku_id;
-
+	/* Note - the original dalboz skus do not have legitimate CBI
+	   info. So they return all 0xffff_ffff */
 	if (google_chromeec_cbi_get_sku_id(&sku_id))
 		sku_id = SKU_UNKNOWN;
+
+
+	if (sku_id == SKU_UNKNOWN) {
+		printk(BIOS_ERR, "You have bad CBI information. Unknown SKU!\n");
+		printk(BIOS_ERR, "Go see the Dalboz care and feeding doc\n");
+	}
 
 	return sku_id;
 }
@@ -373,8 +378,11 @@ void mainboard_fsp_silicon_update_params_pci_ddi(FSP_S_CONFIG *scfg)
 	fsp_pcie = (picasso_fsp_pcie_descriptor *)(scfg->dxio_descriptor0);
 	fsp_ddi = (picasso_fsp_ddi_descriptor *)&(scfg->ddi_descriptor0);
 
-	/* SKU 1 and 4 DB have HDMI */
-	if ((sku_id == 0x5A80000A) || (sku_id == 0x5A80000D)) {
+	/* SKU A and D DB have HDMI */
+	/* fixme. this needs to be fw_config controlled. Also,
+	 * this enables HDMI for unknown skus. Only 1/A/D have it */
+	if ((sku_id == 0x5A80000A) || (sku_id == 0x5A80000D) ||
+	    (sku_id == 0x5A800001) || (sku_id == 0xFFFFFFFF)) {
 		for (counter = 0; counter < ARRAY_SIZE(dali_pcie_descriptors); counter++) {
 			fsp_pcie[counter] = dali_pcie_descriptors[counter];
 		}
@@ -385,9 +393,17 @@ void mainboard_fsp_silicon_update_params_pci_ddi(FSP_S_CONFIG *scfg)
 	}
 
 	if (variant_has_emmc(variant_board_sku()))
-		if (CONFIG(BOARD_GOOGLE_BASEBOARD_DALBOZ))
-			if ( sku_id != 0x5A80000C)
-				scfg->emmc0_mode = 0;
+		if (CONFIG(BOARD_GOOGLE_BASEBOARD_DALBOZ)) {
+			scfg->emmc0_mode = 0;
+			/* fixme. This needs to be fw_config controlled. Also,
+			 *  this enables emmc0 for unknown skus. Only
+			 *  sku3/0xC really has it.
+			 */
+			if ((sku_id == 0x5A80000C) || (sku_id == 0x5A800003) ||
+			    (sku_id == 0xffffffff)) {
+				scfg->emmc0_mode = 1;
+			}
+		}
 
 }
 
