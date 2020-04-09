@@ -13,9 +13,11 @@
 
 config BOARD_GOOGLE_BASEBOARD_TREMBYLE
 	def_bool n
+	select AMD_FP5
 
 config BOARD_GOOGLE_BASEBOARD_DALBOZ
 	def_bool n
+	select AMD_FT5
 
 if BOARD_GOOGLE_BASEBOARD_TREMBYLE || BOARD_GOOGLE_BASEBOARD_DALBOZ
 
@@ -73,11 +75,6 @@ config MAINBOARD_PART_NUMBER
 	default "morphius" if BOARD_GOOGLE_MORPHIUS
 	default "trembyle" if BOARD_GOOGLE_TREMBYLE
 	default "dalboz" if BOARD_GOOGLE_DALBOZ
-
-config AMD_FT5
-	bool
-	default y if BOARD_GOOGLE_BASEBOARD_DALBOZ
-	default n
 
 config DEVICETREE
 	string
