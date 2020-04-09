@@ -112,16 +112,18 @@ uint32_t svc_save_uapp_data(UAPP_COPYBUF type, void *address,
 	return retval;
 }
 
-void svc_read_timer_val( PSP_TIMER_TYPE type, uint64_t *counter_value )
+uint32_t svc_read_timer_val( PSP_TIMER_TYPE type, uint64_t *counter_value )
 {
-	unsigned int unused = 0;
+	unsigned int retval = 0;
 	assert(type < PSP_TIMER_TYPE_MAX);
-	SVC_CALL2(SVC_READ_TIMER_VAL, type, counter_value, unused);
+	SVC_CALL2(SVC_READ_TIMER_VAL, type, counter_value, retval);
+	return retval;
 }
 
-void svc_reset_system(RESET_TYPE reset_type)
+uint32_t svc_reset_system(RESET_TYPE reset_type)
 {
-	unsigned int unused = 0;
+	unsigned int retval = 0;
 	assert(reset_type < RESET_TYPE_MAX);
-	SVC_CALL1(SVC_RESET_SYSTEM, reset_type, unused);
+	SVC_CALL1(SVC_RESET_SYSTEM, reset_type, retval);
+	return retval;
 }

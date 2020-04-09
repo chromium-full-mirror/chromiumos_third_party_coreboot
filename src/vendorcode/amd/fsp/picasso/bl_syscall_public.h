@@ -48,6 +48,7 @@
 #define SVC_COPY_DATA_FROM_UAPP		0x41
 #define SVC_READ_TIMER_VAL		0x42
 #define SVC_RESET_SYSTEM		0x43
+#define SVC_WRITE_POSTCODE		0x44
 
 typedef enum _PSP_BOOT_MODE
 {
@@ -82,6 +83,11 @@ typedef enum FCH_IO_DEVICE {
 	FCH_IO_DEVICE_I2C,
 	FCH_IO_DEVICE_GPIO,
 	FCH_IO_DEVICE_eSPI,
+	FCH_IO_DEVICE_IOMUX,
+	FCH_IO_DEVICE_MISC,
+	FCH_IO_DEVICE_AOAC,
+	FCH_IO_DEVICE_IOPORT,
+
 	FCH_IO_DEVICE_END,
 } FCH_IO_DEVICE;
 
@@ -289,7 +295,7 @@ uint32_t svc_update_psp_bios_dir(uint32_t *psp_dir_offset,
 uint32_t svc_save_uapp_data(UAPP_COPYBUF type, void *address,
 		uint32_t size);
 
-/*-----------------------------------------------------------------------------
+/*
  *    Read timer raw (currently CHRONO and RTC) value
  *
  *    Parameters:
@@ -298,15 +304,23 @@ uint32_t svc_save_uapp_data(UAPP_COPYBUF type, void *address,
  *		counter_value	- [out] return the raw counter value read from
  *				RTC or CHRONO_LO/HI counter register
  */
-void svc_read_timer_val( PSP_TIMER_TYPE type, uint64_t *counter_value );
+uint32_t svc_read_timer_val( PSP_TIMER_TYPE type, uint64_t *counter_value );
 
-/*-----------------------------------------------------------------------------
+/*
  *    Reset the system
  *
  *   Parameters:
  *      reset_type -   Cold or Warm reset
  */
-void svc_reset_system(RESET_TYPE reset_type);
+uint32_t svc_reset_system(RESET_TYPE reset_type);
+
+/*
+ *    Write postcode to Port-80
+ *
+ *    Parameters:
+ *                postcode -   Postcode value to be written on port-80h
+ */
+uint32_t svc_write_postcode(uint32_t postcode);
 
 /* C entry point for the Bootloader Userspace Application */
 void Main(void);
