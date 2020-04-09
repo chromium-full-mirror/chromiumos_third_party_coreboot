@@ -232,11 +232,15 @@ void console_hw_init(void)
 	// Nothing to init for svc_debug_print
 }
 
-/* Stubs that still need to be implemented */
-
 void timer_monotonic_get(struct mono_time *mt)
 {
-	svc_read_timer_val(PSP_TIMER_TYPE_CHRONO, (uint64_t *)&mt->microseconds);
+	/* Chrono timer is based on a 100MHz clock, so 1 tick is 10ns */
+	uint64_t clk;
+
+	svc_read_timer_val(PSP_TIMER_TYPE_CHRONO, &clk);
+
+	// TODO: Look at better ways to calculate this
+	mt->microseconds = clk / 100;
 }
 
 uintptr_t dw_i2c_base_address(uint32_t bus)
@@ -255,6 +259,8 @@ void do_board_reset(void)
 {
 	svc_reset_system(RESET_TYPE_WARM);
 }
+
+/* Stubs that still need to be implemented */
 
 int get_recovery_mode_switch(void)
 {
