@@ -211,9 +211,6 @@ static void mainboard_init(void *chip_info)
 	gpes = get_gpe_table(&num);
 	if (gpes != NULL)
 		gpe_configure_sci(gpes, num);
-
-	/* Initialize i2c busses that were not initialized in bootblock */
-	i2c_soc_init();
 }
 
 void mainboard_fsp_silicon_init_params_cb(FSP_S_CONFIG *scfg)
