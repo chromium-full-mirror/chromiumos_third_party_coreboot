@@ -36,26 +36,3 @@ uint32_t variant_board_sku(void)
 {
 	return sku_id();
 }
-
-
-
-const char *smbios_mainboard_manufacturer(void)
-{
-	static char oem_bin_data[11];
-	static const char *manuf;
-
-	if (!CONFIG(USE_OEM_BIN))
-		return CONFIG_MAINBOARD_SMBIOS_MANUFACTURER;
-
-	if (manuf)
-		return manuf;
-
-	if (cbfs_boot_load_file("oem.bin", oem_bin_data,
-					    sizeof(oem_bin_data) - 1,
-					    CBFS_TYPE_RAW))
-		manuf = &oem_bin_data[0];
-	else
-		manuf = CONFIG_MAINBOARD_SMBIOS_MANUFACTURER;
-
-	return manuf;
-}
