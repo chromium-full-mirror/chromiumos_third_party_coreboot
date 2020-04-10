@@ -2,6 +2,7 @@
 /* This file is part of the coreboot project. */
 
 #include <stdint.h>
+#include <arch/io.h>
 #include <device/mmio.h>
 #include <amdblocks/acpimmio.h>
 
@@ -106,4 +107,21 @@ u8 aoac_read8(u8 reg)
 void aoac_write8(u8 reg, u8 value)
 {
 	write8((void *)(aoac_bar + reg), value);
+}
+
+static uintptr_t io_bar;
+
+void io_set_bar(void *bar)
+{
+	io_bar = (uintptr_t)bar;
+}
+
+u8 io_read8(u16 reg)
+{
+	return read8((void *)(io_bar + reg));
+}
+
+void io_write8(u16 reg, u8 value)
+{
+	write8((void *)(io_bar + reg), value);
 }
