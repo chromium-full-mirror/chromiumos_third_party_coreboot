@@ -27,7 +27,6 @@ const struct soc_amd_gpio *variant_wifi_romstage_gpio_table(size_t *size);
 const struct soc_amd_gpio *variant_gpio_table(size_t *size);
 void variant_romstage_entry(int s3_resume);
 void variant_mainboard_suspend_resume(void);
-int variant_has_emmc(uint8_t sku);
 /* Return board SKU */
 uint32_t get_board_sku(void);
 /* Modify devictree settings during ramstage. */
@@ -39,6 +38,8 @@ void mainboard_fsp_silicon_update_params_pci_ddi(FSP_S_CONFIG *scfg);
 void variant_get_pcie_ddi_descriptors(
 		const picasso_fsp_pcie_descriptor **pcie_descs, size_t *pcie_num,
 		const picasso_fsp_ddi_descriptor **ddi_descs, size_t *ddi_num);
+/* Everything but ddi and pcie, overrideable by variant */
+void variant_update_fsps_params(FSP_S_CONFIG *scfg);
 
 /* Provide the descriptors for the associated baseboard for the variant. These functions
  * can be used for obtaining the baseboard's descriptors if the variant followed the

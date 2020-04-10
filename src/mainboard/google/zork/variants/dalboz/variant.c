@@ -12,22 +12,37 @@
  */
 
 #include <baseboard/variants.h>
+#include <console/console.h>
 #include <soc/pci_devs.h>
 #include <ec/google/chromeec/ec.h>
 
-void variant_devtree_update(void)
+static int sku_has_emmc(void)
 {
 	uint32_t sku_id;
-	struct device *ssd_host;
-	ssd_host = pcidev_path_on_root(SATA_DEVFN);
 
 	sku_id = get_board_sku();
-	/* Only SKU 3 has not SSD, hence disable it. */
-	if (sku_id == 0x5A80000C) {
-		if (ssd_host == NULL)
-			return;
-		ssd_host->enabled = 0;
-	}
+
+	/* FIXME: This needs to be fw_config controlled. */
+	/* Enable emmc0 for unknown skus. Only sku3/0xC really has it. */
+	if (sku_id == 0x5A80000C || sku_id == 0x5A800003 || sku_id == 0xFFFFFFFF)
+		return 1;
+
+	return 0;
+}
+
+void variant_devtree_update(void)
+{
+	struct device *ssd_host;
+
+	if (!sku_has_emmc())
+		return;
+
+	ssd_host = pcidev_path_on_root(SATA_DEVFN);
+
+	if (ssd_host == NULL)
+		return;
+
+	ssd_host->enabled = 0;
 }
 
 /* FIXME: Comments seem to suggest these are not entirely correct. */
@@ -87,5 +102,15 @@ void variant_get_pcie_ddi_descriptors(
 	} else {
 		*ddi_descs = &non_hdmi_ddi_descriptors[0];
 		*ddi_num = ARRAY_SIZE(non_hdmi_ddi_descriptors);
+	}
+}
+
+void variant_update_fsps_params(FSP_S_CONFIG *scfg)
+{
+	if (sku_has_emmc()) {
+		printk(BIOS_WARNING, "Warning: using speed: HS200 on Dalboz!\n");
+		scfg->emmc0_mode = EMMC_HS200;
+	} else {
+		scfg->emmc0_mode = 0;
 	}
 }

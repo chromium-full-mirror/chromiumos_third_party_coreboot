@@ -216,24 +216,6 @@ static void mainboard_init(void *chip_info)
 	i2c_soc_init();
 }
 
-void mainboard_fsp_silicon_update_params_pci_ddi(FSP_S_CONFIG *scfg)
-{
-	uint32_t sku_id = get_board_sku();
-
-	if (variant_has_emmc(variant_board_sku()))
-		if (CONFIG(BOARD_GOOGLE_BASEBOARD_DALBOZ)) {
-			scfg->emmc0_mode = 0;
-			/* fixme. This needs to be fw_config controlled. Also,
-			 *  this enables emmc0 for unknown skus. Only
-			 *  sku3/0xC really has it.
-			 */
-			if ((sku_id == 0x5A80000C) || (sku_id == 0x5A800003) ||
-			    (sku_id == 0xffffffff)) {
-				scfg->emmc0_mode = 1;
-			}
-		}
-}
-
 void mainboard_fsp_silicon_init_params_cb(FSP_S_CONFIG *scfg)
 {
 	const picasso_fsp_pcie_descriptor *fsp_pcie;
@@ -244,19 +226,7 @@ void mainboard_fsp_silicon_init_params_cb(FSP_S_CONFIG *scfg)
 	variant_get_pcie_ddi_descriptors(&fsp_pcie, &num_pcie, &fsp_ddi, &num_ddi);
 	soc_fill_pcie_descriptors(scfg, fsp_pcie, num_pcie);
 	soc_fill_ddi_descriptors(scfg, fsp_ddi, num_ddi);
-
-	if (variant_has_emmc(variant_board_sku())) {
-		if (CONFIG(BOARD_GOOGLE_BASEBOARD_DALBOZ)) {
-			printk(BIOS_WARNING, "Warning: using speed: HS200 on Dalboz!\n");
-			scfg->emmc0_mode = EMMC_HS200;
-		} else {
-			scfg->emmc0_mode = EMMC_HS400;
-		}
-	} else {
-		scfg->emmc0_mode = SD_DISABLE;
-	}
-
-	mainboard_fsp_silicon_update_params_pci_ddi(scfg);
+	variant_update_fsps_params(scfg);
 }
 
 /*************************************************
@@ -314,6 +284,12 @@ const char *smbios_system_sku(void)
 	return sku_str;
 }
 
+void __weak variant_update_fsps_params(FSP_S_CONFIG *scfg)
+{
+	/* Default to EMMC enabled with EMMC_HS400 */
+	scfg->emmc0_mode = EMMC_HS400;
+}
+
 /* Variants may override these functions so see definitions in variants */
 uint32_t __weak variant_board_sku(void)
 {
@@ -323,12 +299,6 @@ uint32_t __weak variant_board_sku(void)
 
 void __weak variant_mainboard_suspend_resume(void)
 {
-}
-
-int __weak variant_has_emmc(uint8_t sku)
-{
-	/* Default to EMMC enabled */
-	return 1;
 }
 
 void __weak variant_devtree_update(void)
