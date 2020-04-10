@@ -16,7 +16,7 @@
 #define __BASEBOARD_VARIANTS_H__
 
 #include <stddef.h>
-#include <FspsUpd.h>
+#include <soc/platform_descriptors.h>
 
 const struct sci_source *get_gpe_table(size_t *num);
 uint8_t variant_memory_sku(void);
@@ -33,5 +33,17 @@ uint32_t get_board_sku(void);
 /* Modify devictree settings during ramstage. */
 void variant_devtree_update(void);
 void mainboard_fsp_silicon_update_params_pci_ddi(FSP_S_CONFIG *scfg);
+
+/* Per variant FSP-S initialization, default implementation in baseboard and
+ * overrideable by the variant. */
+void variant_get_pcie_ddi_descriptors(
+		const picasso_fsp_pcie_descriptor **pcie_descs, size_t *pcie_num,
+		const picasso_fsp_ddi_descriptor **ddi_descs, size_t *ddi_num);
+
+/* Provide the descriptors for the associated baseboard for the variant. These functions
+ * can be used for obtaining the baseboard's descriptors if the variant followed the
+ * baseboard. */
+const picasso_fsp_pcie_descriptor *baseboard_get_pcie_descriptors(size_t *num);
+const picasso_fsp_ddi_descriptor *baseboard_get_ddi_descriptors(size_t *num);
 
 #endif /* __BASEBOARD_VARIANTS_H__ */

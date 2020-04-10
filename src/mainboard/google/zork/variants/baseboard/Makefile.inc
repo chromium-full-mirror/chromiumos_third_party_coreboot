@@ -23,7 +23,9 @@ romstage-$(CONFIG_BOARD_GOOGLE_BASEBOARD_DALBOZ) += gpio_baseboard_dalboz.c
 romstage-y += tpm_tis.c
 
 ramstage-$(CONFIG_BOARD_GOOGLE_BASEBOARD_TREMBYLE) += gpio_baseboard_trembyle.c
+ramstage-$(CONFIG_BOARD_GOOGLE_BASEBOARD_TREMBYLE) += fsps_baseboard_trembyle.c
 ramstage-$(CONFIG_BOARD_GOOGLE_BASEBOARD_DALBOZ) += gpio_baseboard_dalboz.c
+ramstage-$(CONFIG_BOARD_GOOGLE_BASEBOARD_DALBOZ) += fsps_baseboard_dalboz.c
 ramstage-y += tpm_tis.c
 
 # Add OEM ID table

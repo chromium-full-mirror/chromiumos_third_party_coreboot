@@ -216,181 +216,9 @@ static void mainboard_init(void *chip_info)
 	i2c_soc_init();
 }
 
-static const picasso_fsp_pcie_descriptor pco_pcie_descriptors[] =
-{
-	{ // NVME SSD
-		.port_present = true,
-		.engine_type = PCIE_ENGINE,
-		.start_lane = 0,
-		.end_lane = 3,
-		.device_number = 1,
-		.function_number = 7,
-		.link_aspm = ASPM_L1,
-		.link_aspm_L1_1 = true,
-		.link_aspm_L1_2 = true,
-		.turn_off_unused_lanes = true,
-		.clk_req = NVME_CLKREQ,
-	},
-	{ // WLAN
-		.port_present = true,
-		.engine_type = PCIE_ENGINE,
-		.start_lane = 4,
-		.end_lane = 4,
-		.device_number = 1,
-		.function_number = 2,
-		.link_aspm = ASPM_L1,
-		.link_aspm_L1_1 = true,
-		.link_aspm_L1_2 = true,
-		.turn_off_unused_lanes = true,
-		.clk_req = WLAN_CLKREQ,
-		.clk_pm_support = true,
-	},
-	{ // SD Reader
-		.port_present = true,
-		.engine_type = PCIE_ENGINE,
-		.start_lane = 5,
-		.end_lane = 5,
-		.device_number = 1,
-		.function_number = 3,
-		.link_aspm = ASPM_L1,
-		.link_aspm_L1_1 = true,
-		.link_aspm_L1_2 = true,
-		.turn_off_unused_lanes = true,
-		.clk_req = SD_CLKREQ,
-	}
-};
-
-static const picasso_fsp_pcie_descriptor dali_pcie_descriptors[] =
-{
-	{ // NVME SSD
-		.port_present = true,
-		.engine_type = PCIE_ENGINE,
-		.start_lane = NVME_START_LANE,
-		.end_lane = NVME_END_LANE,
-		.device_number = 1,
-		.function_number = 7,
-		.link_aspm = ASPM_L1,
-		.link_aspm_L1_1 = true,
-		.link_aspm_L1_2 = true,
-		.turn_off_unused_lanes = true,
-		.clk_req = NVME_CLKREQ,
-		.clk_pm_support = true,
-	},
-	{ // WLAN
-		.port_present = true,
-		.engine_type = PCIE_ENGINE,
-		.start_lane = WLAN_START_LANE,
-		.end_lane = WLAN_END_LANE,
-		.device_number = 1,
-		.function_number = 2,
-		.link_aspm = ASPM_L1,
-		.link_aspm_L1_1 = true,
-		.link_aspm_L1_2 = true,
-		.turn_off_unused_lanes = true,
-		.clk_req = WLAN_CLKREQ,
-		.clk_pm_support = true,
-	},
-	{ // SD Reader
-		.port_present = true,
-		.engine_type = PCIE_ENGINE,
-		.start_lane = SD_START_LANE,
-		.end_lane = SD_END_LANE,
-		.device_number = 1,
-		.function_number = 3,
-		.link_aspm = ASPM_L1,
-		.link_aspm_L1_1 = true,
-		.link_aspm_L1_2 = true,
-		.turn_off_unused_lanes = true,
-		.clk_req = SD_CLKREQ,
-	}
-};
-
-picasso_fsp_ddi_descriptor pco_ddi_descriptors[] =
-{
-	{ // DDI0, DP0, eDP
-		.connector_type = EDP,
-		.aux_index = AUX1,
-		.hdp_index = HDP1
-	},
-	{ // DDI1, DP1, DB OPT1 HDMI
-		.connector_type = HDMI,
-		.aux_index = AUX2,
-		.hdp_index = HDP2
-	},
-	{ // DDI2, DP2, DB OPT1 USB-C1
-		.connector_type = DP,
-		.aux_index = AUX3,
-		.hdp_index = HDP3,
-	},
-	{ // DDI3, DP3, USB-C0
-		.connector_type = DP,
-		.aux_index = AUX4,
-		.hdp_index = HDP4,
-	}
-};
-
-picasso_fsp_ddi_descriptor dali_ddi_descriptors[] =
-{
-	{ // DDI0, DP0, eDP
-		.connector_type = EDP,
-		.aux_index = AUX1,
-		.hdp_index = HDP1
-	},
-	{ // DDI1, DP1, DB OPT2 USB-C1 / DB OPT3 MST hub
-		.connector_type = DP,
-		.aux_index = AUX2,
-		.hdp_index = HDP2
-	},
-	// DP2 pins not connected on Dali
-	{ // DDI2, DP3, USB-C0
-		.connector_type = DP,
-		.aux_index = AUX4,
-		.hdp_index = HDP4,
-	}
-};
-
-picasso_fsp_ddi_descriptor dalboz_ddi_descriptors[] = {
-	{ // DDI0, DP0, eDP
-		.connector_type = EDP,
-		.aux_index = AUX1,
-		.hdp_index = HDP1
-	},
-	{ // DDI1, DP1, DB OPT2 USB-C1 / DB OPT3 MST hub
-		.connector_type = HDMI,
-		.aux_index = AUX2,
-		.hdp_index = HDP2
-	},
-	// DP2 pins not connected on Dali
-	{ // DDI2, DP3, USB-C0
-		.connector_type = DP,
-		.aux_index = AUX4,
-		.hdp_index = HDP4,
-	}
-};
-
 void mainboard_fsp_silicon_update_params_pci_ddi(FSP_S_CONFIG *scfg)
 {
-	uint8_t counter;
 	uint32_t sku_id = get_board_sku();
-	picasso_fsp_ddi_descriptor     *fsp_ddi;
-	picasso_fsp_pcie_descriptor    *fsp_pcie;
-
-	fsp_pcie = (picasso_fsp_pcie_descriptor *)(scfg->dxio_descriptor0);
-	fsp_ddi = (picasso_fsp_ddi_descriptor *)&(scfg->ddi_descriptor0);
-
-	/* SKU A and D DB have HDMI */
-	/* fixme. this needs to be fw_config controlled. Also,
-	 * this enables HDMI for unknown skus. Only 1/A/D have it */
-	if ((sku_id == 0x5A80000A) || (sku_id == 0x5A80000D) ||
-	    (sku_id == 0x5A800001) || (sku_id == 0xFFFFFFFF)) {
-		for (counter = 0; counter < ARRAY_SIZE(dali_pcie_descriptors); counter++) {
-			fsp_pcie[counter] = dali_pcie_descriptors[counter];
-		}
-
-		for (counter = 0; counter < ARRAY_SIZE(dalboz_ddi_descriptors); counter++) {
-			fsp_ddi[counter] = dalboz_ddi_descriptors[counter];
-		}
-	}
 
 	if (variant_has_emmc(variant_board_sku()))
 		if (CONFIG(BOARD_GOOGLE_BASEBOARD_DALBOZ)) {
@@ -404,41 +232,18 @@ void mainboard_fsp_silicon_update_params_pci_ddi(FSP_S_CONFIG *scfg)
 				scfg->emmc0_mode = 1;
 			}
 		}
-
 }
 
 void mainboard_fsp_silicon_init_params_cb(FSP_S_CONFIG *scfg)
 {
-	picasso_fsp_ddi_descriptor     *fsp_ddi;
-	picasso_fsp_pcie_descriptor    *fsp_pcie;
-	uint8_t counter;
+	const picasso_fsp_pcie_descriptor *fsp_pcie;
+	const picasso_fsp_ddi_descriptor *fsp_ddi;
+	size_t num_pcie;
+	size_t num_ddi;
 
-	fsp_pcie = (picasso_fsp_pcie_descriptor *)(scfg->dxio_descriptor0);
-	fsp_ddi = (picasso_fsp_ddi_descriptor *)&(scfg->ddi_descriptor0);
-
-	// Dali and Pollock
-	if (soc_is_raven2()) {
-		for (counter = 0; counter < ARRAY_SIZE(dali_pcie_descriptors); counter++) {
-			fsp_pcie[counter] = dali_pcie_descriptors[counter];
-		}
-
-		for (counter = 0; counter < ARRAY_SIZE(dali_ddi_descriptors); counter++) {
-			fsp_ddi[counter] = dali_ddi_descriptors[counter];
-		}
-	}
-	// Picasso and default
-	else {
-		if (!soc_is_picasso())
-			printk(BIOS_WARNING, "Warning: Unrecognized Processor in %s", __FILE__);
-
-		for (counter = 0; counter < ARRAY_SIZE(pco_pcie_descriptors); counter++) {
-			fsp_pcie[counter] = pco_pcie_descriptors[counter];
-		}
-
-		for (counter = 0; counter < ARRAY_SIZE(pco_ddi_descriptors); counter++) {
-			fsp_ddi[counter] = pco_ddi_descriptors[counter];
-		}
-	}
+	variant_get_pcie_ddi_descriptors(&fsp_pcie, &num_pcie, &fsp_ddi, &num_ddi);
+	soc_fill_pcie_descriptors(scfg, fsp_pcie, num_pcie);
+	soc_fill_ddi_descriptors(scfg, fsp_ddi, num_ddi);
 
 	if (variant_has_emmc(variant_board_sku())) {
 		if (CONFIG(BOARD_GOOGLE_BASEBOARD_DALBOZ)) {
