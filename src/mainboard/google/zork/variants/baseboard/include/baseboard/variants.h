@@ -16,18 +16,17 @@
 #define __BASEBOARD_VARIANTS_H__
 
 #include <stddef.h>
+#include <boardid.h>
+#include <ec/google/chromeec/ec.h>
 #include <soc/platform_descriptors.h>
 
 const struct sci_source *get_gpe_table(size_t *num);
 uint8_t variant_memory_sku(void);
-uint32_t variant_board_sku(void);
 const struct soc_amd_gpio *variant_early_gpio_table(size_t *size);
 const struct soc_amd_gpio *variant_romstage_gpio_table(size_t *size);
 const struct soc_amd_gpio *variant_wifi_romstage_gpio_table(size_t *size);
 const struct soc_amd_gpio *variant_gpio_table(size_t *size);
 void variant_romstage_entry(int s3_resume);
-/* Return board SKU */
-uint32_t get_board_sku(void);
 /* Modify devictree settings during ramstage. */
 void variant_devtree_update(void);
 void mainboard_fsp_silicon_update_params_pci_ddi(FSP_S_CONFIG *scfg);

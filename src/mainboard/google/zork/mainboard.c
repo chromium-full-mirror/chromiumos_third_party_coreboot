@@ -37,27 +37,6 @@
 #include <variant/thermal.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <commonlib/helpers.h>
-#include <ec/google/chromeec/ec.h>
-
-#define SKU_UNKNOWN		0xFFFFFFFF
-
-uint32_t get_board_sku(void)
-{
-	static uint32_t sku_id = SKU_UNKNOWN;
-
-	/* Note - the original dalboz skus do not have legitimate CBI
-	   info. So they return all 0xffff_ffff */
-	if (google_chromeec_cbi_get_sku_id(&sku_id))
-		sku_id = SKU_UNKNOWN;
-
-
-	if (sku_id == SKU_UNKNOWN) {
-		printk(BIOS_ERR, "You have bad CBI information. Unknown SKU!\n");
-		printk(BIOS_ERR, "Go see the Dalboz care and feeding doc\n");
-	}
-
-	return sku_id;
-}
 
 /***********************************************************
  * These arrays set up the FCH PCI_INTR registers 0xC00/0xC01.
@@ -185,13 +164,11 @@ static void pirq_setup(void)
 static void mainboard_init(void *chip_info)
 {
 	const struct sci_source *gpes;
-	uint32_t sku_id;
 	size_t num;
 	int boardid;
 	size_t num_gpios;
 	const struct soc_amd_gpio *gpios;
 
-	sku_id = get_board_sku();
 	mainboard_ec_init();
 	boardid = board_id();
 	printk(BIOS_INFO, "Board ID: %d\n", boardid);
@@ -268,15 +245,6 @@ struct chip_operations mainboard_ops = {
 	.final = mainboard_final,
 };
 
-const char *smbios_system_sku(void)
-{
-	static char sku_str[3 + 10 + 1];
-
-	snprintf(sku_str, sizeof(sku_str), "sku%u", variant_board_sku());
-
-	return sku_str;
-}
-
 const char *smbios_mainboard_manufacturer(void)
 {
 	static char oem_bin_data[11];
@@ -302,13 +270,6 @@ void __weak variant_update_fsps_params(FSP_S_CONFIG *scfg)
 {
 	/* Default to EMMC enabled with EMMC_HS400 */
 	scfg->emmc0_mode = EMMC_HS400;
-}
-
-/* Variants may override these functions so see definitions in variants */
-uint32_t __weak variant_board_sku(void)
-{
-	/* Magic value meaning not provisioned. */
-	return 0x7fffffff;
 }
 
 void __weak variant_devtree_update(void)

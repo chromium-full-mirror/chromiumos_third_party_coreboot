@@ -18,13 +18,12 @@
 
 static int sku_has_emmc(void)
 {
-	uint32_t sku_id;
-
-	sku_id = get_board_sku();
+	uint32_t board_sku = sku_id();
 
 	/* FIXME: This needs to be fw_config controlled. */
 	/* Enable emmc0 for unknown skus. Only sku3/0xC really has it. */
-	if (sku_id == 0x5A80000C || sku_id == 0x5A800003 || sku_id == 0xFFFFFFFF)
+	if (board_sku == 0x5A80000C || board_sku == 0x5A800003 ||
+	    board_sku == CROS_SKU_UNKNOWN)
 		return 1;
 
 	return 0;
@@ -89,14 +88,14 @@ void variant_get_pcie_ddi_descriptors(
 		const picasso_fsp_pcie_descriptor **pcie_descs, size_t *pcie_num,
 		const picasso_fsp_ddi_descriptor **ddi_descs, size_t *ddi_num)
 {
-	uint32_t sku_id = get_board_sku();
+	uint32_t board_sku = sku_id();
 
 	*pcie_descs = baseboard_get_pcie_descriptors(pcie_num);
 
 	/* SKU 1, A, and D DB have HDMI, as well as unknown */
 	/* FIXME: this needs to be fw_config controlled. */
-	if ((sku_id == 0x5A80000A) || (sku_id == 0x5A80000D) ||
-	    (sku_id == 0x5A800001) || (sku_id == 0xFFFFFFFF)) {
+	if ((board_sku == 0x5A80000A) || (board_sku == 0x5A80000D) ||
+	    (board_sku == 0x5A800001) || (board_sku == CROS_SKU_UNKNOWN)) {
 		*ddi_descs = &hdmi_ddi_descriptors[0];
 		*ddi_num = ARRAY_SIZE(hdmi_ddi_descriptors);
 	} else {

@@ -23,7 +23,7 @@
 
 void variant_romstage_entry(int s3_resume)
 {
-	uint32_t sku = google_chromeec_get_sku_id();
+	uint32_t sku = sku_id();
 
 	//SET WIFI_PCIE_RESET_L HIGH
 	gpio_set(WIFI_PCIE_RESET_L, 1);
