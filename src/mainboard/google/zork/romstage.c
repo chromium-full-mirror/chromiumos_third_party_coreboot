@@ -99,7 +99,3 @@ void mainboard_romstage_early_init(void)
 
 	variant_romstage_entry(s3_resume);
 }
-
-void mainboard_fsp_memory_init_params_cb(FSP_M_CONFIG *mcfg, uint32_t version)
-{
-}

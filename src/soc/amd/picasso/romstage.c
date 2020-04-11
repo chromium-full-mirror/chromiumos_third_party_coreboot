@@ -217,8 +217,6 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 			mcfg->telemetry_vddcr_soc_offset = config->telemetry_vddcr_soc_offset;
 		}
 	}
-
-	mainboard_fsp_memory_init_params_cb(mcfg, version);
 }
 
 asmlinkage void soc_hybrid_romstage_entry(uint32_t bist, uint64_t early_tsc)

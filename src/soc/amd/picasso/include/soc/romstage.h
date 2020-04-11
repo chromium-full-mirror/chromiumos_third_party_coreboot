@@ -19,10 +19,8 @@
 
 #include <stdint.h>
 #include <arch/cpu.h>
-#include <FspmUpd.h>
 
 void mainboard_romstage_early_init(void);
 void mainboard_romstage_entry_s3(int s3_resume);
-void mainboard_fsp_memory_init_params_cb(FSP_M_CONFIG *mcfg, uint32_t version);
 
 #endif /* __PICASSO_HYBRID_ROMSTAGE_H__ */

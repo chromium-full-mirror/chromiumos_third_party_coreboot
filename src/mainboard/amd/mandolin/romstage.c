@@ -75,7 +75,3 @@ void mainboard_romstage_early_init(void)
 	printk(BIOS_DEBUG, "Mandolin: Enable eSPI channel to EC\n");
 	enable_espi_early();
 }
-
-void mainboard_fsp_memory_init_params_cb(FSP_M_CONFIG *mcfg, uint32_t version)
-{
-}
