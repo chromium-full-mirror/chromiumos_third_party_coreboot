@@ -56,18 +56,7 @@ static void fsps_update_emmc_config(FSP_S_CONFIG *scfg,
 	scfg->emmc0_mode = val;
 }
 
-void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
-{
-	const struct soc_amd_picasso_config *cfg;
-	FSP_S_CONFIG *scfg = &supd->FspsConfig;
-
-	cfg = config_of_path(GNB_DEVFN);
-	fsps_update_emmc_config(scfg, cfg);
-
-	mainboard_fsp_silicon_init_params_cb(scfg);
-}
-
-void soc_fill_pcie_descriptors(FSP_S_CONFIG *scfg,
+static void fill_pcie_descriptors(FSP_S_CONFIG *scfg,
 			const picasso_fsp_pcie_descriptor *descs, size_t num)
 {
 	size_t i;
@@ -81,7 +70,7 @@ void soc_fill_pcie_descriptors(FSP_S_CONFIG *scfg,
 	}
 }
 
-void soc_fill_ddi_descriptors(FSP_S_CONFIG *scfg,
+static void fill_ddi_descriptors(FSP_S_CONFIG *scfg,
 			const picasso_fsp_ddi_descriptor *descs, size_t num)
 {
 	size_t i;
@@ -93,4 +82,26 @@ void soc_fill_ddi_descriptors(FSP_S_CONFIG *scfg,
 	for (i = 0; i < num; i++) {
 		fsp_ddi[i] = descs[i];
 	}
+}
+static void fsp_fill_pcie_ddi_descriptors(FSP_S_CONFIG *scfg)
+{
+	const picasso_fsp_pcie_descriptor *fsp_pcie;
+	const picasso_fsp_ddi_descriptor *fsp_ddi;
+	size_t num_pcie;
+	size_t num_ddi;
+
+	mainboard_get_pcie_ddi_descriptors(&fsp_pcie, &num_pcie,
+						&fsp_ddi, &num_ddi);
+	fill_pcie_descriptors(scfg, fsp_pcie, num_pcie);
+	fill_ddi_descriptors(scfg, fsp_ddi, num_ddi);
+}
+
+void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
+{
+	const struct soc_amd_picasso_config *cfg;
+	FSP_S_CONFIG *scfg = &supd->FspsConfig;
+
+	cfg = config_of_path(GNB_DEVFN);
+	fsps_update_emmc_config(scfg, cfg);
+	fsp_fill_pcie_ddi_descriptors(scfg);
 }

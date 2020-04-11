@@ -23,10 +23,9 @@
 #define EMMC_HS400		10
 #define EMMC_HS300		11
 
-/* Fill in the FSP_S_CONFIG structure with the provided descriptors. */
-void soc_fill_pcie_descriptors(FSP_S_CONFIG *scfg,
-			const picasso_fsp_pcie_descriptor *descs, size_t num);
-void soc_fill_ddi_descriptors(FSP_S_CONFIG *scfg,
-			const picasso_fsp_ddi_descriptor *descs, size_t num);
+/* Mainboard callback to obtain PCIe and DDI descriptors. */
+void mainboard_get_pcie_ddi_descriptors(
+		const picasso_fsp_pcie_descriptor **pcie_descs, size_t *pcie_num,
+		const picasso_fsp_ddi_descriptor **ddi_descs, size_t *ddi_num);
 
 #endif /* __PICASSO_PLATFORM_DESCRIPTORS_H__ */

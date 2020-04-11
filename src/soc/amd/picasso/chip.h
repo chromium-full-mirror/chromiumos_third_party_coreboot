@@ -119,6 +119,5 @@ extern struct device_operations pci_domain_ops;
 
 /* Empty function for compatibility with FSP 2.0 driver */
 void *vbt_get(void);
-void mainboard_fsp_silicon_init_params_cb(FSP_S_CONFIG *scfg);
 
 #endif /* __PICASSO_CHIP_H__ */

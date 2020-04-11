@@ -191,16 +191,12 @@ static void mainboard_init(void *chip_info)
 		gpe_configure_sci(gpes, num);
 }
 
-void mainboard_fsp_silicon_init_params_cb(FSP_S_CONFIG *scfg)
+void mainboard_get_pcie_ddi_descriptors(
+		const picasso_fsp_pcie_descriptor **pcie_descs, size_t *pcie_num,
+		const picasso_fsp_ddi_descriptor **ddi_descs, size_t *ddi_num)
 {
-	const picasso_fsp_pcie_descriptor *fsp_pcie;
-	const picasso_fsp_ddi_descriptor *fsp_ddi;
-	size_t num_pcie;
-	size_t num_ddi;
-
-	variant_get_pcie_ddi_descriptors(&fsp_pcie, &num_pcie, &fsp_ddi, &num_ddi);
-	soc_fill_pcie_descriptors(scfg, fsp_pcie, num_pcie);
-	soc_fill_ddi_descriptors(scfg, fsp_ddi, num_ddi);
+	variant_get_pcie_ddi_descriptors(pcie_descs, pcie_num,
+					ddi_descs, ddi_num);
 }
 
 /*************************************************

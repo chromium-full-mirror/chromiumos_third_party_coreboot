@@ -378,24 +378,26 @@ static const picasso_fsp_ddi_descriptor dali_ddi_descriptors[] =
 	}
 };
 
-void mainboard_fsp_silicon_init_params_cb(FSP_S_CONFIG *scfg)
+void mainboard_get_pcie_ddi_descriptors(
+		const picasso_fsp_pcie_descriptor **pcie_descs, size_t *pcie_num,
+		const picasso_fsp_ddi_descriptor **ddi_descs, size_t *ddi_num)
 {
 	// Dali
 	if (soc_is_dali()) {
-		soc_fill_pcie_descriptors(dali_pcie_descriptors,
-					ARRAY_SIZE(dali_pcie_descriptors));
-		soc_fill_ddi_descriptors(dali_ddi_descriptors,
-					ARRAY_SIZE(dali_ddi_descriptors));
+		*pcie_descs = dali_pcie_descriptors;
+		*pcie_num = ARRAY_SIZE(dali_pcie_descriptors);
+		*ddi_descs = dali_ddi_descriptors;
+		*ddi_num = ARRAY_SIZE(dali_ddi_descriptors);
 	}
 	// Picasso and default
 	else {
 		if (!soc_is_picasso())
 			printk(BIOS_WARNING, "Warning: Unrecognized Processor in %s", __FILE__);
 
-		soc_fill_pcie_descriptors(pco_pcie_descriptors,
-					ARRAY_SIZE(pco_pcie_descriptors));
-		soc_fill_ddi_descriptors(pco_ddi_descriptors,
-					ARRAY_SIZE(pco_ddi_descriptors));
+		*pcie_descs = pco_pcie_descriptors;
+		*pcie_num = ARRAY_SIZE(pco_pcie_descriptors);
+		*ddi_descs = pco_ddi_descriptors;
+		*ddi_num = ARRAY_SIZE(pco_ddi_descriptors);
 	}
 }
 
