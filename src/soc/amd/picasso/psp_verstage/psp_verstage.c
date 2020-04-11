@@ -140,7 +140,8 @@ void Main(void)
 {
 	uint32_t retval = 0;
 
-	printk(BIOS_DEBUG,"Entering verstage on PSP\n");
+	/* Do not use printk() before verstage_mainboard_init() is called */
+	svc_debug_print("Entering verstage on PSP\n");
 	memset(&_bss_start, '\0', &_bss_end - &_bss_start);
 
 	verstage_mainboard_init();
