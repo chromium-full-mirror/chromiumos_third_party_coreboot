@@ -96,6 +96,21 @@ struct soc_amd_picasso_config {
 	uint32_t telemetry_vddcr_vdd_offset;
 	uint32_t telemetry_vddcr_soc_slope;
 	uint32_t telemetry_vddcr_soc_offset;
+
+	enum {
+		SD_EMMC_DISABLE,
+		SD_EMMC_SD_LOW_SPEED,
+		SD_EMMC_SD_HIGH_SPEED,
+		SD_EMMC_SD_UHS_I_SDR_50,
+		SD_EMMC_SD_UHS_I_DDR_50,
+		SD_EMMC_SD_UHS_I_SDR_104,
+		SD_EMMC_EMMC_SDR_26,
+		SD_EMMC_EMMC_SDR_52,
+		SD_EMMC_EMMC_DDR_52,
+		SD_EMMC_EMMC_HS200,
+		SD_EMMC_EMMC_HS400,
+		SD_EMMC_EMMC_HS300,
+	} sd_emmc_config;
 };
 
 typedef struct soc_amd_picasso_config config_t;

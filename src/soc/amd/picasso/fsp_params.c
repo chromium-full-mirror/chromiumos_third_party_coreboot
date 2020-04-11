@@ -1,13 +1,68 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /* This file is part of the coreboot project. */
 
+#include <device/pci.h>
+#include <soc/pci_devs.h>
 #include <soc/platform_descriptors.h>
 #include <fsp/api.h>
 #include "chip.h"
 
+static void fsps_update_emmc_config(FSP_S_CONFIG *scfg,
+				const struct soc_amd_picasso_config *cfg)
+{
+	int val = SD_DISABLE;
+
+	switch (cfg->sd_emmc_config) {
+	case SD_EMMC_DISABLE:
+		val = SD_DISABLE;
+		break;
+	case SD_EMMC_SD_LOW_SPEED:
+		val = SD_LOW_SPEED;
+		break;
+	case SD_EMMC_SD_HIGH_SPEED:
+		val = SD_HIGH_SPEED;
+		break;
+	case SD_EMMC_SD_UHS_I_SDR_50:
+		val = SD_UHS_I_SDR_50;
+		break;
+	case SD_EMMC_SD_UHS_I_DDR_50:
+		val = SD_UHS_I_DDR_50;
+		break;
+	case SD_EMMC_SD_UHS_I_SDR_104:
+		val = SD_UHS_I_SDR_104;
+		break;
+	case SD_EMMC_EMMC_SDR_26:
+		val = EMMC_SDR_26;
+		break;
+	case SD_EMMC_EMMC_SDR_52:
+		val = EMMC_SDR_52;
+		break;
+	case SD_EMMC_EMMC_DDR_52:
+		val = EMMC_DDR_52;
+		break;
+	case SD_EMMC_EMMC_HS200:
+		val = EMMC_HS200;
+		break;
+	case SD_EMMC_EMMC_HS400:
+		val = EMMC_HS400;
+		break;
+	case SD_EMMC_EMMC_HS300:
+		val = EMMC_HS300;
+		break;
+	default:
+		break;
+	}
+
+	scfg->emmc0_mode = val;
+}
+
 void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 {
+	const struct soc_amd_picasso_config *cfg;
 	FSP_S_CONFIG *scfg = &supd->FspsConfig;
+
+	cfg = config_of_path(GNB_DEVFN);
+	fsps_update_emmc_config(scfg, cfg);
 
 	mainboard_fsp_silicon_init_params_cb(scfg);
 }
