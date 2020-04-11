@@ -11,14 +11,11 @@
  * GNU General Public License for more details.
  */
 
-#include <amdblocks/lpc.h>
 #include <baseboard/variants.h>
-#include <device/pci_ops.h>
 #include <ec/ec.h>
 #include <ec/google/chromeec/ec.h>
 #include <soc/espi.h>
 #include <soc/gpio.h>
-#include <soc/pci_devs.h>
 #include <soc/romstage.h>
 #include <variant/ec.h>
 #include <console/console.h>
@@ -85,27 +82,11 @@ static void enable_espi_early(void)
 	espi_enable_resources(ioports);
 }
 
-static void disable_rom_sharing(void)
-{
-	u8 byte;
-
-	byte = pci_read_config8(SOC_LPC_DEV, LPC_PCI_CONTROL);
-	byte &= ~VW_ROM_SHARING_EN;
-	byte &= ~EXT_ROM_SHARING_EN;
-	pci_write_config8(SOC_LPC_DEV, LPC_PCI_CONTROL, byte);
-}
-
 void mainboard_romstage_early_init(void)
 {
 	int s3_resume = 0; //TODO: Handle S3
 	size_t num_gpios;
 	const struct soc_amd_gpio *gpios;
-
-	/*
-	 * Disable ROM sharing since the EC will never read the SPI directly.
-	 * This frees up EGPIO67_SPI_ROM_REQ so it can be used as a GPIO.
-	 */
-	disable_rom_sharing();
 
 	gpios = variant_romstage_gpio_table(&num_gpios);
 	program_gpios(gpios, num_gpios);
