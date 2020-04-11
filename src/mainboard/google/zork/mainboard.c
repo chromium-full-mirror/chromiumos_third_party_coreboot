@@ -201,7 +201,6 @@ void mainboard_fsp_silicon_init_params_cb(FSP_S_CONFIG *scfg)
 	variant_get_pcie_ddi_descriptors(&fsp_pcie, &num_pcie, &fsp_ddi, &num_ddi);
 	soc_fill_pcie_descriptors(scfg, fsp_pcie, num_pcie);
 	soc_fill_ddi_descriptors(scfg, fsp_ddi, num_ddi);
-	variant_update_fsps_params(scfg);
 }
 
 /*************************************************
@@ -244,12 +243,6 @@ struct chip_operations mainboard_ops = {
 	.enable_dev = zork_enable,
 	.final = mainboard_final,
 };
-
-void __weak variant_update_fsps_params(FSP_S_CONFIG *scfg)
-{
-	/* Default to EMMC enabled with EMMC_HS400 */
-	scfg->emmc0_mode = EMMC_HS400;
-}
 
 void __weak variant_devtree_update(void)
 {

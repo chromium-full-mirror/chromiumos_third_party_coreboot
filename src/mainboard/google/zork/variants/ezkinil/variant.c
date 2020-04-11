@@ -2,6 +2,7 @@
 /* This file is part of the coreboot project. */
 
 #include <baseboard/variants.h>
+#include <device/device.h>
 #include <soc/pci_devs.h>
 #include <ec/google/chromeec/ec.h>
 
@@ -21,24 +22,13 @@ static int sku_has_emmc(void)
 void variant_devtree_update(void)
 {
 	struct device *ssd_host;
-
-	if (!sku_has_emmc())
-		return;
+	struct soc_amd_picasso_config *cfg;
 
 	ssd_host = pcidev_path_on_root(SATA_DEVFN);
+	cfg = config_of(ssd_host);
 
-	if (ssd_host == NULL)
-		return;
-
-	ssd_host->enabled = 0;
+	if (sku_has_emmc())
+		ssd_host->enabled = 0;
+	else
+		cfg->sd_emmc_config = SD_EMMC_DISABLE;
 }
-
-void variant_update_fsps_params(FSP_S_CONFIG *scfg)
-{
-	if (sku_has_emmc()) {
-		scfg->emmc0_mode = EMMC_HS400;
-	} else {
-		scfg->emmc0_mode = SD_DISABLE;
-	}
-}
-

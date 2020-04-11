@@ -19,6 +19,7 @@
 #include <boardid.h>
 #include <ec/google/chromeec/ec.h>
 #include <soc/platform_descriptors.h>
+#include "chip.h"
 
 const struct sci_source *get_gpe_table(size_t *num);
 const struct soc_amd_gpio *variant_early_gpio_table(size_t *size);
@@ -28,15 +29,12 @@ const struct soc_amd_gpio *variant_gpio_table(size_t *size);
 void variant_romstage_entry(int s3_resume);
 /* Modify devictree settings during ramstage. */
 void variant_devtree_update(void);
-void mainboard_fsp_silicon_update_params_pci_ddi(FSP_S_CONFIG *scfg);
 
 /* Per variant FSP-S initialization, default implementation in baseboard and
  * overrideable by the variant. */
 void variant_get_pcie_ddi_descriptors(
 		const picasso_fsp_pcie_descriptor **pcie_descs, size_t *pcie_num,
 		const picasso_fsp_ddi_descriptor **ddi_descs, size_t *ddi_num);
-/* Everything but ddi and pcie, overrideable by variant */
-void variant_update_fsps_params(FSP_S_CONFIG *scfg);
 
 /* Provide the descriptors for the associated baseboard for the variant. These functions
  * can be used for obtaining the baseboard's descriptors if the variant followed the
