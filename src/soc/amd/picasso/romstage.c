@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <amdblocks/lpc.h>
 #include <arch/cpu.h>
 #include <arch/romstage.h>
 #include <arch/acpi.h>
@@ -26,6 +27,7 @@
 #include <cpu/x86/bist.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/amd/msr.h>
+#include <device/pci_ops.h>
 #include <smp/node.h>
 #include <console/uart.h>
 #include <cbmem.h>
@@ -37,6 +39,7 @@
 #include <elog.h>
 #include <soc/cpu.h>
 #include <soc/northbridge.h>
+#include <soc/pci_devs.h>
 #include <soc/southbridge.h>
 #include <soc/romstage.h>
 #include <fsp/api.h>
@@ -55,6 +58,16 @@ static uint8_t telemetry_config_used(const config_t *config)
 	return 0;
 }
 
+static void disable_rom_sharing(void)
+{
+	u8 byte;
+
+	byte = pci_read_config8(SOC_LPC_DEV, LPC_PCI_CONTROL);
+	byte &= ~VW_ROM_SHARING_EN;
+	byte &= ~EXT_ROM_SHARING_EN;
+	pci_write_config8(SOC_LPC_DEV, LPC_PCI_CONTROL, byte);
+}
+
 static void romstage_soc_early_init(void)
 {
 	msr_t mmconf;
@@ -65,6 +78,9 @@ static void romstage_soc_early_init(void)
 	wrmsr(MMIO_CONF_BASE, mmconf);
 
 	fch_pre_init();
+
+	if (CONFIG(DISABLE_SPI_FLASH_ROM_SHARING))
+		disable_rom_sharing();
 }
 
 static void romstage_soc_init(int s3_resume)

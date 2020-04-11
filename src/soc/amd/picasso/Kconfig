@@ -456,4 +456,12 @@ config VBOOT_STARTS_BEFORE_BOOTBLOCK
 	  Runs verstage on the PSP.  Only available on
 	  certain Chrome OS branded parts from AMD.
 
+config DISABLE_SPI_FLASH_ROM_SHARING
+	def_bool n
+	help
+	  Instruct the chipset to not honor the EGPIO67_SPI_ROM_REQ pin
+	  which indicates a board level ROM transaction request. This
+	  removes arbitration with board and assumes the chipset controls
+	  the SPI flash bus entirely.
+
 endif # SOC_AMD_PICASSO
