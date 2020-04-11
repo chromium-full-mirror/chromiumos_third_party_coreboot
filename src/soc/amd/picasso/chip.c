@@ -29,7 +29,6 @@
 #include <soc/soc_util.h>
 #include <soc/southbridge.h>
 #include "chip.h"
-#include <fsp/api.h>
 
 /* Supplied by i2c.c */
 extern struct device_operations picasso_i2c_mmio_ops;
@@ -275,13 +274,6 @@ static void enable_dev(struct device *dev)
 void *vbt_get(void)
 {
 	return NULL;
-}
-
-void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
-{
-	FSP_S_CONFIG *scfg = &supd->FspsConfig;
-
-	mainboard_fsp_silicon_init_params_cb(scfg);
 }
 
 static void soc_init(void *chip_info)

@@ -2,6 +2,15 @@
 /* This file is part of the coreboot project. */
 
 #include <soc/platform_descriptors.h>
+#include <fsp/api.h>
+#include "chip.h"
+
+void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
+{
+	FSP_S_CONFIG *scfg = &supd->FspsConfig;
+
+	mainboard_fsp_silicon_init_params_cb(scfg);
+}
 
 void soc_fill_pcie_descriptors(FSP_S_CONFIG *scfg,
 			const picasso_fsp_pcie_descriptor *descs, size_t num)
