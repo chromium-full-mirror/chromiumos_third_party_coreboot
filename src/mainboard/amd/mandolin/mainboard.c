@@ -21,9 +21,9 @@
 #include <soc/espi.h>
 #include <soc/southbridge.h>
 #include <soc/pci_devs.h>
+#include <soc/platform_descriptors.h>
 #include <soc/soc_util.h>
 #include <commonlib/helpers.h>
-#include <platform_descriptors.h>
 #include "gpio.h"
 //
 //
@@ -329,7 +329,7 @@ static const picasso_fsp_pcie_descriptor dali_pcie_descriptors[] =
 	}
 };
 
-picasso_fsp_ddi_descriptor pco_ddi_descriptors[] =
+static const picasso_fsp_ddi_descriptor pco_ddi_descriptors[] =
 {
 	{ // DDI0 - DP
 		.connector_type = DP,
@@ -353,7 +353,7 @@ picasso_fsp_ddi_descriptor pco_ddi_descriptors[] =
 	}
 };
 
-picasso_fsp_ddi_descriptor dali_ddi_descriptors[] =
+static const picasso_fsp_ddi_descriptor dali_ddi_descriptors[] =
 {
 	{ // DDI0 - DP
 		.connector_type = DP,
@@ -374,38 +374,25 @@ picasso_fsp_ddi_descriptor dali_ddi_descriptors[] =
 
 void mainboard_fsp_silicon_init_params_cb(FSP_S_CONFIG *scfg)
 {
-	picasso_fsp_ddi_descriptor     *fsp_ddi;
-	picasso_fsp_pcie_descriptor    *fsp_pcie;
-	uint8_t                        counter;
-
-	fsp_pcie = (picasso_fsp_pcie_descriptor *)(scfg->dxio_descriptor0);
-	fsp_ddi = (picasso_fsp_ddi_descriptor *)&(scfg->ddi_descriptor0);
-
 	// Dali
 	if (soc_is_dali()) {
-		for (counter = 0; counter < ARRAY_SIZE(dali_pcie_descriptors); counter++) {
-			fsp_pcie[counter] = dali_pcie_descriptors[counter];
-		}
-
-		for (counter = 0; counter < ARRAY_SIZE(dali_ddi_descriptors); counter++) {
-			fsp_ddi[counter] = dali_ddi_descriptors[counter];
-		}
+		soc_fill_pcie_descriptors(dali_pcie_descriptors,
+					ARRAY_SIZE(dali_pcie_descriptors));
+		soc_fill_ddi_descriptors(dali_ddi_descriptors,
+					ARRAY_SIZE(dali_ddi_descriptors));
 	}
 	// Picasso and default
 	else {
 		if (!soc_is_picasso())
 			printk(BIOS_WARNING, "Warning: Unrecognized Processor in %s", __FILE__);
 
-		for (counter = 0; counter < ARRAY_SIZE(pco_pcie_descriptors); counter++) {
-			fsp_pcie[counter] = pco_pcie_descriptors[counter];
-		}
-
-		for (counter = 0; counter < ARRAY_SIZE(pco_ddi_descriptors); counter++) {
-			fsp_ddi[counter] = pco_ddi_descriptors[counter];
-		}
+		soc_fill_pcie_descriptors(pco_pcie_descriptors,
+					ARRAY_SIZE(pco_pcie_descriptors));
+		soc_fill_ddi_descriptors(pco_ddi_descriptors,
+					ARRAY_SIZE(pco_ddi_descriptors));
 	}
 	if (!CONFIG(PICASSO_LPC_IOMUX))
-		scfg->emmc0_mode = 10;
+		scfg->emmc0_mode = EMMC_HS400;
 }
 
 /*************************************************
