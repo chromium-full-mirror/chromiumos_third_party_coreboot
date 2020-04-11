@@ -179,6 +179,12 @@ static void enable_ec_io_ports(void)
 
 static void mainboard_init(void *chip_info)
 {
+	struct soc_amd_picasso_config *cfg = config_of_path(GNB_DEVFN);
+
+	if (!CONFIG(PICASSO_LPC_IOMUX)) {
+		cfg->sd_emmc_config = SD_EMMC_EMMC_HS400;
+	}
+
 	mainboard_program_gpios();
 }
 
@@ -391,8 +397,6 @@ void mainboard_fsp_silicon_init_params_cb(FSP_S_CONFIG *scfg)
 		soc_fill_ddi_descriptors(pco_ddi_descriptors,
 					ARRAY_SIZE(pco_ddi_descriptors));
 	}
-	if (!CONFIG(PICASSO_LPC_IOMUX))
-		scfg->emmc0_mode = EMMC_HS400;
 }
 
 /*************************************************

@@ -29,6 +29,8 @@ chip soc/amd/picasso
 				ACPI_FADT_S4_RTC_VALID |
 				ACPI_FADT_REMOTE_POWER_ON"
 
+	register "sd_emmc_config" = "SD_EMMC_DISABLE"
+
 	device cpu_cluster 0 on
 		device lapic 0 on end
 	end
