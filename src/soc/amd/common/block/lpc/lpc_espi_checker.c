@@ -309,7 +309,7 @@ void check_lpc_espi_overlap(void)
 	gather_lpc_regs();
 
 	/* read and populate my eSPI information */
-	uint8_t *espi_base = espi_read_base_address();
+	uint8_t *espi_base = espi_get_bar();
 	uint32_t slave0_decode_en = read32(espi_base + ESPI_DECODE);
 
 	/* handle the special bits / ranges in the eSPI register */

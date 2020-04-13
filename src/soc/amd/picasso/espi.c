@@ -13,13 +13,12 @@
  */
 
 #include <console/console.h>
-#include <device/pci_ops.h>
+#include <arch/mmio.h>
+#include <device/device.h>
 #include <soc/espi.h>
-#include <soc/pci_devs.h>
 #include <stdint.h>
 #include <string.h>
 #include <timer.h>
-#include <amdblocks/lpc.h>
 #include <amdblocks/lpc_espi_checker.h>
 #include <lib.h>
 #include <assert.h>
@@ -47,10 +46,10 @@ static uint32_t read32_espi(uint8_t *espi, uint8_t offset)
 	return val;
 }
 
-void dump_espi_regs(void)
+static void dump_espi_regs(void)
 {
 	/* Show the entire address space of 64 dwords*/
-	hexdump32(ESPI_EXT_DBG, espi_read_base_address(), 0x40);
+	hexdump32(ESPI_EXT_DBG, espi_get_bar(), 0x40);
 }
 
 static void espi_show_slave_configuration(uint32_t config)
@@ -139,7 +138,7 @@ static void espi_show_slave_configuration(uint32_t config)
 
 static void espi_show_host_configuration(void)
 {
-	uint8_t *espi = espi_read_base_address();
+	uint8_t *espi = espi_get_bar();
 	uint32_t slave0_decode_en = read32(espi + ESPI_DECODE);
 	uint32_t slave0_config = read32(espi + ESPI_SLAVE0_CONFIG);
 	uint32_t global_ctrl_reg_1 = read32(espi + ESPI_GLOBAL_CONTROL_1);
@@ -459,20 +458,6 @@ static bool is_0x80(uintptr_t base)
 	return (base == 0x80);
 }
 
-/*
- * Contrary to the ESPI_BASE_ADDRESS macro in iomap.h,
- * this is a not a fixed resource.
- */
-void *espi_read_base_address(void)
-{
-	uintptr_t spi_espi_bar, espi;
-
-	spi_espi_bar = pci_read_config32(SOC_LPC_DEV, SPIROM_BASE_ADDRESS_REGISTER);
-	espi = (spi_espi_bar & SPI_BAR_ADDRESS_MASK) + ESPI_OFFSET_FROM_BAR;
-	return (void *)espi;
-}
-
-
 static void set_frequency(uint32_t req, uint32_t slave_supports, uint32_t *host_cfg_reg,
 			  uint32_t *slave_cfg_reg)
 {
@@ -684,7 +669,7 @@ static void set_generics(const struct espi_config *cfg, uint32_t *cfg_reg,
 void espi_setup(const struct espi_config *cfg)
 {
 	uint32_t cfg_reg = 0, global_ctrl_reg;
-	uint8_t *espi = espi_read_base_address();
+	uint8_t *espi = espi_get_bar();
 	uint32_t slave_supports, slave_cfg_reg;
 	uint32_t espi_initial_mode = ESPI_OP_FREQ_16_MHZ | ESPI_IO_MODE_SINGLE;
 
@@ -789,7 +774,7 @@ static int espi_allocate_mmio(struct espi_resource_allocator *allocation,
 static void espi_write_resources(struct espi_resource_allocator *allocation)
 {
 	uint32_t espi_capabilities, decode_enable = 0;
-	uint8_t *espi = espi_read_base_address();
+	uint8_t *espi = espi_get_bar();
 	int i;
 
 	espi_capabilities = read32(espi);
@@ -844,7 +829,9 @@ static void espi_write_resources(struct espi_resource_allocator *allocation)
 	printk(ESPI_DBG, "ESPI Decode reg: %08x\n", decode_enable);
 	write32(espi + ESPI_DECODE, decode_enable);
 
-	check_lpc_espi_overlap();
+	/* PSP does not have LPC mapped */
+	if (!CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK) || !ENV_VERSTAGE)
+		check_lpc_espi_overlap();
 }
 
 static int espi_allocate(struct espi_resource_allocator *allocation,

@@ -16,6 +16,8 @@
 #define AMD_PICASSO_ESPI_H
 
 #include <stdint.h>
+#include <device/resource.h>
+
 /*
  * If 'update_slave' is set, then this will cause an eSPI bus transaction to
  * write to the slave's config registers. This is not needed if the setting
@@ -54,9 +56,11 @@ struct espi_response {
 void espi_setup(const struct espi_config *cfg);
 int espi_enable_resources(const struct resource *resource_linked_list);
 void espi_enable_children_resources(struct device *espi);
-void *espi_read_base_address(void);
+void *espi_get_bar(void);
 void espi_show_configuration(void);
-void dump_espi_regs(void);
+
+/* The PSP needs to map the device into virtual memory. */
+void espi_set_bar(void *bar);
 
 /*
  * Picasso-specific eSPI host registers

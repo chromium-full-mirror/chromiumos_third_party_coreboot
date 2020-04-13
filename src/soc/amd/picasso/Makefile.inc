@@ -41,6 +41,7 @@ subdirs-$(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK) += psp_verstage
 romstage-y += early_stack.S
 romstage-y += i2c.c
 romstage-y += espi.c
+romstage-y += espi-x86.c
 romstage-y += romstage.c
 romstage-y += gpio.c
 romstage-y += pmutil.c
@@ -55,7 +56,10 @@ romstage-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
 romstage-y += psp.c
 romstage-y += soc_util.c
 
-ifneq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
+ifeq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
+verstage-y += espi.c
+verstage-y += espi-psp.c
+else
 verstage-y += gpio.c
 verstage-y += i2c.c
 verstage-y += pmutil.c
@@ -70,6 +74,7 @@ ramstage-y += i2c.c
 ramstage-y += chip.c
 ramstage-y += cpu.c
 ramstage-y += espi.c
+ramstage-y += espi-x86.c
 ramstage-y += mca.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-y += gpio.c
