@@ -946,12 +946,12 @@ void mainboard_suspend_resume(void);
 void *acpi_find_wakeup_vector(void);
 
 enum {
-	ACPI_S0,
-	ACPI_S1,
-	ACPI_S2,
-	ACPI_S3,
-	ACPI_S4,
-	ACPI_S5,
+	ACPI_S0 = 0,
+	ACPI_S1 = 1,
+	ACPI_S2 = 2,
+	ACPI_S3 = 3,
+	ACPI_S4 = 4,
+	ACPI_S5 = 5,
 };
 
 #if CONFIG(ACPI_INTEL_HARDWARE_SLEEP_VALUES) \
