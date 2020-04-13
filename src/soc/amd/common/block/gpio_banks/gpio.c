@@ -121,56 +121,38 @@ int gpio_get(gpio_t gpio_num)
 
 void gpio_set(gpio_t gpio_num, int value)
 {
-	uint32_t reg;
-	uintptr_t gpio_address = gpio_get_address(gpio_num);
-
-	reg = read32((void *)gpio_address);
-	reg &= ~GPIO_OUTPUT_MASK;
-	reg |=  !!value << GPIO_OUTPUT_SHIFT;
-	write32((void *)gpio_address, reg);
+	mem_read_write32((void *)gpio_get_address(gpio_num),
+			 !!value << GPIO_OUTPUT_VALUE_SHIFT,
+			 GPIO_OUTPUT_VALUE_MASK);
 }
 
 void gpio_input_pulldown(gpio_t gpio_num)
 {
-	uint32_t reg;
-	uintptr_t gpio_address = gpio_get_address(gpio_num);
-
-	reg = read32((void *)gpio_address);
-	reg &= ~GPIO_PULLUP_ENABLE;
-	reg |=  GPIO_PULLDOWN_ENABLE;
-	write32((void *)gpio_address, reg);
+	mem_read_write32((void *)gpio_get_address(gpio_num),
+			 GPIO_PULLDOWN_ENABLE,
+			 GPIO_PULL_DIR_MASK);
 }
 
 void gpio_input_pullup(gpio_t gpio_num)
 {
-	uint32_t reg;
-	uintptr_t gpio_address = gpio_get_address(gpio_num);
-
-	reg = read32((void *)gpio_address);
-	reg &= ~GPIO_PULLDOWN_ENABLE;
-	reg |=  GPIO_PULLUP_ENABLE;
-	write32((void *)gpio_address, reg);
+	mem_read_write32((void *)gpio_get_address(gpio_num),
+			 GPIO_PULLUP_ENABLE,
+			 GPIO_PULL_DIR_MASK);
 }
 
 void gpio_input(gpio_t gpio_num)
 {
-	uint32_t reg;
-	uintptr_t gpio_address = gpio_get_address(gpio_num);
-
-	reg = read32((void *)gpio_address);
-	reg &= ~GPIO_OUTPUT_ENABLE;
-	write32((void *)gpio_address, reg);
+	mem_read_write32((void *)gpio_get_address(gpio_num),
+			 GPIO_INPUT_ENABLE,
+			 GPIO_DIR_MASK);
 }
 
 void gpio_output(gpio_t gpio_num, int value)
 {
-	uint32_t reg;
-	uintptr_t gpio_address = gpio_get_address(gpio_num);
-
-	reg = read32((void *)gpio_address);
-	reg |=  GPIO_OUTPUT_ENABLE;
-	write32((void *)gpio_address, reg);
-	gpio_set(gpio_num, value);
+	mem_read_write32((void *)gpio_get_address(gpio_num),
+			 GPIO_OUTPUT_ENABLE
+				 | !!value << GPIO_OUTPUT_VALUE_SHIFT,
+			 GPIO_OUTPUT_VALUE_MASK | GPIO_DIR_MASK);
 }
 
 const char *gpio_acpi_path(gpio_t gpio)
