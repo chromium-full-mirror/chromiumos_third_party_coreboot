@@ -32,15 +32,11 @@ static int sku_has_emmc(void)
 
 void variant_devtree_update(void)
 {
-	struct device *ssd_host;
 	struct soc_amd_picasso_config *cfg;
 
-	ssd_host = pcidev_path_on_root(SATA_DEVFN);
-	cfg = config_of(ssd_host);
+	cfg = config_of_path(GNB_DEVFN);
 
-	if (sku_has_emmc())
-		ssd_host->enabled = 0;
-	else
+	if (!sku_has_emmc())
 		cfg->sd_emmc_config = SD_EMMC_DISABLE;
 }
 
