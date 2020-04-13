@@ -102,6 +102,7 @@ ramstage-y += finalize.c
 ramstage-y += psp.c
 ramstage-y += soc_util.c
 ramstage-y += fsp_params.c
+ramstage-y += dmi.c
 
 smm-y += smihandler.c
 smm-y += smi_util.c
