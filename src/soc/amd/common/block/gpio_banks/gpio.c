@@ -185,7 +185,8 @@ void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 	uint8_t mux, index, gpio;
 	int gevent_num;
 	const struct soc_amd_event *gev_tbl;
-	size_t gev_items;
+	size_t gev_items = 0;
+	const bool can_set_smi_flags = !CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK) || !ENV_VERSTAGE;
 
 	inter_master = (uint32_t *)((uintptr_t)gpio_get_bar() + GPIO_MASTER_SWITCH);
 
@@ -205,7 +206,9 @@ void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 	 */
 	mem_read_write32(inter_master, 0, GPIO_MASK_STS_EN | GPIO_INTERRUPT_EN);
 
-	soc_get_gpio_event_table(&gev_tbl, &gev_items);
+	if (can_set_smi_flags) {
+		soc_get_gpio_event_table(&gev_tbl, &gev_items);
+	}
 
 	for (index = 0; index < size; index++) {
 		gpio = gpio_list_ptr[index].gpio;
@@ -236,6 +239,10 @@ void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 						AMD_GPIO_CONTROL_MASK);
 				break;
 			case GPIO_SMI_FLAG:
+				/* Can't set SMI flags from PSP */
+				if (!can_set_smi_flags)
+					break;
+
 				if (gevent_missing(gpio, gevent_num, "SMI Flag"))
 					break;
 				mem_read_write32(gpio_ptr, control,
@@ -243,6 +250,10 @@ void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 				program_smi(control_flags, gevent_num);
 				break;
 			case GPIO_SCI_FLAG:
+				/* Can't set SCI flags from PSP */
+				if (!can_set_smi_flags)
+					break;
+
 				if (gevent_missing(gpio, gevent_num, "SCI Flag"))
 					break;
 				mem_read_write32(gpio_ptr, control,
@@ -274,15 +285,17 @@ void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 	 */
 	mem_read_write32(inter_master, GPIO_INTERRUPT_EN, GPIO_INTERRUPT_EN);
 
-	/* Set all SCI trigger direction (high/low) */
-	mem_read_write32((uint32_t *)
-			(uintptr_t)(ACPIMMIO_SMI_BASE + SMI_SCI_TRIG),
-					direction, mask);
+	if (can_set_smi_flags) {
+		/* Set all SCI trigger direction (high/low) */
+		mem_read_write32((uint32_t *)
+				(uintptr_t)(ACPIMMIO_SMI_BASE + SMI_SCI_TRIG),
+						direction, mask);
 
-	/* Set all SCI trigger level (edge/level) */
-	mem_read_write32((uint32_t *)
-			(uintptr_t)(ACPIMMIO_SMI_BASE + SMI_SCI_LEVEL),
-					edge_level, mask);
+		/* Set all SCI trigger level (edge/level) */
+		mem_read_write32((uint32_t *)
+				(uintptr_t)(ACPIMMIO_SMI_BASE + SMI_SCI_LEVEL),
+						edge_level, mask);
+	}
 }
 
 int gpio_interrupt_status(gpio_t gpio)

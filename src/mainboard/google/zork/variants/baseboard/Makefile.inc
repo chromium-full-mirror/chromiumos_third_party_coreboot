@@ -14,7 +14,10 @@
 bootblock-$(CONFIG_BOARD_GOOGLE_BASEBOARD_TREMBYLE) += gpio_baseboard_trembyle.c
 bootblock-$(CONFIG_BOARD_GOOGLE_BASEBOARD_DALBOZ) += gpio_baseboard_dalboz.c
 
-ifneq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
+ifeq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
+verstage-$(CONFIG_BOARD_GOOGLE_BASEBOARD_TREMBYLE) += gpio_baseboard_trembyle.c
+verstage-$(CONFIG_BOARD_GOOGLE_BASEBOARD_DALBOZ) += gpio_baseboard_dalboz.c
+else
 verstage-y += tpm_tis.c
 endif
 
