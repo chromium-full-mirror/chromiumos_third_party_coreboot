@@ -180,4 +180,12 @@ config PAYLOAD_CONFIGFILE
 	depends on PAYLOAD_SEABIOS
 	default "$(top)/src/mainboard/google/zork/config_seabios"
 
+config PSP_SHAREDMEM_BASE
+	hex
+	default 0x00A00000
+	depends on VBOOT_STARTS_BEFORE_BOOTBLOCK
+	help
+	  Fix this - this is NOT a good address.  Can we put it in the bios region?
+	  0xD000 or so, then copy it to cbmem?
+
 endif # BOARD_GOOGLE_BASEBOARD_TREMBYLE || BOARD_GOOGLE_BASEBOARD_DALBOZ
