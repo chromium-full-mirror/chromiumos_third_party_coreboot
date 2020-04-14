@@ -36,8 +36,13 @@ void variant_devtree_update(void)
 
 	cfg = config_of_path(GNB_DEVFN);
 
-	if (!sku_has_emmc())
+	if (sku_has_emmc()) {
+		if (sku_id() == 0x5A800003)
+			/* rev0 boards have issues with HS400 */
+			cfg->sd_emmc_config = SD_EMMC_EMMC_HS200;
+	} else {
 		cfg->sd_emmc_config = SD_EMMC_DISABLE;
+	}
 }
 
 /* FIXME: Comments seem to suggest these are not entirely correct. */

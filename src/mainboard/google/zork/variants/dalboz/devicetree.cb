@@ -67,7 +67,7 @@ chip soc/amd/picasso
 
         # End : OPN Performance Configuration
 
-	register "sd_emmc_config" = "SD_EMMC_EMMC_HS200"
+	register "sd_emmc_config" = "SD_EMMC_EMMC_HS400"
 
 	# I2C2 for touchscreen and trackpad
 	register "i2c[2]" = "{
