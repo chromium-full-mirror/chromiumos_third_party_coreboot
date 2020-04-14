@@ -356,16 +356,6 @@ void post_code(u8 value)
 
 /* Stubs that still need to be implemented */
 
-int get_recovery_mode_switch(void)
-{
-	return 0;
-}
-int get_lid_switch(void)
-{
-	return 0;
-}
-
-
 void timestamp_add_now(enum timestamp_id id)
 {
 	return;
