@@ -249,6 +249,14 @@ PSP_UCODE_FILE1=$(top)/$(FIRMWARE_LOCATE)/UcodePatch_PCO_B1.bin
 PSP_UCODE_FILE2=$(top)/$(FIRMWARE_LOCATE)/UcodePatch_PCO_B0.bin
 PSP_UCODE_FILE3=$(top)/$(FIRMWARE_LOCATE)/UcodePatch_RV2_A0.bin
 
+# type = 0x6B - PSP Shared memory location
+ifeq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK)$(CONFIG_PSP_SHAREDMEM_BASE),y0x0)
+$(error PSP_SHAREDMEM_BASE must be set if VBOOT_STARTS_BEFORE_BOOTBLOCK is set)
+endif
+ifneq ($(CONFIG_PSP_SHAREDMEM_BASE),0x0)
+PSP_SHAREDMEM_BASE=$(CONFIG_PSP_SHAREDMEM_BASE)
+endif
+
 # type = 0x52 - PSP Bootloader Userspace Application (verstage)
 ifeq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
 PSP_VERSTAGE_FILE=$(obj)/psp_verstage.bin
@@ -312,6 +320,7 @@ OPT_PSP_UCODE_FILE1=$(call add_opt_prefix, $(PSP_UCODE_FILE1), --instance 0 --uc
 OPT_PSP_UCODE_FILE2=$(call add_opt_prefix, $(PSP_UCODE_FILE2), --instance 1 --ucode)
 OPT_PSP_UCODE_FILE3=$(call add_opt_prefix, $(PSP_UCODE_FILE3), --instance 2 --ucode)
 OPT_MP2CFG_FILE=$(call add_opt_prefix, $(PSP_MP2CFG_FILE), --mp2-config)
+OPT_PSP_SHAREDMEM_BASE=$(call add_opt_prefix, $(PSP_SHAREDMEM_BASE), --sharedmem)
 
 $(obj)/APCB_%.bin: $(APCB_BLOB_DIR)/APCB_%.bin
 	cp $< $@
@@ -455,6 +464,7 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)) \
 		$(OPT_IKEK_FILE) \
 		$(OPT_SEC_DEBUG_FILE) \
 		$(OPT_VERSTAGE_FILE) \
+		$(OPT_PSP_SHAREDMEM_BASE) \
 		--combo-capable \
 		--token-unlock \
 		--flashsize $(CONFIG_ROM_SIZE) \

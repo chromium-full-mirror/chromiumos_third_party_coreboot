@@ -433,6 +433,15 @@ config APCB_BLOB_DIR
 
 	  If unsure, leave empty.
 
+config PSP_SHAREDMEM_BASE
+	hex "Location in main memory for vboot workbuf"
+	default 0x0
+	depends on VBOOT_STARTS_BEFORE_BOOTBLOCK
+	help
+	  Sets the location for the PSP to pass the vboot workbuf to
+	  coreboot.  This will be copied into main memory and available
+	  when the x86 is started.
+
 endmenu
 
 config VBOOT_STARTS_IN_ROMSTAGE
