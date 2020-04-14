@@ -19,7 +19,6 @@
 #include <delay.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <amdblocks/acpimmio.h>
-#include <amdblocks/i2c.h>
 #include <soc/i2c.h>
 #include <soc/iomap.h>
 #include <soc/soc_util.h>
@@ -30,18 +29,19 @@
 const char *i2c_acpi_name(const struct device *dev);
 
 /*
- * i2c4 is slave device only, do not list it here,
- * otherwise this slave device will not be able to work.
+ * We don't have addresses for I2C0-1.
  */
 static const uintptr_t i2c_bus_address[] = {
-	APU_I2C0_BASE,
-	APU_I2C1_BASE,
+	0,
+	0,
 	APU_I2C2_BASE,
 	APU_I2C3_BASE,
+	APU_I2C4_BASE, /* Can only be used in slave mode */
 };
 
-_Static_assert(ARRAY_SIZE(i2c_bus_address) == I2C_DEVICE_COUNT,
-	       "ARRAY_SIZE(i2c_bus_address) must equal I2C_DEVICE_COUNT");
+_Static_assert(
+	ARRAY_SIZE(i2c_bus_address) == I2C_MASTER_DEV_COUNT + I2C_SLAVE_DEV_COUNT,
+	"ARRAY_SIZE(i2c_bus_address) must equal I2C_MASTER_DEV_COUNT + I2C_SLAVE_DEV_COUNT");
 
 uintptr_t dw_i2c_base_address(unsigned int bus)
 {
@@ -68,10 +68,6 @@ const struct dw_i2c_bus_config *dw_i2c_get_soc_cfg(unsigned int bus)
 const char *i2c_acpi_name(const struct device *dev)
 {
 	switch (dev->path.mmio.addr) {
-	case APU_I2C0_BASE:
-		return "I2C0";
-	case APU_I2C1_BASE:
-		return "I2C1";
 	case APU_I2C2_BASE:
 		return "I2C2";
 	case APU_I2C3_BASE:
@@ -86,10 +82,6 @@ const char *i2c_acpi_name(const struct device *dev)
 int dw_i2c_soc_dev_to_bus(struct device *dev)
 {
 	switch (dev->path.mmio.addr) {
-	case APU_I2C0_BASE:
-		return 0;
-	case APU_I2C1_BASE:
-		return 1;
 	case APU_I2C2_BASE:
 		return 2;
 	case APU_I2C3_BASE:
@@ -101,14 +93,6 @@ int dw_i2c_soc_dev_to_bus(struct device *dev)
 }
 
 __weak void mainboard_i2c_override(int bus, uint32_t *pad_settings) { }
-
-/* Pollock has access to I2C0 and I2C1. */
-static unsigned int i2c_start_index(void)
-{
-	if (soc_is_pollock())
-		return 0;
-	return 2;
-}
 
 static void dw_i2c_soc_init(bool is_early_init)
 {
@@ -122,7 +106,7 @@ static void dw_i2c_soc_init(bool is_early_init)
 	if (config == NULL)
 		return;
 
-	for (i = i2c_start_index(); i < ARRAY_SIZE(config->i2c); i++) {
+	for (i = I2C_MASTER_START_INDEX; i < ARRAY_SIZE(config->i2c); i++) {
 		const struct dw_i2c_bus_config *cfg  = &config->i2c[i];
 
 		if (cfg->early_init != is_early_init)
@@ -161,15 +145,6 @@ void i2c_soc_early_init(void)
 void i2c_soc_init(void)
 {
 	dw_i2c_soc_init(false);
-}
-
-void soc_update_i2c_resource(struct resource *res)
-{
-	unsigned int index = i2c_start_index();
-	unsigned int count = ARRAY_SIZE(i2c_bus_address) - index;
-
-	res->base = dw_i2c_base_address(index);
-	res->size = I2C_DEVICE_SIZE * count;
 }
 
 struct device_operations picasso_i2c_mmio_ops = {

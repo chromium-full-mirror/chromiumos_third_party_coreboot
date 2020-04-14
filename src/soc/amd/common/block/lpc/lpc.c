@@ -29,7 +29,6 @@
 #include <pc80/i8259.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/lpc.h>
-#include <amdblocks/i2c.h>
 #include <soc/acpi.h>
 #include <soc/southbridge.h>
 #include <soc/nvs.h>
@@ -38,8 +37,6 @@
 
 /* Most systems should have already enabled the bridge */
 void __weak soc_late_lpc_bridge_enable(void) { }
-
-void __weak soc_update_i2c_resource(struct resource *res) { }
 
 void lpc_init(struct device *dev)
 {
@@ -140,8 +137,6 @@ void lpc_read_resources(struct device *dev)
 	res->base = I2C_BASE_ADDRESS;
 	res->size = I2C_DEVICE_SIZE * I2C_DEVICE_COUNT;
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
-
-	soc_update_i2c_resource(res);
 
 	compact_resources(dev);
 
