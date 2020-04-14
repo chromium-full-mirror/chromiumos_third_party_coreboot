@@ -22,7 +22,6 @@
 #include <amdblocks/i2c.h>
 #include <soc/i2c.h>
 #include <soc/iomap.h>
-#include <soc/pci_devs.h>
 #include <soc/soc_util.h>
 #include <soc/southbridge.h>
 #include "chip.h"
@@ -226,7 +225,6 @@ static void restore_i2c_pin_registers(uint8_t gpio,
 void sb_reset_i2c_slaves(void)
 {
 	const struct soc_amd_picasso_config *cfg;
-	const struct device *dev = pcidev_path_on_root(GNB_DEVFN);
 	struct soc_amd_i2c_save save_table[saved_pins_count];
 	uint8_t i, j, control;
 	/* I2C0-1 is not accessible from the x86. */
@@ -237,9 +235,9 @@ void sb_reset_i2c_slaves(void)
 		gpio_get_address(I2C3_SCL_PIN),
 	};
 
-	if (!dev || !dev->chip_info)
+	cfg = get_soc_config();
+	if (!cfg)
 		return;
-	cfg = dev->chip_info;
 	control = cfg->i2c_scl_reset & GPIO_I2C_MASK;
 	if (control == 0)
 		return;
