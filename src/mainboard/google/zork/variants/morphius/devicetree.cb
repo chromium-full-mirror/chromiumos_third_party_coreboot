@@ -32,7 +32,7 @@ chip soc/amd/picasso
         # For the below fields, 0 indicates use SOC default
 
         # System config index
-	register "system_config" = "3"
+	register "system_config" = "2"
 
 	# Set STAPM confiuration. All of these fields must be set >0 to take affect
 	register "slow_ppt_limit" = "20000" #mw
@@ -45,7 +45,7 @@ chip soc/amd/picasso
 	register "prochot_l_deassertion_ramp_time" = "20" #mS
 
         # Lower die temperature limit
-	register "thermctl_limit" = "85" #degrees C
+	register "thermctl_limit" = "100" #degrees C
 
         # FP5 Processor Voltage Supply PSI Currents
         register "psi0_current_limit" = "18000" #mA
