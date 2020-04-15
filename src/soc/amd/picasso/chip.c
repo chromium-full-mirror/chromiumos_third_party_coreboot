@@ -42,118 +42,6 @@ struct device_operations cpu_bus_ops = {
 	.acpi_fill_ssdt_generator = generate_cpu_entries,
 };
 
-static void generate_xhci_entries(struct device *device)
-{
-	printk(BIOS_INFO, "xHCI SSDT generation\n");
-	struct device *sibling;
-	struct device * bus_a_dev;
-	struct bus *link;
-	link = device->link_list;
-	for (sibling = link->children; sibling; sibling = sibling->sibling) {
-		/* Find Bridge A on PCI Root Bus */
-		if (sibling->path.pci.devfn == PCIE_A_DEVFN) {
-			/* On Bridge A, find the xHCI0 controller */
-			link = sibling->link_list;
-			for (bus_a_dev = link->children; bus_a_dev; bus_a_dev = bus_a_dev->sibling) {
-				if (bus_a_dev->path.pci.devfn == XHCI0_DEVFN) {
-					if (soc_is_dali()){
-						printk(BIOS_INFO, "Generating xHCI SSDT for Dali...\n");
-						/* Scope: \_SB.PCI0.PBRA.XHC0.RHUB */
-						char pscope[] = "\\_SB.PCI0.PBRA.XHC0.RHUB";
-						acpigen_write_scope(pscope);
-
-						acpigen_write_device("HS01");
-						acpigen_write_name_byte("_ADR", 1);
-						acpigen_pop_len();
-
-						acpigen_write_device("HS02");
-						acpigen_write_name_byte("_ADR", 2);
-						acpigen_pop_len();
-
-						acpigen_write_device("HS03");
-						acpigen_write_name_byte("_ADR", 3);
-						acpigen_pop_len();
-
-						acpigen_write_device("HS04");
-						acpigen_write_name_byte("_ADR", 4);
-						acpigen_pop_len();
-
-						acpigen_write_device("HS05");
-						acpigen_write_name_byte("_ADR", 5);
-						acpigen_pop_len();
-
-						acpigen_write_device("HS06");
-						acpigen_write_name_byte("_ADR", 6);
-						acpigen_pop_len();
-
-						acpigen_write_device("SS01");
-						acpigen_write_name_byte("_ADR", 7);
-						acpigen_pop_len();
-
-						acpigen_write_device("SS02");
-						acpigen_write_name_byte("_ADR", 8);
-						acpigen_pop_len();
-
-						acpigen_write_device("SS03");
-						acpigen_write_name_byte("_ADR", 9);
-						acpigen_pop_len();
-
-						acpigen_write_device("SS04");
-						acpigen_write_name_byte("_ADR", 0xa);
-						acpigen_pop_len();
-
-						acpigen_write_device("SS05");
-						acpigen_write_name_byte("_ADR", 0xb);
-						acpigen_pop_len();
-
-						acpigen_pop_len(); // Exit scope
-					} else {
-						printk(BIOS_INFO, "Generating xHCI SSDT for Picasso...\n");
-						/* Scope: \_SB_.PCI0.PBRA.XHC0.RHUB */
-						char pscope[] = "\\_SB.PCI0.PBRA.XHC0.RHUB";
-						acpigen_write_scope(pscope);
-
-						acpigen_write_device("HS01");
-						acpigen_write_name_byte("_ADR", 1);
-						acpigen_pop_len();
-
-						acpigen_write_device("HS02");
-						acpigen_write_name_byte("_ADR", 2);
-						acpigen_pop_len();
-
-						acpigen_write_device("HS03");
-						acpigen_write_name_byte("_ADR", 3);
-						acpigen_pop_len();
-
-						acpigen_write_device("HS04");
-						acpigen_write_name_byte("_ADR", 4);
-						acpigen_pop_len();
-
-						acpigen_write_device("SS01");
-						acpigen_write_name_byte("_ADR", 5);
-						acpigen_pop_len();
-
-						acpigen_write_device("SS02");
-						acpigen_write_name_byte("_ADR", 6);
-						acpigen_pop_len();
-
-						acpigen_write_device("SS03");
-						acpigen_write_name_byte("_ADR", 7);
-						acpigen_pop_len();
-
-						acpigen_write_device("SS04");
-						acpigen_write_name_byte("_ADR", 8);
-						acpigen_pop_len();
-
-						acpigen_pop_len(); // Exit scope
-					}
-				}
-			}
-		}
-	}
-	return;
-}
-
 const char *soc_acpi_name(const struct device *dev)
 {
 	if (dev->path.type == DEVICE_PATH_DOMAIN)
@@ -250,7 +138,6 @@ struct device_operations pci_domain_ops = {
 	.set_resources	  = domain_set_resources,
 	.scan_bus	  = pci_domain_scan_bus,
 	.acpi_name	  = soc_acpi_name,
-	.acpi_fill_ssdt_generator = generate_xhci_entries
 };
 
 static void enable_dev(struct device *dev)
