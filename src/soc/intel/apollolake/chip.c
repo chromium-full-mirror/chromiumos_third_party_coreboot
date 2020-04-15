@@ -100,6 +100,10 @@
 /* IOSF Gasket Backbone Local Clock Gating Enable */
 #define IOSFGBLCGE		(1 << 0)
 
+#define CFG_XHCPMCTRL          0x80a4
+/* BIT[7:4] LFPS periodic sampling for USB3 Ports */
+#define LFPS_PM_DISABLE_MASK    0xFFFFFF0F
+
 const char *soc_acpi_name(const struct device *dev)
 {
 	if (dev->path.type == DEVICE_PATH_DOMAIN)
@@ -796,6 +800,36 @@ static int check_xdci_enable(void)
 	return !!dev->enabled;
 }
 
+static void disable_xhci_lfps_pm(void)
+{
+	struct soc_intel_apollolake_config *cfg;
+	struct device *dev = SA_DEV_ROOT;
+
+	if (!dev || !dev->chip_info) {
+		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
+		return;
+	}
+
+	cfg = dev->chip_info;
+
+	if (cfg->disable_xhci_lfps_pm) {
+		void *addr;
+		const struct resource *res;
+		uint32_t reg;
+		struct device *xhci_dev = PCH_DEV_XHCI;
+
+		res = find_resource(xhci_dev, PCI_BASE_ADDRESS_0);
+		addr = (void *)(uintptr_t)(res->base + CFG_XHCPMCTRL);
+		reg = read32(addr);
+		printk(BIOS_DEBUG, "XHCI PM: control reg=0x%x.\n", reg);
+		if (reg) {
+			reg &= LFPS_PM_DISABLE_MASK;
+			write32(addr, reg);
+			printk(BIOS_INFO, "XHCI PM: Disable xHCI LFPS as configured in devicetree.\n");
+		}
+	}
+}
+
 void platform_fsp_notify_status(enum fsp_notify_phase phase)
 {
 	if (phase == END_OF_FIRMWARE) {
@@ -843,6 +877,9 @@ void platform_fsp_notify_status(enum fsp_notify_phase phase)
 				IOSFGBLCGE;
 			write32(cfg, reg);
 		}
+
+		/* Disable XHCI LFPS power management if the option in dev tree is set. */
+		disable_xhci_lfps_pm();
 	}
 }
 
