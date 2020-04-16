@@ -193,9 +193,9 @@ const char *soc_acpi_name(const struct device *dev)
 		return NULL;
 
 	switch (dev->path.pci.devfn) {
-	case GNB_DEVID: 	// GNB Root Complex
+	case GNB_DEVFN: 	// GNB Root Complex
 		return "GNB";
-	case IOMMU_DEVID: 	// IOMMU
+	case IOMMU_DEVFN: 	// IOMMU
 		return "IOMM";
 	/* PCIe GPP Bridges PCIE_GPP_#_DEVFN*/
 	case PCIE_GPP_0_DEVFN:
