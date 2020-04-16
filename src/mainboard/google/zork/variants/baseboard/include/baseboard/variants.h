@@ -50,4 +50,7 @@ int variant_has_emmc(void);
  /* Return 0 if non-existent, 1 if present. */
 int variant_has_nvme(void);
 
+/* Determine if booting in factory by using CROS_SKU_UNPROVISIONED. */
+int boot_is_factory_unprovisioned(void);
+
 #endif /* __BASEBOARD_VARIANTS_H__ */
