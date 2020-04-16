@@ -223,15 +223,15 @@ static const struct pci_driver family17_northbridge __pci_driver = {
 
 static void disable_mmio_reg(int reg)
 {
-	pci_write_config32(SOC_DF_F0_DEVFN, NB_MMIO_CONTROL(reg),
+	pci_write_config32(SOC_DF_F0_DEV, NB_MMIO_CONTROL(reg),
 			FABRIC_ID_IOMS0 << MMIO_DST_ID_SH);
-	pci_write_config32(SOC_DF_F0_DEVFN, NB_MMIO_BASE(reg), 0);
-	pci_write_config32(SOC_DF_F0_DEVFN, NB_MMIO_LIMIT(reg), 0);
+	pci_write_config32(SOC_DF_F0_DEV, NB_MMIO_BASE(reg), 0);
+	pci_write_config32(SOC_DF_F0_DEV, NB_MMIO_LIMIT(reg), 0);
 }
 
 static int is_mmio_reg_disabled(int reg)
 {
-	uint32_t val = pci_read_config32(SOC_DF_F0_DEVFN, NB_MMIO_CONTROL(reg));
+	uint32_t val = pci_read_config32(SOC_DF_F0_DEV, NB_MMIO_CONTROL(reg));
 	return !(val & ((MMIO_WE | MMIO_RE)));
 }
 
@@ -266,12 +266,12 @@ void northbridge_init(void)
 	 /* Adjust and mark from HPET-LAPIC or 0xfed00000-0xfee00000-1 as NP */
 	for (i = 0 ; i < NUM_NB_MMIO_REGS ; i++) {
 		/* Adjust all registers that overlap */
-		ctrl = pci_read_config32(SOC_DF_F0_DEVFN, NB_MMIO_CONTROL(i));
+		ctrl = pci_read_config32(SOC_DF_F0_DEV, NB_MMIO_CONTROL(i));
 		if (!(ctrl & (MMIO_WE | MMIO_RE)))
 			continue; /* not enabled */
 
-		base = pci_read_config32(SOC_DF_F0_DEVFN, NB_MMIO_BASE(i));
-		limit = pci_read_config32(SOC_DF_F0_DEVFN, NB_MMIO_LIMIT(i));
+		base = pci_read_config32(SOC_DF_F0_DEV, NB_MMIO_BASE(i));
+		limit = pci_read_config32(SOC_DF_F0_DEV, NB_MMIO_LIMIT(i));
 
 		if (base > adj_top || limit < adj_bot)
 			continue; /* no overlap */
@@ -282,10 +282,10 @@ void northbridge_init(void)
 		}
 
 		if (base <= adj_bot)
-			pci_write_config32(SOC_DF_F0_DEVFN, NB_MMIO_LIMIT(i),
+			pci_write_config32(SOC_DF_F0_DEV, NB_MMIO_LIMIT(i),
 					adj_bot - 1);
 		else
-			pci_write_config32(SOC_DF_F0_DEVFN, NB_MMIO_BASE(i),
+			pci_write_config32(SOC_DF_F0_DEV, NB_MMIO_BASE(i),
 					adj_top + 1);
 	}
 	i = find_unused_mmio_reg();
@@ -294,9 +294,9 @@ void northbridge_init(void)
 		return;
 	}
 
-	pci_write_config32(SOC_DF_F0_DEVFN, NB_MMIO_BASE(i), adj_bot);
-	pci_write_config32(SOC_DF_F0_DEVFN, NB_MMIO_LIMIT(i), adj_top);
-	pci_write_config32(SOC_DF_F0_DEVFN, NB_MMIO_CONTROL(i),
+	pci_write_config32(SOC_DF_F0_DEV, NB_MMIO_BASE(i), adj_bot);
+	pci_write_config32(SOC_DF_F0_DEV, NB_MMIO_LIMIT(i), adj_top);
+	pci_write_config32(SOC_DF_F0_DEV, NB_MMIO_CONTROL(i),
 			FABRIC_ID_IOMS0 << MMIO_DST_ID_SH |
 			MMIO_NP | MMIO_WE | MMIO_RE);
 }
