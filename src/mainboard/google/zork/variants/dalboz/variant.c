@@ -21,6 +21,10 @@ static int sku_has_emmc(void)
 {
 	uint32_t board_sku = sku_id();
 
+	/* Factory flow requires all OS boot media to be enabled. */
+	if (boot_is_factory_unprovisioned())
+		return 1;
+
 	/* FIXME: This needs to be fw_config controlled. */
 	/* Enable emmc0 for unknown skus. Only sku3/0xC really has it. */
 	if (board_sku == 0x5A80000C || board_sku == 0x5A800003 ||
