@@ -136,7 +136,7 @@ static struct device_operations d14_f3_bridge_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_AMD_PCO_LPC,
+	PCI_DEVICE_ID_AMD_FAM17H_LPC,
 	0
 };
 
