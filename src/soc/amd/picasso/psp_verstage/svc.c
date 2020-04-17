@@ -106,9 +106,8 @@ uint32_t svc_save_uapp_data(UAPP_COPYBUF type, void *address,
 		uint32_t size)
 {
 	uint32_t retval = 0;
-//	assert(type < UAPP_COPYBUF_MAX);
-//	assert(size <= 16 * 1024);
-	SVC_CALL3(SVC_UPDATE_PSP_BIOS_DIR, type, (uint32_t)address, size, retval);
+	assert(type < UAPP_COPYBUF_MAX);
+	SVC_CALL3(SVC_COPY_DATA_FROM_UAPP, type, (uint32_t)address, size, retval);
 	return retval;
 }
 
