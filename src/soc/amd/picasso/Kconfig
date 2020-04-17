@@ -445,6 +445,16 @@ config PSP_SHAREDMEM_BASE
 	  coreboot.  This will be copied into main memory and available
 	  when the x86 is started.
 
+config PSP_SHAREDMEM_SIZE
+	hex "Maximum size of shared memory area"
+	default 0x8000
+	depends on VBOOT_STARTS_BEFORE_BOOTBLOCK
+	help
+	  Sets the maximum size for the PSP to pass the vboot workbuf and
+	  any logs or timestamps back to coreboot.  This will be copied
+	  into main memory by the PSP and will be available when the x86 is
+	  started.
+
 endmenu
 
 config VBOOT_STARTS_IN_ROMSTAGE

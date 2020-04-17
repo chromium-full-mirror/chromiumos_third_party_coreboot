@@ -262,6 +262,7 @@ $(error PSP_SHAREDMEM_BASE must be set if VBOOT_STARTS_BEFORE_BOOTBLOCK is set)
 endif
 ifneq ($(CONFIG_PSP_SHAREDMEM_BASE),0x0)
 PSP_SHAREDMEM_BASE=$(CONFIG_PSP_SHAREDMEM_BASE)
+PSP_SHAREDMEM_SIZE=$(CONFIG_PSP_SHAREDMEM_SIZE)
 endif
 
 # type = 0x52 - PSP Bootloader Userspace Application (verstage)
@@ -328,6 +329,7 @@ OPT_PSP_UCODE_FILE2=$(call add_opt_prefix, $(PSP_UCODE_FILE2), --instance 1 --uc
 OPT_PSP_UCODE_FILE3=$(call add_opt_prefix, $(PSP_UCODE_FILE3), --instance 2 --ucode)
 OPT_MP2CFG_FILE=$(call add_opt_prefix, $(PSP_MP2CFG_FILE), --mp2-config)
 OPT_PSP_SHAREDMEM_BASE=$(call add_opt_prefix, $(PSP_SHAREDMEM_BASE), --sharedmem)
+OPT_PSP_SHAREDMEM_SIZE=$(call add_opt_prefix, $(PSP_SHAREDMEM_SIZE), --sharedmem-size)
 
 AMDFW_COMMON_ARGS=$(OPT_AMD_PUBKEY_FILE) \
 		$(OPT_PSPBTLDR_FILE) \
@@ -382,6 +384,7 @@ AMDFW_COMMON_ARGS=$(OPT_AMD_PUBKEY_FILE) \
 		$(OPT_SEC_DEBUG_FILE) \
 		$(OPT_VERSTAGE_FILE) \
 		$(OPT_PSP_SHAREDMEM_BASE) \
+		$(OPT_PSP_SHAREDMEM_SIZE) \
 		--combo-capable \
 		--token-unlock \
 		--flashsize $(CONFIG_ROM_SIZE)
