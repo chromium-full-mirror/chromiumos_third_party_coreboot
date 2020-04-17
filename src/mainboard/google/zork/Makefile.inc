@@ -24,6 +24,7 @@ ramstage-y += sku_id.c
 ifeq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
 verstage-y += memlayout.ld
 verstage-y += espi.c
+verstage-y += verstage.c
 else
 verstage-y += chromeos.c
 verstage-y += ec.c
