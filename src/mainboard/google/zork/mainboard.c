@@ -161,20 +161,26 @@ static void pirq_setup(void)
 	picr_data_ptr = fch_pic_routing;
 }
 
+static void mainboard_configure_gpios(void)
+{
+	size_t base_num_gpios;
+	const struct soc_amd_gpio *base_gpios;
+
+	base_gpios = variant_base_gpio_table(&base_num_gpios);
+	program_gpios(base_gpios, base_num_gpios);
+}
+
 static void mainboard_init(void *chip_info)
 {
 	const struct sci_source *gpes;
 	size_t num;
 	int boardid;
-	size_t num_gpios;
-	const struct soc_amd_gpio *gpios;
 
 	mainboard_ec_init();
 	boardid = board_id();
 	printk(BIOS_INFO, "Board ID: %d\n", boardid);
 
-	gpios = variant_gpio_table(&num_gpios);
-	program_gpios(gpios, num_gpios);
+	mainboard_configure_gpios();
 
 	/* Update DUT configuration */
 	variant_devtree_update();

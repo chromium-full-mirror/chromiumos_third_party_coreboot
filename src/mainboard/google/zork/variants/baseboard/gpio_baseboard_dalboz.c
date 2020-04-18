@@ -201,7 +201,7 @@ struct soc_amd_gpio *variant_wifi_romstage_gpio_table(size_t *size)
 }
 
 const __weak
-struct soc_amd_gpio *variant_gpio_table(size_t *size)
+struct soc_amd_gpio *variant_base_gpio_table(size_t *size)
 {
 	*size = ARRAY_SIZE(gpio_set_stage_ram);
 	return gpio_set_stage_ram;

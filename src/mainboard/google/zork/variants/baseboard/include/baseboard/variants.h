@@ -25,7 +25,13 @@ const struct sci_source *get_gpe_table(size_t *num);
 const struct soc_amd_gpio *variant_early_gpio_table(size_t *size);
 const struct soc_amd_gpio *variant_romstage_gpio_table(size_t *size);
 const struct soc_amd_gpio *variant_wifi_romstage_gpio_table(size_t *size);
-const struct soc_amd_gpio *variant_gpio_table(size_t *size);
+/*
+ * This function provides base GPIO configuration table. It is typically provided by
+ * baseboard using a weak implementation. If GPIO configuration for a variant differs
+ * signficantly from the baseboard, then the variant can also provide a strong implementation of
+ * this function.
+ */
+const struct soc_amd_gpio *variant_base_gpio_table(size_t *size);
 void variant_romstage_entry(int s3_resume);
 /* Modify devictree settings during ramstage. */
 void variant_devtree_update(void);
