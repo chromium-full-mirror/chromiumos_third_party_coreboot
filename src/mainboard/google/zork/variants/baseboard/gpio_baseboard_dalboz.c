@@ -105,8 +105,8 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_NF(GPIO_16, USB_OC0_L, PULL_UP),
 	/* USB_OC1_L - USB C1 */
 	PAD_NF(GPIO_17, USB_OC1_L, PULL_UP),
-	/* USB_OC2_L - USB A0 & A1*/
-	PAD_NF(GPIO_18, USB_OC2_L, PULL_UP),
+	/* WIFI_DISABLE */
+	PAD_GPO(GPIO_18, LOW),
 	/* EMMC_CMD */
 	PAD_NF(GPIO_21, EMMC_CMD, PULL_UP),
 	/* EC_FCH_SCI_ODL */
@@ -177,8 +177,8 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_GPO(GPIO_140, LOW),
 	/* USB_HUB_RST_L */
 	PAD_GPO(GPIO_141, HIGH),
-	/*  */
-	PAD_GPI(GPIO_143, PULL_DOWN),
+	/* BT_DISABLE */
+	PAD_GPO(GPIO_143, LOW),
 	/*
 	 * USI_REPORT_EN - TODO: Driver resets this later.
 	 * Do we want it high or low initially?
