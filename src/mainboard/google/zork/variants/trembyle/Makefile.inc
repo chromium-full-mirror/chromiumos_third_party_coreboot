@@ -12,3 +12,5 @@
 #
 
 subdirs-y += ../baseboard/spd
+
+ramstage-y += gpio.c

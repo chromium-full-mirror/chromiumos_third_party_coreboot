@@ -12,3 +12,5 @@
 #
 
 subdirs-y += ./spd
+
+ramstage-y += gpio.c

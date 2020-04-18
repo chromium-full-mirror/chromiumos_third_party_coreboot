@@ -110,14 +110,14 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_GPI(GPIO_12, PULL_UP),
 	/* DMIC_SEL */
 	PAD_GPO(GPIO_13, LOW), // Select Camera 1 Dmic
-	/* USB_OC4_L - USB_A1 */
-	PAD_NF(GPIO_14, USB_OC4_L, PULL_UP),
-	/* USB_OC0_L - USB C0 */
+	/* BT_DISABLE */
+	PAD_GPO(GPIO_14, LOW),
+	/* USB_OC0_L - USB C0 + USB A0 */
 	PAD_NF(GPIO_16, USB_OC0_L, PULL_UP),
-	/* USB_OC1_L - USB C1 */
+	/* USB_OC1_L - USB C1 + USB A1 */
 	PAD_NF(GPIO_17, USB_OC1_L, PULL_UP),
-	/* USB_OC2_L - USB A0 */
-	PAD_NF(GPIO_18, USB_OC2_L, PULL_UP),
+	/* WIFI_DISABLE */
+	PAD_GPO(GPIO_18, LOW),
 	/* EMMC_CMD */
 	PAD_NF(GPIO_21, EMMC_CMD, PULL_UP),
 	/* EC_FCH_SCI_ODL */
