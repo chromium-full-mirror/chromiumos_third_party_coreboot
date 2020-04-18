@@ -32,6 +32,11 @@ const struct soc_amd_gpio *variant_wifi_romstage_gpio_table(size_t *size);
  * this function.
  */
 const struct soc_amd_gpio *variant_base_gpio_table(size_t *size);
+/*
+ * This function allows variant to override any GPIOs that are different than the base GPIO
+ * configuration provided by variant_base_gpio_table().
+ */
+const struct soc_amd_gpio *variant_override_gpio_table(size_t *size);
 void variant_romstage_entry(int s3_resume);
 /* Modify devictree settings during ramstage. */
 void variant_devtree_update(void);

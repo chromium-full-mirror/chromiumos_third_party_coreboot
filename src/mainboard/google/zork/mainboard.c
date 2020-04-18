@@ -163,11 +163,14 @@ static void pirq_setup(void)
 
 static void mainboard_configure_gpios(void)
 {
-	size_t base_num_gpios;
-	const struct soc_amd_gpio *base_gpios;
+	size_t base_num_gpios, override_num_gpios;
+	const struct soc_amd_gpio *base_gpios, *override_gpios;
 
 	base_gpios = variant_base_gpio_table(&base_num_gpios);
-	program_gpios(base_gpios, base_num_gpios);
+	override_gpios = variant_override_gpio_table(&override_num_gpios);
+
+	gpio_configure_pads_with_override(base_gpios, base_num_gpios,
+						override_gpios, override_num_gpios);
 }
 
 static void mainboard_init(void *chip_info)
@@ -248,4 +251,11 @@ struct chip_operations mainboard_ops = {
 
 void __weak variant_devtree_update(void)
 {
+}
+
+__weak const struct soc_amd_gpio *variant_override_gpio_table(size_t *size)
+{
+	/* Default weak implementation - No overrides. */
+	*size = 0;
+	return NULL;
 }
