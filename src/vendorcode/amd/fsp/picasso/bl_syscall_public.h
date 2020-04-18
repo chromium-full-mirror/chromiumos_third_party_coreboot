@@ -49,6 +49,8 @@
 #define SVC_READ_TIMER_VAL		0x42
 #define SVC_RESET_SYSTEM		0x43
 #define SVC_WRITE_POSTCODE		0x44
+#define SVC_GET_MAX_WORKBUF_SIZE	0x45
+#define SVC_SHA				0x46
 
 typedef enum _PSP_BOOT_MODE
 {
@@ -143,13 +145,46 @@ typedef enum RESET_TYPE
 	RESET_TYPE_MAX     = 2,
 } RESET_TYPE;
 
-/* Exit to the main Boot Loader. This does not return back to user application.
+/* SHA types same as ccp SHA type in crypto.h */
+typedef enum SHA_TYPE
+{
+	SHA_TYPE_256,
+	SHA_TYPE_512
+} SHA_TYPE;
+
+/* All SHA operation supported */
+typedef enum SHA_OPERATION_MODE
+{
+	SHA_GENERIC
+} SHA_OPERATION_MODE;
+
+/* SHA Supported Data Structures */
+typedef struct SHA_GENERIC_DATA_T
+{
+	SHA_TYPE	SHAType;
+	uint8_t		*Data;
+	uint32_t	DataLen;
+	uint32_t	DataMemType;
+	uint8_t		*Digest;
+	uint32_t	DigestLen;
+	uint8_t		*IntermediateDigest;
+	uint32_t	IntermediateMsgLen;
+	uint32_t	Init;
+	uint32_t	Eom;
+} SHA_GENERIC_DATA;
+
+typedef union SHA_OPERATION_T
+{
+	SHA_GENERIC_DATA	SHA;
+} SHA_OPERATION;
+
+/*
+ * Exit to the main Boot Loader. This does not return back to user application.
  *
  * Parameters:
  *     status  -   either Ok or error code defined by AGESA
  */
 void svc_exit(uint32_t status);
-
 
 /* Maps buffer for stack usage.
  *
@@ -163,14 +198,12 @@ void svc_exit(uint32_t status);
 uint32_t svc_map_user_stack(void *start_addr,
 		void *end_addr, void *stack_va);
 
-
 /* Print debug message into serial console.
  *
  * Parameters:
  *     string     -   null-terminated string
  */
 void svc_debug_print(const char *string);
-
 
 /* Print 4 DWORD values in hex to serial console
  *
@@ -188,7 +221,6 @@ void svc_debug_print_ex(uint32_t dword0,
  * Return value: BL_OK, or BL_ERR_TIMER_PARAM_OVERFLOW
  */
 uint32_t svc_wait_10ns_multiple(uint32_t multiple);
-
 
 /* Description     - Returns the current boot mode from the type PSP_BOOT_MODE found in
  *                   bl_public.h.
@@ -321,6 +353,19 @@ uint32_t svc_reset_system(RESET_TYPE reset_type);
  *                postcode -   Postcode value to be written on port-80h
  */
 uint32_t svc_write_postcode(uint32_t postcode);
+
+/*
+ *   Get the max size of workbuf memory supported by PSP BL
+ *
+ *   Parameters:
+ *               size -   [out] Max size supported by PSP BL for workbuf copy
+ */
+uint32_t svc_get_max_workbuf_size(uint32_t *size);
+
+/*
+ * Generic SHA call for SHA, SHA_OTP, SHA_HMAC
+ */
+uint32_t svc_crypto_sha(SHA_OPERATION *sha_op, SHA_OPERATION_MODE sha_mode);
 
 /* C entry point for the Bootloader Userspace Application */
 void Main(void);
