@@ -33,6 +33,9 @@ static void *vboot_get_workbuf(void)
 
 	if (cbmem_possibly_online())
 		wb = cbmem_find(CBMEM_ID_VBOOT_WORKBUF);
+	/* TODO: Put into early_dram.ld */
+	if (wb == NULL && CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK) && !ENV_VERSTAGE)
+		wb = (void *)CONFIG_PSP_SHAREDMEM_BASE;
 
 	if (wb == NULL && (CONFIG(VBOOT_STARTS_IN_BOOTBLOCK) ||
 			(CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK))) &&
@@ -105,6 +108,10 @@ static void vboot_setup_cbmem(int unused)
 	if (CONFIG(VBOOT_STARTS_IN_BOOTBLOCK))
 		rv = vb2api_relocate(wb_cbmem, _vboot2_work, cbmem_size,
 				     &vboot_ctx);
+	/* TODO: Put into early_dram.ld */
+	else if (CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK))
+		rv = vb2api_relocate(wb_cbmem, (void *)CONFIG_PSP_SHAREDMEM_BASE,
+				     cbmem_size, &vboot_ctx);
 	else
 		rv = vb2api_init(wb_cbmem, cbmem_size, &vboot_ctx);
 
