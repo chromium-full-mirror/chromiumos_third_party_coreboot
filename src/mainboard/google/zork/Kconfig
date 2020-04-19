@@ -188,6 +188,21 @@ config PSP_SHAREDMEM_BASE
 	  Fix this - this is NOT a good address.  Can we put it in the bios region?
 	  0xD000 or so, then copy it to cbmem?
 
+#TODO: Change these to get the postition from the FMAP file
+config PICASSO_FW_A_POSITION
+	hex
+	default 0xFF031040
+	depends on VBOOT_SLOTS_RW_AB && VBOOT_STARTS_BEFORE_BOOTBLOCK
+	help
+	  Location of the AMD firmware in the RW_A region.
+
+config PICASSO_FW_B_POSITION
+	hex
+	default 0xFF3CF040
+	depends on VBOOT_SLOTS_RW_AB && VBOOT_STARTS_BEFORE_BOOTBLOCK
+	help
+	  Location of the AMD firmware in the RW_B region
+
 config VARIANT_HAS_FW_CONFIG
 	bool
 	help
