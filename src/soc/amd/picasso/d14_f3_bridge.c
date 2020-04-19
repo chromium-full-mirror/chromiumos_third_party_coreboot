@@ -115,7 +115,7 @@ static void d14_f3_scan_buses(struct device *bus)
 	printk(BIOS_SPEW, "%s for %s\n", __func__, dev_path(bus));
 
 	find_special_bus_devices(bus);
-	scan_generic_bus(bus);
+	scan_static_bus(bus);
 
 	printk(BIOS_SPEW, "%s for %s done\n", __func__, dev_path(bus));
 }
