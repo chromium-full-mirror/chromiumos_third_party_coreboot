@@ -474,7 +474,25 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)) \
 	@printf "    AMDFWTOOL  $(subst $(obj)/,,$(@))\n"
 	$(AMDFWTOOL) \
 		$(AMDFW_COMMON_ARGS) \
-		--location $(shell printf "0x%x" $(PICASSO_FWM_POSITION)) \
+		--location $(shell printf "%#x" $(PICASSO_FWM_POSITION)) \
+		--output $@
+
+$(obj)/amdfw_a.rom: $(obj)/amdfw.rom
+	rm -f $@
+	@printf "    AMDFWTOOL  $(subst $(obj)/,,$(@))\n"
+	$(AMDFWTOOL) \
+		$(AMDFW_COMMON_ARGS) \
+		--location $(shell printf "%#x" $(CONFIG_PICASSO_FW_A_POSITION)) \
+		--anywhere \
+		--output $@
+
+$(obj)/amdfw_b.rom: $(obj)/amdfw.rom
+	rm -f $@
+	@printf "    AMDFWTOOL  $(subst $(obj)/,,$(@))\n"
+	$(AMDFWTOOL) \
+		$(AMDFW_COMMON_ARGS) \
+		--location $(shell printf "%#x" $(CONFIG_PICASSO_FW_B_POSITION)) \
+		--anywhere \
 		--output $@
 
 ifeq ($(CONFIG_AMDFW_OUTSIDE_CBFS),y)
@@ -501,6 +519,18 @@ cbfs-files-y += apu/amdfw
 apu/amdfw-file := $(obj)/amdfw.rom
 apu/amdfw-position := $(PICASSO_FWM_POSITION)
 apu/amdfw-type := raw
+
+ifeq ($(CONFIG_VBOOT_SLOTS_RW_AB)$(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),yy)
+cbfs-files-y += apu/amdfw_a
+apu/amdfw_a-file := $(obj)/amdfw_a.rom
+apu/amdfw_a-position := $(call strip_quotes, $(CONFIG_PICASSO_FW_A_POSITION))
+apu/amdfw_a-type := raw
+
+cbfs-files-y += apu/amdfw_b
+apu/amdfw_b-file := $(obj)/amdfw_b.rom
+apu/amdfw_b-position := $(call strip_quotes, $(CONFIG_PICASSO_FW_B_POSITION))
+apu/amdfw_b-type := raw
+endif
 
 endif # ifeq ($(CONFIG_AMDFW_OUTSIDE_CBFS),y)
 
