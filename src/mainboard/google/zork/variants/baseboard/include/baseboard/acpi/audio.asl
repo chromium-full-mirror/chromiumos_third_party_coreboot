@@ -12,64 +12,6 @@
  */
 
 Scope (EC0.CREC) {
-	/* TODO: Generate this via Device Tree and remove from here */
-	Device (I2CT)
-	{
-		Name (_HID, "GOOG0012")
-		Name (_UID, 1)
-		Name (_DDN, "CROS I2C TUNNEL Device")
-
-		/* Device-Specific Data */
-		Name (_DSD, Package ()
-		{
-			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
-#if CONFIG(BOARD_GOOGLE_BASEBOARD_DALBOZ)
-			Package ()
-			{
-				Package () { "google,remote-bus", 5 },
-			}
-#else
-			Package ()
-			{
-				Package () { "google,remote-bus", 8 },
-			}
-#endif
-		})
-		Device (RT58)
-		{
-			Name (_HID, "10EC5682")
-			Name (_UID, 1)
-			Name (_DDN, "Realtek RT5682")
-
-			Name (_CRS, ResourceTemplate ()
-			{
-				I2cSerialBus (
-					0x001A, /* Slave address */
-					ControllerInitiated,
-					0x00061A80,     /* speed */
-					AddressingMode7Bit,
-					"^", /* bus */
-					0x00,
-					ResourceConsumer,
-					,
-				)
-				/* Jack Detect CODEC_GPI */
-				GpioInt (Edge, ActiveBoth, ExclusiveAndWake, PullNone,,
-					"\\_SB.GPIO") { 62 }
-			})
-
-			/* Device-Specific Data */
-			Name (_DSD, Package ()
-			{
-				ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
-				Package ()
-				{
-					Package () { "realtek,jd-src", 1 },
-				},
-
-			})
-		}
-	}
 	#include <ec/google/chromeec/acpi/codec.asl>
 }
 
