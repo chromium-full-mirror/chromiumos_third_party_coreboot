@@ -24,9 +24,13 @@
 #include <timestamp.h>
 #include <assert.h>
 #include <stdint.h>
+#include <soc/i2c.h>
+#include <vb2_api.h>
 #include <security/vboot/symbols.h>
 #include <soc/espi.h>
 #include <soc/i2c.h>
+#include <lib.h>
+#include "psp_verstage.h"
 
 #define RUN_PSP_SVC_TESTS 0
 
@@ -172,6 +176,11 @@ static uint32_t unmap_fch_devices(void)
 	return rtn;
 }
 
+static void reboot_into_recovery(struct vb2_context *ctx)
+{
+// TODO
+}
+
 static uint32_t map_fch_devices(void)
 {
 	void *bar;
@@ -192,6 +201,51 @@ static uint32_t map_fch_devices(void)
 	}
 
 	return BL_UAPP_OK;
+}
+
+/*
+ * Save workbuf (and soon memory console and timestamps) to the bootloader to pass
+ * back to coreboot.
+ */
+static void save_buffers(void)
+{
+	uint32_t retval;
+	uint32_t buffer_size = DEFAULT_WORKBUF_TRANSFER_SIZE;
+	uint32_t max_buffer_size;
+	struct vb2_context *ctx;
+
+	/*
+	 * This should never fail, but if it does, we should still try to
+	 * save the buffer. If that fails, then we should go to recovery mode.
+	 */
+	if (svc_get_max_workbuf_size(&max_buffer_size)) {
+		printk(BIOS_DEBUG,"Error getting workbuf size.\n");
+		max_buffer_size = DEFAULT_WORKBUF_TRANSFER_SIZE;
+        }
+	printk(BIOS_DEBUG,"\nMaximum buffer size: %d bytes\n", max_buffer_size);
+
+	retval = vb2api_relocate(_vboot2_work, _vboot2_work, buffer_size, &ctx);
+	if (retval != VB2_SUCCESS) {
+		printk(BIOS_ERR, "Error shrinking workbuf. Error code %#x\n", retval);
+		buffer_size = VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE;
+		post_code(POSTCODE_WORKBUF_RESIZE_ERROR);
+	}
+
+	if (buffer_size > max_buffer_size) {
+		printk(BIOS_ERR, "Error: Workbuf is larger than max buffer size.\n");
+		post_code(POSTCODE_WORKBUF_BUFFER_SIZE_ERROR);
+		reboot_into_recovery(ctx);
+	}
+
+	retval = svc_save_uapp_data(UAPP_COPYBUF_CHROME_WORKBUF, (void *)_vboot2_work,
+			buffer_size);
+
+	if (retval) {
+		printk(BIOS_ERR, "Error: Could not save workbuf. Error code 0x%08x\n",
+				retval);
+		post_code(POSTCODE_WORKBUF_SAVE_ERROR);
+		reboot_into_recovery(ctx);
+	}
 }
 
 extern char _bss_start, _bss_end;
@@ -229,15 +283,13 @@ void Main(void)
 	uint32_t *bios_dir_offset = NULL;
 	uint32_t *workbuf_addr = NULL;
 
-	if (svcc_save_uapp_data(UAPP_COPYBUF_CHROME_WORKBUF, workbuf_addr,
-			VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE))
-		printk(BIOS_ERR,"Error: could not save workbuf\n");
-
 	svc_update_psp_bios_dir(psp_dir_offset, bios_dir_offset, DIR_OFFSET_SET);
 	#endif
 
 	if (RUN_PSP_SVC_TESTS)
 		test_svc_calls();
+
+	save_buffers();
 
 err:
 	if (boot_dev.base){
