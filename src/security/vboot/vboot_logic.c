@@ -324,15 +324,11 @@ void verstage_main(void)
 	 * check the return value here because vb2api_fw_phase1 will catch
 	 * invalid secdata and tell us what to do (=reboot). */
 	timestamp_add_now(TS_START_TPMINIT);
-
-	/* FIXME: Disable this for now as the TPM isn't working yet */
-	if (!CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK)) {
 	if (vboot_setup_tpm(ctx) == TPM_SUCCESS) {
-			antirollback_read_space_firmware(ctx);
+		antirollback_read_space_firmware(ctx);
 		antirollback_read_space_kernel(ctx);
 	}
-		timestamp_add_now(TS_END_TPMINIT);
-	}
+	timestamp_add_now(TS_END_TPMINIT);
 
 	/* Enable measured boot mode */
 	if (CONFIG(VBOOT_MEASURED_BOOT) &&
