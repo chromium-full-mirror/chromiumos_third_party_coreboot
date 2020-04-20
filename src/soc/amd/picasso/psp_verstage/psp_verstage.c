@@ -32,7 +32,6 @@
 
 static struct mem_region_device boot_dev =
 		MEM_REGION_DEV_RO_INIT(NULL, CONFIG_ROM_SIZE);
-static void *i2c_bus_addr[I2C_DEVICE_COUNT];
 
 void __weak verstage_mainboard_init(void) { }
 
@@ -102,20 +101,6 @@ static void test_svc_calls(void)
 	printk(BIOS_DEBUG,"\nTest: Saving workbuf\n");
 	svc_save_uapp_data(UAPP_COPYBUF_CHROME_WORKBUF, _vboot2_work, VB2_KERNEL_WORKBUF_RECOMMENDED_SIZE);
 
-}
-
-/* Unmap the I2C ports so that they can be used in coreboot */
-static void unmap_i2c(void)
-{
-	for (int i = 0; i < I2C_DEVICE_COUNT; i++) {
-		if (i2c_bus_addr[i] != NULL) {
-			if (svc_unmap_fch_dev(FCH_IO_DEVICE_I2C, i2c_bus_addr[i])) {
-				printk(BIOS_ERR, "Error unmapping I2c %d.\n", i);
-			} else {
-				i2c_bus_addr[i] = NULL;
-			}
-		}
-	}
 }
 
 static uintptr_t *map_spi_rom(void)
@@ -253,9 +238,6 @@ err:
 	unmap_fch_devices();
 
 	svc_write_postcode(0xF2);
-	unmap_i2c();
-
-	svc_write_postcode(0xF3);
 
 	printk(BIOS_DEBUG, "Leaving verstage on PSP\n");
 	svc_exit(retval);
@@ -332,16 +314,10 @@ void timer_monotonic_get(struct mono_time *mt)
 	mt->microseconds = clk / 100;
 }
 
+// TODO: Remove this. Only here so we continue to compile.
 uintptr_t dw_i2c_base_address(uint32_t bus)
 {
-	if (bus < 2 || bus > 3)
-		return 0;
-
-	if (i2c_bus_addr[bus] == NULL)
-		if (svc_map_fch_dev(FCH_IO_DEVICE_I2C, bus, 0, &i2c_bus_addr[bus]))
-			printk(BIOS_ERR, "Error: Could not map I2c bus %d.", bus);
-
-	return (uintptr_t)i2c_bus_addr[bus];
+	return 0;
 }
 
 void do_board_reset(void)
