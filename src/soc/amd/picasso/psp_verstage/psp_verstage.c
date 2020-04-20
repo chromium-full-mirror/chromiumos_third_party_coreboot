@@ -11,7 +11,6 @@
 #include <vendorcode/amd/fsp/picasso/bl_syscall_public.h>
 #include <vendorcode/amd/fsp/picasso/bl_errorcodes_public.h>
 #include <delay.h>
-#include <drivers/i2c/designware/dw_i2c.h>
 #include <reset.h>
 #include <boot_device.h>
 #include <console/console.h>
@@ -312,12 +311,6 @@ void timer_monotonic_get(struct mono_time *mt)
 
 	// TODO: Look at better ways to calculate this
 	mt->microseconds = clk / 100;
-}
-
-// TODO: Remove this. Only here so we continue to compile.
-uintptr_t dw_i2c_base_address(uint32_t bus)
-{
-	return 0;
 }
 
 void do_board_reset(void)

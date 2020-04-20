@@ -14,42 +14,17 @@
  */
 
 #include <device/mmio.h>
-#include <arch/acpi.h>
 #include <console/console.h>
 #include <delay.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <amdblocks/acpimmio.h>
 #include <soc/i2c.h>
-#include <soc/iomap.h>
 #include <soc/soc_util.h>
 #include <soc/southbridge.h>
 #include "chip.h"
 
 /* Global to provide access to chip.c */
 const char *i2c_acpi_name(const struct device *dev);
-
-/*
- * We don't have addresses for I2C0-1.
- */
-static const uintptr_t i2c_bus_address[] = {
-	0,
-	0,
-	APU_I2C2_BASE,
-	APU_I2C3_BASE,
-	APU_I2C4_BASE, /* Can only be used in slave mode */
-};
-
-_Static_assert(
-	ARRAY_SIZE(i2c_bus_address) == I2C_MASTER_DEV_COUNT + I2C_SLAVE_DEV_COUNT,
-	"ARRAY_SIZE(i2c_bus_address) must equal I2C_MASTER_DEV_COUNT + I2C_SLAVE_DEV_COUNT");
-
-uintptr_t dw_i2c_base_address(unsigned int bus)
-{
-	if (bus >= ARRAY_SIZE(i2c_bus_address))
-		return 0;
-
-	return i2c_bus_address[bus];
-}
 
 const struct dw_i2c_bus_config *dw_i2c_get_soc_cfg(unsigned int bus)
 {
