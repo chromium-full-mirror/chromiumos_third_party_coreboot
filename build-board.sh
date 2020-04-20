@@ -125,7 +125,7 @@ function build-coreboot-rom() {
 		fi
 		if [[ -n "${psp_verstage}" ]]; then
 			echo CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK=y
-			echo CONFIG_PSP_BOOTLOADER_NAME=\"test_PspBootLoader_prod_RV_dbg.sbin\"
+			echo CONFIG_PSP_BOOTLOADER_NAME=\"PspBootLoader_test_RV_dbg.sbin\"
 		fi
 	} >> "$work_dir/.config"
 	make \
