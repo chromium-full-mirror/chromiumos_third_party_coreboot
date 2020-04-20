@@ -322,6 +322,63 @@ OPT_PSP_UCODE_FILE3=$(call add_opt_prefix, $(PSP_UCODE_FILE3), --instance 2 --uc
 OPT_MP2CFG_FILE=$(call add_opt_prefix, $(PSP_MP2CFG_FILE), --mp2-config)
 OPT_PSP_SHAREDMEM_BASE=$(call add_opt_prefix, $(PSP_SHAREDMEM_BASE), --sharedmem)
 
+AMDFW_COMMON_ARGS=$(OPT_AMD_PUBKEY_FILE) \
+		$(OPT_PSPBTLDR_FILE) \
+		$(OPT_PUBSIGNEDKEY_FILE) \
+		$(OPT_PSPSCUREOS_FILE) \
+		$(OPT_PSP_SEC_DBG_KEY_FILE) \
+		$(OPT_PSPTRUSTLETS_FILE) \
+		$(OPT_SMUFW1_SUB2_FILE) \
+		$(OPT_SMUFW2_SUB2_FILE) \
+		$(OPT_SMUFW1_SUB1_FILE) \
+		$(OPT_SMUFW2_SUB1_FILE) \
+		$(OPT_PSP_APCB_FILES) \
+		$(OPT_APOB_ADDR) \
+		--apob-nv-size $(shell printf "0x%x" \
+			$(shell cat $(obj)/fmap.fmd | $(_GET_APOBNV_SIZE))) \
+		--apob-nv-base $(shell printf "0x%x" $(call int-add, \
+			$(shell cat $(obj)/fmap.fmd | $(_GET_FLASH_BASE)) \
+			$(shell cat $(obj)/fmap.fmd | $(_GET_BIOS_REG_BASE)) \
+			$(shell cat $(obj)/fmap.fmd | $(_GET_APOBNV_BASE)))) \
+		$(OPT_PSP_BIOSBIN_FILE) \
+		$(OPT_PSP_BIOSBIN_DEST) \
+		$(OPT_PSP_BIOSBIN_SIZE) \
+		$(OPT_PSP_SOFTFUSE) \
+		$(OPT_PSP_PMUI_FILE1) \
+		$(OPT_PSP_PMUI_FILE2) \
+		$(OPT_PSP_PMUI_FILE3) \
+		$(OPT_PSP_PMUI_FILE4) \
+		$(OPT_PSP_PMUD_FILE1) \
+		$(OPT_PSP_PMUD_FILE2) \
+		$(OPT_PSP_PMUD_FILE3) \
+		$(OPT_PSP_PMUD_FILE4) \
+		$(OPT_PSP_UCODE_FILE1) \
+		$(OPT_PSP_UCODE_FILE2) \
+		$(OPT_PSP_UCODE_FILE3) \
+		$(OPT_MP2CFG_FILE) \
+		$(OPT_ABL0_FILE) \
+		$(OPT_ABL1_FILE) \
+		$(OPT_ABL2_FILE) \
+		$(OPT_ABL3_FILE) \
+		$(OPT_ABL4_FILE) \
+		$(OPT_ABL5_FILE) \
+		$(OPT_ABL6_FILE) \
+		$(OPT_ABL7_FILE) \
+		$(OPT_WHITELIST_FILE) \
+		$(OPT_SECG1_FILE) \
+		$(OPT_SECG2_FILE) \
+		$(OPT_MP2FW1_FILE) \
+		$(OPT_MP2FW2_FILE) \
+		$(OPT_DRIVERS_FILE) \
+		$(OPT_PSP_S0I3_FILE) \
+		$(OPT_IKEK_FILE) \
+		$(OPT_SEC_DEBUG_FILE) \
+		$(OPT_VERSTAGE_FILE) \
+		$(OPT_PSP_SHAREDMEM_BASE) \
+		--combo-capable \
+		--token-unlock \
+		--flashsize $(CONFIG_ROM_SIZE)
+
 $(obj)/APCB_%.bin: $(APCB_BLOB_DIR)/APCB_%.bin
 	cp $< $@
 
@@ -410,66 +467,10 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)) \
 			$(AMDFWTOOL) $(obj)/fmap.fmd
 	rm -f $@
 	@printf "    AMDFWTOOL  $(subst $(obj)/,,$(@))\n"
-	@printf "    PSP_VERSTAGE_FILE: $(PSP_VERSTAGE_FILE)\n"
 	$(AMDFWTOOL) \
-		$(OPT_AMD_PUBKEY_FILE) \
-		$(OPT_PSPBTLDR_FILE) \
-		$(OPT_PUBSIGNEDKEY_FILE) \
-		$(OPT_PSPSCUREOS_FILE) \
-		$(OPT_PSP_SEC_DBG_KEY_FILE) \
-		$(OPT_PSPTRUSTLETS_FILE) \
-		$(OPT_SMUFW1_SUB2_FILE) \
-		$(OPT_SMUFW2_SUB2_FILE) \
-		$(OPT_SMUFW1_SUB1_FILE) \
-		$(OPT_SMUFW2_SUB1_FILE) \
-		$(OPT_PSP_APCB_FILES) \
-		$(OPT_APOB_ADDR) \
-		--apob-nv-size $(shell printf "0x%x" \
-			$(shell cat $(obj)/fmap.fmd | $(_GET_APOBNV_SIZE))) \
-		--apob-nv-base $(shell printf "0x%x" $(call int-add, \
-			$(shell cat $(obj)/fmap.fmd | $(_GET_FLASH_BASE)) \
-			$(shell cat $(obj)/fmap.fmd | $(_GET_BIOS_REG_BASE)) \
-			$(shell cat $(obj)/fmap.fmd | $(_GET_APOBNV_BASE)))) \
-		$(OPT_PSP_BIOSBIN_FILE) \
-		$(OPT_PSP_BIOSBIN_DEST) \
-		$(OPT_PSP_BIOSBIN_SIZE) \
-		$(OPT_PSP_SOFTFUSE) \
-		$(OPT_PSP_PMUI_FILE1) \
-		$(OPT_PSP_PMUI_FILE2) \
-		$(OPT_PSP_PMUI_FILE3) \
-		$(OPT_PSP_PMUI_FILE4) \
-		$(OPT_PSP_PMUD_FILE1) \
-		$(OPT_PSP_PMUD_FILE2) \
-		$(OPT_PSP_PMUD_FILE3) \
-		$(OPT_PSP_PMUD_FILE4) \
-		$(OPT_PSP_UCODE_FILE1) \
-		$(OPT_PSP_UCODE_FILE2) \
-		$(OPT_PSP_UCODE_FILE3) \
-		$(OPT_MP2CFG_FILE) \
-		$(OPT_ABL0_FILE) \
-		$(OPT_ABL1_FILE) \
-		$(OPT_ABL2_FILE) \
-		$(OPT_ABL3_FILE) \
-		$(OPT_ABL4_FILE) \
-		$(OPT_ABL5_FILE) \
-		$(OPT_ABL6_FILE) \
-		$(OPT_ABL7_FILE) \
-		$(OPT_WHITELIST_FILE) \
-		$(OPT_SECG1_FILE) \
-		$(OPT_SECG2_FILE) \
-		$(OPT_MP2FW1_FILE) \
-		$(OPT_MP2FW2_FILE) \
-		$(OPT_DRIVERS_FILE) \
-		$(OPT_PSP_S0I3_FILE) \
-		$(OPT_IKEK_FILE) \
-		$(OPT_SEC_DEBUG_FILE) \
-		$(OPT_VERSTAGE_FILE) \
-		$(OPT_PSP_SHAREDMEM_BASE) \
-		--combo-capable \
-		--token-unlock \
-		--flashsize $(CONFIG_ROM_SIZE) \
+		$(AMDFW_COMMON_ARGS) \
 		--location $(shell printf "0x%x" $(PICASSO_FWM_POSITION)) \
-		--output	$@
+		--output $@
 
 ifeq ($(CONFIG_AMDFW_OUTSIDE_CBFS),y)
 PHONY+=add_amdfw
