@@ -65,12 +65,12 @@ static void read_resources(struct device *dev)
 
 	/* DRAM consumed for hybrid romstage and storage */
 	reserved_ram_resource(dev, idx++, CONFIG_ROMSTAGE_ADDR / KiB,
-			(EARLYRAM_TOP - CONFIG_ROMSTAGE_ADDR) / KiB);
+			ROMSTAGE_SIZE / KiB);
 
 	/* top of DRAM consumed early - low top useable RAM
 	 * cbmem_top() accounts for low UMA and TSEG if they are used. */
-	ram_resource(dev, idx++, EARLYRAM_TOP / KiB,
-			(mem_useable - EARLYRAM_TOP) / KiB);
+	ram_resource(dev, idx++, ROMSTAGE_TOP / KiB,
+			(mem_useable - ROMSTAGE_TOP) / KiB);
 
 	/* Low top useable RAM -> Low top RAM (bottom pci mmio hole) */
 	reserved_ram_resource(dev, idx++, mem_useable / KiB,

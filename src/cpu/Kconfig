@@ -28,14 +28,6 @@ config DCACHE_BSP_STACK_SIZE
 	  The amount of anticipated stack usage by bootblock and
 	  other pre-ram stages.
 
-config EARLYRAM_SIZE
-	depends on RESET_VECTOR_IN_RAM
-	hex
-	help
-	  Set the size for DRAM allocated as a scratch region prior to cbmem
-	  ramstage.  The base of the region is linked to immediately follow
-	  the code.
-
 config EARLYRAM_BSP_STACK_SIZE
 	depends on RESET_VECTOR_IN_RAM
 	hex
