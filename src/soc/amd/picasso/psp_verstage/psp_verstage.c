@@ -26,6 +26,7 @@
 #include <stdint.h>
 #include <security/vboot/symbols.h>
 #include <soc/espi.h>
+#include <soc/i2c.h>
 
 #define RUN_PSP_SVC_TESTS 0
 
@@ -118,6 +119,16 @@ static uintptr_t *map_spi_rom(void)
 	return addr;
 }
 
+static void i2c3_set_bar(void *bar)
+{
+	i2c_set_bar(3, (uintptr_t)bar);
+}
+
+static void i2c2_set_bar(void *bar)
+{
+	i2c_set_bar(2, (uintptr_t)bar);
+}
+
 static struct {
 	const char *name;
 	struct {
@@ -132,6 +143,8 @@ static struct {
 	{"GPIO", {FCH_IO_DEVICE_GPIO}, gpio_set_bar},
 	{"IO", {FCH_IO_DEVICE_IOPORT}, io_set_bar},
 	{"eSPI", {FCH_IO_DEVICE_ESPI}, espi_set_bar},
+	{"I2C2", {FCH_IO_DEVICE_I2C, 2}, i2c2_set_bar},
+	{"I2C3", {FCH_IO_DEVICE_I2C, 3}, i2c3_set_bar},
 };
 
 static uint32_t unmap_fch_devices(void)
