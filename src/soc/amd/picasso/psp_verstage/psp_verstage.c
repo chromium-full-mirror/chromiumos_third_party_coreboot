@@ -136,15 +136,18 @@ static uintptr_t *map_spi_rom(void)
 
 static struct {
 	const char *name;
-	FCH_IO_DEVICE device;
+	struct {
+		FCH_IO_DEVICE device;
+		uint32_t arg0;
+	} args;
 	void (*set_bar)(void *bar);
 	void *_bar;
 } bar_map[] = {
-	{"IOMUX", FCH_IO_DEVICE_IOMUX, iomux_set_bar},
-	{"MISC", FCH_IO_DEVICE_MISC, misc_set_bar},
-	{"GPIO", FCH_IO_DEVICE_GPIO, gpio_set_bar},
-	{"IO", FCH_IO_DEVICE_IOPORT, io_set_bar},
-	{"eSPI", FCH_IO_DEVICE_ESPI, espi_set_bar},
+	{"IOMUX", {FCH_IO_DEVICE_IOMUX}, iomux_set_bar},
+	{"MISC", {FCH_IO_DEVICE_MISC}, misc_set_bar},
+	{"GPIO", {FCH_IO_DEVICE_GPIO}, gpio_set_bar},
+	{"IO", {FCH_IO_DEVICE_IOPORT}, io_set_bar},
+	{"eSPI", {FCH_IO_DEVICE_ESPI}, espi_set_bar},
 };
 
 static uint32_t unmap_fch_devices(void)
@@ -158,7 +161,7 @@ static uint32_t unmap_fch_devices(void)
 		if (!bar)
 			continue;
 
-		err = svc_unmap_fch_dev(bar_map[i].device, bar);
+		err = svc_unmap_fch_dev(bar_map[i].args.device, bar);
 		if (err) {
 			printk(BIOS_ERR, "Failed to unmap %s: %u\n", bar_map[i].name, err);
 			rtn = err;
@@ -180,7 +183,7 @@ static uint32_t map_fch_devices(void)
 
 	for (i = 0; i < ARRAY_SIZE(bar_map); ++i) {
 		printk(BIOS_DEBUG, "Mapping %s\n", bar_map[i].name);
-		err = svc_map_fch_dev(bar_map[i].device, 0, 0, &bar);
+		err = svc_map_fch_dev(bar_map[i].args.device, bar_map[i].args.arg0, 0, &bar);
 		if (err) {
 			printk(BIOS_ERR, "Failed to map %s: %u\n", bar_map[i].name, err);
 			return err;
