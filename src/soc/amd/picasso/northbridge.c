@@ -91,12 +91,14 @@ static void read_resources(struct device *dev)
 
 		res = fsp_hob_header_to_resource(hob);
 
-		/* 0 through TOM was set above */
-		if (res->type == EFI_RESOURCE_SYSTEM_MEMORY && res->addr >= tom.lo)
+		if (res->type == EFI_RESOURCE_SYSTEM_MEMORY && res->addr < mem_useable)
+			continue; /* 0 through low usable was set above */
+		if (res->type == EFI_RESOURCE_MEMORY_MAPPED_IO)
+			continue; /* Done separately */
+
+		if (res->type == EFI_RESOURCE_SYSTEM_MEMORY)
 			ram_resource(dev, idx++, res->addr / KiB, res->length / KiB);
-		else if (res->type == EFI_RESOURCE_MEMORY_MAPPED_IO)
-			continue;
-		else if (res->type == EFI_RESOURCE_MEMORY_RESERVED && res->addr >= tom.lo)
+		else if (res->type == EFI_RESOURCE_MEMORY_RESERVED)
 			reserved_ram_resource(dev, idx++, res->addr / KiB, res->length / KiB);
 		else
 			printk(BIOS_ERR, "Error: failed to set resources for type %d\n",
