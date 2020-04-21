@@ -18,6 +18,25 @@
 .code32
 .align 4
 
+.global s3_bsp_reentry
+s3_bsp_reentry:
+	/* Align the stack before reentry to C functions */
+	movl	$(_eearlyram_stack), %esp
+	andl	$0xfffffff0, %esp
+	subl	$4, %esp
+
+	rdtsc
+	pushl	%edx		/* save timestamp */
+	pushl	%eax
+	pushl	$0		/* BIST is N/A */
+
+	/* void hybrid_romstage_entry(uint32_t bist, uint64_t early_tsc); */
+	call	soc_hybrid_romstage_entry
+	/* Execution does not return here */
+1:
+	hlt
+	jmp 1b
+
 .macro is_ap
 	movl	%ecx, %ebx
 	movl	$LAPIC_BASE_MSR, %ecx

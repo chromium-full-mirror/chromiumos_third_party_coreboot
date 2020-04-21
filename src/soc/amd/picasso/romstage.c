@@ -225,6 +225,10 @@ asmlinkage void soc_hybrid_romstage_entry(uint32_t bist, uint64_t early_tsc)
 	int s3_resume;
 	int on_bsp = boot_cpu();
 	int early_mtrr_err;
+	msr_t s3_resume_entry = {
+		.hi = (uint64_t)(uintptr_t)s3_bsp_reentry >> 32,
+		.lo = (uintptr_t)s3_bsp_reentry & 0xffffffff,
+	};
 
 	post_code(0x40);
 	if (CONFIG(COLLECT_TIMESTAMPS) && on_bsp) {
@@ -260,6 +264,11 @@ asmlinkage void soc_hybrid_romstage_entry(uint32_t bist, uint64_t early_tsc)
 	if (on_bsp) {
 		romstage_soc_init(s3_resume);
 		mainboard_romstage_entry_s3(s3_resume);
+
+		/* Trigger the microcode to stash the CPU state and resume vector
+		 * into the C6 save area. */
+		if (!s3_resume)
+			wrmsr(S3_RESUME_EIP, s3_resume_entry);
 	}
 
 	post_code(0x47);

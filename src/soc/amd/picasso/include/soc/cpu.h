@@ -16,14 +16,18 @@
 #ifndef __PICASSO_CPU_H__
 #define __PICASSO_CPU_H__
 
+#include <arch/cpu.h>
 #include <device/device.h>
 #include <commonlib/helpers.h>
+
+#define S3_RESUME_EIP 0xc00110e0
 
 #define MSR_CSTATE_ADDRESS 0xC0010073
 #define CSTATE_IO_BASE_ADDRESS 0x413
 
 #define DALI_3250U_STR "AMD Ryzen 3 3250U"
 
+asmlinkage void s3_bsp_reentry(void);
 void picasso_init_cpus(struct device *dev);
 int get_cpu_count(void);
 void check_mca(void);
