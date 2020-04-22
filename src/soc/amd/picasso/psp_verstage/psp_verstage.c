@@ -261,17 +261,18 @@ void udelay(uint32_t usecs)
 	svc_delay_in_usec(usecs);
 }
 
-
 int vboot_platform_is_resuming(void)
 {
 	uint32_t bootmode = 0;
-	if (svc_get_boot_mode(&bootmode))
-		printk(BIOS_ERR,"Error getting boot mode.\n");
+	if (svc_get_boot_mode(&bootmode)) {
+		printk(BIOS_ERR,"Error getting boot mode. Assuming no resume.\n");
+		return 0;
+	}
 
-	if ((bootmode == PSP_BOOT_MODE_S3_RESUME) || (bootmode == PSP_BOOT_MODE_S0i3_RESUME))
-		bootmode=1;
+	if (bootmode == PSP_BOOT_MODE_S3_RESUME || bootmode == PSP_BOOT_MODE_S0i3_RESUME)
+		return 1;
 
-	return bootmode;
+	return 0;
 }
 
 const struct region_device *boot_device_ro(void)
