@@ -58,6 +58,3 @@ else
 $(error Undefined APCB selection GPIOS for Zork baseboard)
 endif #($(CONFIG_BOARD_GOOGLE_BASEBOARD_TREMBYLE),y)
 
-# SPD_SOURCES is used to generate spd.bin, which is used by mosys
-# APCB_SOURCES and SPD_SOURCES can be merged after b/141434940 is integrated.
-SPD_SOURCES = $(patsubst %_x1,%,$(patsubst %_x2,%,$(APCB_SOURCES)))
