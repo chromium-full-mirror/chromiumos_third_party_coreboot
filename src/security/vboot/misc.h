@@ -64,6 +64,8 @@ static inline int verification_should_run(void)
 		return ENV_ROMSTAGE;
 	else if (CONFIG(VBOOT_STARTS_IN_BOOTBLOCK))
 		return ENV_BOOTBLOCK;
+	else if (CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK))
+		return ENV_VERSTAGE;
 	else
 		dead_code();
 }
@@ -98,7 +100,7 @@ static inline int vboot_logic_executed(void)
 		return 1;
 #endif
 	} else if (CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK)) {
-		return 0;
+		return !ENV_BOOTBLOCK;
 	} else {
 		dead_code();
 	}
