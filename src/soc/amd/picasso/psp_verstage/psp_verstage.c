@@ -27,6 +27,7 @@
 #include <soc/i2c.h>
 #include <vb2_api.h>
 #include <security/vboot/symbols.h>
+#include <security/vboot/misc.h>
 #include <soc/espi.h>
 #include <soc/i2c.h>
 #include <lib.h>
@@ -204,6 +205,64 @@ static uint32_t map_fch_devices(void)
 }
 
 /*
+ * Tell the PSP where to load the rest of the firmware from
+ */
+static void update_boot_region(struct vb2_context *ctx)
+{
+	struct psp_ef_table *ef_table;
+	uint32_t psp_dir_addr, bios_dir_addr;
+	uint32_t *psp_dir_in_spi, *bios_dir_in_spi;
+
+	/* Continue booting from RO */
+	if (ctx->flags & VB2_CONTEXT_RECOVERY_MODE) {
+		printk(BIOS_ERR, "In recovery mode. Staying in RO.\n");
+		return;
+	}
+
+	if (vboot_is_firmware_slot_a(ctx)) {
+		printk(BIOS_SPEW, "Using FMAP RW_A region.\n");
+		ef_table = (struct psp_ef_table *)((CONFIG_PICASSO_FW_A_POSITION &
+						SPI_ADDR_MASK) + (uint32_t)boot_dev.base);
+	} else {
+		printk(BIOS_SPEW, "Using FMAP RW_B region.\n");
+		ef_table = (struct psp_ef_table *)((CONFIG_PICASSO_FW_B_POSITION &
+						SPI_ADDR_MASK) + (uint32_t)boot_dev.base);
+	}
+
+	if (ef_table->signature != EMBEDDED_FW_SIGNATURE) {
+		printk(BIOS_ERR, "Error: ROMSIG address is not correct.\n");
+		post_code(POSTCODE_ROMSIG_MISMATCH_ERROR);
+		reboot_into_recovery(ctx);
+		return;
+	}
+
+	psp_dir_addr = ef_table->psp_table;
+	bios_dir_addr = ef_table->bios1_entry;
+	psp_dir_in_spi = (uint32_t *)((psp_dir_addr & SPI_ADDR_MASK) + (uint32_t)boot_dev.base);
+	bios_dir_in_spi = (uint32_t *)((bios_dir_addr & SPI_ADDR_MASK) + (uint32_t)boot_dev.base);
+	if (*psp_dir_in_spi != PSP_COOKIE) {
+		printk(BIOS_ERR, "Error: PSP Directory address is not correct.\n");
+		post_code(POSTCODE_PSP_COOKIE_MISMATCH_ERROR);
+		reboot_into_recovery(ctx);
+		return;
+	}
+	if (*bios_dir_in_spi != BDT1_COOKIE) {
+		printk(BIOS_ERR, "Error: BIOS Directory address is not correct.\n");
+		post_code(POSTCODE_BDT1_COOKIE_MISMATCH_ERROR);
+		reboot_into_recovery(ctx);
+		return;
+	}
+
+	if (svc_update_psp_bios_dir((void *)&psp_dir_addr,
+			(void *)&bios_dir_addr, DIR_OFFSET_SET)) {
+		printk(BIOS_ERR, "Error: Updated BIOS Directory could not be set.\n");
+		post_code(POSTCODE_UPDATE_PSP_BIOS_DIR_ERROR);
+		reboot_into_recovery(ctx);
+		return;
+	}
+}
+
+/*
  * Save workbuf (and soon memory console and timestamps) to the bootloader to pass
  * back to coreboot.
  */
@@ -246,6 +305,8 @@ static void save_buffers(void)
 		post_code(POSTCODE_WORKBUF_SAVE_ERROR);
 		reboot_into_recovery(ctx);
 	}
+
+	update_boot_region(ctx);
 }
 
 extern char _bss_start, _bss_end;
@@ -278,13 +339,6 @@ void Main(void)
 
 	svc_write_postcode(0x03);
 
-	#if 0 //TODO
-	uint32_t *psp_dir_offset = NULL;
-	uint32_t *bios_dir_offset = NULL;
-	uint32_t *workbuf_addr = NULL;
-
-	svc_update_psp_bios_dir(psp_dir_offset, bios_dir_offset, DIR_OFFSET_SET);
-	#endif
 
 	if (RUN_PSP_SVC_TESTS)
 		test_svc_calls();
