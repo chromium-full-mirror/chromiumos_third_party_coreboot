@@ -42,55 +42,6 @@ Device (PBRA){
     Name(_ADR, 0x00080001)
     // 0.1      # Display HDA
     // 0.2      # Crypto Coprocesor
-
-    // 0.3      # XHCI 0 under Bus A
-    Device(XHC0) {
-        Name(_ADR, 0x00000003)
-        Name(_PRW, Package() { 0xb, 3 })
-        Device (RHUB) {
-            Name (_ADR, 0x0)
-            /* Devices dynamically generated at boot */
-        }
-
-        Method(_S0W,0) {
-            Return(0)
-        }
-
-        Method(_S3W,0) {
-            Return(4)
-        }
-
-        Method(_S4W,0) {
-            Return(4)
-        }
-
-    } /* end XHC0 */
-
-    // 0.4      # XHCI 1 under Bus A
-    Device(XHC1) {
-        Name(_ADR, 0x00000004)
-        Name(_PRW, Package() { 0xb, 3 })
-        Device (RHUB) {
-            Name (_ADR, Zero)
-            Device (HS05) { Name (_ADR, 1) }
-            Device (HS06) { Name (_ADR, 2) }
-            Device (SS05) { Name (_ADR, 3) }
-        }
-
-        Method(_S0W,0) {
-            Return(0)
-        }
-
-        Method(_S3W,0) {
-            Return(4)
-        }
-
-        Method(_S4W,0) {
-            Return(4)
-        }
-
-    } /* end XHC1 */
-
     // 0.7      # non-Sensor Fusion Hub device
 }
 

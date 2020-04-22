@@ -34,52 +34,58 @@ static void picasso_usb_init(struct device *dev)
 
 static const struct xhci_port_info {
 	unsigned int did;
+	const char *acpi_device_name;
 	int hs_count;
 	int ss_count;
 } xhci_port_info[] = {
 	{
 		.did = PCI_DEVICE_ID_AMD_FAM17H_MODEL20H_XHCI0,
+		.acpi_device_name = "XHC0",
 		.hs_count = 6,
 		.ss_count = 5,
 	},
 	{
 		.did = PCI_DEVICE_ID_AMD_FAM17H_MODEL18H_XHCI0,
+		.acpi_device_name = "XHC0",
 		.hs_count = 4,
 		.ss_count = 4,
 	},
 	{
 		.did = PCI_DEVICE_ID_AMD_FAM17H_MODEL18H_XHCI1,
+		.acpi_device_name = "XHC1",
 		.hs_count = 2,
 		.ss_count = 1,
 	},
 };
 
-static const char *usb_acpi_name(const struct device *device)
+static const struct xhci_port_info *find_device_cfg(unsigned int did)
 {
-	switch(device->device) {
-	case PCI_DEVICE_ID_AMD_FAM17H_MODEL20H_XHCI0:
-		return "XHC0";
-	case PCI_DEVICE_ID_AMD_FAM17H_MODEL18H_XHCI0:
-		return "XHC0";
-	case PCI_DEVICE_ID_AMD_FAM17H_MODEL18H_XHCI1:
-		return "XHC1";
-	default:
-		return NULL;
+	int i;
+
+	for (i = 0; i < ARRAY_SIZE(xhci_port_info); i++) {
+		if (xhci_port_info[i].did == did)
+			return &xhci_port_info[i];
 	}
+	return NULL;
 }
 
-static void xhci_add_devices(const struct device *device,
-			     const struct xhci_port_info *controller)
+static const char *usb_acpi_name(const struct device *device)
+{
+	const struct xhci_port_info *pi = find_device_cfg(device->device);
+	if (pi != NULL)
+		return pi->acpi_device_name;
+	else
+		return NULL;
+}
+
+static void xhci_add_devices(const struct xhci_port_info *controller)
 {
 	int i;
 	int addr = 1;
 	char buf[16];
-	char scope_buf[DEVICE_PATH_MAX];
 
-	snprintf(scope_buf, DEVICE_PATH_MAX, "%s.%s", acpi_device_path(device),
-		 "RHUB");
-
-	acpigen_write_scope(scope_buf);
+	acpigen_write_device("RHUB");
+	acpigen_write_name_integer("_ADR", 0x00000000);
 
 	/* Write HS devices */
 	for (i = 1; i <= controller->hs_count; i++){
@@ -99,24 +105,14 @@ static void xhci_add_devices(const struct device *device,
 		addr++;
 	}
 
-	/* Exit Device(RHUB) scope */
+	/* Exit RHUB device */
 	acpigen_pop_len();
-}
-
-static const struct xhci_port_info *find_device_cfg(unsigned int did)
-{
-	int i;
-
-	for (i = 0; i < ARRAY_SIZE(xhci_port_info); i++) {
-		if (xhci_port_info[i].did == did)
-			return &xhci_port_info[i];
-	}
-	return NULL;
 }
 
 static void xhci_fill_ssdt_generator(struct device *device)
 {
 	printk(BIOS_INFO, "xHCI SSDT generation\n");
+
 	const struct xhci_port_info *pi = find_device_cfg(device->device);
 
 	if (pi == NULL) {
@@ -125,7 +121,32 @@ static void xhci_fill_ssdt_generator(struct device *device)
 		return;
 	}
 
-	xhci_add_devices(device, pi);
+	/* Write SSDT entry for xHCI controller */
+	acpigen_write_scope(acpi_device_scope(device));
+	acpigen_write_device(pi->acpi_device_name);
+	acpigen_write_ADR_pci_device(device);
+	acpigen_write_PRW(0xb, 3);
+
+	xhci_add_devices(pi);
+
+        // Method(_S0W,0) {
+        // 	Return(0)
+        // }
+	acpigen_write_name_integer("_S0W", 0);
+
+        // Method(_S3W,0) {
+        // 	Return(4)
+        // }
+	acpigen_write_name_integer("_S3W", 4);
+
+        // Method(_S4W,0) {
+        // 	Return(4)
+        // }
+	acpigen_write_name_integer("_S4W", 4);
+
+	acpigen_pop_len(); // xHCI device
+
+	acpigen_pop_len(); // PRBA scope
 }
 
 static struct pci_operations lops_pci = {
