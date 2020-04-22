@@ -133,3 +133,17 @@ uint32_t svc_write_postcode(uint32_t postcode)
 	SVC_CALL1(SVC_WRITE_POSTCODE, postcode, retval);
 	return retval;
 }
+
+uint32_t svc_get_max_workbuf_size(uint32_t *size)
+{
+	uint32_t retval = 0;
+	SVC_CALL1(SVC_GET_MAX_WORKBUF_SIZE, size, retval);
+	return retval;
+}
+
+uint32_t svc_crypto_sha(SHA_OPERATION *sha_op, SHA_OPERATION_MODE sha_mode)
+{
+	uint32_t retval = 0;
+	SVC_CALL2(SVC_SHA, sha_op, sha_mode, retval);
+	return retval;
+}
