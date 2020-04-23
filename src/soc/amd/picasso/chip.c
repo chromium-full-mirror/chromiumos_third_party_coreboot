@@ -197,8 +197,6 @@ const char *soc_acpi_name(const struct device *dev)
 		return "GNB";
 	case IOMMU_DEVID: 	// IOMMU
 		return "IOMM";
-	case GFX_DEVFN: 	// Internal Graphics
-		return "IGFX";
 	/* PCIe GPP Bridges PCIE_GPP_#_DEVFN*/
 	case PCIE_GPP_0_DEVFN:
 		return "PBR0";
