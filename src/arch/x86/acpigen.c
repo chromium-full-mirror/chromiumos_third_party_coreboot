@@ -31,6 +31,8 @@
 #include <assert.h>
 #include <console/console.h>
 #include <device/device.h>
+#include <device/pci_def.h>
+#include <device/pci_type.h>
 
 static char *gencurrent;
 
@@ -1715,4 +1717,26 @@ int acpigen_disable_tx_gpio(struct acpi_gpio *gpio)
 		return acpigen_soc_set_tx_gpio(gpio->pins[0]);
 	else
 		return acpigen_soc_clear_tx_gpio(gpio->pins[0]);
+}
+
+void acpigen_write_ADR(uint64_t adr)
+{
+	acpigen_write_name_qword("_ADR", adr);
+}
+
+void acpigen_write_ADR_pci_devfn(pci_devfn_t devfn)
+{
+	/*
+	 * _ADR for PCI Bus is encoded as follows:
+	 * [63:32] - unused
+	 * [31:16] - device #
+	 * [15:0]  - function #
+	 */
+	acpigen_write_ADR(PCI_SLOT(devfn) << 16 | PCI_FUNC(devfn));
+}
+
+void acpigen_write_ADR_pci_device(const struct device *dev)
+{
+	assert(dev->path.type == DEVICE_PATH_PCI);
+	acpigen_write_ADR_pci_devfn(dev->path.pci.devfn);
 }
