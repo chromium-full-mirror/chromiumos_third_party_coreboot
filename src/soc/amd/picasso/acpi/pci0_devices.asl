@@ -40,10 +40,6 @@ Device (PBR6){
 // 0:08.1   # Internal GPP Bridge 0 to Bus A
 Device (PBRA){
     Name(_ADR, 0x00080001)
-    // 0.0      # Internal GPU
-    Device (IGFX){
-        Name(_ADR, 0x00000000)
-    }
     // 0.1      # Display HDA
     // 0.2      # Crypto Coprocesor
 
