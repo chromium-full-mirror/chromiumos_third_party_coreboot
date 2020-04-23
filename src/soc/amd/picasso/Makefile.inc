@@ -111,6 +111,7 @@ smm-$(CONFIG_PICASSO_UART) += uart.c
 smm-$(CONFIG_SPI_FLASH) += spi.c
 smm-y += gpio.c
 smm-y += psp.c
+smm-y += smu.c
 
 cbfs-files-y += etc/sdcard0
 etc/sdcard0-file = $(src)/soc/amd/picasso/sdcard0
