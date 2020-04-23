@@ -491,4 +491,13 @@ size_t acpi_dp_add_property_list(struct acpi_dp *dp,
 /* Write Device Property hierarchy and clean up resources */
 void acpi_dp_write(struct acpi_dp *table);
 
+/*
+ * Helper function to write a PCI device with _ADR object defined.
+ *
+ * IMPORTANT: Device that is added to SSDT cannot be accessed from DSDT. So, if there are any
+ * references to this PCI device required from static asl files, do not use this function and
+ * instead add the device to DSDT as well.
+ */
+void acpi_device_write_pci_dev(struct device *dev);
+
 #endif

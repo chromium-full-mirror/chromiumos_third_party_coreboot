@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <assert.h>
 #include <string.h>
 #include <arch/acpi.h>
 #include <arch/acpi_device.h>
@@ -915,4 +916,34 @@ struct acpi_dp *acpi_dp_add_gpio(struct acpi_dp *dp, const char *name,
 	acpi_dp_add_array(dp, gpio);
 
 	return gpio;
+}
+
+/*
+ * This function writes a PCI device with _ADR object:
+ * Example:
+ * Scope (\_SB.PCI0)
+ * {
+ *    Device (IGFX)
+ *    {
+ *       Name (_ADR, 0x0000000000000000)
+ *    }
+ * }
+ */
+void acpi_device_write_pci_dev(struct device *dev)
+{
+	const char *scope = acpi_device_scope(dev);
+	const char *name = acpi_device_name(dev);
+
+	assert(dev->path.type == DEVICE_PATH_PCI);
+	assert(name);
+	assert(scope);
+
+	acpigen_write_scope(scope);
+	acpigen_write_device(name);
+
+	acpigen_write_ADR_pci_device(dev);
+	acpigen_write_STA(acpi_device_status(dev));
+
+	acpigen_pop_len(); /* Device */
+	acpigen_pop_len(); /* Scope */
 }
