@@ -400,7 +400,7 @@ config USE_PSPSCUREOS
 
 config PSP_LOAD_MP2_FW
 	bool "Include MP2 blobs in PSP build"
-	default y
+	default n
 	help
 	  Include the MP2 firmwares and configuration into the PSP build.
 
