@@ -155,7 +155,7 @@ FIRMWARE_LOCATE=$(dir $(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)))
 PSPBTLDR_FILE=$(top)/$(FIRMWARE_LOCATE)/$(CONFIG_PSP_BOOTLOADER_NAME)
 $(info Adding PSP $(shell md5sum $(PSPBTLDR_FILE)))
 
-# types = 0x8 and 0x18
+# types = 0x8 and 0x12
 PSP_SMUFW1_SUB1_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmwareRV2.csbin
 PSP_SMUFW1_SUB2_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmwarePCO.csbin
 PSP_SMUFW2_SUB1_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware2RV2.csbin
