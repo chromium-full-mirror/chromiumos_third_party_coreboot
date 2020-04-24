@@ -320,7 +320,7 @@ config EARLYRAM_AP_STACK_SIZE
 	default 0x1000
 
 config AMDFW_OUTSIDE_CBFS
-	bool "The AMD firmware is outside CBFS"
+	bool
 	default n
 	help
 	  The AMDFW (PSP) is typically locatable in cbfs.  Select this
@@ -361,7 +361,7 @@ comment "AMD Firmware Directory Table set to location for 16MB ROM"
 	depends on AMD_FWM_POSITION_INDEX = 5
 
 config AMD_PUBKEY_FILE
-	string "AMD public Key"
+	string
 	default "3rdparty/blobs/soc/amd/picasso/PSP/AmdPubKeyRV.bin"
 
 config PSP_BOOTLOADER_NAME
@@ -391,7 +391,7 @@ config MRC_SETTINGS_CACHE_SIZE
 	  erase.
 
 config USE_PSPSCUREOS
-	bool "Include PSP SecureOS blobs in PSP build"
+	bool
 	default y
 	help
 	  Include the PspSecureOs and PspTrustlet binaries in the PSP build.
@@ -399,7 +399,7 @@ config USE_PSPSCUREOS
 	  If unsure, answer 'y'
 
 config PSP_LOAD_MP2_FW
-	bool "Include MP2 blobs in PSP build"
+	bool
 	default n
 	help
 	  Include the MP2 firmwares and configuration into the PSP build.
@@ -407,7 +407,7 @@ config PSP_LOAD_MP2_FW
 	  If unsure, answer 'y'
 
 config PSP_LOAD_S0I3_FW
-	bool "Include S0I3 blob in PSP build"
+	bool
 	default n
 	help
 	  Select this item to include the S0i3 file into the PSP build.
