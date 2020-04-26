@@ -76,6 +76,10 @@ static void read_resources(struct device *dev)
 	reserved_ram_resource(dev, idx++, mem_useable / KiB,
 					(tom.lo - mem_useable) / KiB);
 
+	/* Reserve region where PSP copies the APOB into DRAM */
+	reserved_ram_resource(dev, idx++, CONFIG_PSP_APOB_DRAM_ADDRESS / KiB,
+					CONFIG_MRC_SETTINGS_CACHE_SIZE / KiB);
+
 	mmconf_resource(dev, MMIO_CONF_BASE);
 
 	if (!hob) {
