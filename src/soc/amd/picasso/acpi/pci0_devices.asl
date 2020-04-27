@@ -136,10 +136,6 @@ Device (PBRA){
 // 0:08.2   # Internal GPP Bridge 0 to Bus B
 Device (PBRB){
     Name(_ADR, 0x00080002)
-    /* 0:00.0 - AHCI/SATA */
-    Device(STCR) {
-        Name(_ADR, 0x00000000)
-    } /* end STCR */
 }
 // 0:14.0   # SM
 Device(SBUS) {

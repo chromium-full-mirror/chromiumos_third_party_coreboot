@@ -220,8 +220,6 @@ const char *soc_acpi_name(const struct device *dev)
 		return "AZHD";
 	case LPC_DEVFN: 	// LPC Bus
 		return "LPCB";
-	case SATA_DEVFN: 	// Sata
-		return "STCR";
 	case SMBUS_DEVFN: 	// SMBUS
 		return "SBUS";
 	case XHCI0_DEVFN: 	// xHCI Controller 1
