@@ -161,18 +161,20 @@ PSP_SMUFW1_SUB2_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmwarePCO.csbin
 PSP_SMUFW2_SUB1_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware2RV2.csbin
 PSP_SMUFW2_SUB2_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware2PCO.csbin
 
+ifeq ($(CONFIG_PSP_UNLOCK_SECURE_DEBUG),y)
 # type = 0x9
 PSP_SEC_DBG_KEY_FILE=$(top)/$(FIRMWARE_LOCATE)/RavenSecureDebug_PublicKey.bin
+# type = 0x13
+PSP_SEC_DEBUG_FILE=$(top)/$(FIRMWARE_LOCATE)/secure_unlock_prod_RV.sbin
 # Enable secure debug unlock
 PSP_SOFTFUSE_BITS += 0
+PSP_TOKEN_UNLOCK="--token-unlock"
+endif
 
 ifeq ($(CONFIG_USE_PSPSCUREOS),y)
 # types = 0x2
 PSPSCUREOS_FILE=$(top)/$(FIRMWARE_LOCATE)/psp_os_combined_prod_RV.sbin
 endif
-
-# type = 0x13
-PSP_SEC_DEBUG_FILE=$(top)/$(FIRMWARE_LOCATE)/secure_unlock_prod_RV.sbin
 
 # type = 0x21
 PSP_IKEK_FILE=$(top)/$(FIRMWARE_LOCATE)/PspIkekRV.bin
@@ -288,6 +290,7 @@ OPT_SMUFW1_SUB2_FILE=$(call add_opt_prefix, $(PSP_SMUFW1_SUB2_FILE), --subprogra
 OPT_SMUFW2_SUB1_FILE=$(call add_opt_prefix, $(PSP_SMUFW2_SUB1_FILE), --subprogram 1 --smufirmware2)
 OPT_SMUFW2_SUB2_FILE=$(call add_opt_prefix, $(PSP_SMUFW2_SUB2_FILE), --subprogram 2 --smufirmware2)
 OPT_PSP_SEC_DBG_KEY_FILE=$(call add_opt_prefix, $(PSP_SEC_DBG_KEY_FILE), --securedebug)
+OPT_TOKEN_UNLOCK=$(call add_opt_prefix, $(PSP_TOKEN_UNLOCK), "")
 OPT_PSP_SOFTFUSE=$(call add_opt_prefix, $(PSP_SOFTFUSE), --soft-fuse)
 OPT_PSPSCUREOS_FILE=$(call add_opt_prefix, $(PSPSCUREOS_FILE), --secureos)
 OPT_SEC_DEBUG_FILE=$(call add_opt_prefix, $(PSP_SEC_DEBUG_FILE), --secdebug)
@@ -385,7 +388,7 @@ AMDFW_COMMON_ARGS=$(OPT_AMD_PUBKEY_FILE) \
 		$(OPT_PSP_SHAREDMEM_BASE) \
 		$(OPT_PSP_SHAREDMEM_SIZE) \
 		--combo-capable \
-		--token-unlock \
+		$(OPT_TOKEN_UNLOCK) \
 		--flashsize $(CONFIG_ROM_SIZE)
 
 $(obj)/APCB_%.bin: $(APCB_BLOB_DIR)/APCB_%.bin
