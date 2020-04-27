@@ -26,6 +26,7 @@
 #include <stdint.h>
 #include <soc/i2c.h>
 #include <vb2_api.h>
+#include <2recovery_reasons.h>
 #include <security/vboot/symbols.h>
 #include <security/vboot/misc.h>
 #include <soc/espi.h>
@@ -177,9 +178,16 @@ static uint32_t unmap_fch_devices(void)
 	return rtn;
 }
 
-static void reboot_into_recovery(struct vb2_context *ctx)
+static void reboot_into_recovery(struct vb2_context *ctx, uint32_t subcode)
 {
-// TODO
+	subcode += PSP_VBOOT_ERROR_SUBCODE;
+	post_code(subcode);
+
+	vb2api_fail(ctx, VB2_RECOVERY_RO_UNSPECIFIED, (int)subcode);
+	vboot_save_data(ctx);
+
+	printk(BIOS_ERR, "Rebooting into recovery: %#x\n", (unsigned int)subcode);
+	vboot_reboot();
 }
 
 static uint32_t map_fch_devices(void)
@@ -207,7 +215,7 @@ static uint32_t map_fch_devices(void)
 /*
  * Tell the PSP where to load the rest of the firmware from
  */
-static void update_boot_region(struct vb2_context *ctx)
+static uint32_t update_boot_region(struct vb2_context *ctx)
 {
 	struct psp_ef_table *ef_table;
 	uint32_t psp_dir_addr, bios_dir_addr;
@@ -216,7 +224,7 @@ static void update_boot_region(struct vb2_context *ctx)
 	/* Continue booting from RO */
 	if (ctx->flags & VB2_CONTEXT_RECOVERY_MODE) {
 		printk(BIOS_ERR, "In recovery mode. Staying in RO.\n");
-		return;
+		return 0;
 	}
 
 	if (vboot_is_firmware_slot_a(ctx)) {
@@ -231,9 +239,7 @@ static void update_boot_region(struct vb2_context *ctx)
 
 	if (ef_table->signature != EMBEDDED_FW_SIGNATURE) {
 		printk(BIOS_ERR, "Error: ROMSIG address is not correct.\n");
-		post_code(POSTCODE_ROMSIG_MISMATCH_ERROR);
-		reboot_into_recovery(ctx);
-		return;
+		return POSTCODE_ROMSIG_MISMATCH_ERROR;
 	}
 
 	psp_dir_addr = ef_table->psp_table;
@@ -242,78 +248,73 @@ static void update_boot_region(struct vb2_context *ctx)
 	bios_dir_in_spi = (uint32_t *)((bios_dir_addr & SPI_ADDR_MASK) + (uint32_t)boot_dev.base);
 	if (*psp_dir_in_spi != PSP_COOKIE) {
 		printk(BIOS_ERR, "Error: PSP Directory address is not correct.\n");
-		post_code(POSTCODE_PSP_COOKIE_MISMATCH_ERROR);
-		reboot_into_recovery(ctx);
-		return;
+		return POSTCODE_PSP_COOKIE_MISMATCH_ERROR;
 	}
 	if (*bios_dir_in_spi != BDT1_COOKIE) {
 		printk(BIOS_ERR, "Error: BIOS Directory address is not correct.\n");
-		post_code(POSTCODE_BDT1_COOKIE_MISMATCH_ERROR);
-		reboot_into_recovery(ctx);
-		return;
+		return POSTCODE_BDT1_COOKIE_MISMATCH_ERROR;
 	}
 
 	if (svc_update_psp_bios_dir((void *)&psp_dir_addr,
 			(void *)&bios_dir_addr, DIR_OFFSET_SET)) {
 		printk(BIOS_ERR, "Error: Updated BIOS Directory could not be set.\n");
-		post_code(POSTCODE_UPDATE_PSP_BIOS_DIR_ERROR);
-		reboot_into_recovery(ctx);
-		return;
+		return POSTCODE_UPDATE_PSP_BIOS_DIR_ERROR;
 	}
+
+	return 0;
 }
 
 /*
  * Save workbuf (and soon memory console and timestamps) to the bootloader to pass
  * back to coreboot.
  */
-static void save_buffers(void)
+static uint32_t save_buffers(struct vb2_context **ctx)
 {
 	uint32_t retval;
 	uint32_t buffer_size = DEFAULT_WORKBUF_TRANSFER_SIZE;
 	uint32_t max_buffer_size;
-	struct vb2_context *ctx;
 
 	/*
 	 * This should never fail, but if it does, we should still try to
 	 * save the buffer. If that fails, then we should go to recovery mode.
 	 */
 	if (svc_get_max_workbuf_size(&max_buffer_size)) {
-		printk(BIOS_DEBUG,"Error getting workbuf size.\n");
+		post_code(POSTCODE_DEFAULT_BUFFER_SIZE_NOTICE);
+		printk(BIOS_NOTICE,"Notice: using default transfer buffer size.\n");
 		max_buffer_size = DEFAULT_WORKBUF_TRANSFER_SIZE;
-        }
+	}
 	printk(BIOS_DEBUG,"\nMaximum buffer size: %d bytes\n", max_buffer_size);
 
-	retval = vb2api_relocate(_vboot2_work, _vboot2_work, buffer_size, &ctx);
+	retval = vb2api_relocate(_vboot2_work, _vboot2_work, buffer_size, ctx);
 	if (retval != VB2_SUCCESS) {
 		printk(BIOS_ERR, "Error shrinking workbuf. Error code %#x\n", retval);
 		buffer_size = VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE;
-		post_code(POSTCODE_WORKBUF_RESIZE_ERROR);
+		post_code(POSTCODE_WORKBUF_RESIZE_WARNING);
 	}
 
 	if (buffer_size > max_buffer_size) {
 		printk(BIOS_ERR, "Error: Workbuf is larger than max buffer size.\n");
 		post_code(POSTCODE_WORKBUF_BUFFER_SIZE_ERROR);
-		reboot_into_recovery(ctx);
+		return(POSTCODE_WORKBUF_BUFFER_SIZE_ERROR);
 	}
 
 	retval = svc_save_uapp_data(UAPP_COPYBUF_CHROME_WORKBUF, (void *)_vboot2_work,
 			buffer_size);
-
 	if (retval) {
 		printk(BIOS_ERR, "Error: Could not save workbuf. Error code 0x%08x\n",
 				retval);
-		post_code(POSTCODE_WORKBUF_SAVE_ERROR);
-		reboot_into_recovery(ctx);
+		return(POSTCODE_WORKBUF_SAVE_ERROR);
 	}
 
-	update_boot_region(ctx);
+	return 0;
 }
 
 extern char _bss_start, _bss_end;
 
 void Main(void)
 {
-	uint32_t retval = 0;
+	uint32_t retval;
+	struct vb2_context *ctx = NULL;
 
 	/* Do not use printk() before verstage_mainboard_init() is called */
 	svc_debug_print("Entering verstage on PSP\n");
@@ -339,13 +340,19 @@ void Main(void)
 
 	svc_write_postcode(0x03);
 
-
 	if (RUN_PSP_SVC_TESTS)
 		test_svc_calls();
 
-	save_buffers();
+	post_code(POSTCODE_SAVE_BUFFERS);
+	retval = save_buffers(&ctx);
+	if (retval)
+		goto err;
 
-err:
+	post_code(POSTCODE_UPDATE_BOOT_REGION);
+	retval = update_boot_region(ctx);
+	if (retval)
+		goto err;
+
 	if (boot_dev.base){
 		printk(BIOS_DEBUG,"Unmapping SPI rom\n");
 		if (svc_unmap_spi_rom((void *)boot_dev.base))
@@ -359,6 +366,9 @@ err:
 
 	printk(BIOS_DEBUG, "Leaving verstage on PSP\n");
 	svc_exit(retval);
+
+err:
+	reboot_into_recovery(ctx, retval);
 	return;
 }
 
@@ -435,6 +445,7 @@ void timer_monotonic_get(struct mono_time *mt)
 
 void do_board_reset(void)
 {
+	printk(BIOS_ERR,"Resetting the board now.\n");
 	svc_reset_system(RESET_TYPE_WARM);
 }
 
