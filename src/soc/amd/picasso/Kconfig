@@ -464,6 +464,10 @@ config PSP_UNLOCK_SECURE_DEBUG
 
 endmenu
 
+config VERSTAGE_IN_USERSPACE
+	bool
+	default n
+
 config VBOOT_STARTS_IN_ROMSTAGE
 	bool "Verstage runs on X86"
 	default y if !VBOOT_STARTS_BEFORE_BOOTBLOCK
@@ -480,6 +484,7 @@ config VBOOT_STARTS_BEFORE_BOOTBLOCK
 	bool "Verstage runs on PSP"
 	depends on VBOOT
 	select VBOOT_SEPARATE_VERSTAGE
+	select VERSTAGE_IN_USERSPACE
 	select ARCH_VERSTAGE_ARMV7
 	help
 	  Runs verstage on the PSP.  Only available on

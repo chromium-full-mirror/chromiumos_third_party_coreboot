@@ -81,11 +81,13 @@ ifeq ($(CONFIG_ARCH_VERSTAGE_ARMV7),y)
 verstage-generic-ccopts += $(armv7-a_flags)
 verstage-S-ccopts += $(armv7_asm_flags)
 
+ifneq ($(CONFIG_VERSTAGE_IN_USERSPACE),y)
 verstage-y += cache.c
 verstage-y += cpu.S
 verstage-y += exception.c
 verstage-y += exception_asm.S
 verstage-y += mmu.c
+endif
 
 else ifeq ($(CONFIG_ARCH_VERSTAGE_ARMV7_M),y)
 verstage-generic-ccopts += $(armv7-m_flags)
