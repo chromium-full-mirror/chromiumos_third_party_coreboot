@@ -57,16 +57,15 @@ romstage-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
 romstage-y += psp.c
 romstage-y += soc_util.c
 
+verstage-y += i2c.c
+verstage-y += pmutil.c
 ifeq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
 verstage-y += espi.c
 verstage-y += espi-psp.c
-verstage-y += i2c.c
 verstage-y += i2c-psp.c
 else
 verstage-y += gpio.c
-verstage-y += i2c.c
 verstage-y += i2c-x86.c
-verstage-y += pmutil.c
 verstage-y += reset.c
 verstage-$(CONFIG_PICASSO_UART) += uart.c
 verstage-y += tsc_freq.c

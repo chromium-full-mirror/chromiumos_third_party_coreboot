@@ -1,7 +1,7 @@
 #ifndef PC80_MC146818RTC_H
 #define PC80_MC146818RTC_H
 
-#if CONFIG(ARCH_X86) && !(CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK) && ENV_VERSTAGE)
+#if CONFIG(ARCH_X86)
 
 #include <arch/io.h>
 #include <types.h>

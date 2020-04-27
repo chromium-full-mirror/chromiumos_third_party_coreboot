@@ -33,6 +33,7 @@
 #include <soc/i2c.h>
 #include <lib.h>
 #include "psp_verstage.h"
+#include <soc/southbridge.h>
 
 #define RUN_PSP_SVC_TESTS 0
 
@@ -309,6 +310,11 @@ static uint32_t save_buffers(struct vb2_context **ctx)
 	return 0;
 }
 
+static void sb_enable_legacy_io(void)
+{
+	pm_io_write32(PM_DECODE_EN, pm_io_read32(PM_DECODE_EN) | LEGACY_IO_EN);
+}
+
 extern char _bss_start, _bss_end;
 
 void Main(void)
@@ -329,6 +335,8 @@ void Main(void)
 		printk(BIOS_DEBUG, "Failed to map FCH devices: %u\n", retval);
 		goto err;
 	}
+
+	sb_enable_legacy_io();
 
 	svc_write_postcode(0x01);
 
@@ -446,7 +454,7 @@ void timer_monotonic_get(struct mono_time *mt)
 void do_board_reset(void)
 {
 	printk(BIOS_ERR,"Resetting the board now.\n");
-	svc_reset_system(RESET_TYPE_WARM);
+	svc_reset_system(RESET_TYPE_COLD);
 }
 
 void post_code(u8 value)
