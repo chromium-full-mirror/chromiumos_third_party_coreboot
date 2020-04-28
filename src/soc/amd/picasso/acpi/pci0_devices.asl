@@ -91,11 +91,6 @@ Device (PBRA){
 
     } /* end XHC1 */
 
-    // 0.5      # Audio Processor
-    // 0.6      # Audio Processor - HD Audio Controller
-    Device(AZHD) {
-        Name(_ADR, 0x00000006)
-    } /* end AZHD */
     // 0.7      # non-Sensor Fusion Hub device
 }
 
