@@ -45,13 +45,20 @@ struct soc_amd_picasso_config {
 		I2S_PINS_UNCONF = 7,	/* All pads will be input mode */
 	} acp_pin_cfg;
 
-	/* SPI Config */
-	bool spi_override_defaults;
-	uint32_t spi_normal_speed;
-	uint32_t spi_fast_speed;
-	uint32_t spi_altio_speed;
-	uint32_t spi_tpm_speed;
-	uint32_t spi_read_mode;
+	/*
+	 * SPI config
+	 * Default values if not overriden by mainboard:
+	 * Read mode - Normal 33MHz
+	 * Normal speed - 66MHz
+	 * Fast speed - 66MHz
+	 * Alt speed - 66MHz
+	 * TPM speed - 66MHz
+	 */
+	enum spi_read_mode spi_read_mode;
+	enum spi100_speed spi_normal_speed;
+	enum spi100_speed spi_fast_speed;
+	enum spi100_speed spi_altio_speed;
+	enum spi100_speed spi_tpm_speed;
 
 /* ***** ACPI configuration ***** */
 	/* Options for these are in src/arch/x86/include/arch/acpi.h */

@@ -37,6 +37,7 @@
 #include <soc/pci_devs.h>
 #include <soc/nvs.h>
 #include <types.h>
+#include "chip.h"
 
 #define FCH_AOAC_UART_FOR_CONSOLE \
 		(CONFIG_UART_FOR_CONSOLE == 0 ? FCH_AOAC_DEV_UART0 \
@@ -272,39 +273,38 @@ void sb_read_mode(u32 mode)
 	write32((void *)(base + SPI_CNTRL0), val | SPI_READ_MODE(mode));
 }
 
+static void sb_spi_config_mb_modes(void)
+{
+	const struct soc_amd_picasso_config *cfg = get_soc_config();
+
+	if (!cfg)
+		die("SoC chip config not found!\n");
+
+	sb_read_mode(cfg->spi_read_mode);
+	sb_set_spi100(cfg->spi_normal_speed, cfg->spi_fast_speed, cfg->spi_altio_speed,
+		      cfg->spi_tpm_speed);
+}
+
+static void sb_spi_config_em100_modes(void)
+{
+	sb_read_mode(SPI_READ_MODE_NORMAL33M);
+	sb_set_spi100(SPI_SPEED_16M, SPI_SPEED_16M, SPI_SPEED_16M, SPI_SPEED_16M);
+}
+
+static void sb_spi_config_modes(void)
+{
+	if (CONFIG(EM100))
+		sb_spi_config_em100_modes();
+	else
+		sb_spi_config_mb_modes();
+}
+
 static void sb_spi_init(void)
 {
 	lpc_enable_spi_prefetch();
 	sb_init_spi_base();
 	sb_disable_4dw_burst();
-
-	if (CONFIG(EM100)) {
-		/*
-		 * We should be able to rely on defaults, but it seems safer
-		 * to explicitly set up these registers.
-		 */
-		sb_read_mode(SPI_READ_MODE_NOM);
-		sb_set_spi100(SPI_SPEED_16M,		/* Normal */
-				SPI_SPEED_16M,		/* Fast   */
-				SPI_SPEED_16M,		/* AltIO  */
-				SPI_SPEED_16M);		/* TPM    */
-	} else {
-		const config_t *config = get_soc_config();
-		if(config != NULL && config->spi_override_defaults) {
-			sb_read_mode(config->spi_read_mode);
-			sb_set_spi100(config->spi_normal_speed,
-					config->spi_fast_speed,
-					config->spi_altio_speed,
-					config->spi_tpm_speed);
-		}
-		else {
-			sb_read_mode(SPI_READ_MODE_NOM);
-			sb_set_spi100(SPI_SPEED_16M,
-					SPI_SPEED_16M,
-					SPI_SPEED_16M,
-					SPI_SPEED_16M);
-		}
-	}
+	sb_spi_config_modes();
 }
 
 static void fch_smbus_init(void)
