@@ -39,6 +39,7 @@
 #include <soc/nvs.h>
 #include <soc/gpio.h>
 #include <version.h>
+#include "chip.h"
 
 unsigned long __weak acpi_mb_madt_irqoverride(unsigned long current)
 {

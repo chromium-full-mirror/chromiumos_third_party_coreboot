@@ -43,6 +43,7 @@
 #include <soc/southbridge.h>
 #include <soc/romstage.h>
 #include <fsp/api.h>
+#include "chip.h"
 
 void __weak mainboard_romstage_early_init(void) {}
 void __weak mainboard_romstage_entry_s3(int s3_resume) {}
