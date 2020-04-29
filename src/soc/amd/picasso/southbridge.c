@@ -291,7 +291,7 @@ static void sb_spi_config_em100_modes(void)
 	sb_set_spi100(SPI_SPEED_16M, SPI_SPEED_16M, SPI_SPEED_16M, SPI_SPEED_16M);
 }
 
-static void sb_spi_config_modes(void)
+void sb_spi_config_modes(void)
 {
 	if (CONFIG(EM100))
 		sb_spi_config_em100_modes();

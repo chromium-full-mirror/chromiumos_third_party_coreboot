@@ -366,6 +366,7 @@ void southbridge_final(void *chip_info);
 void southbridge_init(void *chip_info);
 void sb_read_mode(u32 mode);
 void sb_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm);
+void sb_spi_config_modes(void);
 void fch_pre_init(void);
 void fch_early_init(void);
 void set_uart_config(int idx);
