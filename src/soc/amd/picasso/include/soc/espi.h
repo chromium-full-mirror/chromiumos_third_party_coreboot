@@ -41,12 +41,6 @@ struct espi_resource_allocator {
 	unsigned int enable_0x80 : 1;
 };
 
-struct espi_response {
-	uint8_t hdata[7];
-	uint8_t status : 1;
-	uint8_t type : 2;
-};
-
 void espi_setup(const struct espi_config *cfg);
 int espi_enable_resources(const struct resource *resource_linked_list);
 void espi_enable_children_resources(struct device *espi);
