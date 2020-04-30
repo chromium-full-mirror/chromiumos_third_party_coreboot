@@ -1,1 +1,1 @@
-ramstage-$(CONFIG_ACPI_SATA_GENERATOR) += sata.c
+ramstage-$(CONFIG_HAVE_ACPI_TABLES) += sata.c
