@@ -156,16 +156,6 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 	return 0;
 }
 
-int chipset_volatile_group_begin(const struct spi_flash *flash)
-{
-	return 0;
-}
-
-int chipset_volatile_group_end(const struct spi_flash *flash)
-{
-	return 0;
-}
-
 static int xfer_vectors(const struct spi_slave *slave,
 			struct spi_op vectors[], size_t count)
 {
