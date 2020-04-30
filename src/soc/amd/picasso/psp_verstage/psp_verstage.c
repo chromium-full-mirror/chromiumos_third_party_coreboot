@@ -40,7 +40,8 @@
 static struct mem_region_device boot_dev =
 		MEM_REGION_DEV_RO_INIT(NULL, CONFIG_ROM_SIZE);
 
-void __weak verstage_mainboard_init(void) { }
+void __weak verstage_mainboard_early_init(void) {}
+void __weak verstage_mainboard_init(void) {}
 
 static void test_svc_calls(void)
 {
@@ -325,6 +326,8 @@ void Main(void)
 	/* Do not use printk() before verstage_mainboard_init() is called */
 	svc_debug_print("Entering verstage on PSP\n");
 	memset(&_bss_start, '\0', &_bss_end - &_bss_start);
+
+	verstage_mainboard_early_init();
 
 	console_init();
 
