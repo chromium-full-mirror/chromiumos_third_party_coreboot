@@ -452,7 +452,7 @@ void do_board_reset(void)
 void post_code(u8 value)
 {
 	if (CONFIG(CONSOLE_POST))
-		printk(BIOS_WARNING, "Post code: 0x%02x", value);
+		printk(BIOS_WARNING, "Post code: 0x%02x\n", value);
 	if (CONFIG(POST_IO) && CONFIG_POST_IO_PORT == 0x80)
 		svc_write_postcode(value);
 }
