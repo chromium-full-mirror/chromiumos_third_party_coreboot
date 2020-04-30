@@ -11,4 +11,4 @@
 # GNU General Public License for more details.
 #
 
-subdirs-y += ../../spd
+subdirs-y += ./spd
