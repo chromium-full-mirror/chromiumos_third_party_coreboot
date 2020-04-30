@@ -32,7 +32,6 @@ void enable_espi_early(void)
 		.virtual_wire_ch_en	= 1,
 		.out_of_band_ch_en	= 0,
 		.flash_ch_en		= 0,
-		.update_slave		= 1,
 		/* Set IRQ 1 and IRQ 12 to active high. */
 		.irq_polarity		= BIT(1) | BIT(12),
 	};

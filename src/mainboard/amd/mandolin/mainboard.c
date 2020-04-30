@@ -153,7 +153,6 @@ static void enable_ec_io_ports(void)
 		.virtual_wire_ch_en	= 0,
 		.out_of_band_ch_en	= 0,
 		.flash_ch_en		= 0,
-		.update_slave = 1,
 	};
 
 	struct resource ioports[] = { {

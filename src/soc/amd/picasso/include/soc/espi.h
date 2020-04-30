@@ -18,11 +18,6 @@
 #include <stdint.h>
 #include <device/resource.h>
 
-/*
- * If 'update_slave' is set, then this will cause an eSPI bus transaction to
- * write to the slave's config registers. This is not needed if the setting
- * match the slave's defaults.
- */
 struct espi_config {
 	unsigned long bus_width;
 	unsigned long espi_freq_mhz;
@@ -32,7 +27,6 @@ struct espi_config {
 	unsigned int virtual_wire_ch_en : 1;
 	unsigned int out_of_band_ch_en : 1;
 	unsigned int flash_ch_en : 1;
-	unsigned int update_slave : 1;
 	unsigned int subtractive_decode : 1;
 	unsigned int irq_polarity;
 };

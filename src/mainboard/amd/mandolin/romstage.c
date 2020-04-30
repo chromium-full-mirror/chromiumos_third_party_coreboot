@@ -35,7 +35,6 @@ static void enable_espi_early(void)
 		.virtual_wire_ch_en	= 0,
 		.out_of_band_ch_en	= 0,
 		.flash_ch_en		= 0,
-		.update_slave		= 0,
 	};
 
 	struct resource ioports[] = { {
