@@ -370,13 +370,6 @@ endif
 ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/reset.c),)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/reset.c
 endif
-ifeq ($(CONFIG_HAVE_ACPI_TABLES),y)
-ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/acpi_tables.c
-$(eval $(call asl_template,dsdt))
-ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/fadt.c),)
-ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/fadt.c
-endif
-endif # CONFIG_GENERATE_ACPI_TABLES
 
 ramstage-libs ?=
 
