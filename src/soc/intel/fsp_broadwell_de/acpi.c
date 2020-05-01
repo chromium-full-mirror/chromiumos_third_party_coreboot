@@ -18,8 +18,8 @@
 
 #include <string.h>
 #include <types.h>
-#include <arch/acpi.h>
-#include <arch/acpigen.h>
+#include <acpi/acpi.h>
+#include <acpi/acpigen.h>
 #include <arch/io.h>
 #include <device/pci_ops.h>
 #include <arch/smp/mpspec.h>

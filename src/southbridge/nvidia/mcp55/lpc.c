@@ -30,7 +30,7 @@
 #include <arch/io.h>
 #include <arch/ioapic.h>
 #include <cpu/x86/lapic.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <stdlib.h>
 #include <cpu/amd/powernow.h>
 #include "mcp55.h"

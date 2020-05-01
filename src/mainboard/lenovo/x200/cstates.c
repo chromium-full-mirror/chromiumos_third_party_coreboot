@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpigen.h>
+#include <acpi/acpigen.h>
 
 static acpi_cstate_t cst_entries[] = {
 	{

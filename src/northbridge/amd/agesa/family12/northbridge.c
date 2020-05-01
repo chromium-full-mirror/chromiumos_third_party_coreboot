@@ -14,8 +14,8 @@
  */
 
 #include <console/console.h>
-#include <arch/acpi.h>
-#include <arch/acpigen.h>
+#include <acpi/acpi.h>
+#include <acpi/acpigen.h>
 #include <device/pci_ops.h>
 #include <stdint.h>
 #include <device/device.h>

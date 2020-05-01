@@ -15,7 +15,7 @@
 
 #include <variant/ec.h>
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 DefinitionBlock(
 	"dsdt.aml",
 	"DSDT",

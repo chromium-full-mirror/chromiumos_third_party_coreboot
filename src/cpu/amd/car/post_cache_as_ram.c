@@ -26,7 +26,7 @@
 #include <cpu/amd/mtrr.h>
 #include <cpu/amd/car.h>
 #include <cpu/amd/msr.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <program_loading.h>
 #include <romstage_handoff.h>
 

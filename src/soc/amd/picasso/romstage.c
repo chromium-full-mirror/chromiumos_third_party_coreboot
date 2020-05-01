@@ -17,7 +17,7 @@
 #include <amdblocks/lpc.h>
 #include <arch/cpu.h>
 #include <arch/romstage.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <arch/exception.h>
 #include <delay.h>
 #include <pc80/mc146818rtc.h>

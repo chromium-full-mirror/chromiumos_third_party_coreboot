@@ -13,7 +13,7 @@
 
 #include <stdlib.h>
 #include <cbmem.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 
 #if CONFIG(CBMEM_TOP_BACKUP)
 

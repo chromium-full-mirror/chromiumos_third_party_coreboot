@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <boardid.h>
 #include <drivers/vpd/vpd.h>
 #include <smbios.h>

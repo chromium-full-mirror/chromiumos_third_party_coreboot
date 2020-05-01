@@ -17,7 +17,7 @@
 #ifndef _SOC_CHIP_H_
 #define _SOC_CHIP_H_
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 
 /* The devicetree parser expects chip.h to reside directly in the path
  * specified by the devicetree. */

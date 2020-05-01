@@ -16,7 +16,7 @@
 
 #include <stdint.h>
 #include <string.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <arch/ebda.h>
 #include <commonlib/endian.h>
 #include <console/console.h>

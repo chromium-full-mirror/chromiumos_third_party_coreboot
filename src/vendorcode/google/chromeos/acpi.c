@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpigen.h>
+#include <acpi/acpigen.h>
 #if CONFIG(GENERIC_GPIO_LIB)
 #include <gpio.h>
 #endif

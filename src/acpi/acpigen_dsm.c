@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpigen.h>
-#include <arch/acpigen_dsm.h>
+#include <acpi/acpigen.h>
+#include <acpi/acpigen_dsm.h>
 #include <stdlib.h>
 
 /* -------------------  I2C HID DSM ---------------------------- */

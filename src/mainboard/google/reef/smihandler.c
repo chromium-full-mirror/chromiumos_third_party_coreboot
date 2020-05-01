@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <baseboard/variants.h>
 #include <cpu/x86/smm.h>
 #include <ec/google/chromeec/smm.h>

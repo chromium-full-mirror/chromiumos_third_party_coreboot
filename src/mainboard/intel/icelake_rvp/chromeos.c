@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <baseboard/variants.h>
 #include <boot/coreboot_tables.h>
 #include <gpio.h>

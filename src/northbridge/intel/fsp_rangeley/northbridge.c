@@ -16,7 +16,7 @@
  */
 
 #include <console/console.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <device/pci_ops.h>
 #include <stdint.h>
 #include <cpu/intel/fsp_model_406dx/model_406dx.h>

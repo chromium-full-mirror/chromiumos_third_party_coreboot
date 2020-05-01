@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <cpu/intel/haswell/haswell.h>
 #include <cpu/x86/smm.h>
 #include <northbridge/intel/haswell/haswell.h>

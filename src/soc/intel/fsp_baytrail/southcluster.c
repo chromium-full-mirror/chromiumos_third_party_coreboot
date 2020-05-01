@@ -40,7 +40,7 @@
 #include <soc/pmc.h>
 #include <soc/ramstage.h>
 #include "chip.h"
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 
 typedef struct soc_intel_fsp_baytrail_config config_t;
 

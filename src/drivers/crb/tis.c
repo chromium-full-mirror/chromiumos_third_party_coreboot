@@ -14,7 +14,7 @@
 #include <arch/early_variables.h>
 #include <console/console.h>
 #include <security/tpm/tis.h>
-#include <arch/acpigen.h>
+#include <acpi/acpigen.h>
 #include <device/device.h>
 #include <drivers/intel/ptt/ptt.h>
 

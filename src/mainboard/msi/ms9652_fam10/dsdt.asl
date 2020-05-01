@@ -17,7 +17,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 DefinitionBlock ("DSDT.aml", "DSDT", 1, OEM_ID, ACPI_TABLE_CREATOR, 1)
 {
 	#include "acpi/util.asl"

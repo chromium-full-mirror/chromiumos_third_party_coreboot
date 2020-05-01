@@ -1,4 +1,4 @@
-#include <arch/acpi_device.h>
+#include <acpi/acpi_device.h>
 
 /*
  * Dialog Semiconductor DA7219 Audio Codec devicetree bindings

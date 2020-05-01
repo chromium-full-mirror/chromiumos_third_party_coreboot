@@ -14,7 +14,7 @@
  */
 
 #include <device/mmio.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <console/console.h>
 #include <delay.h>
 #include <drivers/i2c/designware/dw_i2c.h>

@@ -15,7 +15,7 @@
 
 #include <console/console.h>
 #include <device/device.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <amdblocks/amd_pci_util.h>
 #include <soc/cpu.h>
 #include <soc/espi.h>

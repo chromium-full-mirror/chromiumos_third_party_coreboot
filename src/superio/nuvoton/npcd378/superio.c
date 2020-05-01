@@ -25,8 +25,8 @@
 #include <pc80/keyboard.h>
 #include <stdlib.h>
 #include <superio/conf_mode.h>
-#include <arch/acpi.h>
-#include <arch/acpigen.h>
+#include <acpi/acpi.h>
+#include <acpi/acpigen.h>
 
 #include "npcd378.h"
 

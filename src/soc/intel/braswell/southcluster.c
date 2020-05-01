@@ -19,7 +19,7 @@
 #include <arch/io.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <arch/ioapic.h>
 #include <bootstate.h>
 #include "chip.h"

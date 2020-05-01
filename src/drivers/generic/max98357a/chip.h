@@ -1,4 +1,4 @@
-#include <arch/acpi_device.h>
+#include <acpi/acpi_device.h>
 
 struct drivers_generic_max98357a_config {
 	/* SDMODE GPIO */

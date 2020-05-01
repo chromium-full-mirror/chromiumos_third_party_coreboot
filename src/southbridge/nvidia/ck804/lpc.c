@@ -27,7 +27,7 @@
 #include <pc80/isa-dma.h>
 #include <arch/io.h>
 #include <arch/ioapic.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <cpu/x86/lapic.h>
 #include <stdlib.h>
 #include <assert.h>

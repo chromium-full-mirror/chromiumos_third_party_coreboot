@@ -19,7 +19,7 @@
 #include <option.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/msr.h>
-#include <arch/acpigen.h>
+#include <acpi/acpigen.h>
 #include <cpu/amd/powernow.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>

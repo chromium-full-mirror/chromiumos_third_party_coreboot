@@ -854,7 +854,7 @@ func main() {
 
 	dsdt.WriteString(
 		`
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 DefinitionBlock(
 	"dsdt.aml",
 	"DSDT",

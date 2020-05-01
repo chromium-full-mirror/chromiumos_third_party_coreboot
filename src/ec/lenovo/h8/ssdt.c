@@ -14,7 +14,7 @@
  */
 
 #include <console/console.h>
-#include <arch/acpigen.h>
+#include <acpi/acpigen.h>
 #include <string.h>
 
 #include "h8.h"

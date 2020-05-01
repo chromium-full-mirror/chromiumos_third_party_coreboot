@@ -20,7 +20,7 @@
 #include <cpu/x86/smm.h>
 #include <cpu/x86/cache.h>
 #include <cpu/amd/amd64_save_state.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <arch/hlt.h>
 #include <device/pci_def.h>
 #include <soc/smi.h>

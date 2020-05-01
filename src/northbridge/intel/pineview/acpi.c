@@ -15,8 +15,8 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpigen.h>
-#include <arch/acpi.h>
+#include <acpi/acpigen.h>
+#include <acpi/acpi.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <northbridge/intel/pineview/pineview.h>

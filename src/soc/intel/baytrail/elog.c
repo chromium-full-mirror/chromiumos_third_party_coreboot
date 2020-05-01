@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <stdint.h>
 #include <console/console.h>
 #include <cbmem.h>

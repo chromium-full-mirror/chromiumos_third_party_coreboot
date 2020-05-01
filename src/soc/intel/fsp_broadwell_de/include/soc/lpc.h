@@ -18,7 +18,7 @@
 #ifndef _SOC_LPC_H_
 #define _SOC_LPC_H_
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 
 /* LPC Interface Bridge PCI Configuration Registers */
 #define GPIO_BASE_ADR_OFFSET	0x48

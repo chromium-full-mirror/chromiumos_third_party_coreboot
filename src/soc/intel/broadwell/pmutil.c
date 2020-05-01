@@ -18,7 +18,7 @@
  * and the differences between PCH variants.
  */
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <arch/io.h>
 #include <device/pci_ops.h>
 #include <device/device.h>

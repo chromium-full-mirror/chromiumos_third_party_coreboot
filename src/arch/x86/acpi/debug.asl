@@ -14,7 +14,7 @@
  */
 
 /*
-	#include <arch/acpi.h>
+	#include <acpi/acpi.h>
 	DefinitionBlock (
 		"DSDT.AML",
 		"DSDT",

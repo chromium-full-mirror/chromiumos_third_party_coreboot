@@ -19,7 +19,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <arch/smp/mpspec.h>
 #include <device/device.h>
 #include <cpu/amd/powernow.h>

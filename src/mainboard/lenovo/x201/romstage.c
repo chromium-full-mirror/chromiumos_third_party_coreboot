@@ -26,7 +26,7 @@
 #include <arch/romstage.h>
 #include <ec/acpi/ec.h>
 #include <timestamp.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 
 #include "dock.h"
 #include <southbridge/intel/ibexpeak/pch.h>

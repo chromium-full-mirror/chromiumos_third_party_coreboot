@@ -23,7 +23,7 @@
 #include <pc80/i8259.h>
 #include <console/console.h>	/* printk */
 #include <device/pci_ehci.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include "lpc.h"		/* lpc_read_resources */
 #include "SbPlatform.h"		/* Platform Specific Definitions */
 #include "chip.h"		/* struct southbridge_amd_cimx_sb900_config */

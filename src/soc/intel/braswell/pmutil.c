@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <arch/io.h>
 #include <assert.h>
 #include <device/mmio.h>

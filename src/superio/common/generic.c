@@ -14,7 +14,7 @@
 
 #include <device/device.h>
 #include <device/pnp.h>
-#include <arch/acpigen.h>
+#include <acpi/acpigen.h>
 #include <device/pnp_def.h>
 #include <console/console.h>
 

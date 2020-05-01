@@ -23,7 +23,7 @@
 #include <device/pci_def.h>
 #include <device/pnp_def.h>
 #include <cpu/x86/lapic.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <console/console.h>
 #include <arch/romstage.h>
 #include <northbridge/intel/i945/i945.h>

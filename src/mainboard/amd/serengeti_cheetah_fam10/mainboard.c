@@ -12,7 +12,7 @@
  */
 
 #include <device/device.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include "mainboard.h"
 
 static void mainboard_enable(struct device *dev)

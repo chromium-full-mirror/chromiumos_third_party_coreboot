@@ -1,4 +1,4 @@
-#include <arch/acpi_device.h>
+#include <acpi/acpi_device.h>
 
 #define NAU8825_MAX_BUTTONS 8
 

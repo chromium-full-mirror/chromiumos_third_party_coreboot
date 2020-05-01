@@ -16,7 +16,7 @@
  *
  */
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 
 #include <soc/acpi.h>
 #include <soc/soc_util.h>

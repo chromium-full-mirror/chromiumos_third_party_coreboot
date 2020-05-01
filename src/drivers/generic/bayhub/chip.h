@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpi_device.h>
+#include <acpi/acpi_device.h>
 
 /*
  * Bayhub BG720 PCI to eMMC bridge

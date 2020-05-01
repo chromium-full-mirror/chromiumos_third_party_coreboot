@@ -15,8 +15,8 @@
 
 #include <device/pci_ops.h>
 #include <arch/ioapic.h>
-#include <arch/acpi.h>
-#include <arch/acpigen.h>
+#include <acpi/acpi.h>
+#include <acpi/acpigen.h>
 #include <arch/cpu.h>
 #include <cbmem.h>
 #include <console/console.h>

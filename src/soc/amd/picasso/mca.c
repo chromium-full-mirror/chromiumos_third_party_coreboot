@@ -14,7 +14,7 @@
  */
 
 #include <cpu/x86/msr.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <soc/cpu.h>
 #include <soc/northbridge.h>
 #include <console/console.h>

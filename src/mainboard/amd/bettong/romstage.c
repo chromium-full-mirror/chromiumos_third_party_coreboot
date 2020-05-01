@@ -14,7 +14,7 @@
  */
 
 #include <console/console.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <arch/io.h>
 #include <arch/cpu.h>
 #include <cpu/x86/lapic.h>

@@ -16,7 +16,7 @@
  */
 
 #include <stdint.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <arch/cpu.h>
 #include <device/pci.h>
 #include <string.h>

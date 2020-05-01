@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <types.h>
 #include <console/console.h>

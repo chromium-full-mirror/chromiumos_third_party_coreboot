@@ -11,7 +11,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpigen.h>
+#include <acpi/acpigen.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
 
 static acpi_cstate_t cst_entries[] = {

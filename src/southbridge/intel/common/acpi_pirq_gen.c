@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpigen.h>
+#include <acpi/acpigen.h>
 #include <console/console.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>

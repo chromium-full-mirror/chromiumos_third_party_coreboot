@@ -21,7 +21,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include "mcp55.h"
 
 #if CONFIG(HAVE_ACPI_TABLES)

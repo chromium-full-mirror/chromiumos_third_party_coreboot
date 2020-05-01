@@ -19,7 +19,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include "chip.h"
 
 #if CONFIG(HAVE_ACPI_TABLES)

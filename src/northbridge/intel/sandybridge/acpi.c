@@ -18,7 +18,7 @@
 #include <types.h>
 #include <console/console.h>
 #include <commonlib/helpers.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>

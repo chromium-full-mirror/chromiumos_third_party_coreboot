@@ -17,7 +17,7 @@
 #ifndef _FSP_RANGELEY_CHIP_H_
 #define _FSP_RANGELEY_CHIP_H_
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <drivers/intel/fsp1_0/fsp_values.h>
 
 struct northbridge_intel_fsp_rangeley_config {

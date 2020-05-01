@@ -21,7 +21,7 @@
  */
 
 #include <assert.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <device/pci_ops.h>
 #include <arch/smp/mpspec.h>
 #include <device/pci.h>

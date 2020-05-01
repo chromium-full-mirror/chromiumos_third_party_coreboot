@@ -24,7 +24,7 @@
 #include <pc80/i8254.h>
 #include <pc80/i8259.h>
 #include <pc80/isa-dma.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include "sb800.h"
 
 static void lpc_init(struct device *dev)

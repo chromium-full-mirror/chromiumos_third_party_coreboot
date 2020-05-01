@@ -16,7 +16,7 @@
 
 #include <console/console.h>
 #include <device/mmio.h>
-#include <arch/acpi_ivrs.h>
+#include <acpi/acpi_ivrs.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>

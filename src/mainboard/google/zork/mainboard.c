@@ -16,7 +16,7 @@
 #include <cbfs.h>
 #include <device/device.h>
 #include <device/mmio.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <amdblocks/amd_pci_util.h>
 #include <amdblocks/gpio_banks.h>
 #include <cbmem.h>

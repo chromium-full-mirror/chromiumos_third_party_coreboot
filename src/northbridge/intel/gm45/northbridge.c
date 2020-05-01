@@ -22,7 +22,7 @@
 #include <stdlib.h>
 #include <cpu/cpu.h>
 #include <boot/tables.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <cpu/intel/smm_reloc.h>
 
 #include "chip.h"

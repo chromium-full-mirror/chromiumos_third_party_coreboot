@@ -18,7 +18,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <device/pci.h>
 
 #define IOAPIC_ICH4		2

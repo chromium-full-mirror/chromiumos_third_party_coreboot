@@ -25,9 +25,9 @@
 #include <pc80/i8259.h>
 #include <arch/io.h>
 #include <arch/ioapic.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <arch/cpu.h>
-#include <arch/acpigen.h>
+#include <acpi/acpigen.h>
 #include <drivers/intel/gma/i915.h>
 #include <cpu/x86/smm.h>
 #include <cbmem.h>

@@ -18,7 +18,7 @@
 #ifndef __SOC_PICASSO_ACPI_H__
 #define __SOC_PICASSO_ACPI_H__
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <fsp/util.h>
 
 #define AMD_FSP_ACPI_HOB_BASE_GUID { \

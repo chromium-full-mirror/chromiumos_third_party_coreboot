@@ -18,7 +18,7 @@
 #define __SR5650_H__
 
 #include <stdint.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include "chip.h"
 #include "rev.h"
 

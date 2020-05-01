@@ -16,7 +16,7 @@
  */
 
 #include <arch/cpu.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <bootstate.h>
 #include <cbmem.h>
 #include <console/console.h>

@@ -15,7 +15,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <device/device.h>
 #include <gpio.h>
 #include <stdlib.h>

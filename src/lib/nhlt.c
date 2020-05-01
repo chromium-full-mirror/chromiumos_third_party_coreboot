@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <cbfs.h>
 #include <commonlib/endian.h>
 #include <console/console.h>

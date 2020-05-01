@@ -13,9 +13,9 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpi_device.h>
-#include <arch/acpi_pld.h>
-#include <arch/acpigen.h>
+#include <acpi/acpi_device.h>
+#include <acpi/acpi_pld.h>
+#include <acpi/acpigen.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/path.h>

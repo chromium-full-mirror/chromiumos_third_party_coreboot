@@ -17,7 +17,7 @@
 #include <bootstate.h>
 #include <device/pci.h>
 #include <fsp/api.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
 #include <device/device.h>

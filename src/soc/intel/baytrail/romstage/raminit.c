@@ -14,7 +14,7 @@
  */
 
 #include <stddef.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <assert.h>
 #include <cbfs.h>
 #include <cbmem.h>

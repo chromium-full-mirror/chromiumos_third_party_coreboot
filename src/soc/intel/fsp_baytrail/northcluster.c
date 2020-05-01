@@ -27,7 +27,7 @@
 #include <cbmem.h>
 #include <soc/baytrail.h>
 #include <drivers/intel/fsp1_0/fsp_util.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 
 static const int legacy_hole_base_k = 0xa0000 / 1024;
 static const int legacy_hole_size_k = 384;

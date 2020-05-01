@@ -61,7 +61,7 @@ struct soc_amd_picasso_config {
 	enum spi100_speed spi_tpm_speed;
 
 /* ***** ACPI configuration ***** */
-	/* Options for these are in src/arch/x86/include/arch/acpi.h */
+	/* Options for these are in src/arch/x86/include/acpi/acpi.h */
 	uint8_t  fadt_pm_profile;
 	uint16_t fadt_boot_arch;
 	uint32_t fadt_flags;

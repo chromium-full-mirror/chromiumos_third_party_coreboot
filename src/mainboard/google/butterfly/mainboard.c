@@ -22,7 +22,7 @@
 #include <console/console.h>
 #include <drivers/intel/gma/int15.h>
 #include <fmap.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <arch/io.h>
 #include <arch/interrupt.h>
 #include <boot/coreboot_tables.h>

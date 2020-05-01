@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <arch/io.h>
 #include <cpu/x86/smm.h>
 #include <southbridge/intel/lynxpoint/nvs.h>

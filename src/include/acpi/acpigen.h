@@ -20,9 +20,9 @@
 
 #include <stdlib.h>
 #include <stdint.h>
-#include <arch/acpi.h>
-#include <arch/acpi_device.h>
-#include <arch/acpi_pld.h>
+#include <acpi/acpi.h>
+#include <acpi/acpi_device.h>
+#include <acpi/acpi_pld.h>
 #include <device/pci_type.h>
 
 /* Values that can be returned for ACPI Device _STA method */

@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <security/tpm/tis.h>
 
 int tis_plat_irq_status(void)

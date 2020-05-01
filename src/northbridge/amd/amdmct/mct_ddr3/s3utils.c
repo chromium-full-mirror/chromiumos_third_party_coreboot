@@ -15,7 +15,7 @@
 
 #include <string.h>
 #include <arch/cpu.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/msr.h>
 #include <cpu/x86/mtrr.h>

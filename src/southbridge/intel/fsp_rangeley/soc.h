@@ -18,7 +18,7 @@
 #ifndef SOUTHBRIDGE_INTEL_RANGELEY_SOC_H
 #define SOUTHBRIDGE_INTEL_RANGELEY_SOC_H
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 
 /* SOC types */
 #define SOC_TYPE_RANGELEY	0x1F

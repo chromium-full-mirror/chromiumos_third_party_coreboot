@@ -21,7 +21,7 @@
 #include <commonlib/helpers.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <soc/i2c.h>
-#include <arch/acpi_device.h>
+#include <acpi/acpi_device.h>
 
 /* Merlin Falcon supports 2 channels, Prairie Falcon only 1 (channel B) */
 #define MAX_NODES 1

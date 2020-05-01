@@ -17,7 +17,7 @@
 #ifndef _SOC_ACPI_H_
 #define _SOC_ACPI_H_
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <soc/nvs.h>
 
 void acpi_create_serialio_ssdt(acpi_header_t *ssdt);

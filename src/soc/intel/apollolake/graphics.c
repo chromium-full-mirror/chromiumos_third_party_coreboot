@@ -16,7 +16,7 @@
  */
 
 #include <stdint.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <bootmode.h>
 #include <console/console.h>
 #include <fsp/util.h>

@@ -19,7 +19,7 @@
 #ifndef _SOC_CHIP_H_
 #define _SOC_CHIP_H_
 
-#include <arch/acpi_device.h>
+#include <acpi/acpi_device.h>
 #include <device/i2c_simple.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <intelblocks/chip.h>

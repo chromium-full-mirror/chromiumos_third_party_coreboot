@@ -19,7 +19,7 @@
 
 #include <string.h>
 #include <console/console.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <version.h>
 
 extern unsigned pm_base;	/* pm_base should be set in sb acpi */

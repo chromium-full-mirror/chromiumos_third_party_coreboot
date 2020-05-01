@@ -14,7 +14,7 @@
 #include <variant/ec.h>
 
 /* DefinitionBlock Statement */
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 
 DefinitionBlock (
 	"DSDT.AML",	/* Output filename */

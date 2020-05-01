@@ -17,7 +17,7 @@
 #ifndef SOUTHBRIDGE_INTEL_RANGELEY_CHIP_H
 #define SOUTHBRIDGE_INTEL_RANGELEY_CHIP_H
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 
 struct southbridge_intel_fsp_rangeley_config {
 

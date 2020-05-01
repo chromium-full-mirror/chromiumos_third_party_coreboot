@@ -26,13 +26,13 @@
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <arch/ioapic.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <arch/cpu.h>
 #include <cpu/x86/smm.h>
 #include <elog.h>
 #include <string.h>
 #include <cbmem.h>
-#include <arch/acpigen.h>
+#include <acpi/acpigen.h>
 #include "chip.h"
 #include "soc.h"
 #include "irq.h"

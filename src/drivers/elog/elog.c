@@ -14,7 +14,7 @@
  */
 
 #if CONFIG(HAVE_ACPI_RESUME)
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #endif
 #include <arch/early_variables.h>
 #include <bootstate.h>

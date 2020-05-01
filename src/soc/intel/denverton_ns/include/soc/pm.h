@@ -19,7 +19,7 @@
 #define _DENVERTON_NS_PM_H_
 
 #include <soc/pmc.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 
 #define GPE_MAX 127
 

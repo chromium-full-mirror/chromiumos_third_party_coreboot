@@ -18,7 +18,7 @@
 #ifndef _SOC_ACPI_H_
 #define _SOC_ACPI_H_
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 
 void acpi_create_intel_hpet(acpi_hpet_t *hpet);
 void acpi_fill_in_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt);

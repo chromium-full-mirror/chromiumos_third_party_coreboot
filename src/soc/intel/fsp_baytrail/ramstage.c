@@ -14,7 +14,7 @@
  */
 
 #include <arch/cpu.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <cpu/intel/microcode.h>

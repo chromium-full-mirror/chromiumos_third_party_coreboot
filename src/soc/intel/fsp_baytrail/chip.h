@@ -18,7 +18,7 @@
 #ifndef _FSP_BAYTRAIL_CHIP_H_
 #define _FSP_BAYTRAIL_CHIP_H_
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <drivers/intel/fsp1_0/fsp_values.h>
 
 /* The devicetree parser expects chip.h to reside directly in the path
@@ -347,7 +347,7 @@ struct soc_intel_fsp_baytrail_config {
 	int lpe_codec_clk_num; /* Platform clock pins. [0:5] are valid. */
 
 /* ***** ACPI configuration ***** */
-	/* Options for these are in src/arch/x86/include/arch/acpi.h */
+	/* Options for these are in src/arch/x86/include/acpi/acpi.h */
 	uint8_t  fadt_pm_profile;
 	uint16_t fadt_boot_arch;
 

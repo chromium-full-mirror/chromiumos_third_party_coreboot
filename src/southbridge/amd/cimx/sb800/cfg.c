@@ -17,7 +17,7 @@
 #include "cfg.h"
 #include <OEM.h>
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 
 /**
  * @brief South Bridge CIMx configuration

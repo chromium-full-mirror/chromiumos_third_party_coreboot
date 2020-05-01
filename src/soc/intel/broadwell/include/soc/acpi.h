@@ -16,7 +16,7 @@
 #ifndef _BROADWELL_ACPI_H_
 #define _BROADWELL_ACPI_H_
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <soc/nvs.h>
 
 /* P-state configuration */

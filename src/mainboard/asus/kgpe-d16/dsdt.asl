@@ -30,7 +30,7 @@
  * PCI link routing templates taken from ck804.asl and modified for this board
  */
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 DefinitionBlock (
 		"DSDT.AML",	/* Output filename */
 		"DSDT",		/* Signature */

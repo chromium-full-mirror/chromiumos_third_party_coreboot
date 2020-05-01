@@ -17,7 +17,7 @@
 #include <types.h>
 #include <string.h>
 #include <console/console.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <arch/smp/mpspec.h>
 #include <device/device.h>
 #include <device/pci.h>

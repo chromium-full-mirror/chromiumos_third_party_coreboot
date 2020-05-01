@@ -15,7 +15,7 @@
  */
 
 #include <string.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <console/console.h>
 #include <cbmem.h>
 #include <cpu/x86/smm.h>

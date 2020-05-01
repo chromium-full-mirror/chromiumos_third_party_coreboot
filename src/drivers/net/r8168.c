@@ -22,8 +22,8 @@
  */
 
 #include <cbfs.h>
-#include <arch/acpi_device.h>
-#include <arch/acpigen.h>
+#include <acpi/acpi_device.h>
+#include <acpi/acpigen.h>
 #include <string.h>
 #include <arch/io.h>
 #include <console/console.h>

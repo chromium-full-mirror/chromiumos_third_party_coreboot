@@ -24,8 +24,8 @@
 #include <cpu/x86/lapic.h>
 #include <arch/ioapic.h>
 #if CONFIG(HAVE_ACPI_TABLES)
-#include <arch/acpi.h>
-#include <arch/acpigen.h>
+#include <acpi/acpi.h>
+#include <acpi/acpigen.h>
 #include <cpu/amd/powernow.h>
 #endif
 #include <stdlib.h>

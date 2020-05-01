@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpigen_dsm.h>
+#include <acpi/acpigen_dsm.h>
 #include <device/device.h>
 #include <stdint.h>
 #include <string.h>

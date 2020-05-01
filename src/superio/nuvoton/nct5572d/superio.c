@@ -22,7 +22,7 @@
 #include <pc80/keyboard.h>
 #include <pc80/mc146818rtc.h>
 #include <stdlib.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <superio/conf_mode.h>
 
 #include "nct5572d.h"

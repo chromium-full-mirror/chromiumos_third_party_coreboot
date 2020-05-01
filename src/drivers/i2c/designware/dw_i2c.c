@@ -775,7 +775,7 @@ int dw_i2c_init(unsigned int bus, const struct dw_i2c_bus_config *bcfg)
 	return 0;
 }
 #if !(CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK) && ENV_VERSTAGE)
-#include <arch/acpigen.h>
+#include <acpi/acpigen.h>
 
 /*
  * Write ACPI object to describe speed configuration.

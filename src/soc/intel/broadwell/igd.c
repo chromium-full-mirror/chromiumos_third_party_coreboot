@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <bootmode.h>

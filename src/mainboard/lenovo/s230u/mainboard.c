@@ -24,7 +24,7 @@
 #include <smbios.h>
 #include "ec.h"
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 
 static u8 mainboard_fill_ec_version(char *buf, u8 buf_len)
 {

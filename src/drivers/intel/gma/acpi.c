@@ -14,8 +14,8 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpi.h>
-#include <arch/acpigen.h>
+#include <acpi/acpi.h>
+#include <acpi/acpigen.h>
 #include <string.h>
 #include "i915.h"
 

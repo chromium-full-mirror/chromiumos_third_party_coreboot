@@ -22,7 +22,7 @@
 #define INCLUDE_LPSS 1
 
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 DefinitionBlock(
 	"dsdt.aml",
 	"DSDT",

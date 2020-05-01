@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <cbmem.h>
 #include <cf9_reset.h>
 #include <commonlib/helpers.h>

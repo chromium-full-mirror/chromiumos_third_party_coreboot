@@ -15,9 +15,9 @@
 
 #include <assert.h>
 #include <string.h>
-#include <arch/acpi.h>
-#include <arch/acpi_device.h>
-#include <arch/acpigen.h>
+#include <acpi/acpi.h>
+#include <acpi/acpi_device.h>
+#include <acpi/acpigen.h>
 #include <device/device.h>
 #include <device/path.h>
 #if CONFIG(GENERIC_GPIO_LIB)

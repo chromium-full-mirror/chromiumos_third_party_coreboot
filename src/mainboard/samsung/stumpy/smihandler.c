@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <southbridge/intel/bd82x6x/nvs.h>

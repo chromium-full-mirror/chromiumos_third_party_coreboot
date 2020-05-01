@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <ec/google/chromeec/ec.h>
 #include <variant/ec.h>
 

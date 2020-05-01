@@ -23,7 +23,7 @@
 #include <string.h>
 #include <pc80/keyboard.h>
 #include <superio/common/ssdt.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include "ast2400.h"
 
 static void ast2400_init(struct device *dev)

@@ -21,7 +21,7 @@
 
 #include <string.h>
 #include <console/console.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <version.h>
 
 extern u32 pm_base; /* pm_base should be set in sb ACPI */

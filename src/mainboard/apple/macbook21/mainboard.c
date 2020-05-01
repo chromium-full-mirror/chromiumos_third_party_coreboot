@@ -20,7 +20,7 @@
 #include <device/pci_ops.h>
 #include <arch/interrupt.h>
 #include <northbridge/intel/i945/i945.h>
-#include <arch/acpigen.h>
+#include <acpi/acpigen.h>
 #include <drivers/intel/gma/int15.h>
 #include <ec/acpi/ec.h>
 

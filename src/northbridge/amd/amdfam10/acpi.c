@@ -16,8 +16,8 @@
 
 #include <console/console.h>
 #include <string.h>
-#include <arch/acpi.h>
-#include <arch/acpigen.h>
+#include <acpi/acpi.h>
+#include <acpi/acpigen.h>
 #include <device/pci.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>

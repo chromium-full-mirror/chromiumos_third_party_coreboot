@@ -11,7 +11,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <cpu/x86/smm.h>
 #include <ec/google/chromeec/smm.h>
 #include <gpio.h>
