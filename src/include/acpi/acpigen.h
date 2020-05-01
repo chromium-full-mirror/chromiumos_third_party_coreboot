@@ -15,8 +15,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef LIBACPI_H
-#define LIBACPI_H
+#ifndef __ACPI_ACPIGEN_H__
+#define __ACPI_ACPIGEN_H__
 
 #include <stdlib.h>
 #include <stdint.h>

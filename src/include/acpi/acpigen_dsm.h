@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __ARCH_ACPIGEN_DSM_H__
-#define __ARCH_ACPIGEN_DSM_H__
+#ifndef __ACPI_ACPIGEN_DSM_H__
+#define __ACPI_ACPIGEN_DSM_H__
 
 #include <stdint.h>
 

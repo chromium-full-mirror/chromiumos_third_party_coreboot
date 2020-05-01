@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __ACPI_DEVICE_H
-#define __ACPI_DEVICE_H
+#ifndef __ACPI_ACPI_DEVICE_H__
+#define __ACPI_ACPI_DEVICE_H__
 
 #include <device/i2c.h>
 #include <stdint.h>

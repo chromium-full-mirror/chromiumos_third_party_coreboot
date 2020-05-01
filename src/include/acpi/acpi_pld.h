@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __ACPI_PLD_H
-#define __ACPI_PLD_H
+#ifndef __ACPI_ACPI_PLD_H__
+#define __ACPI_ACPI_PLD_H__
 
 #include <acpi/acpi.h>
 #include <stdint.h>

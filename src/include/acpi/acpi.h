@@ -23,8 +23,8 @@
  * coreboot ACPI support - headers and defines.
  */
 
-#ifndef __ASM_ACPI_H
-#define __ASM_ACPI_H
+#ifndef __ACPI_ACPI_H__
+#define __ACPI_ACPI_H__
 
 /*
  * The type and enable fields are common in ACPI, but the

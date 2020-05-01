@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
-#ifndef __ACPIGEN_PS2_KEYBD_H__
-#define __ACPIGEN_PS2_KEYBD_H__
+#ifndef __ACPI_ACPIGEN_PS2_KEYBD_H__
+#define __ACPI_ACPIGEN_PS2_KEYBD_H__
 
 #include <types.h>
 
