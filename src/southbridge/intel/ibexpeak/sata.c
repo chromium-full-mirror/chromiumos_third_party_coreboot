@@ -22,7 +22,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <pc80/mc146818rtc.h>
-#include <acpi/sata.h>
+#include <acpi/acpi_sata.h>
 #include <types.h>
 
 #include "chip.h"

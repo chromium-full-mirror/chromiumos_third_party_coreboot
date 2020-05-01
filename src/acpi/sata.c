@@ -11,10 +11,9 @@
  * GNU General Public License for more details.
  */
 
-#include "sata.h"
-
 #include <acpi/acpi.h>
 #include <acpi/acpigen.h>
+#include <acpi/acpi_sata.h>
 
 /* e.g.
  * generate_sata_ssdt_ports("\_SB.PCI0.SATA", 0x3);
