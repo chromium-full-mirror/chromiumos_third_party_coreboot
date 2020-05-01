@@ -33,20 +33,6 @@ static void setup_i2c(void)
 	printk(BIOS_DEBUG, "i2c setup\n");
 }
 
-/* TODO(154636850): See if we can include device tree config */
-static const struct soc_amd_picasso_config config = {
-	/* Enable I2C3 for H1 400kHz */
-	.i2c[3] = {
-		.speed = I2C_SPEED_FAST,
-		.early_init = true,
-	}
-};
-
-const struct soc_amd_picasso_config *get_soc_config(void)
-{
-	return &config;
-}
-
 void verstage_mainboard_init(void)
 {
 	setup_gpio();
