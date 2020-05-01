@@ -253,6 +253,9 @@ config ACPI_BERT
 	  ACPI Boot Error Record Table.  This option reserves an 8MB region
 	  for building the error structures.
 
+config CHROMEOS
+	select CHROMEOS_RAMOOPS_DYNAMIC
+
 config RO_REGION_ONLY
 	string
 	depends on CHROMEOS
