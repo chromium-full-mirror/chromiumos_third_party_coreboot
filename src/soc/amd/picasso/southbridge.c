@@ -116,19 +116,6 @@ const static struct irq_idx_name irq_association[] = {
 	{ PIRQ_UART3,	"UART3" },
 };
 
-const struct soc_amd_picasso_config *get_soc_config(void)
-{
-	const struct device *dev = pcidev_path_on_root(GNB_DEVFN);
-
-	if (!dev || !dev->chip_info) {
-		printk(BIOS_ERR, "%s: Could not find SoC devicetree config!\n",
-			__func__);
-		return NULL;
-	}
-
-	return dev->chip_info;
-}
-
 const struct irq_idx_name *sb_get_apic_reg_association(size_t *size)
 {
 	*size = ARRAY_SIZE(irq_association);
@@ -275,10 +262,7 @@ void sb_read_mode(u32 mode)
 
 static void sb_spi_config_mb_modes(void)
 {
-	const struct soc_amd_picasso_config *cfg = get_soc_config();
-
-	if (!cfg)
-		die("SoC chip config not found!\n");
+	const struct soc_amd_picasso_config *cfg = config_of_soc();
 
 	sb_read_mode(cfg->spi_read_mode);
 	sb_set_spi100(cfg->spi_normal_speed, cfg->spi_fast_speed, cfg->spi_altio_speed,

@@ -172,7 +172,7 @@ static void set_mtrrs_for_ramstage(void)
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
 	FSP_M_CONFIG *mcfg = &mupd->FspmConfig;
-	const config_t *config = get_soc_config();
+	const config_t *config = config_of_soc();
 
 	mcfg->pci_express_base_addr = CONFIG_MMCONF_BASE_ADDRESS;
 

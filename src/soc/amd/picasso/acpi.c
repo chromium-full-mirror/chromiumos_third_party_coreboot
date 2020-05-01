@@ -83,10 +83,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 {
 	acpi_header_t *header = &(fadt->header);
-	const config_t *config = get_soc_config();
-
-	if (config == NULL)
-		return;
+	const config_t *config = config_of_soc();
 
 	printk(BIOS_DEBUG, "pm_base: 0x%04x\n", PICASSO_ACPI_IO_BASE);
 

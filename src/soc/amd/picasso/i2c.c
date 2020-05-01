@@ -33,9 +33,7 @@ const struct dw_i2c_bus_config *dw_i2c_get_soc_cfg(unsigned int bus)
 	if (bus >= ARRAY_SIZE(config->i2c))
 		return NULL;
 
-	config = get_soc_config();
-	if (config == NULL)
-		return NULL;
+	config = config_of_soc();
 
 	return &config->i2c[bus];
 }
@@ -76,10 +74,7 @@ static void dw_i2c_soc_init(bool is_early_init)
 	uint32_t pad_ctrl;
 	int misc_reg;
 
-	config = get_soc_config();
-
-	if (config == NULL)
-		return;
+	config = config_of_soc();
 
 	for (i = I2C_MASTER_START_INDEX; i < ARRAY_SIZE(config->i2c); i++) {
 		const struct dw_i2c_bus_config *cfg  = &config->i2c[i];
@@ -185,9 +180,7 @@ void sb_reset_i2c_slaves(void)
 		gpio_get_address(I2C3_SCL_PIN),
 	};
 
-	cfg = get_soc_config();
-	if (!cfg)
-		return;
+	cfg = config_of_soc();
 	control = cfg->i2c_scl_reset & GPIO_I2C_MASK;
 	if (control == 0)
 		return;
