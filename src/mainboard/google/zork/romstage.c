@@ -21,14 +21,13 @@
 #include <variant/ec.h>
 #include <console/console.h>
 
-void __weak variant_romstage_entry(int s3_resume)
+void __weak variant_romstage_entry()
 {
 	/* By default, don't do anything */
 }
 
 void romstage_mainboard_early_init(void)
 {
-	int s3_resume = 0; //TODO: Handle S3
 	size_t num_gpios;
 	const struct soc_amd_gpio *gpios;
 
@@ -41,5 +40,5 @@ void romstage_mainboard_early_init(void)
 
 	mainboard_ec_init();
 
-	variant_romstage_entry(s3_resume);
+	variant_romstage_entry();
 }

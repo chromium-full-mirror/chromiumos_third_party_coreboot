@@ -9,7 +9,7 @@
 #include <soc/gpio.h>
 #include <variant/gpio.h>
 
-void variant_romstage_entry(int s3_resume)
+void variant_romstage_entry(void)
 {
 	uint32_t board_version;
 

@@ -21,10 +21,8 @@
 #include <variant/gpio.h>
 #include <delay.h>
 
-void variant_romstage_entry(int s3_resume)
+void variant_romstage_entry(void)
 {
-	uint32_t sku = sku_id();
-
 	//SET WIFI_PCIE_RESET_L HIGH
 	gpio_set(WIFI_PCIE_RESET_L, 1);
 
@@ -41,15 +39,6 @@ void variant_romstage_entry(int s3_resume)
 
 	/* SET WIFI_PCIE_RESET_L HIGH */
 	gpio_set(WIFI_PCIE_RESET_L, 1);
-
-	if (!s3_resume) {
-		/* Based on SKU, turn on keyboard backlight */
-		switch (sku) {
-		default:
-			// TODO: Add SKU Specific items here
-			break;
-		}
-	}
 }
 
 static const struct soc_amd_gpio morphius_gpio_set_wifi[] = {
