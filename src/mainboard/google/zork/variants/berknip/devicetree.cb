@@ -27,11 +27,11 @@ chip soc/amd/picasso
 
 	register "acp_pin_cfg" = "I2S_PINS_I2S_TDM"
 
-        # Start : OPN Performance Configuration
-        # See devhub #55593 Chapter 3.2 for documentation
-        # For the below fields, 0 indicates use SOC default
+	# Start : OPN Performance Configuration
+	# See devhub #55593 Chapter 3.2 for documentation
+	# For the below fields, 0 indicates use SOC default
 
-        # System config index
+	# System config index
 	register "system_config" = "3"
 
 	# Set STAPM confiuration. All of these fields must be set >0 to take affect
@@ -41,25 +41,25 @@ chip soc/amd/picasso
 	register "stapm_time_constant" = "200" #second
 	register "sustained_power_limit" = "25000" #mw
 
-        # PROCHOT_L de-assertion Ramp Time
+	# PROCHOT_L de-assertion Ramp Time
 	register "prochot_l_deassertion_ramp_time" = "20" #mS
 
-        # Lower die temperature limit
+	# Lower die temperature limit
 	register "thermctl_limit" = "85" #degrees C
 
-        # FP5 Processor Voltage Supply PSI Currents
-        register "psi0_current_limit" = "18000" #mA
+	# FP5 Processor Voltage Supply PSI Currents
+	register "psi0_current_limit" = "18000" #mA
 	register "psi0_soc_current_limit" = "12000"  #mA
 	register "vddcr_soc_voltage_margin" = "0" #mV
 	register "vddcr_vdd_voltage_margin" = "0" #mV
 
-        # VRM Limits
+	# VRM Limits
 	register "vrm_maximum_current_limit" = "0"  #mA
 	register "vrm_soc_maximum_current_limit" = "0"  #mA
 	register "vrm_current_limit" = "0"  #mA
 	register "vrm_soc_current_limit" = "0" #mA
 
-        # Misc SMU settings
+	# Misc SMU settings
 	register "sb_tsi_alert_comparator_mode_en" = "0"
 	register "core_dldo_bypass" = "1"
 	register "min_soc_vid_offset" = "0"
@@ -70,7 +70,7 @@ chip soc/amd/picasso
 	register "telemetry_vddcr_soc_slope" = "24519" #mA
 	register "telemetry_vddcr_soc_offset" = "0"
 
-        # End : OPN Performance Configuration
+	# End : OPN Performance Configuration
 
 	register "sd_emmc_config" = "SD_EMMC_EMMC_HS400"
 
