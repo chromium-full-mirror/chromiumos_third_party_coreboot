@@ -35,7 +35,10 @@ void romstage_mainboard_early_init(void)
 	program_gpios(gpios, num_gpios);
 	gpios = variant_wifi_romstage_gpio_table(&num_gpios);
 	program_gpios(gpios, num_gpios);
+}
 
+void romstage_mainboard_init(void)
+{
 	enable_espi_early();
 
 	mainboard_ec_init();
