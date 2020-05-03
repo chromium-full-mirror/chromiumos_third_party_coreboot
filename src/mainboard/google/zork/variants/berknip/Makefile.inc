@@ -13,4 +13,6 @@
 
 subdirs-y += ./spd
 
+romstage-y += ./romstage.c
+
 ramstage-y += gpio.c
