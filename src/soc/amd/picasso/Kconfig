@@ -110,7 +110,7 @@ config VGA_BIOS_ID
 
 config VGA_BIOS_FILE
 	string
-	default "3rdparty/blobs/soc/amd/picasso/PicassoGenericVbios.bin"
+	default "3rdparty/amd_blobs/picasso/PicassoGenericVbios.bin"
 
 # Add Dali VBIOS to build
 config SECOND_VBIOS
@@ -130,7 +130,7 @@ config SECOND_VBIOS_ID
 
 config SECOND_VBIOS_FILE
 	string
-	default "3rdparty/blobs/soc/amd/picasso/Raven2GenericVbios.bin"
+	default "3rdparty/amd_blobs/picasso/Raven2GenericVbios.bin"
 
 config CHECK_REV_IN_OPROM_NAME
 	bool
@@ -366,7 +366,7 @@ comment "AMD Firmware Directory Table set to location for 16MB ROM"
 
 config AMD_PUBKEY_FILE
 	string
-	default "3rdparty/blobs/soc/amd/picasso/PSP/AmdPubKeyRV.bin"
+	default "3rdparty/amd_blobs/picasso/PSP/AmdPubKeyRV.bin"
 
 config PSP_BOOTLOADER_NAME
 	string "Specify the PSP Bootloader filename (without path)"
@@ -429,7 +429,7 @@ config HAVE_PSP_WHITELIST_FILE
 config PSP_WHITELIST_FILE
 	string "Debug whitelist path and file name"
 	depends on HAVE_PSP_WHITELIST_FILE
-	default "3rdparty/blobs/soc/amd/picasso/PSP/wtl-rvn.sbin"
+	default "3rdparty/amd_blobs/picasso/PSP/wtl-rvn.sbin"
 
 config APCB_BLOB_DIR
 	string "Directory containing mainboard APCB blobs"
