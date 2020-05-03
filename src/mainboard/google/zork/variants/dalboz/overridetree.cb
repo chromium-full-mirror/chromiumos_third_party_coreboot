@@ -48,7 +48,6 @@ chip soc/amd/picasso
 		subsystemid 0x1022 0x1510 inherit
 		device pci 8.1 on      # Internal GPP Bridge 0 to Bus A
 			device pci 0.3 on  end # USB 3.1
-			device pci 0.4 on  end # USB 3.1
 		end
 	end # domain
 
