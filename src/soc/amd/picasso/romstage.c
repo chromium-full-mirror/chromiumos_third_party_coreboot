@@ -45,6 +45,7 @@
 #include <soc/romstage.h>
 #include <fsp/api.h>
 #include "chip.h"
+#include <2struct.h>
 
 void __weak mainboard_romstage_early_init(void) {}
 void __weak mainboard_romstage_entry_s3(int s3_resume) {}
@@ -257,6 +258,26 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	}
 }
 
+static void check_workbuf(uintptr_t workbuf_location)
+{
+	int workbuf_invalid = 0;
+
+	if (*(unsigned int *)workbuf_location != VB2_SHARED_DATA_MAGIC) {
+		workbuf_invalid = 1;
+	}
+
+	/* TODO: Check PSP mailbox registers b/153700436 */
+
+	if (workbuf_invalid) {
+		printk(BIOS_ERR,"ERROR: VBOOT workbuf not valid.\n");
+
+		printk(BIOS_DEBUG,"Signature: %#08x\n",*(unsigned int *)workbuf_location);
+
+		/* TODO: Reboot into recovery b/152638343 */
+		die("Halting.\n");
+	}
+}
+
 asmlinkage void soc_hybrid_romstage_entry(uint32_t bist, uint64_t early_tsc)
 {
 	int s3_resume;
@@ -283,6 +304,10 @@ asmlinkage void soc_hybrid_romstage_entry(uint32_t bist, uint64_t early_tsc)
 		post_code(0x42);
 		romstage_soc_early_init();
 		console_init();
+
+		if (CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK))
+			check_workbuf(CONFIG_PSP_SHAREDMEM_BASE);
+
 		mainboard_romstage_early_init(); /* espi + port 80 init */
 
 		post_code(0x43);
