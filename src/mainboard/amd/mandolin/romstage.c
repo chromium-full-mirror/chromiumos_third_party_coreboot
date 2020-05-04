@@ -61,9 +61,12 @@ static void enable_espi_early(void)
 
 void romstage_mainboard_early_init(void)
 {
-	uint32_t decode;
-
 	mainboard_program_early_gpios();
+}
+
+void romstage_mainboard_init(void)
+{
+	uint32_t decode;
 
 	if (CONFIG(SUPERIO_SMSC_SIO1036)) {
 		lpc_enable_sio_decode(LPC_SELECT_SIO_4E4F);
