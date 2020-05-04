@@ -19,6 +19,7 @@
 #include <baseboard/variants.h>
 #include <delay.h>
 #include <gpio.h>
+#include <soc/intel/apollolake/chip.h>
 
 enum {
 	SKU_37_DROID = 37, /* LTE */
@@ -83,5 +84,25 @@ void variant_smi_sleep(u8 slp_typ)
 		return;
 	default:
 		return;
+	}
+}
+
+void variant_update_devtree(struct device *dev)
+{
+	struct soc_intel_apollolake_config *cfg = NULL;
+
+	cfg = (struct soc_intel_apollolake_config *)dev->chip_info;
+
+	if (cfg != NULL && cfg->disable_xhci_lfps_pm) {
+		switch (google_chromeec_get_board_sku()) {
+		case 37:
+		case 38:
+		case 39:
+		case 40:
+			cfg->disable_xhci_lfps_pm = 1;
+			return;
+		default:
+			return;
+		}
 	}
 }
