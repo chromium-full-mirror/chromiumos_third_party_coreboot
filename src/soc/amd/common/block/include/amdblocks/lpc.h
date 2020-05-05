@@ -206,6 +206,6 @@ void lpc_enable_spi_rom(uint32_t enable);
 void lpc_init(struct device *dev);
 void lpc_read_resources(struct device *dev);
 void lpc_set_resources(struct device *dev);
-void lpc_enable_childrens_resources(struct device *dev);
+void lpc_enable_children_resources(struct device *dev);
 
 #endif /* __AMDBLOCKS_LPC_H__ */
