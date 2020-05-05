@@ -38,7 +38,7 @@
 /* Most systems should have already enabled the bridge */
 void __weak soc_late_lpc_bridge_enable(void) { }
 
-void lpc_init(struct device *dev)
+static void lpc_init(struct device *dev)
 {
 	u8 byte;
 
@@ -102,7 +102,7 @@ void lpc_init(struct device *dev)
 	pm_write8(PM_SERIRQ_CONF, byte);
 }
 
-void lpc_read_resources(struct device *dev)
+static void lpc_read_resources(struct device *dev)
 {
 	struct resource *res;
 	global_nvs_t *gnvs;
@@ -145,7 +145,7 @@ void lpc_read_resources(struct device *dev)
 	printk(BIOS_DEBUG, "ACPI GNVS at %p\n", gnvs);
 }
 
-void lpc_set_resources(struct device *dev)
+static void lpc_set_resources(struct device *dev)
 {
 	struct resource *res;
 	u32 spi_enable_bits;
@@ -305,7 +305,7 @@ static void configure_child_espi_windows(struct device *child)
 	}
 }
 
-void lpc_enable_children_resources(struct device *dev)
+static void lpc_enable_children_resources(struct device *dev)
 {
 	struct bus *link;
 	struct device *child;

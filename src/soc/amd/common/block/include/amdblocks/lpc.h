@@ -212,9 +212,4 @@ void lpc_set_spibase(uint32_t base);
 /* Enable SPI ROM (SPI_ROM_ENABLE, SPI_ROM_ALT_ENABLE) */
 void lpc_enable_spi_rom(uint32_t enable);
 
-void lpc_init(struct device *dev);
-void lpc_read_resources(struct device *dev);
-void lpc_set_resources(struct device *dev);
-void lpc_enable_children_resources(struct device *dev);
-
 #endif /* __AMDBLOCKS_LPC_H__ */
