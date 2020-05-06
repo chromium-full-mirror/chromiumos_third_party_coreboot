@@ -32,6 +32,28 @@ static void picasso_usb_init(struct device *dev)
 	printk(BIOS_DEBUG, "%s\n", __func__);
 }
 
+static const struct xhci_port_info {
+	unsigned int did;
+	int hs_count;
+	int ss_count;
+} xhci_port_info[] = {
+	{
+		.did = PCI_DEVICE_ID_AMD_FAM17H_MODEL20H_XHCI0,
+		.hs_count = 6,
+		.ss_count = 5,
+	},
+	{
+		.did = PCI_DEVICE_ID_AMD_FAM17H_MODEL18H_XHCI0,
+		.hs_count = 4,
+		.ss_count = 4,
+	},
+	{
+		.did = PCI_DEVICE_ID_AMD_FAM17H_MODEL18H_XHCI1,
+		.hs_count = 2,
+		.ss_count = 1,
+	},
+};
+
 static const char *usb_acpi_name(const struct device *device)
 {
 	switch(device->device) {
@@ -46,111 +68,64 @@ static const char *usb_acpi_name(const struct device *device)
 	}
 }
 
+static void xhci_add_devices(const struct device *device,
+			     const struct xhci_port_info *controller)
+{
+	int i;
+	int addr = 1;
+	char buf[16];
+	char scope_buf[DEVICE_PATH_MAX];
+
+	snprintf(scope_buf, DEVICE_PATH_MAX, "%s.%s", acpi_device_path(device),
+		 "RHUB");
+
+	acpigen_write_scope(scope_buf);
+
+	/* Write HS devices */
+	for (i = 1; i <= controller->hs_count; i++){
+		snprintf(buf, sizeof(buf), "HS%02d", i);
+		acpigen_write_device(buf);
+		acpigen_write_name_byte("_ADR", addr);
+		acpigen_pop_len();
+		addr++;
+	}
+
+	/* Write SS devices */
+	for (i = 1; i <= controller->ss_count; i++){
+		snprintf(buf, sizeof(buf), "SS%02d", i);
+		acpigen_write_device(buf);
+		acpigen_write_name_byte("_ADR", addr);
+		acpigen_pop_len();
+		addr++;
+	}
+
+	/* Exit Device(RHUB) scope */
+	acpigen_pop_len();
+}
+
+static const struct xhci_port_info *find_device_cfg(unsigned int did)
+{
+	int i;
+
+	for (i = 0; i < ARRAY_SIZE(xhci_port_info); i++) {
+		if (xhci_port_info[i].did == did)
+			return &xhci_port_info[i];
+	}
+	return NULL;
+}
+
 static void xhci_fill_ssdt_generator(struct device *device)
 {
 	printk(BIOS_INFO, "xHCI SSDT generation\n");
-	switch (device->device) {
-	case PCI_DEVICE_ID_AMD_FAM17H_MODEL20H_XHCI0:
-		/* Scope: \_SB.PCI0.PBRA.XHC0.RHUB */
-		{
-			char pscope[] = "\\_SB.PCI0.PBRA.XHC0.RHUB";
-			acpigen_write_scope(pscope);
+	const struct xhci_port_info *pi = find_device_cfg(device->device);
 
-			acpigen_write_device("HS01");
-			acpigen_write_name_byte("_ADR", 1);
-			acpigen_pop_len();
-
-			acpigen_write_device("HS02");
-			acpigen_write_name_byte("_ADR", 2);
-			acpigen_pop_len();
-
-			acpigen_write_device("HS03");
-			acpigen_write_name_byte("_ADR", 3);
-			acpigen_pop_len();
-
-			acpigen_write_device("HS04");
-			acpigen_write_name_byte("_ADR", 4);
-			acpigen_pop_len();
-
-			acpigen_write_device("HS05");
-			acpigen_write_name_byte("_ADR", 5);
-			acpigen_pop_len();
-
-			acpigen_write_device("HS06");
-			acpigen_write_name_byte("_ADR", 6);
-			acpigen_pop_len();
-
-			acpigen_write_device("SS01");
-			acpigen_write_name_byte("_ADR", 7);
-			acpigen_pop_len();
-
-			acpigen_write_device("SS02");
-			acpigen_write_name_byte("_ADR", 8);
-			acpigen_pop_len();
-
-			acpigen_write_device("SS03");
-			acpigen_write_name_byte("_ADR", 9);
-			acpigen_pop_len();
-
-			acpigen_write_device("SS04");
-			acpigen_write_name_byte("_ADR", 0xa);
-			acpigen_pop_len();
-
-			acpigen_write_device("SS05");
-			acpigen_write_name_byte("_ADR", 0xb);
-			acpigen_pop_len();
-
-			acpigen_pop_len(); // Exit scope
-		}
-		break;
-	case PCI_DEVICE_ID_AMD_FAM17H_MODEL18H_XHCI0:
-		/* Scope: \_SB_.PCI0.PBRA.XHC0.RHUB */
-		{
-			char pscope[] = "\\_SB.PCI0.PBRA.XHC0.RHUB";
-			acpigen_write_scope(pscope);
-
-			acpigen_write_device("HS01");
-			acpigen_write_name_byte("_ADR", 1);
-			acpigen_pop_len();
-
-			acpigen_write_device("HS02");
-			acpigen_write_name_byte("_ADR", 2);
-			acpigen_pop_len();
-
-			acpigen_write_device("HS03");
-			acpigen_write_name_byte("_ADR", 3);
-			acpigen_pop_len();
-
-			acpigen_write_device("HS04");
-			acpigen_write_name_byte("_ADR", 4);
-			acpigen_pop_len();
-
-			acpigen_write_device("SS01");
-			acpigen_write_name_byte("_ADR", 5);
-			acpigen_pop_len();
-
-			acpigen_write_device("SS02");
-			acpigen_write_name_byte("_ADR", 6);
-			acpigen_pop_len();
-
-			acpigen_write_device("SS03");
-			acpigen_write_name_byte("_ADR", 7);
-			acpigen_pop_len();
-
-			acpigen_write_device("SS04");
-			acpigen_write_name_byte("_ADR", 8);
-			acpigen_pop_len();
-
-			acpigen_pop_len(); // Exit scope
-		}
-		break;
-	case PCI_DEVICE_ID_AMD_FAM17H_MODEL18H_XHCI1:
-		//TODO (pshoroff): Add XHC1 generation in separate patch
-		printk(BIOS_INFO,
-		       "xHCI SSDT generation: attempted generation for device:0x%04x\n",
-			device->device);
-		break;
+	if (pi == NULL) {
+		printk(BIOS_ERR, "Unsupported xHCI device: VendorID:0x%0x4 DeviceID:0x%04x\n",
+		       device->vendor, device->device);
+		return;
 	}
+
+	xhci_add_devices(device, pi);
 }
 
 static struct pci_operations lops_pci = {
