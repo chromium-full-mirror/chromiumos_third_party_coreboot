@@ -120,6 +120,9 @@ static void clear_agesa_mtrrs(void)
 		.lo = 0,
 	};
 
+	// disable cache first before invalidating all mtrrs
+	disable_cache();
+
 	for (i = 0 ; i < vmtrrs ; i++) {
 		wrmsr(MTRR_PHYS_MASK(i), mtrr);
 		wrmsr(MTRR_PHYS_BASE(i), mtrr);
@@ -129,6 +132,9 @@ static void clear_agesa_mtrrs(void)
 	msr_t sys_cfg = rdmsr(SYSCFG_MSR);
 	sys_cfg.lo &= ~SYSCFG_MSR_TOM2WB;
 	wrmsr(SYSCFG_MSR, sys_cfg);
+
+	// enable cache again after we finished all the settings
+	enable_cache();
 
 	if (set_early_mtrrs())
 		printk(BIOS_WARNING, "Warning: MTRRs not set properly for ramstage\n");
@@ -271,6 +277,7 @@ asmlinkage void soc_hybrid_romstage_entry(uint32_t bist, uint64_t early_tsc)
 	 * begins in romstage for this device. */
 	post_code(0x41);
 	early_mtrr_err = set_early_mtrrs();
+	enable_mtrr_and_cache();
 
 	if (on_bsp) {
 		post_code(0x42);
@@ -315,7 +322,6 @@ asmlinkage void soc_hybrid_romstage_entry(uint32_t bist, uint64_t early_tsc)
 
 	post_code(0x4a);
 	set_mtrrs_for_ramstage();
-	enable_mtrr_and_cache();
 	run_ramstage();
 
 	post_code(0x50); /* Should never see this post code. */
