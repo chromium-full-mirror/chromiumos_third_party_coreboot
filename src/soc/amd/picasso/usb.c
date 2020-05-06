@@ -32,6 +32,20 @@ static void picasso_usb_init(struct device *dev)
 	printk(BIOS_DEBUG, "%s\n", __func__);
 }
 
+static const char *usb_acpi_name(const struct device *device)
+{
+	switch(device->device) {
+	case PCI_DEVICE_ID_AMD_FAM17H_MODEL20H_XHCI0:
+		return "XHC0";
+	case PCI_DEVICE_ID_AMD_FAM17H_MODEL18H_XHCI0:
+		return "XHC0";
+	case PCI_DEVICE_ID_AMD_FAM17H_MODEL18H_XHCI1:
+		return "XHC1";
+	default:
+		return NULL;
+	}
+}
+
 static void xhci_fill_ssdt_generator(struct device *device)
 {
 	printk(BIOS_INFO, "xHCI SSDT generation\n");
@@ -149,7 +163,7 @@ static struct device_operations usb_ops = {
 	.enable_resources = pci_dev_enable_resources,
 	.init = picasso_usb_init,
 	.scan_bus = scan_static_bus,
-	.acpi_name = soc_acpi_name,
+	.acpi_name = usb_acpi_name,
 	.ops_pci = &lops_pci,
 	.acpi_fill_ssdt_generator = xhci_fill_ssdt_generator,
 };

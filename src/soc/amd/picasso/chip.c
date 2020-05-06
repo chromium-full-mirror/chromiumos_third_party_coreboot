@@ -110,10 +110,6 @@ const char *soc_acpi_name(const struct device *dev)
 		return "LPCB";
 	case SMBUS_DEVFN: 	// SMBUS
 		return "SBUS";
-	case XHCI0_DEVFN: 	// xHCI Controller 1
-		return "XHC0";
-	case XHCI1_DEVFN: 	// xHCI Controller 2
-		return "XHC1";
 	case DF_F0_DEVFN:
 		return "DFD1";	// Data Fabric 0
 	case DF_F1_DEVFN:
