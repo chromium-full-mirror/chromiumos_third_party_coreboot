@@ -33,10 +33,13 @@ static void setup_i2c(void)
 	printk(BIOS_DEBUG, "i2c setup\n");
 }
 
-void verstage_mainboard_init(void)
+void verstage_mainboard_early_init(void)
 {
 	setup_gpio();
+}
 
+void verstage_mainboard_init(void)
+{
 	setup_espi();
 
 	setup_i2c();
