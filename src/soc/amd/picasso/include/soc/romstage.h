@@ -20,7 +20,7 @@
 #include <stdint.h>
 #include <arch/cpu.h>
 
-void mainboard_romstage_early_init(void);
-void mainboard_romstage_entry_s3(int s3_resume);
+void romstage_mainboard_early_init(void);
+void romstage_mainboard_init(void);
 
 #endif /* __PICASSO_HYBRID_ROMSTAGE_H__ */

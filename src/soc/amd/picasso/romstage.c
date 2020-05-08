@@ -47,8 +47,8 @@
 #include "chip.h"
 #include <2struct.h>
 
-void __weak mainboard_romstage_early_init(void) {}
-void __weak mainboard_romstage_entry_s3(int s3_resume) {}
+void __weak romstage_mainboard_early_init(void) {}
+void __weak romstage_mainboard_init(void) {}
 
 static uint8_t telemetry_config_used(const config_t *config)
 {
@@ -86,7 +86,7 @@ static void romstage_soc_early_init(void)
 		disable_rom_sharing();
 }
 
-static void romstage_soc_init(int s3_resume)
+static void romstage_soc_init(void)
 {
 	fch_early_init();
 }
@@ -302,13 +302,14 @@ asmlinkage void soc_hybrid_romstage_entry(uint32_t bist, uint64_t early_tsc)
 
 	if (on_bsp) {
 		post_code(0x42);
+
 		romstage_soc_early_init();
 		console_init();
 
 		if (CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK))
 			check_workbuf(CONFIG_PSP_SHAREDMEM_BASE);
 
-		mainboard_romstage_early_init(); /* espi + port 80 init */
+		romstage_mainboard_early_init();
 
 		post_code(0x43);
 		init_timer();
@@ -325,8 +326,8 @@ asmlinkage void soc_hybrid_romstage_entry(uint32_t bist, uint64_t early_tsc)
 	post_code(0x46);
 	s3_resume = acpi_s3_resume_allowed() && acpi_is_wakeup_s3();
 	if (on_bsp) {
-		romstage_soc_init(s3_resume);
-		mainboard_romstage_entry_s3(s3_resume);
+		romstage_soc_init();
+		romstage_mainboard_init();
 
 		/* Trigger the microcode to stash the CPU state and resume vector
 		 * into the C6 save area. */

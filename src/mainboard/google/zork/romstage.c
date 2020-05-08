@@ -26,7 +26,7 @@ void __weak variant_romstage_entry(int s3_resume)
 	/* By default, don't do anything */
 }
 
-void mainboard_romstage_early_init(void)
+void romstage_mainboard_early_init(void)
 {
 	int s3_resume = 0; //TODO: Handle S3
 	size_t num_gpios;

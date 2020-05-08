@@ -59,7 +59,7 @@ static void enable_espi_early(void)
 	espi_enable_resources(ioports);
 }
 
-void mainboard_romstage_early_init(void)
+void romstage_mainboard_early_init(void)
 {
 	uint32_t decode;
 
