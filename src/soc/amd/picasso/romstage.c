@@ -304,12 +304,12 @@ asmlinkage void soc_hybrid_romstage_entry(uint32_t bist, uint64_t early_tsc)
 		post_code(0x42);
 
 		romstage_soc_early_init();
+		romstage_mainboard_early_init();
+
 		console_init();
 
 		if (CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK))
 			check_workbuf(CONFIG_PSP_SHAREDMEM_BASE);
-
-		romstage_mainboard_early_init();
 
 		post_code(0x43);
 		init_timer();
