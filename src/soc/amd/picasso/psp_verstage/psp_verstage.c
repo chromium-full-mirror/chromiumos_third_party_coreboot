@@ -318,6 +318,22 @@ static void sb_enable_legacy_io(void)
 
 extern char _bss_start, _bss_end;
 
+static void verstage_soc_early_init(void)
+{
+	uint32_t retval;
+	printk(BIOS_DEBUG, "Mapping devices\n");
+
+	retval = map_fch_devices();
+	if (retval) {
+		printk(BIOS_DEBUG, "Failed to map FCH devices: %u\n", retval);
+		reboot_into_recovery(NULL, retval);
+	}
+}
+
+static void verstage_soc_init(void)
+{
+}
+
 void Main(void)
 {
 	uint32_t retval;
@@ -327,22 +343,16 @@ void Main(void)
 	svc_debug_print("Entering verstage on PSP\n");
 	memset(&_bss_start, '\0', &_bss_end - &_bss_start);
 
+	verstage_soc_early_init();
 	verstage_mainboard_early_init();
 
 	console_init();
-
-	printk(BIOS_DEBUG, "Mapping devices\n");
-
-	retval = map_fch_devices();
-	if (retval) {
-		printk(BIOS_DEBUG, "Failed to map FCH devices: %u\n", retval);
-		goto err;
-	}
 
 	sb_enable_legacy_io();
 
 	svc_write_postcode(0x01);
 
+	verstage_soc_init();
 	verstage_mainboard_init();
 
 	svc_write_postcode(0x02);
