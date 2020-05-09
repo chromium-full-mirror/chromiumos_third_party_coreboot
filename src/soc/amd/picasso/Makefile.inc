@@ -247,12 +247,11 @@ PSP_UCODE_FILE2=$(top)/$(FIRMWARE_LOCATE)/UcodePatch_PCO_B0.bin
 PSP_UCODE_FILE3=$(top)/$(FIRMWARE_LOCATE)/UcodePatch_RV2_A0.bin
 
 # type = 0x6B - PSP Shared memory location
-ifeq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK)$(CONFIG_PSP_SHAREDMEM_BASE),y0x0)
-$(error PSP_SHAREDMEM_BASE must be set if VBOOT_STARTS_BEFORE_BOOTBLOCK is set)
-endif
-ifneq ($(CONFIG_PSP_SHAREDMEM_BASE),0x0)
-PSP_SHAREDMEM_BASE=$(CONFIG_PSP_SHAREDMEM_BASE)
+ifneq ($(CONFIG_PSP_SHAREDMEM_SIZE),0x0)
+# Place SHAREDMEM immediately below the 4KB boundary below the reset vector.
 PSP_SHAREDMEM_SIZE=$(CONFIG_PSP_SHAREDMEM_SIZE)
+_PSP_SHAREDMEM_BASE=$(call int-subtract, $(call int-subtract, $(call int-add, $(CONFIG_X86_RESET_VECTOR) + 0x10) $(PSP_SHAREDMEM_SIZE)) 0x1000)
+PSP_SHAREDMEM_BASE=$(shell printf "0x%x" $(_PSP_SHAREDMEM_BASE))
 endif
 
 # type = 0x52 - PSP Bootloader Userspace Application (verstage)

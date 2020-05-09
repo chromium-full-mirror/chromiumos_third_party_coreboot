@@ -164,6 +164,9 @@
 		STR(vboot2 work buffer size must be equivalent to \
 			VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE! (sz)));
 
+#define VBOOT2_PSP_SHARED_WORK(addr, sz) \
+	REGION(vboot2_work, addr, sz, 16) \
+
 #define VBOOT2_TPM_LOG(addr, size) \
 	REGION(vboot2_tpm_log, addr, size, 16) \
 	_ = ASSERT(size >= 2K, "vboot2 tpm log buffer must be at least 2K!");

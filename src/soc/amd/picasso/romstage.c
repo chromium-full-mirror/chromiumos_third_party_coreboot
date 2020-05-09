@@ -37,6 +37,7 @@
 #include <program_loading.h>
 #include <romstage_handoff.h>
 #include <elog.h>
+#include <security/vboot/symbols.h>
 #include <soc/cpu.h>
 #include <soc/northbridge.h>
 #include <soc/pci_devs.h>
@@ -271,7 +272,7 @@ asmlinkage void soc_hybrid_romstage_entry(uint32_t bist, uint64_t early_tsc)
 		console_init();
 
 		if (CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK))
-			check_workbuf(CONFIG_PSP_SHAREDMEM_BASE);
+			check_workbuf((uintptr_t)_vboot2_work);
 
 		post_code(0x43);
 		init_timer();
