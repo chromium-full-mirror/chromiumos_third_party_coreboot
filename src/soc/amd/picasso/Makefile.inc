@@ -55,9 +55,11 @@ romstage-y += southbridge.c
 romstage-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
 romstage-y += psp.c
 romstage-y += soc_util.c
+romstage-y += config.c
 
 verstage-y += i2c.c
 verstage-y += pmutil.c
+verstage-y += config.c
 ifeq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
 verstage-y += espi.c
 verstage-y += espi-psp.c
@@ -99,6 +101,7 @@ ramstage-y += psp.c
 ramstage-y += soc_util.c
 ramstage-y += fsp_params.c
 ramstage-y += dmi.c
+ramstage-y += config.c
 
 smm-y += smihandler.c
 smm-y += smi_util.c
@@ -107,6 +110,7 @@ smm-$(CONFIG_PICASSO_UART) += uart.c
 smm-y += gpio.c
 smm-y += psp.c
 smm-y += smu.c
+smm-y += config.c
 
 cbfs-files-y += etc/sdcard0
 etc/sdcard0-file = $(src)/soc/amd/picasso/sdcard0
