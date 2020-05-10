@@ -31,6 +31,24 @@ chip soc/amd/picasso
 
 	register "sd_emmc_config" = "SD_EMMC_DISABLE"
 
+	# eSPI Configuration
+	register "common_config.espi_config" = "{
+		.std_io_decode_bitmap = ESPI_DECODE_IO_0X60_0X64_EN,
+		.generic_io_range[0] = {
+			.base = 0x662,
+			.size = 8,
+		},
+
+		.io_mode = ESPI_IO_MODE_SINGLE,
+		.op_freq_mhz = ESPI_OP_FREQ_33_MHZ,
+		.crc_check_enable = 1,
+		.dedicated_alert_pin = 1,
+		.periph_ch_en = 0,
+		.vw_ch_en = 0,
+		.oob_ch_en = 0,
+		.flash_ch_en = 0,
+	}"
+
 	device cpu_cluster 0 on
 		device lapic 0 on end
 	end

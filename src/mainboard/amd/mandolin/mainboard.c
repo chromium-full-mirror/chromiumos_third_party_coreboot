@@ -18,7 +18,6 @@
 #include <acpi/acpi.h>
 #include <amdblocks/amd_pci_util.h>
 #include <soc/cpu.h>
-#include <soc/espi.h>
 #include <soc/southbridge.h>
 #include <soc/pci_devs.h>
 #include <soc/platform_descriptors.h>
@@ -140,40 +139,6 @@ static void pirq_setup(void)
 	pirq_data_size = ARRAY_SIZE(mainboard_pirq_data);
 	intr_data_ptr = fch_apic_routing;
 	picr_data_ptr = fch_pic_routing;
-}
-
-static void enable_ec_io_ports(void)
-{
-	const struct espi_config cfg = {
-		.bus_width		= ESPI_IO_MODE_SINGLE,
-		.espi_freq_mhz		= ESPI_OP_FREQ_33_MHZ,
-		.enable_crc_checking	= 1,
-		.alert_pin_on_io1	= 0,
-		.peripheral_ch_en	= 0,
-		.virtual_wire_ch_en	= 0,
-		.out_of_band_ch_en	= 0,
-		.flash_ch_en		= 0,
-	};
-
-	struct resource ioports[] = { {
-		.flags = IORESOURCE_IO,
-		.base = 0x662,
-		.size = 8,
-		.next = ioports + 1,
-	}, {
-		.flags = IORESOURCE_IO,
-		.base = 0x60,
-		.size = 1,
-		.next = ioports + 2,
-	}, {
-		.flags = IORESOURCE_IO,
-		.base = 0x64,
-		.size = 1,
-		.next = NULL
-	} };
-
-	espi_setup(&cfg);
-	espi_enable_resources(ioports);
 }
 
 static void mainboard_init(void *chip_info)
@@ -410,7 +375,6 @@ static void mandolin_enable(struct device *dev)
 
 	/* Initialize the PIRQ data structures for consumption */
 	pirq_setup();
-	enable_ec_io_ports();
 }
 
 struct chip_operations mainboard_ops = {
