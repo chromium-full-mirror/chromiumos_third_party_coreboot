@@ -17,6 +17,7 @@
 #include <console/streams.h>
 #include <security/vboot/vboot_common.h>
 #include <amdblocks/acpimmio.h>
+#include <amdblocks/espi.h>
 #include <bootmode.h>
 #include <timer.h>
 #include <halt.h>
@@ -29,7 +30,6 @@
 #include <2recovery_reasons.h>
 #include <security/vboot/symbols.h>
 #include <security/vboot/misc.h>
-#include <soc/espi.h>
 #include <soc/i2c.h>
 #include <lib.h>
 #include "psp_verstage.h"
@@ -135,6 +135,11 @@ static void i2c3_set_bar(void *bar)
 static void i2c2_set_bar(void *bar)
 {
 	i2c_set_bar(2, (uintptr_t)bar);
+}
+
+static void espi_set_bar(void *bar)
+{
+	espi_update_static_bar((uintptr_t)bar);
 }
 
 static struct {
@@ -332,6 +337,10 @@ static void verstage_soc_early_init(void)
 
 static void verstage_soc_init(void)
 {
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_USE_ESPI)) {
+		espi_setup();
+		espi_configure_decodes();
+	}
 }
 
 void Main(void)

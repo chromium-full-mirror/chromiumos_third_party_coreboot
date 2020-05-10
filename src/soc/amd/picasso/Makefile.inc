@@ -41,8 +41,6 @@ subdirs-$(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK) += psp_verstage
 romstage-y += early_stack.S
 romstage-y += i2c.c
 romstage-y += i2c-x86.c
-romstage-y += espi.c
-romstage-y += espi-x86.c
 romstage-y += romstage.c
 romstage-y += gpio.c
 romstage-y += pmutil.c
@@ -61,8 +59,6 @@ verstage-y += i2c.c
 verstage-y += pmutil.c
 verstage-y += config.c
 ifeq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
-verstage-y += espi.c
-verstage-y += espi-psp.c
 verstage-y += i2c-psp.c
 else
 verstage-y += gpio.c
@@ -72,13 +68,10 @@ verstage-$(CONFIG_PICASSO_UART) += uart.c
 verstage-y += tsc_freq.c
 endif
 
-ramstage-y += d14_f3_bridge.c
 ramstage-y += i2c.c
 ramstage-y += i2c-x86.c
 ramstage-y += chip.c
 ramstage-y += cpu.c
-ramstage-y += espi.c
-ramstage-y += espi-x86.c
 ramstage-y += mca.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-y += gpio.c
