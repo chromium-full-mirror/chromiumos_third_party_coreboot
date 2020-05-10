@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/mmio.h>
 #include <console/console.h>
 #include <spi_flash.h>
 #include <soc/pci_devs.h>
