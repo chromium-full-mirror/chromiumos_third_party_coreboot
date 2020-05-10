@@ -12,10 +12,8 @@
  */
 
 #include <baseboard/variants.h>
-#include <baseboard/espi.h>
 #include <ec/ec.h>
 #include <ec/google/chromeec/ec.h>
-#include <soc/espi.h>
 #include <soc/gpio.h>
 #include <soc/romstage.h>
 #include <variant/ec.h>
@@ -39,8 +37,6 @@ void romstage_mainboard_early_init(void)
 
 void romstage_mainboard_init(void)
 {
-	enable_espi_early();
-
 	mainboard_ec_init();
 
 	variant_romstage_entry();
