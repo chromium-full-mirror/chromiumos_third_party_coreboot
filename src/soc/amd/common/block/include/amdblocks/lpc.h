@@ -192,7 +192,16 @@ int lpc_find_wideio_range(uint16_t start, uint16_t size);
 int lpc_set_wideio_range(uint16_t start, uint16_t size);
 
 uintptr_t lpc_get_spibase(void);
-void lpc_set_spibase(uint32_t base, uint32_t enable);
+
+/*
+ * Sets MMIO base address for SPI controller and eSPI controller (if supported by platform).
+ *
+ * eSPI base = SPI base + 0x10000
+ */
+void lpc_set_spibase(uint32_t base);
+
+/* Enable SPI ROM (SPI_ROM_ENABLE, SPI_ROM_ALT_ENABLE) */
+void lpc_enable_spi_rom(uint32_t enable);
 
 void lpc_init(struct device *dev);
 void lpc_read_resources(struct device *dev);
