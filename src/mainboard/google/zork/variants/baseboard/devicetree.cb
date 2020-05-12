@@ -60,14 +60,13 @@ chip soc/amd/picasso
 	register "sd_emmc_config" = "SD_EMMC_EMMC_HS400"
 
 	# SPI Configuration
-	# Speeds: 66M, 33M, 22M, 16M, 100M, 800K
-	register "spi_normal_speed" = "SPI_SPEED_66M" #Mhz
-	register "spi_fast_speed" = "SPI_SPEED_66M" #Mhz
-	register "spi_altio_speed" = "SPI_SPEED_66M" #Mhz
-	register "spi_tpm_speed" = "SPI_SPEED_66M" #Mhz
-
-	# Modes: NOM, DUAL112, DUAL114, DUAL122, QUAD144, NORMAL66, FAST
-	register "spi_read_mode" = "SPI_READ_MODE_DUAL112"
+	register "common_config.spi_config" = "{
+		.normal_speed = SPI_SPEED_66M, /* MHz */
+		.fast_speed = SPI_SPEED_66M, /* MHz */
+		.altio_speed = SPI_SPEED_66M, /* MHz */
+		.tpm_speed = SPI_SPEED_66M, /* MHz */
+		.read_mode = SPI_READ_MODE_DUAL112,
+	}"
 
 	register "i2c_scl_reset" = "GPIO_I2C2_SCL | GPIO_I2C3_SCL"
 

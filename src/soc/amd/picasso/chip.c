@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <amdblocks/spi.h>
 #include <acpi/acpigen.h>
 #include <bootstate.h>
 #include <console/console.h>
@@ -179,7 +180,7 @@ static void soc_init(void *chip_info)
 	 * registers(b/153506142). Currently, FSP-S reconfigures SPI frequency causing em100 to
 	 * stop working. Thus, reconfigure SPI speeds here.
 	 */
-	sb_spi_config_modes();
+	fch_spi_config_modes();
 
 	northbridge_init();
 	southbridge_init(chip_info);
