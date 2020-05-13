@@ -25,7 +25,6 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
 #include <cpu/x86/bist.h>
-#include <cpu/x86/cache.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/amd/msr.h>
 #include <device/pci_ops.h>
@@ -163,42 +162,12 @@ static void set_mtrrs_for_ramstage(void)
 		return;
 	}
 
-	if (!IS_ALIGNED(ramstage_wb_base, ramstage_wb_size)) {
-		uintptr_t wb_end = ramstage_wb_base + ramstage_wb_size;
-		// since we're in early stage, try only size * 2 for safety
-		size_t new_size = ramstage_wb_size * 2;
-		uintptr_t new_base = ALIGN_DOWN(ramstage_wb_base, new_size);
-		// see if it fits
-		if ((new_base <= ramstage_wb_base) &&
-		    (new_base + new_size >= wb_end) &&
-		    (new_base + new_size > new_base)) {
-			printk(BIOS_INFO, "Expanding MTRR from %lx-%lx to %lx-%lx\n",
-				   ramstage_wb_base, wb_end,
-				   new_base, new_base + new_size);
-			ramstage_wb_base = new_base;
-			ramstage_wb_size = new_size;
-		}
-	}
-
 	mtrr = get_free_var_mtrr();
 	if (mtrr >= 0)
 		set_var_mtrr(mtrr, ramstage_wb_base, ramstage_wb_size,
 					MTRR_TYPE_WRBACK);
 	else
 		printk(BIOS_WARNING, "Warning: Unable to make ramstage cacheable\n");
-}
-
-static void enable_mtrr_and_cache(void)
-{
-	msr_t msr;
-	int deftype = MTRR_TYPE_UNCACHEABLE; // default to UC
-
-	msr = rdmsr(MTRR_DEF_TYPE_MSR);
-	msr.lo &= ~0xff;
-	msr.lo |= MTRR_DEF_TYPE_EN | deftype;
-	wrmsr(MTRR_DEF_TYPE_MSR, msr);
-
-	enable_cache();
 }
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
@@ -341,7 +310,6 @@ asmlinkage void soc_hybrid_romstage_entry(uint32_t bist, uint64_t early_tsc)
 
 	post_code(0x4a);
 	set_mtrrs_for_ramstage();
-	enable_mtrr_and_cache();
 	run_ramstage();
 
 	post_code(0x50); /* Should never see this post code. */
