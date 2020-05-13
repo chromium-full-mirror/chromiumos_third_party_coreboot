@@ -94,7 +94,7 @@ void variant_update_devtree(struct device *dev)
 	cfg = (struct soc_intel_apollolake_config *)dev->chip_info;
 
 	if (cfg != NULL && cfg->disable_xhci_lfps_pm) {
-		switch (google_chromeec_get_board_sku()) {
+		switch (get_board_sku()) {
 		case 37:
 		case 38:
 		case 39:
