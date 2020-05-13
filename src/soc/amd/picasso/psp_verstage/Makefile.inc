@@ -10,6 +10,7 @@ verstage-y += psp_startup.S
 verstage-y += psp_end.S
 verstage-y += psp.c
 verstage-y += svc.c
+verstage-y += vboot_crypto.c
 
 $(obj)/psp_verstage.bin: $(objcbfs)/verstage.elf
 	$(OBJCOPY_verstage) -O binary $^ $@
