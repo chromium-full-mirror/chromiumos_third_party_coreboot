@@ -97,6 +97,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_NF(GPIO_2, WAKE_L, PULL_UP),
 	/* PEN_DETECT_ODL */
 	PAD_GPI(GPIO_4, PULL_UP),
+	PAD_WAKE(GPIO_4, PULL_UP, EDGE_LOW, S3_S4_S5),
 	/* PEN_POWER_EN - Enabled*/
 	PAD_GPO(GPIO_5, HIGH),
 	/* FPMCU_INT_L */
@@ -107,8 +108,8 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* I2S_LRCLK - Bit banged in depthcharge */
 	PAD_NF(GPIO_8, ACP_I2S_LRCLK, PULL_NONE),
 	/* TOUCHPAD_INT_ODL */
-	/* TODO: Make sure driver sets as wake source */
 	PAD_GPI(GPIO_9, PULL_UP),
+	PAD_WAKE(GPIO_9, PULL_UP, EDGE_LOW, S3_S4_S5),
 	/* S0iX SLP - (unused - goes to EC & FPMCU */
 	PAD_GPI(GPIO_10, PULL_UP),
 	/* FPMCU_RST_L */
