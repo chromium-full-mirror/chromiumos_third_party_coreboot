@@ -25,6 +25,7 @@
 #include <soc/iomap.h>
 #include <soc/southbridge.h>
 #include <FspsUpd.h>
+#include <acpi/acpi.h>
 
 struct soc_amd_picasso_config {
 	struct soc_amd_common_config common_config;
