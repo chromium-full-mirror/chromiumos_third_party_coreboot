@@ -14,6 +14,7 @@
  */
 
 #include <acpi/acpigen.h>
+#include <amdblocks/gpio_banks.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -22,39 +23,39 @@
 #include <device/pci_ehci.h>
 #include <soc/acpi.h>
 #include <soc/pci_devs.h>
+#include <soc/smi.h>
 #include <soc/southbridge.h>
 #include <amdblocks/acpimmio.h>
 
-static void picasso_usb_init(struct device *dev)
-{
-	/* USB overcurrent configuration is programmed inside the FSP */
-
-	printk(BIOS_DEBUG, "%s\n", __func__);
-}
+#define XHCI_GEVENT		GEVENT_31
 
 static const struct xhci_port_info {
 	unsigned int did;
 	const char *acpi_device_name;
 	int hs_count;
 	int ss_count;
+	int pme;
 } xhci_port_info[] = {
 	{
 		.did = PCI_DEVICE_ID_AMD_FAM17H_MODEL20H_XHCI0,
 		.acpi_device_name = "XHC0",
 		.hs_count = 6,
 		.ss_count = 5,
+		.pme = SMITYPE_XHC0_PME,
 	},
 	{
 		.did = PCI_DEVICE_ID_AMD_FAM17H_MODEL18H_XHCI0,
 		.acpi_device_name = "XHC0",
 		.hs_count = 4,
 		.ss_count = 4,
+		.pme = SMITYPE_XHC0_PME,
 	},
 	{
 		.did = PCI_DEVICE_ID_AMD_FAM17H_MODEL18H_XHCI1,
 		.acpi_device_name = "XHC1",
 		.hs_count = 2,
 		.ss_count = 1,
+		.pme = SMITYPE_XHC1_PME,
 	},
 };
 
@@ -67,6 +68,20 @@ static const struct xhci_port_info *find_device_cfg(unsigned int did)
 			return &xhci_port_info[i];
 	}
 	return NULL;
+}
+
+static void picasso_usb_init(struct device *dev)
+{
+	/* USB overcurrent configuration is programmed inside the FSP */
+
+	printk(BIOS_DEBUG, "%s\n", __func__);
+
+	const struct xhci_port_info *pi = find_device_cfg(dev->device);
+
+	if (pi == NULL)
+		return;
+
+	smi_write8(SMI_SCI_MAP(pi->pme), XHCI_GEVENT);
 }
 
 static const char *usb_acpi_name(const struct device *device)
@@ -125,7 +140,7 @@ static void xhci_fill_ssdt_generator(struct device *device)
 	acpigen_write_scope(acpi_device_scope(device));
 	acpigen_write_device(pi->acpi_device_name);
 	acpigen_write_ADR_pci_device(device);
-	acpigen_write_PRW(0xb, 3);
+	acpigen_write_PRW(XHCI_GEVENT, 3);
 
 	xhci_add_devices(pi);
 
