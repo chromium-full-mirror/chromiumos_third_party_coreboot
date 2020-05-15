@@ -59,6 +59,12 @@ $(CONFIG_FSP_M_CBFS)-type := fsp
 ifeq ($(CONFIG_FSP_M_XIP),y)
 $(CONFIG_FSP_M_CBFS)-options := --xip $(TXTIBB)
 endif
+ifeq ($(CONFIG_FSP_COMPRESS_FSP_M_LZMA),y)
+$(CONFIG_FSP_M_CBFS)-compression := LZMA
+endif
+ifeq ($(CONFIG_FSP_COMPRESS_FSP_M_LZ4),y)
+$(CONFIG_FSP_M_CBFS)-compression := LZ4
+endif
 
 cbfs-files-$(CONFIG_ADD_FSP_BINARIES) += $(CONFIG_FSP_S_CBFS)
 $(CONFIG_FSP_S_CBFS)-file := $(call strip_quotes,$(CONFIG_FSP_S_FILE))
