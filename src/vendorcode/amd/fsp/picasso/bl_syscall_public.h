@@ -173,11 +173,6 @@ typedef struct SHA_GENERIC_DATA_T
 	uint32_t	Eom;
 } SHA_GENERIC_DATA;
 
-typedef union SHA_OPERATION_T
-{
-	SHA_GENERIC_DATA	SHA;
-} SHA_OPERATION;
-
 /*
  * Exit to the main Boot Loader. This does not return back to user application.
  *
@@ -365,7 +360,7 @@ uint32_t svc_get_max_workbuf_size(uint32_t *size);
 /*
  * Generic SHA call for SHA, SHA_OTP, SHA_HMAC
  */
-uint32_t svc_crypto_sha(SHA_OPERATION *sha_op, SHA_OPERATION_MODE sha_mode);
+uint32_t svc_crypto_sha(SHA_GENERIC_DATA *sha_op, SHA_OPERATION_MODE sha_mode);
 
 /* C entry point for the Bootloader Userspace Application */
 void Main(void);

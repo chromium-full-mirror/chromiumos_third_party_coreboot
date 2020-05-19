@@ -141,7 +141,7 @@ uint32_t svc_get_max_workbuf_size(uint32_t *size)
 	return retval;
 }
 
-uint32_t svc_crypto_sha(SHA_OPERATION *sha_op, SHA_OPERATION_MODE sha_mode)
+uint32_t svc_crypto_sha(SHA_GENERIC_DATA *sha_op, SHA_OPERATION_MODE sha_mode)
 {
 	uint32_t retval = 0;
 	SVC_CALL2(SVC_SHA, sha_op, sha_mode, retval);
