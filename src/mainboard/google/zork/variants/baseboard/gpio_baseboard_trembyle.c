@@ -47,6 +47,8 @@ static const struct soc_amd_gpio gpio_set_stage_rom[] = {
 	PAD_GPO(GPIO_68, HIGH),
 	/* EN_PWR_CAMERA - reset */
 	PAD_GPO(GPIO_76, LOW),
+	/* RAM_ID_4 */
+	PAD_GPI(GPIO_84, PULL_NONE),
 	/* CLK_REQ0_L - WIFI */
 	PAD_NF(GPIO_92, CLK_REQ0_L, PULL_UP),
 	/* ESPI_ALERT_L (may be unused) */
@@ -146,8 +148,6 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_NF(GPIO_75, EMMC_DATA6, PULL_NONE),
 	/* EN_PWR_CAMERA */
 	PAD_GPO(GPIO_76, HIGH),
-	/* DMIC_AD_EN */
-	PAD_GPO(GPIO_84, HIGH),
 	/* APU_EDP_BL_DISABLE TODP: Set low in depthcharge */
 	PAD_GPO(GPIO_85, HIGH),
 	/* MST_GPIO_2 (Fw Update HDMI hub) */
