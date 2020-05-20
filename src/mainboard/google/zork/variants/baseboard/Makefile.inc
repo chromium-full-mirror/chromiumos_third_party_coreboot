@@ -46,4 +46,3 @@ APCB_BOARD_ID_GPIO3 = 69 1 0
 else
 $(error Undefined APCB selection GPIOS for Zork baseboard)
 endif #($(CONFIG_BOARD_GOOGLE_BASEBOARD_TREMBYLE),y)
-

@@ -8,7 +8,7 @@
 #include <variant/ec.h>
 #include <console/console.h>
 
-void __weak variant_romstage_entry()
+void __weak variant_romstage_entry(void)
 {
 	/* By default, don't do anything */
 }

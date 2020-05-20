@@ -9,7 +9,7 @@
 #include <ec/google/chromeec/i2c_tunnel/chip.h>
 #include <string.h>
 
-#define EC_PNP_ID		0x0c09
+#define EC_PNP_ID 0x0c09
 
 /* Look for an EC device of type PNP with id 0x0c09 */
 static bool match_ec_dev(DEVTREE_CONST struct device *dev)
@@ -114,8 +114,7 @@ static int sku_has_emmc(void)
 
 	/* FIXME: This needs to be fw_config controlled. */
 	/* Enable emmc0 for unknown skus. Only sku3/0xC really has it. */
-	if (board_sku == 0x5A80000C || board_sku == 0x5A800003 ||
-	    board_sku == CROS_SKU_UNKNOWN)
+	if (board_sku == 0x5A80000C || board_sku == 0x5A800003 || board_sku == CROS_SKU_UNKNOWN)
 		return 1;
 
 	return 0;
@@ -139,20 +138,22 @@ void variant_devtree_update(void)
 }
 
 /* FIXME: Comments seem to suggest these are not entirely correct. */
-static const picasso_fsp_ddi_descriptor non_hdmi_ddi_descriptors[] =
-{
-	{ // DDI0, DP0, eDP
+static const picasso_fsp_ddi_descriptor non_hdmi_ddi_descriptors[] = {
+	{
+		// DDI0, DP0, eDP
 		.connector_type = EDP,
 		.aux_index = AUX1,
 		.hdp_index = HDP1
 	},
-	{ // DDI1, DP1, DB OPT2 USB-C1 / DB OPT3 MST hub
+	{
+		// DDI1, DP1, DB OPT2 USB-C1 / DB OPT3 MST hub
 		.connector_type = DP,
 		.aux_index = AUX2,
 		.hdp_index = HDP2
 	},
-	// DP2 pins not connected on Dali
-	{ // DDI2, DP3, USB-C0
+	{
+		// DP2 pins not connected on Dali
+		// DDI2, DP3, USB-C0
 		.connector_type = DP,
 		.aux_index = AUX4,
 		.hdp_index = HDP4,
@@ -178,9 +179,10 @@ static const picasso_fsp_ddi_descriptor hdmi_ddi_descriptors[] = {
 	}
 };
 
-void variant_get_pcie_ddi_descriptors(
-		const picasso_fsp_pcie_descriptor **pcie_descs, size_t *pcie_num,
-		const picasso_fsp_ddi_descriptor **ddi_descs, size_t *ddi_num)
+void variant_get_pcie_ddi_descriptors(const picasso_fsp_pcie_descriptor **pcie_descs,
+				      size_t *pcie_num,
+				      const picasso_fsp_ddi_descriptor **ddi_descs,
+				      size_t *ddi_num)
 {
 	uint32_t board_sku = sku_id();
 
@@ -188,8 +190,8 @@ void variant_get_pcie_ddi_descriptors(
 
 	/* SKU 1, A, and D DB have HDMI, as well as unknown */
 	/* FIXME: this needs to be fw_config controlled. */
-	if ((board_sku == 0x5A80000A) || (board_sku == 0x5A80000D) ||
-	    (board_sku == 0x5A800001) || (board_sku == CROS_SKU_UNKNOWN)) {
+	if ((board_sku == 0x5A80000A) || (board_sku == 0x5A80000D) || (board_sku == 0x5A800001)
+	    || (board_sku == CROS_SKU_UNKNOWN)) {
 		*ddi_descs = &hdmi_ddi_descriptors[0];
 		*ddi_num = ARRAY_SIZE(hdmi_ddi_descriptors);
 	} else {

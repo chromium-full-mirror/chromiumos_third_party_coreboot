@@ -159,8 +159,8 @@ static void mainboard_configure_gpios(void)
 	base_gpios = variant_base_gpio_table(&base_num_gpios);
 	override_gpios = variant_override_gpio_table(&override_num_gpios);
 
-	gpio_configure_pads_with_override(base_gpios, base_num_gpios,
-						override_gpios, override_num_gpios);
+	gpio_configure_pads_with_override(base_gpios, base_num_gpios, override_gpios,
+					  override_num_gpios);
 }
 
 static void mainboard_init(void *chip_info)
@@ -190,12 +190,12 @@ static void mainboard_init(void *chip_info)
 		gpe_configure_sci(gpes, num);
 }
 
-void mainboard_get_pcie_ddi_descriptors(
-		const picasso_fsp_pcie_descriptor **pcie_descs, size_t *pcie_num,
-		const picasso_fsp_ddi_descriptor **ddi_descs, size_t *ddi_num)
+void mainboard_get_pcie_ddi_descriptors(const picasso_fsp_pcie_descriptor **pcie_descs,
+					size_t *pcie_num,
+					const picasso_fsp_ddi_descriptor **ddi_descs,
+					size_t *ddi_num)
 {
-	variant_get_pcie_ddi_descriptors(pcie_descs, pcie_num,
-					ddi_descs, ddi_num);
+	variant_get_pcie_ddi_descriptors(pcie_descs, pcie_num, ddi_descs, ddi_num);
 }
 
 /*************************************************
@@ -203,8 +203,7 @@ void mainboard_get_pcie_ddi_descriptors(
  *************************************************/
 static void zork_enable(struct device *dev)
 {
-	printk(BIOS_INFO, "Mainboard "
-				CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
+	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 
 	/* Initialize the PIRQ data structures for consumption */
 	pirq_setup();
@@ -218,7 +217,7 @@ static const struct soc_amd_gpio gpio_set_bl[] = {
 
 static void reset_backlight_gpio(void *unused)
 {
-	printk(BIOS_DEBUG,"Reset backlight GPIO\n");
+	printk(BIOS_DEBUG, "Reset backlight GPIO\n");
 	/* Re-Enable backlight - GPIO 85 active low */
 	/* TODO: Remove this after AGESA stops enabling the fan - b/155667589 */
 	program_gpios(gpio_set_bl, ARRAY_SIZE(gpio_set_bl)); /*  APU_EDP_BL_DISABLE */

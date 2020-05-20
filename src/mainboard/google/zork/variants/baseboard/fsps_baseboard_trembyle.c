@@ -5,9 +5,10 @@
 #include <commonlib/compiler.h>
 #include <soc/soc_util.h>
 
-void __weak variant_get_pcie_ddi_descriptors(
-		const picasso_fsp_pcie_descriptor **pcie_descs, size_t *pcie_num,
-		const picasso_fsp_ddi_descriptor **ddi_descs, size_t *ddi_num)
+void __weak variant_get_pcie_ddi_descriptors(const picasso_fsp_pcie_descriptor **pcie_descs,
+					     size_t *pcie_num,
+					     const picasso_fsp_ddi_descriptor **ddi_descs,
+					     size_t *ddi_num)
 {
 	*pcie_descs = baseboard_get_pcie_descriptors(pcie_num);
 	*ddi_descs = baseboard_get_ddi_descriptors(ddi_num);
@@ -17,9 +18,9 @@ void __weak variant_get_pcie_ddi_descriptors(
  * Type 1 parts, while reporting as Picasso through cpuid, are fused like a Dali.
  * Those parts need to be configured as Type 2. */
 
-static const picasso_fsp_pcie_descriptor pco_pcie_descriptors[] =
-{
-	{ // NVME SSD
+static const picasso_fsp_pcie_descriptor pco_pcie_descriptors[] = {
+	{
+		// NVME SSD
 		.port_present = true,
 		.engine_type = PCIE_ENGINE,
 		.start_lane = 0,
@@ -32,7 +33,8 @@ static const picasso_fsp_pcie_descriptor pco_pcie_descriptors[] =
 		.turn_off_unused_lanes = true,
 		.clk_req = NVME_CLKREQ,
 	},
-	{ // WLAN
+	{
+		// WLAN
 		.port_present = true,
 		.engine_type = PCIE_ENGINE,
 		.start_lane = 4,
@@ -46,7 +48,8 @@ static const picasso_fsp_pcie_descriptor pco_pcie_descriptors[] =
 		.clk_req = WLAN_CLKREQ,
 		.clk_pm_support = true,
 	},
-	{ // SD Reader
+	{
+		// SD Reader
 		.port_present = true,
 		.engine_type = PCIE_ENGINE,
 		.start_lane = 5,
@@ -61,9 +64,9 @@ static const picasso_fsp_pcie_descriptor pco_pcie_descriptors[] =
 	}
 };
 
-static const picasso_fsp_pcie_descriptor dali_pcie_descriptors[] =
-{
-	{ // NVME SSD
+static const picasso_fsp_pcie_descriptor dali_pcie_descriptors[] = {
+	{
+		// NVME SSD
 		.port_present = true,
 		.engine_type = PCIE_ENGINE,
 		.start_lane = NVME_START_LANE,
@@ -77,7 +80,8 @@ static const picasso_fsp_pcie_descriptor dali_pcie_descriptors[] =
 		.clk_req = NVME_CLKREQ,
 		.clk_pm_support = true,
 	},
-	{ // WLAN
+	{
+		// WLAN
 		.port_present = true,
 		.engine_type = PCIE_ENGINE,
 		.start_lane = WLAN_START_LANE,
@@ -91,7 +95,8 @@ static const picasso_fsp_pcie_descriptor dali_pcie_descriptors[] =
 		.clk_req = WLAN_CLKREQ,
 		.clk_pm_support = true,
 	},
-	{ // SD Reader
+	{
+		// SD Reader
 		.port_present = true,
 		.engine_type = PCIE_ENGINE,
 		.start_lane = SD_START_LANE,
@@ -119,44 +124,48 @@ const picasso_fsp_pcie_descriptor *baseboard_get_pcie_descriptors(size_t *num)
 	return &pco_pcie_descriptors[0];
 }
 
-static const picasso_fsp_ddi_descriptor pco_ddi_descriptors[] =
-{
-	{ // DDI0, DP0, eDP
+static const picasso_fsp_ddi_descriptor pco_ddi_descriptors[] = {
+	{
+		// DDI0, DP0, eDP
 		.connector_type = EDP,
 		.aux_index = AUX1,
 		.hdp_index = HDP1
 	},
-	{ // DDI1, DP1, DB OPT1 HDMI
+	{
+		// DDI1, DP1, DB OPT1 HDMI
 		.connector_type = HDMI,
 		.aux_index = AUX2,
 		.hdp_index = HDP2
 	},
-	{ // DDI2, DP2, DB OPT1 USB-C1
+	{
+		// DDI2, DP2, DB OPT1 USB-C1
 		.connector_type = DP,
 		.aux_index = AUX3,
 		.hdp_index = HDP3,
 	},
-	{ // DDI3, DP3, USB-C0
+	{
+		// DDI3, DP3, USB-C0
 		.connector_type = DP,
 		.aux_index = AUX4,
 		.hdp_index = HDP4,
 	}
 };
 
-static const picasso_fsp_ddi_descriptor dali_ddi_descriptors[] =
-{
-	{ // DDI0, DP0, eDP
+static const picasso_fsp_ddi_descriptor dali_ddi_descriptors[] = {
+	{
+		// DDI0, DP0, eDP
 		.connector_type = EDP,
 		.aux_index = AUX1,
 		.hdp_index = HDP1
 	},
-	{ // DDI1, DP1, DB OPT2 USB-C1 / DB OPT3 MST hub
+	{
+		// DDI1, DP1, DB OPT2 USB-C1 / DB OPT3 MST hub
 		.connector_type = DP,
 		.aux_index = AUX2,
 		.hdp_index = HDP2
 	},
-	// DP2 pins not connected on Dali
-	{ // DDI2, DP3, USB-C0
+	{
+		// DDI2, DP3, USB-C0
 		.connector_type = DP,
 		.aux_index = AUX4,
 		.hdp_index = HDP4,

@@ -4,17 +4,18 @@
 #include <baseboard/variants.h>
 #include <commonlib/compiler.h>
 
-void __weak variant_get_pcie_ddi_descriptors(
-		const picasso_fsp_pcie_descriptor **pcie_descs, size_t *pcie_num,
-		const picasso_fsp_ddi_descriptor **ddi_descs, size_t *ddi_num)
+void __weak variant_get_pcie_ddi_descriptors(const picasso_fsp_pcie_descriptor **pcie_descs,
+					     size_t *pcie_num,
+					     const picasso_fsp_ddi_descriptor **ddi_descs,
+					     size_t *ddi_num)
 {
 	*pcie_descs = baseboard_get_pcie_descriptors(pcie_num);
 	*ddi_descs = baseboard_get_ddi_descriptors(ddi_num);
 }
 
-static const picasso_fsp_pcie_descriptor pcie_descriptors[] =
-{
-	{ // NVME SSD
+static const picasso_fsp_pcie_descriptor pcie_descriptors[] = {
+	{
+		// NVME SSD
 		.port_present = true,
 		.engine_type = PCIE_ENGINE,
 		.start_lane = NVME_START_LANE,
@@ -28,7 +29,8 @@ static const picasso_fsp_pcie_descriptor pcie_descriptors[] =
 		.clk_req = NVME_CLKREQ,
 		.clk_pm_support = true,
 	},
-	{ // WLAN
+	{
+		// WLAN
 		.port_present = true,
 		.engine_type = PCIE_ENGINE,
 		.start_lane = WLAN_START_LANE,
@@ -42,7 +44,8 @@ static const picasso_fsp_pcie_descriptor pcie_descriptors[] =
 		.clk_req = WLAN_CLKREQ,
 		.clk_pm_support = true,
 	},
-	{ // SD Reader
+	{
+		// SD Reader
 		.port_present = true,
 		.engine_type = PCIE_ENGINE,
 		.start_lane = SD_START_LANE,
