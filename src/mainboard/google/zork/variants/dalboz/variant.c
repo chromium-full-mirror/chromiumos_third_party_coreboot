@@ -1,15 +1,4 @@
-/*
- * This file is part of the coreboot project.
- *
- * Copyright 2020 Google LLC
- *
- * SPDX-License-Identifier: GPL-2.0-only
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <baseboard/variants.h>
 #include <console/console.h>
