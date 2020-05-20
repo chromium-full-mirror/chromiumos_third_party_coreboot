@@ -3,7 +3,7 @@
 # This directory
 SPD_SOURCES_DIR := src/mainboard/$(MAINBOARDDIR)/spd
 
-# Ordered List of APCB entries, upto 16.
+# Ordered List of APCB entries, up to 16.
 # Entries should match this pattern {NAME}_x{1,2}
 # There should be a matching SPD hex file in SPD_SOURCES_DIR
 # matching the pattern {NAME}.spd.hex
