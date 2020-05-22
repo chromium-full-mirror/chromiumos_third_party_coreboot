@@ -38,6 +38,32 @@ chip soc/amd/picasso
 		device pci 8.1 on      # Internal GPP Bridge 0 to Bus A
 			device pci 0.3 on  end # USB 3.1
 		end
+		device pci 14.3 on  # - D14F3 bridge
+			chip ec/google/chromeec
+				device pnp 0c09.0 on
+					chip ec/google/chromeec/i2c_tunnel
+						register "uid" = "1"
+						register "remote_bus" = "8"
+						device generic 0.0 on
+							chip drivers/i2c/generic
+								register "hid" = ""10EC1015""
+								register "desc" = ""RT1015 Tweeter Left Speaker Amp""
+								register "uid" = "0"
+								register "name" = ""TL""
+								device i2c 28 on end
+							end
+							chip drivers/i2c/generic
+								register "hid" = ""10EC1015""
+								register "desc" = ""RT1015 Tweeter Right Speaker Amp""
+								register "uid" = "1"
+								register "name" = ""TR""
+								device i2c 29 on end
+							end
+						end
+					end
+				end
+			end
+		end
 	end # domain
 
 	device mmio 0xfedc4000 on # APU_I2C2_BASE
