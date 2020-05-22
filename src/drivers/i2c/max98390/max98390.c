@@ -84,8 +84,9 @@ static const char *max98390_acpi_name(const struct device *dev)
 }
 
 static struct device_operations max98390_ops = {
-	.read_resources = noop_read_resources,
-	.set_resources = noop_set_resources,
+	.read_resources = DEVICE_NOOP,
+	.set_resources = DEVICE_NOOP,
+	.enable_resources = DEVICE_NOOP,
 	.acpi_name = max98390_acpi_name,
 	.acpi_fill_ssdt_generator = max98390_fill_ssdt,
 };
