@@ -12,6 +12,18 @@ static const struct soc_amd_gpio ezkinil_v1_gpio_set_stage_ram[] = {
 	/* USB_OC2_L - USB A0 */
 	PAD_NF(GPIO_18, USB_OC2_L, PULL_UP),
 };
+
+static const struct soc_amd_gpio ezkinil_gpio_set_stage_ram[] = {
+	/* MST_GPIO_2 (Fw Update HDMI hub) Change NC */
+	PAD_GPI(GPIO_86, PULL_UP),
+	/* MST_GPIO_3 (Fw Update HDMI hub) Change NC */
+	PAD_GPI(GPIO_90, PULL_UP),
+	/* FPMCU_RST_L Change NC */
+	PAD_GPI(GPIO_11, PULL_UP),
+	/* FPMCU_BOOT0 Change NC */
+	PAD_GPI(GPIO_69, PULL_UP),
+};
+
 const struct soc_amd_gpio *variant_override_gpio_table(size_t *size)
 {
 	uint32_t board_version;
@@ -29,6 +41,6 @@ const struct soc_amd_gpio *variant_override_gpio_table(size_t *size)
 		return ezkinil_v1_gpio_set_stage_ram;
 	}
 
-	*size = 0;
-	return NULL;
+	*size = ARRAY_SIZE(ezkinil_gpio_set_stage_ram);
+	return ezkinil_gpio_set_stage_ram;
 }
