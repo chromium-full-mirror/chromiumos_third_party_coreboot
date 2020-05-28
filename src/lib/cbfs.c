@@ -98,8 +98,19 @@ int cbfs_locate_file_in_region(struct cbfsf *fh, const char *region_name,
 	return cbfs_locate(fh, &rdev, name, type);
 }
 
+static inline bool fsps_env(void)
+{
+	/* FSP-S is assumed to be loaded in ramstage. */
+	if (ENV_RAMSTAGE)
+		return true;
+	return false;
+}
+
 static inline bool cbfs_lz4_enabled(void)
 {
+	if (fsps_env() && CONFIG(FSP_COMPRESS_FSP_S_LZ4))
+		return true;
+
 	if ((ENV_BOOTBLOCK || ENV_VERSTAGE) && !CONFIG(COMPRESS_PRERAM_STAGES))
 		return false;
 
@@ -108,6 +119,8 @@ static inline bool cbfs_lz4_enabled(void)
 
 static inline bool cbfs_lzma_enabled(void)
 {
+	if (fsps_env() && CONFIG(FSP_COMPRESS_FSP_S_LZMA))
+		return true;
 	/* We assume here romstage and postcar are never compressed. */
 	if (ENV_BOOTBLOCK || ENV_VERSTAGE)
 		return false;

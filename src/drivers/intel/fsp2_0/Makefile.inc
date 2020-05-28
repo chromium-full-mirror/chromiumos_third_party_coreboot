@@ -64,6 +64,14 @@ cbfs-files-$(CONFIG_ADD_FSP_BINARIES) += $(CONFIG_FSP_S_CBFS)
 $(CONFIG_FSP_S_CBFS)-file := $(call strip_quotes,$(CONFIG_FSP_S_FILE))
 $(CONFIG_FSP_S_CBFS)-type := fsp
 
+ifeq ($(CONFIG_FSP_COMPRESS_FSP_S_LZMA),y)
+$(CONFIG_FSP_S_CBFS)-compression := LZMA
+endif
+ifeq ($(CONFIG_FSP_COMPRESS_FSP_S_LZ4),y)
+$(CONFIG_FSP_S_CBFS)-compression := LZ4
+endif
+
+
 ifeq ($(CONFIG_FSP_USE_REPO),y)
 $(obj)/Fsp_M.fd: $(call strip_quotes,$(CONFIG_FSP_FD_PATH))
 	python2 3rdparty/fsp/Tools/SplitFspBin.py split -f $(CONFIG_FSP_FD_PATH) -o "$(obj)" -n "Fsp.fd"

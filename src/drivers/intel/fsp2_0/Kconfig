@@ -208,6 +208,13 @@ config FSP_PEIM_TO_PEIM_INTERFACE
 	  is limited till EFI_PEI_MP_SERVICE_PPI and this option might be
 	  useful to add further PPI if required.
 
+
+config FSP_COMPRESS_FSP_S_LZMA
+	bool
+
+config FSP_COMPRESS_FSP_S_LZ4
+	bool
+
 if FSP_PEIM_TO_PEIM_INTERFACE
 source "src/drivers/intel/fsp2_0/ppi/Kconfig"
 endif

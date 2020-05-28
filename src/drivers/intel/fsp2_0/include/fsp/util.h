@@ -19,6 +19,7 @@
 #include <fsp/api.h>
 #include <fsp/info_header.h>
 #include <memrange.h>
+#include <program_loading.h>
 #include <types.h>
 
 struct hob_header {
@@ -92,6 +93,21 @@ bool fsp_guid_compare(const uint8_t guid1[16], const uint8_t guid2[16]);
 /* Fill in header and validate sanity of component within region device. */
 enum cb_err fsp_validate_component(struct fsp_header *hdr,
 					const struct region_device *rdev);
+
+struct fsp_load_descriptor {
+	/* fsp_prog object will have region_device initialized to final
+	 * load location in memory. */
+	struct prog fsp_prog;
+	/* Fill in destination location given final load size. Return 0 on
+	 * success, < 0 on error. */
+	int (*get_destination)(const struct fsp_load_descriptor *fspld,
+			void **dest, size_t final_load_size,
+			const struct region_device *source);
+};
+
+/* Load the FSP component described by fsp_load_descriptor from cbfs. The FSP
+ * header object will be validated and filled in on successful load. */
+enum cb_err fsp_load_component(struct fsp_load_descriptor *fspld, struct fsp_header *hdr);
 
 /* Get igd framebuffer bar from SoC */
 uintptr_t fsp_soc_get_igd_bar(void);
