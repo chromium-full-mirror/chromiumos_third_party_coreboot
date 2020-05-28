@@ -292,6 +292,10 @@ config ROMSTAGE_ADDR
 	  is 64KB and the reset vector is ROMSTAGE_ADDR + 0xfff0.  Systems
 	  supporting S3 must reserved this region from use by the OS.
 
+config FSP_M_ADDR
+	hex
+	default 0x90000000
+
 config X86_RESET_VECTOR
 	hex
 	depends on ARCH_X86

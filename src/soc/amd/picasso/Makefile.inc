@@ -530,4 +530,6 @@ endif
 
 endif # ifeq ($(CONFIG_AMDFW_OUTSIDE_CBFS),y)
 
+$(CONFIG_FSP_M_CBFS)-options := -b $(CONFIG_FSP_M_ADDR)
+
 endif # ($(CONFIG_SOC_AMD_PICASSO),y)
