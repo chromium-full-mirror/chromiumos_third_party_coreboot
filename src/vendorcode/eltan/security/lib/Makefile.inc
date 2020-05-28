@@ -35,8 +35,8 @@ $$(VEN_SEC_LIB_$(1)): $(obj)/config.h
 		fwlib21
 endef # vendor-security-for-stage
 
-CFLAGS_common += -I3rdparty/vboot/firmware/2lib/include
-CFLAGS_common += -I3rdparty/vboot/firmware/lib21/include
+CFLAGS_common += -I$(VBOOT_SOURCE)/firmware/2lib/include
+CFLAGS_common += -I$(VBOOT_SOURCE)/firmware/lib21/include
 
 ifneq ($(filter y,$(CONFIG_VENDORCODE_ELTAN_VBOOT) $(CONFIG_VENDORCODE_ELTAN_MBOOT)),)
 
