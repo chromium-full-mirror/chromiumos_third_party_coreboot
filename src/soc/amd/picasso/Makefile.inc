@@ -116,8 +116,6 @@ CPPFLAGS_common += -I$(src)/vendorcode/amd/fsp/picasso
 
 APCB_BLOB_DIR:=$(or $(call strip_quotes, $(CONFIG_APCB_BLOB_DIR)), \
 		    $(top)/3rdparty/blobs/mainboard)/$(MAINBOARDDIR)
-# APCB binary with magic numbers to be replaced by apcb_edit tool
-APCB_MAGIC_BLOB:=$(obj)/APCB_magic.bin
 
 # ROMSIG Normally At ROMBASE + 0x20000
 # Overridden by CONFIG_AMD_FWM_POSITION_INDEX
@@ -384,6 +382,9 @@ AMDFW_COMMON_ARGS=$(OPT_AMD_PUBKEY_FILE) \
 
 $(obj)/APCB_%.bin: $(APCB_BLOB_DIR)/APCB_%.bin
 	cp $< $@
+
+# APCB binary with magic numbers to be replaced by apcb_edit tool
+APCB_MAGIC_BLOB:=$(FIRMWARE_LOCATE)/APCB_magic.bin
 
 $(obj)/APCB_empty.bin: $(APCB_MAGIC_BLOB) $(APCB_EDIT_TOOL)
 	$(APCB_EDIT_TOOL) \

@@ -144,7 +144,7 @@ config OEM_BIN_FILE
 config FSP_M_FILE
 	string "FSP-M (memory init) binary path and filename"
 	depends on ADD_FSP_BINARIES
-	default "3rdparty/blobs/soc/amd/picasso/PICASSO_M.fd"
+	default "3rdparty/amd_blobs/picasso/PICASSO_M.fd"
 	help
 	  The path and filename of the FSP-M binary for this platform.
 	  TODO: remove this: Mandolin temporarily makes the default
@@ -153,7 +153,7 @@ config FSP_M_FILE
 config FSP_S_FILE
 	string "FSP-S (silicon init) binary path and filename"
 	depends on ADD_FSP_BINARIES
-	default "3rdparty/blobs/soc/amd/picasso/PICASSO_S.fd"
+	default "3rdparty/amd_blobs/picasso/PICASSO_S.fd"
 	help
 	  The path and filename of the FSP-S binary for this platform.
 	  TODO: remove this: Mandolin temporarily makes the default
