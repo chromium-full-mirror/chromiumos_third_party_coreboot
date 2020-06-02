@@ -17,7 +17,6 @@
 #include <acpi/acpigen.h>
 #include <bootstate.h>
 #include <console/console.h>
-#include <cpu/x86/mtrr.h>
 #include <cpu/amd/mtrr.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -176,21 +175,6 @@ void *vbt_get(void)
 
 static void soc_init(void *chip_info)
 {
-	/* Set the Fixed MTRRs to send cycles to DRAM.  AGESA will use just <1MB
-	 * as an AP wake buffer */
-	msr_t mtrr, syscfg, deftype;
-
-	deftype = rdmsr(MTRR_DEF_TYPE_MSR);
-	deftype.lo |= MTRR_DEF_TYPE_EN | MTRR_DEF_TYPE_FIX_EN;
-	wrmsr(MTRR_DEF_TYPE_MSR, deftype);
-
-	syscfg = rdmsr(SYSCFG_MSR);
-	syscfg.lo |= SYSCFG_MSR_MtrrFixDramEn | SYSCFG_MSR_MtrrFixDramModEn;
-	wrmsr(SYSCFG_MSR, syscfg);
-
-	mtrr.hi = mtrr.lo = 0x1e1e1e1e; /* RdDram,WrDram,WB */
-	wrmsr(MTRR_FIX_4K_F8000, mtrr);
-
 	fsp_silicon_init(acpi_is_wakeup_s3());
 
 	/*
