@@ -21,6 +21,7 @@
 #include <arch/exception.h>
 #include <delay.h>
 #include <pc80/mc146818rtc.h>
+#include <cpu/x86/cache.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
@@ -93,82 +94,69 @@ static void romstage_soc_init(void)
 
 static int set_early_mtrrs(void)
 {
-	int mtrr;
+	msr_t top_mem;
+	msr_t sys_cfg;
+	msr_t mtrr_def_type;
+	msr_t fixed_mtrr_ram;
+	msr_t fixed_mtrr_mmio;
+	struct var_mtrr_context mtrr_ctx;
 
-	mtrr = get_free_var_mtrr();
-	if (mtrr < 0)
-		return -1;
+	var_mtrr_context_init(&mtrr_ctx, NULL);
+	top_mem = rdmsr(TOP_MEM);
+	/* Enable RdDram and WrDram attributes in fixed MTRRs. */
+	sys_cfg = rdmsr(SYSCFG_MSR);
+	sys_cfg.lo |= SYSCFG_MSR_MtrrFixDramModEn;
 
-	set_var_mtrr(mtrr, EARLY_DRAM_MTRR_BASE, EARLY_DRAM_MTRR_SIZE,
-				MTRR_TYPE_WRBACK);
+	/* Fixed MTRR constants. */
+	fixed_mtrr_ram.lo = fixed_mtrr_ram.hi =
+		((MTRR_TYPE_WRBACK | MTRR_READ_MEM | MTRR_WRITE_MEM) <<  0) |
+		((MTRR_TYPE_WRBACK | MTRR_READ_MEM | MTRR_WRITE_MEM) <<  8) |
+		((MTRR_TYPE_WRBACK | MTRR_READ_MEM | MTRR_WRITE_MEM) << 16) |
+		((MTRR_TYPE_WRBACK | MTRR_READ_MEM | MTRR_WRITE_MEM) << 24);
+	fixed_mtrr_mmio.lo = fixed_mtrr_mmio.hi =
+		((MTRR_TYPE_UNCACHEABLE) <<  0) |
+		((MTRR_TYPE_UNCACHEABLE) <<  8) |
+		((MTRR_TYPE_UNCACHEABLE) << 16) |
+		((MTRR_TYPE_UNCACHEABLE) << 24);
 
-	mtrr = get_free_var_mtrr();
-	if (mtrr < 0)
-		return -1;
+	/* Prep default MTRR type. */
+	mtrr_def_type = rdmsr(MTRR_DEF_TYPE_MSR);
+	mtrr_def_type.lo &= ~MTRR_DEF_TYPE_MASK;
+	mtrr_def_type.lo |= MTRR_TYPE_UNCACHEABLE;
+	mtrr_def_type.lo |= MTRR_DEF_TYPE_EN | MTRR_DEF_TYPE_FIX_EN;
 
-	set_var_mtrr(mtrr, FLASH_BASE_ADDR, CONFIG_ROM_SIZE,
-				MTRR_TYPE_WRPROT);
-	return 0;
-}
+	disable_cache();
 
-static void clear_agesa_mtrrs(void)
-{
-	msr_t mtrr_cap = rdmsr(MTRR_CAP_MSR);
-	int vmtrrs = mtrr_cap.lo & MTRR_CAP_VCNT;
-	int i;
-	msr_t mtrr = {
-		.hi = 0,
-		.lo = 0,
-	};
-
-	for (i = 0 ; i < vmtrrs ; i++) {
-		wrmsr(MTRR_PHYS_MASK(i), mtrr);
-		wrmsr(MTRR_PHYS_BASE(i), mtrr);
-	}
-
-	/* Disable WB from to region 4GB - TOM2 */
-	msr_t sys_cfg = rdmsr(SYSCFG_MSR);
-	sys_cfg.lo &= ~SYSCFG_MSR_TOM2WB;
 	wrmsr(SYSCFG_MSR, sys_cfg);
 
-	if (set_early_mtrrs())
-		printk(BIOS_WARNING, "Warning: MTRRs not set properly for ramstage\n");
-}
+	clear_all_var_mtrr();
 
-static void set_mtrrs_for_ramstage(void)
-{
-	uintptr_t mem_top;
-	uintptr_t ramstage_wb_base;
-	size_t ramstage_wb_size;
-	int mtrr;
+	var_mtrr_set(&mtrr_ctx, 0, ALIGN_DOWN(top_mem.lo, 8*MiB), MTRR_TYPE_WRBACK);
+	var_mtrr_set(&mtrr_ctx, FLASH_BASE_ADDR, CONFIG_ROM_SIZE, MTRR_TYPE_WRPROT);
 
-	mem_top = (uintptr_t)cbmem_top();
+	/* Set up RAM caching for everything below 1MiB except for 0xa0000-0xc0000 . */
+	wrmsr(MTRR_FIX_64K_00000, fixed_mtrr_ram);
+	wrmsr(MTRR_FIX_16K_80000, fixed_mtrr_ram);
+	wrmsr(MTRR_FIX_16K_A0000, fixed_mtrr_mmio);
+	wrmsr(MTRR_FIX_4K_C0000, fixed_mtrr_ram);
+	wrmsr(MTRR_FIX_4K_C8000, fixed_mtrr_ram);
+	wrmsr(MTRR_FIX_4K_D0000, fixed_mtrr_ram);
+	wrmsr(MTRR_FIX_4K_D8000, fixed_mtrr_ram);
+	wrmsr(MTRR_FIX_4K_E0000, fixed_mtrr_ram);
+	wrmsr(MTRR_FIX_4K_E8000, fixed_mtrr_ram);
+	wrmsr(MTRR_FIX_4K_F0000, fixed_mtrr_ram);
+	wrmsr(MTRR_FIX_4K_F8000, fixed_mtrr_ram);
 
-	clear_agesa_mtrrs(); /* TODO: make AGESA leave the MTRRs alone*/
+	wrmsr(MTRR_DEF_TYPE_MSR, mtrr_def_type);
 
-	/* Cache anticipated ramstage location through the top of cbmem.
-	 * Unlike some other implementations, TSEG is in cbmem so it will
-	 * be cached as well.
-	 */
-	ramstage_wb_size = EARLY_RAMSTAGE_MTRR_SZ;
-	ramstage_wb_base = mem_top - ramstage_wb_size;
+	/* Enable Fixed and Variable MTRRs. */
+	sys_cfg.lo |= SYSCFG_MSR_MtrrFixDramEn | SYSCFG_MSR_MtrrVarDramEn;
+	sys_cfg.lo |= SYSCFG_MSR_TOM2En | SYSCFG_MSR_TOM2WB;
+	wrmsr(SYSCFG_MSR, sys_cfg);
 
-	/* Ensure base and size are usable in a single MTRR pair */
-	if (ramstage_wb_size != 1 << fms(ramstage_wb_size)) {
-		ramstage_wb_size = 1 << (1 + fms(ramstage_wb_size));
-		ramstage_wb_base = mem_top - ramstage_wb_size;
-	}
-	if (mem_top - EARLY_RAMSTAGE_MTRR_SZ < EARLY_DRAM_MTRR_TOP) {
-		printk(BIOS_WARNING, "Warning: Skipping ramstage cacheable due to configuration\n");
-		return;
-	}
+	enable_cache();
 
-	mtrr = get_free_var_mtrr();
-	if (mtrr >= 0)
-		set_var_mtrr(mtrr, ramstage_wb_base, ramstage_wb_size,
-					MTRR_TYPE_WRBACK);
-	else
-		printk(BIOS_WARNING, "Warning: Unable to make ramstage cacheable\n");
+	return 0;
 }
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
@@ -310,7 +298,6 @@ asmlinkage void soc_hybrid_romstage_entry(uint32_t bist, uint64_t early_tsc)
 	/* APs do not return to here and continue  */
 
 	post_code(0x4a);
-	set_mtrrs_for_ramstage();
 	run_ramstage();
 
 	post_code(0x50); /* Should never see this post code. */
