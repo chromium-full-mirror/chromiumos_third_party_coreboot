@@ -27,6 +27,10 @@ config BOARD_SPECIFIC_OPTIONS
 	select AZALIA_PLUGIN_SUPPORT
 	select HAVE_ACPI_RESUME
 
+config FMDFILE
+	string
+	default "src/mainboard/amd/mandolin/mandolin.fmd"
+
 config FSP_M_FILE
 	string "FSP-M (memory init) binary path and filename"
 	depends on ADD_FSP_BINARIES
