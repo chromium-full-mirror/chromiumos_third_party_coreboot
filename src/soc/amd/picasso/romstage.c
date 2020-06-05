@@ -236,7 +236,6 @@ static void check_workbuf(uintptr_t workbuf_location)
 asmlinkage void soc_hybrid_romstage_entry(uint32_t bist, uint64_t early_tsc)
 {
 	int s3_resume;
-	int on_bsp = boot_cpu();
 	int early_mtrr_err;
 	msr_t s3_resume_entry = {
 		.hi = (uint64_t)(uintptr_t)s3_bsp_reentry >> 32,
@@ -244,7 +243,7 @@ asmlinkage void soc_hybrid_romstage_entry(uint32_t bist, uint64_t early_tsc)
 	};
 
 	post_code(0x40);
-	if (CONFIG(COLLECT_TIMESTAMPS) && on_bsp) {
+	if (CONFIG(COLLECT_TIMESTAMPS)) {
 		timestamp_init(early_tsc);
 		timestamp_add_now(TS_START_ROMSTAGE);
 	}
@@ -254,40 +253,37 @@ asmlinkage void soc_hybrid_romstage_entry(uint32_t bist, uint64_t early_tsc)
 	post_code(0x41);
 	early_mtrr_err = set_early_mtrrs();
 
-	if (on_bsp) {
-		post_code(0x42);
+	post_code(0x42);
 
-		romstage_soc_early_init();
-		romstage_mainboard_early_init();
+	romstage_soc_early_init();
+	romstage_mainboard_early_init();
 
-		console_init();
+	console_init();
 
-		if (CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK))
-			check_workbuf((uintptr_t)_vboot2_work);
+	if (CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK))
+		check_workbuf((uintptr_t)_vboot2_work);
 
-		post_code(0x43);
-		init_timer();
-		sanitize_cmos();
-		cmos_post_init();
+	post_code(0x43);
+	init_timer();
+	sanitize_cmos();
+	cmos_post_init();
 
-		post_code(0x44);
-		exception_init();
-	}
+	post_code(0x44);
+	exception_init();
 
 	post_code(0x45);
 	report_bist_failure(bist);
 
 	post_code(0x46);
 	s3_resume = acpi_s3_resume_allowed() && acpi_is_wakeup_s3();
-	if (on_bsp) {
-		romstage_soc_init();
-		romstage_mainboard_init();
 
-		/* Trigger the microcode to stash the CPU state and resume vector
-		 * into the C6 save area. */
-		if (!s3_resume)
-			wrmsr(S3_RESUME_EIP, s3_resume_entry);
-	}
+	romstage_soc_init();
+	romstage_mainboard_init();
+
+	/* Trigger the microcode to stash the CPU state and resume vector
+	 * into the C6 save area. */
+	if (!s3_resume)
+		wrmsr(S3_RESUME_EIP, s3_resume_entry);
 
 	post_code(0x47);
 	u32 val = cpuid_eax(1);
@@ -299,7 +295,6 @@ asmlinkage void soc_hybrid_romstage_entry(uint32_t bist, uint64_t early_tsc)
 	post_code(0x49);
 	fsp_memory_init(s3_resume);
 	soc_update_mrc_cache();
-	/* APs do not return to here and continue  */
 
 	post_code(0x4a);
 	run_ramstage();
