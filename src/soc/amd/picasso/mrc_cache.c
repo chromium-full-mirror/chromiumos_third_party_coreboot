@@ -8,7 +8,6 @@
 #include <console/console.h>
 #include <fmap.h>
 #include <soc/mrc_cache.h>
-#include <soc/psp.h>
 #include <spi_flash.h>
 #include <stdint.h>
 #include <string.h>
@@ -16,6 +15,20 @@
 #define DEFAULT_MRC_CACHE "RW_MRC_CACHE"
 /* PSP requires this value to be 64KiB */
 #define DEFAULT_MRC_CACHE_SIZE 0x10000
+
+#if !CONFIG_PSP_APOB_DRAM_ADDRESS
+#error Incorrect APOB configuration setting(s)
+#endif
+
+#define APOB_SIGNATURE 0x424F5041	/* 'APOB' */
+
+/* APOB_BASE_HEADER from AGESA */
+struct apob_base_header {
+	uint32_t   signature;			/* APOB signature */
+	uint32_t   version;			/* Version */
+	uint32_t   size;			/* APOB Size */
+	uint32_t   offset_of_first_entry;	/* APOB Header Size */
+};
 
 static bool apob_header_valid(const struct apob_base_header *apob_header_ptr, const char *where)
 {
