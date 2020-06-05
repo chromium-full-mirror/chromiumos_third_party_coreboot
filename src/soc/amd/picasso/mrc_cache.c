@@ -83,13 +83,17 @@ static void *get_apob_from_nv_region(struct region *region)
 }
 
 /* Save APOB buffer to flash */
-static void update_apob_in_flash(void *unused)
+void soc_update_mrc_cache(void)
 {
 	struct apob_base_header *apob_rom;
 	struct region_device write_rdev;
 	struct region region;
 	bool update_needed = false;
 	const struct apob_base_header *apob_src_ram;
+
+	/* Nothing to update in case of S3 resume. */
+	if (acpi_is_wakeup_s3())
+		return;
 
 	apob_src_ram = get_apob_dram_address();
 	if (apob_src_ram == NULL)
@@ -132,11 +136,6 @@ static void update_apob_in_flash(void *unused)
 
 	printk(BIOS_INFO, "Updated APOB in flash\n");
 }
-
-/*
- * Ensure APOB is stored into SPI flash after PCI enumeration is done.
- */
-BOOT_STATE_INIT_ENTRY(BS_DEV_ENUMERATE, BS_ON_EXIT, update_apob_in_flash, NULL);
 
 static void *get_apob_nv_address(void)
 {

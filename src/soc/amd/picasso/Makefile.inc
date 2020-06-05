@@ -96,7 +96,6 @@ ramstage-y += soc_util.c
 ramstage-y += fsp_params.c
 ramstage-y += dmi.c
 ramstage-y += config.c
-ramstage-y += mrc_cache.c
 
 smm-y += smihandler.c
 smm-y += smi_util.c

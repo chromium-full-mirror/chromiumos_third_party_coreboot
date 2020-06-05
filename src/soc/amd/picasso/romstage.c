@@ -298,6 +298,7 @@ asmlinkage void soc_hybrid_romstage_entry(uint32_t bist, uint64_t early_tsc)
 
 	post_code(0x49);
 	fsp_memory_init(s3_resume);
+	soc_update_mrc_cache();
 	/* APs do not return to here and continue  */
 
 	post_code(0x4a);
