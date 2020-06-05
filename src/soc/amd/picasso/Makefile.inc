@@ -54,6 +54,7 @@ romstage-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
 romstage-y += psp.c
 romstage-y += soc_util.c
 romstage-y += config.c
+romstage-y += mrc_cache.c
 
 verstage-y += i2c.c
 verstage-y += pmutil.c
@@ -95,6 +96,7 @@ ramstage-y += soc_util.c
 ramstage-y += fsp_params.c
 ramstage-y += dmi.c
 ramstage-y += config.c
+ramstage-y += mrc_cache.c
 
 smm-y += smihandler.c
 smm-y += smi_util.c
