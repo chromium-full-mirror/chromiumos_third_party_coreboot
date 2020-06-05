@@ -40,6 +40,7 @@
 #include <elog.h>
 #include <security/vboot/symbols.h>
 #include <soc/cpu.h>
+#include <soc/mrc_cache.h>
 #include <soc/northbridge.h>
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>
@@ -163,6 +164,8 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
 	FSP_M_CONFIG *mcfg = &mupd->FspmConfig;
 	const config_t *config = config_of_soc();
+
+	mupd->FspmArchUpd.NvsBufferPtr = soc_fill_mrc_cache();
 
 	mcfg->pci_express_base_addr = CONFIG_MMCONF_BASE_ADDRESS;
 

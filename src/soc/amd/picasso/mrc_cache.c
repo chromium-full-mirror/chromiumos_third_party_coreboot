@@ -1,11 +1,13 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <acpi/acpi.h>
 #include <assert.h>
 #include <boot_device.h>
 #include <bootstate.h>
 #include <commonlib/region.h>
 #include <console/console.h>
 #include <fmap.h>
+#include <soc/mrc_cache.h>
 #include <soc/psp.h>
 #include <spi_flash.h>
 #include <stdint.h>
@@ -135,3 +137,27 @@ static void update_apob_in_flash(void *unused)
  * Ensure APOB is stored into SPI flash after PCI enumeration is done.
  */
 BOOT_STATE_INIT_ENTRY(BS_DEV_ENUMERATE, BS_ON_EXIT, update_apob_in_flash, NULL);
+
+static void *get_apob_nv_address(void)
+{
+	struct region region;
+
+	if (get_nv_region(&region) != 0)
+		return NULL;
+
+	return get_apob_from_nv_region(&region);
+}
+
+void *soc_fill_mrc_cache(void)
+{
+	/* If this is non-S3 boot, then use the APOB data placed by PSP in DRAM. */
+	if (!acpi_is_wakeup_s3())
+		return get_apob_dram_address();
+
+	/*
+	 * In case of S3 resume, PSP does not copy APOB data to DRAM. Thus, coreboot needs to
+	 * provide the APOB NV data from RW_MRC_CACHE on SPI flash so that FSP can use it
+	 * without having to traverse the BIOS directory table.
+	 */
+	return get_apob_nv_address();
+}
