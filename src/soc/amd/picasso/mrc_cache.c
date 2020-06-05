@@ -10,6 +10,10 @@
 #include <stdint.h>
 #include <string.h>
 
+#define DEFAULT_MRC_CACHE "RW_MRC_CACHE"
+/* PSP requires this value to be 64KiB */
+#define DEFAULT_MRC_CACHE_SIZE 0x10000
+
 /* validate APOB header */
 static int apob_header_valid(const struct apob_base_header *apob_header_ptr,
 	const char *where)
@@ -21,17 +25,15 @@ static int apob_header_valid(const struct apob_base_header *apob_header_ptr,
 	}
 
 	if (apob_header_ptr->size == 0 ||
-			apob_header_ptr->size > CONFIG_MRC_SETTINGS_CACHE_SIZE) {
+			apob_header_ptr->size > DEFAULT_MRC_CACHE_SIZE) {
 		printk(BIOS_WARNING, "%s APOB data is too large %x > %x\n",
 			where,
-			apob_header_ptr->size, CONFIG_MRC_SETTINGS_CACHE_SIZE);
+			apob_header_ptr->size, DEFAULT_MRC_CACHE_SIZE);
 		return -1;
 	}
 
 	return 0;
 }
-
-#define DEFAULT_MRC_CACHE "RW_MRC_CACHE"
 
 /* Save APOB buffer to flash */
 static void update_apob_in_flash(const struct apob_base_header *apob_src_ram,
@@ -87,7 +89,7 @@ static void update_apob_in_flash(const struct apob_base_header *apob_src_ram,
 		return;
 
 	/* write data to flash region */
-	if (rdev_eraseat(backing_rdev, 0, CONFIG_MRC_SETTINGS_CACHE_SIZE) < 0) {
+	if (rdev_eraseat(backing_rdev, 0, DEFAULT_MRC_CACHE_SIZE) < 0) {
 		printk(BIOS_ERR, "Error: APOB flash region erase failed\n");
 		return;
 	}

@@ -14,7 +14,7 @@
 #ifndef __PICASSO_PSP_H__
 #define __PICASSO_PSP_H__
 
-#if !CONFIG_PSP_APOB_DRAM_ADDRESS || !CONFIG_MRC_SETTINGS_CACHE_SIZE
+#if !CONFIG_PSP_APOB_DRAM_ADDRESS
 #error Incorrect APOB configuration setting(s)
 #endif
 
