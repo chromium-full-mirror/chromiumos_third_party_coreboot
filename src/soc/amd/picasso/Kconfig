@@ -521,7 +521,7 @@ config APCB_BLOB_DIR
 	  If unsure, leave empty.
 
 config PSP_UNLOCK_SECURE_DEBUG
-	bool
+	bool "Enable APU secure debug unlock"
 	default n
 	help
 	  Select this item to enable secure debug options in PSP.
