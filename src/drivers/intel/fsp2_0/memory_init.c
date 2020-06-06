@@ -229,7 +229,7 @@ static enum cb_err fsp_fill_common_arch_params(FSPM_ARCH_UPD *arch_upd,
 		 * pointer would be null and S3 resume fails with fsp-m
 		 * returning error. Invoking a reset here saves time.
 		 */
-		if (ENV_CACHE_AS_RAM && !arch_upd->NvsBufferPtr)
+		if (!arch_upd->NvsBufferPtr)
 			/* FIXME: A "system" reset is likely enough: */
 			full_reset();
 		arch_upd->BootMode = FSP_BOOT_ON_S3_RESUME;
