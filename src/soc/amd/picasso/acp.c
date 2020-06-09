@@ -25,14 +25,12 @@
 #include <amdblocks/acpimmio.h>
 #include <commonlib/helpers.h>
 
-static void enable(struct device *dev)
+static void acp_init(struct device *dev)
 {
 	const struct soc_amd_picasso_config *cfg;
 	const struct device *nb_dev = pcidev_path_on_root(GNB_DEVFN);
 	struct resource *res;
 	uintptr_t bar;
-
-	pci_dev_enable_resources(dev);
 
 	/* Set the proper I2S_PIN_CONFIG state */
 	if (!nb_dev || !nb_dev->chip_info)
@@ -66,7 +64,8 @@ static struct pci_operations lops_pci = {
 static struct device_operations acp_ops = {
 	.read_resources = pci_dev_read_resources,
 	.set_resources = pci_dev_set_resources,
-	.enable_resources = enable,
+	.enable_resources = pci_dev_enable_resources,
+	.init = acp_init,
 	.ops_pci = &lops_pci,
 };
 
