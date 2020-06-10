@@ -14,7 +14,7 @@
 /* _RESET_VECTOR: typically the top of the ROM */
 
 SECTIONS {
-#if (CONFIG(C_ENVIRONMENT_BOOTBLOCK) && CONFIG_C_ENV_BOOTBLOCK_SIZE > 0x10000)
+#if ((CONFIG(C_ENVIRONMENT_BOOTBLOCK) && CONFIG_C_ENV_BOOTBLOCK_SIZE > 0x10000) || CONFIG(RESET_VECTOR_IN_RAM))
 	/* Trigger an error if I have an unuseable start address */
 	_TOO_LOW = CONFIG_X86_RESET_VECTOR - 0xfff0;
 	_bogus = ASSERT(_start16bit >= _TOO_LOW, "_start16bit too low. Please report.");
