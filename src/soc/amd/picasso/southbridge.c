@@ -247,6 +247,13 @@ void fch_pre_init(void)
 	sb_reset_i2c_slaves();
 	if (CONFIG(PICASSO_UART))
 		set_uart_config(CONFIG_UART_FOR_CONSOLE);
+
+	/*
+	 * On reset Range_0 defaults to enabled. We want to start with a clean
+	 * slate to not have things unexpectedly enabled.
+	 */
+	clear_uart_legacy_config();
+
 	if (CONFIG(PICASSO_UART_LEGACY))
 		set_uart_legacy_config(CONFIG_UART_FOR_CONSOLE,
 			CONFIG_PICASSO_UART_LEGACY_RANGE);

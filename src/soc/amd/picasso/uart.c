@@ -51,6 +51,10 @@ uintptr_t uart_platform_base(int idx)
 	return uart_info[idx].base;
 }
 
+void clear_uart_legacy_config(void)
+{
+	write16((void *)FCH_LEGACY_UART_DECODE, 0);
+}
 
 void set_uart_legacy_config(int uart_idx, int range_idx)
 {
