@@ -40,6 +40,7 @@
 #include <elog.h>
 #include <security/vboot/symbols.h>
 #include <soc/cpu.h>
+#include <soc/memmap.h>
 #include <soc/mrc_cache.h>
 #include <soc/northbridge.h>
 #include <soc/pci_devs.h>
@@ -295,6 +296,8 @@ asmlinkage void soc_hybrid_romstage_entry(uint32_t bist, uint64_t early_tsc)
 	post_code(0x49);
 	fsp_memory_init(s3_resume);
 	soc_update_mrc_cache();
+
+	memmap_stash_early_dram_usage();
 
 	post_code(0x4a);
 	run_ramstage();

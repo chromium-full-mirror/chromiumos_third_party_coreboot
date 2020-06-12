@@ -24,6 +24,7 @@
 #include <cpu/amd/mtrr.h>
 #include <cbmem.h>
 #include <arch/bert_storage.h>
+#include <soc/memmap.h>
 #include <soc/northbridge.h>
 #include <soc/iomap.h>
 #include <amdblocks/acpimmio.h>
@@ -152,3 +153,26 @@ static void alloc_reserved_in_cbmem(int unused)
 }
 
 ROMSTAGE_CBMEM_INIT_HOOK(alloc_reserved_in_cbmem)
+
+void memmap_stash_early_dram_usage(void)
+{
+	struct memmap_early_dram *e;
+
+	e = cbmem_add(CBMEM_ID_CB_EARLY_DRAM, sizeof(*e));
+
+	if (!e)
+		die("ERROR: Failed to stash early dram usage!\n");
+
+	e->base = (uint32_t)(uintptr_t)_early_reserved_dram;
+	e->size = REGION_SIZE(early_reserved_dram);
+}
+
+const struct memmap_early_dram *memmap_get_early_dram_usage(void)
+{
+	struct memmap_early_dram *e = cbmem_find(CBMEM_ID_CB_EARLY_DRAM);
+
+	if (!e)
+		die("ERROR: Failed to read early dram usage!\n");
+
+	return e;
+}

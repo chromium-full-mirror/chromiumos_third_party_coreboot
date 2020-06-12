@@ -249,8 +249,7 @@ PSP_UCODE_FILE3=$(top)/$(FIRMWARE_LOCATE)/UcodePatch_RV2_A0.bin
 ifneq ($(CONFIG_PSP_SHAREDMEM_SIZE),0x0)
 # Place SHAREDMEM immediately below the 4KB boundary below the reset vector.
 PSP_SHAREDMEM_SIZE=$(CONFIG_PSP_SHAREDMEM_SIZE)
-_PSP_SHAREDMEM_BASE=$(call int-subtract, $(call int-subtract, $(call int-add, $(CONFIG_X86_RESET_VECTOR) + 0x10) $(PSP_SHAREDMEM_SIZE)) 0x1000)
-PSP_SHAREDMEM_BASE=$(shell printf "0x%x" $(_PSP_SHAREDMEM_BASE))
+PSP_SHAREDMEM_BASE=$(CONFIG_PSP_SHAREDMEM_BASE)
 endif
 
 # type = 0x52 - PSP Bootloader Userspace Application (verstage)
