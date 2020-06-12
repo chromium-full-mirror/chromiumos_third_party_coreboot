@@ -72,6 +72,10 @@ config CPU_SPECIFIC_OPTIONS
 	select NO_FMAP_CACHE # Picasso doesn't have Cache as RAM
 	select HAVE_PRE_BOOTBLOCK_VBOOT_SUPPORT
 
+config MEMLAYOUT_LD_FILE
+	string
+	default "src/soc/amd/picasso/memlayout.ld"
+
 config HAVE_BOOTBLOCK
 	bool
 	default n
