@@ -14,17 +14,13 @@
 ##
 
 bootblock-y += bootblock.c
-bootblock-y += memlayout.ld
 
-romstage-y += memlayout.ld
 romstage-y += romstage.c
 romstage-y += bdk_devicetree.c
 
 ramstage-y += mainboard.c
-ramstage-y += memlayout.ld
 ramstage-y += bdk_devicetree.c
 
-verstage-y += memlayout.ld
 
 MB_DIR = src/mainboard/$(MAINBOARDDIR)
 

@@ -20,6 +20,3 @@ romstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-y += mainboard.c
 
-bootblock-y += memlayout.ld
-romstage-y += memlayout.ld
-ramstage-y += memlayout.ld

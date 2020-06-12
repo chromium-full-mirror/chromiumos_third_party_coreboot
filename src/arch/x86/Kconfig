@@ -353,3 +353,7 @@ config MAX_PIRQ_LINKS
 	  also have a separate link for ATA or IOAPIC interrupts. When the PIRQ
 	  table specifies links greater than 4, pirq_route_irqs will not
 	  function properly, unless this variable is correctly set.
+
+config MEMLAYOUT_LD_FILE
+	string
+	default "src/arch/x86/memlayout.ld"

@@ -22,7 +22,6 @@ verstage-y += boardid.c
 verstage-y += cdp.c
 verstage-y += chromeos.c
 verstage-y += blsp.c
-verstage-y += memlayout.ld
 verstage-y += reset.c
 verstage-y += verstage.c
 
@@ -42,6 +41,3 @@ ramstage-y += mmu.c
 ramstage-y += reset.c
 ramstage-y += blsp.c
 
-bootblock-y += memlayout.ld
-romstage-y += memlayout.ld
-ramstage-y += memlayout.ld

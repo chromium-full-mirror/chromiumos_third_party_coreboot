@@ -28,6 +28,10 @@ config BOARD_SPECIFIC_OPTIONS
 	select MAINBOARD_HAS_NATIVE_VGA_INIT
 	select MISSING_BOARD_RESET
 
+config MEMLAYOUT_LD_FILE
+	string
+	default "src/mainboard/emulation/qemu-aarch64/memlayout.ld"
+
 config MAINBOARD_DIR
 	string
 	default emulation/qemu-aarch64

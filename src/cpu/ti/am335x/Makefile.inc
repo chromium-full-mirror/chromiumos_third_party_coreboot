@@ -47,8 +47,5 @@ $(obj)/MLO: $(obj)/coreboot.rom $(obj)/omap-header.bin
 
 omap-header-y	+= header.c
 
-bootblock-y += memlayout.ld
-romstage-y += memlayout.ld
-ramstage-y += memlayout.ld
-omap-header-y += memlayout.ld
+omap-header-srcs += memlayout.ld
 omap-header-y += header.ld
