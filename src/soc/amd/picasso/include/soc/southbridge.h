@@ -220,6 +220,13 @@
 #define FCH_AOAC_DEV_UART3		26
 #define FCH_AOAC_DEV_ESPI		27
 
+/* LPC register 0xDA is internally called "MiscCntrl"
+	 Bit0 (En_TPM_flush_rbuf) ( TPM fails to flush prefetch
+	 data, 1 disables SPI prefetching )
+*/
+#define LPC_MISC_CONTROL		0xDC
+#define   SPI_PREFETCH_DISABLE		BIT(0)
+
 /* Bit definitions for Device D3 Control AOACx0000[40...7E] step 2 */
 #define   FCH_AOAC_TARGET_DEVICE_STATE (BIT(0) + BIT(1))
 #define   FCH_AOAC_DEVICE_STATE		BIT(2)

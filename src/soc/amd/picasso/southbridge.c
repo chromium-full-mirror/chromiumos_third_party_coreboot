@@ -434,11 +434,23 @@ static void set_nvs_sws(void *unused)
 
 BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, set_nvs_sws, NULL);
 
+static void spi_tpm_disable_prefetch(void) {
+	/* Note: "PC TPM on SPI using hardware controller assist" is actually enabled
+		 on devices by using LPC_TPM because the implicit semantics of that code's
+		 behavior even though LPC is no longer used as an interconnect. */
+	if (CONFIG(LPC_TPM)) {
+		/* Disable SPI prefetch by setting BIT0 in register 0xDC
+		   to keep TPM from having buffer flush issues */
+		pci_or_config8(SOC_LPC_DEV, LPC_MISC_CONTROL, SPI_PREFETCH_DISABLE);
+	}
+}
+
 void southbridge_init(void *chip_info)
 {
 	i2c_soc_init();
 	sb_init_acpi_ports();
 	acpi_clear_pm1_status();
+	spi_tpm_disable_prefetch();
 }
 
 static void set_sb_final_nvs(void)
