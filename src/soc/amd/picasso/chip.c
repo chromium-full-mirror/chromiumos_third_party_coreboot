@@ -176,14 +176,6 @@ void *vbt_get(void)
 static void soc_init(void *chip_info)
 {
 	fsp_silicon_init(acpi_is_wakeup_s3());
-
-	/*
-	 * TODO(furquan): Get rid of this once FSP is fixed to not touch SPI
-	 * registers(b/153506142). Currently, FSP-S reconfigures SPI frequency causing em100 to
-	 * stop working. Thus, reconfigure SPI speeds here.
-	 */
-	fch_spi_config_modes();
-
 	northbridge_init();
 	southbridge_init(chip_info);
 	setup_bsp_ramtop();
