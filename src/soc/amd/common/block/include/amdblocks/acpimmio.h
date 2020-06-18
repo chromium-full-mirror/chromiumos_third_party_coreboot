@@ -18,6 +18,7 @@
 #ifndef __AMDBLOCKS_ACPIMMIO_H__
 #define __AMDBLOCKS_ACPIMMIO_H__
 
+#include <arch/mmio.h>
 #include <stdint.h>
 /* iomap.h must indicate if the device uses a block, optional if unused. */
 #include <soc/iomap.h>
@@ -277,5 +278,28 @@ void xhci_pm_write32(uint8_t reg, uint32_t value);
 uint8_t aoac_read8(uint8_t reg);
 void aoac_write8(uint8_t reg, uint8_t value);
 void aoac_set_bar(void *bar);
+
+/* New GPIO banks configuration registers */
+
+static inline void *gpio_ctrl_ptr(uint8_t gpio_num)
+{
+	return (void *)((uintptr_t)gpio_get_bar() + gpio_num * sizeof(uint32_t));
+}
+
+static inline uint32_t gpio_read32(uint8_t gpio_num)
+{
+	return read32(gpio_ctrl_ptr(gpio_num));
+}
+
+static inline void gpio_write32(uint8_t gpio_num, uint32_t value)
+{
+	write32(gpio_ctrl_ptr(gpio_num), value);
+}
+
+static inline void gpio_write32_rb(uint8_t gpio_num, uint32_t value)
+{
+	write32(gpio_ctrl_ptr(gpio_num), value);
+	read32(gpio_ctrl_ptr(gpio_num));
+}
 
 #endif /* __AMDBLOCKS_ACPIMMIO_H__ */

@@ -95,63 +95,63 @@ static void get_sci_config_bits(uint32_t flag, uint32_t *edge, uint32_t *level)
 	}
 }
 
-static uint16_t gpio_get_offset(gpio_t gpio_num)
+uintptr_t gpio_get_address(gpio_t gpio_num)
 {
-	uint16_t block_offset = GPIO_BLOCK_SIZE * (gpio_num / GPIO_PINS_PER_BLOCK);
-	uint16_t pin_offset = (gpio_num % GPIO_PINS_PER_BLOCK) * sizeof(uint32_t);
-
-	return block_offset + pin_offset;
+	return (uintptr_t)gpio_ctrl_ptr(gpio_num);
 }
 
-uint32_t *gpio_get_address(gpio_t gpio_num)
+static void __gpio_update32(gpio_t gpio_num, uint32_t mask, uint32_t or)
 {
-	uintptr_t bar = (uintptr_t)gpio_get_bar();
-	bar += gpio_get_offset(gpio_num);
+	uint32_t reg;
 
-	return (uint32_t *)bar;
+	reg = gpio_read32(gpio_num);
+	reg &= mask;
+	reg |= or;
+	gpio_write32(gpio_num, reg);
+}
+
+static void __gpio_and32(gpio_t gpio_num, uint32_t mask)
+{
+	__gpio_update32(gpio_num, mask, 0);
+}
+
+static void __gpio_or32(gpio_t gpio_num, uint32_t or)
+{
+	__gpio_update32(gpio_num, -1UL, or);
 }
 
 int gpio_get(gpio_t gpio_num)
 {
-	uint32_t reg = read32(gpio_get_address(gpio_num));
+	uint32_t reg;
 
+	reg = gpio_read32(gpio_num);
 	return !!(reg & GPIO_PIN_STS);
 }
 
 void gpio_set(gpio_t gpio_num, int value)
 {
-	mem_read_write32(gpio_get_address(gpio_num),
-			 !!value << GPIO_OUTPUT_VALUE_SHIFT,
-			 GPIO_OUTPUT_VALUE_MASK);
+	__gpio_update32(gpio_num, ~GPIO_OUTPUT_VALUE_MASK, !!value << GPIO_OUTPUT_VALUE_SHIFT);
 }
 
 void gpio_input_pulldown(gpio_t gpio_num)
 {
-	mem_read_write32(gpio_get_address(gpio_num),
-			 GPIO_PULLDOWN_ENABLE,
-			 GPIO_PULL_DIR_MASK);
+	__gpio_update32(gpio_num, ~GPIO_PULLUP_ENABLE, GPIO_PULLDOWN_ENABLE);
 }
 
 void gpio_input_pullup(gpio_t gpio_num)
 {
-	mem_read_write32(gpio_get_address(gpio_num),
-			 GPIO_PULLUP_ENABLE,
-			 GPIO_PULL_DIR_MASK);
+	__gpio_update32(gpio_num, ~GPIO_PULLDOWN_ENABLE, GPIO_PULLUP_ENABLE);
 }
 
 void gpio_input(gpio_t gpio_num)
 {
-	mem_read_write32(gpio_get_address(gpio_num),
-			 GPIO_INPUT_ENABLE,
-			 GPIO_DIR_MASK);
+	__gpio_and32(gpio_num, ~GPIO_OUTPUT_ENABLE);
 }
 
 void gpio_output(gpio_t gpio_num, int value)
 {
-	mem_read_write32(gpio_get_address(gpio_num),
-			 GPIO_OUTPUT_ENABLE
-				 | !!value << GPIO_OUTPUT_VALUE_SHIFT,
-			 GPIO_OUTPUT_VALUE_MASK | GPIO_DIR_MASK);
+	__gpio_or32(gpio_num, GPIO_OUTPUT_ENABLE);
+	gpio_set(gpio_num, value);
 }
 
 const char *gpio_acpi_path(gpio_t gpio)
@@ -221,7 +221,7 @@ void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 
 		soc_gpio_hook(gpio, mux);
 
-		gpio_ptr = gpio_get_address(gpio);
+		gpio_ptr = gpio_ctrl_ptr(gpio);
 
 		if (control_flags & GPIO_SPECIAL_FLAG) {
 			gevent_num = get_gpio_gevent(gpio, gev_tbl, gev_items);
@@ -300,13 +300,12 @@ void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 
 int gpio_interrupt_status(gpio_t gpio)
 {
-	uint32_t *gpio_ptr = gpio_get_address(gpio);
-	uint32_t reg = read32(gpio_ptr);
+	uint32_t reg = gpio_read32(gpio);
 
 	if (reg & GPIO_INT_STATUS) {
 		/* Clear interrupt status, preserve wake status */
 		reg &= ~GPIO_WAKE_STATUS;
-		write32(gpio_ptr, reg);
+		gpio_write32(gpio, reg);
 		return 1;
 	}
 

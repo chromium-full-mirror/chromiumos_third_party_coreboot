@@ -307,7 +307,7 @@ void gpio_configure_pads_with_override(const struct soc_amd_gpio *base_cfg,
 /*
  * Gets the raw memory address of the control register of a particular pin.
  */
-uint32_t *gpio_get_address(gpio_t gpio_num);
+uintptr_t gpio_get_address(gpio_t gpio_num);
 
 /**
  * @brief program a particular set of GPIO
