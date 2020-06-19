@@ -25,6 +25,8 @@ ramstage-y += helpers.c
 ramstage-y += tpm_tis.c
 ramstage-y += ramstage_common.c
 
+smm-y += gpio_baseboard_common.c
+
 # Add OEM ID table
 ifeq ($(CONFIG_USE_OEM_BIN),y)
 cbfs-files-y += oem.bin
