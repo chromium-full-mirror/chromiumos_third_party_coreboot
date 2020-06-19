@@ -29,6 +29,8 @@ const struct soc_amd_gpio *variant_override_gpio_table(size_t *size);
 void variant_romstage_entry(void);
 /* Modify devictree settings during ramstage. */
 void variant_devtree_update(void);
+/* Update audio configuration in devicetree during ramstage. */
+void variant_audio_update(void);
 
 /* Per variant FSP-S initialization, default implementation in baseboard and
  * overrideable by the variant. */
