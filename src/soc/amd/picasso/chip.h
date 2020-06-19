@@ -26,6 +26,7 @@
 #include <soc/southbridge.h>
 #include <FspsUpd.h>
 #include <acpi/acpi.h>
+#include <acpi/acpi_device.h>
 
 /*
   USB 2.0 PHY Parameters
@@ -71,6 +72,9 @@ struct soc_amd_picasso_config {
 		I2S_PINS_I2S_TDM = 4,
 		I2S_PINS_UNCONF = 7,	/* All pads will be input mode */
 	} acp_pin_cfg;
+
+	/* DMIC select GPIO for I2S machine driver AMDI5682 */
+	struct acpi_gpio dmic_select_gpio;
 
 /* ***** ACPI configuration ***** */
 	/* Options for these are in src/arch/x86/include/acpi/acpi.h */
