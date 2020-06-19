@@ -57,6 +57,11 @@ static void acp_init(struct device *dev)
 
 }
 
+static const char *acp_acpi_name(const struct device *dev)
+{
+	return "ACPD";
+}
+
 static struct pci_operations lops_pci = {
 	.set_subsystem = pci_dev_set_subsystem,
 };
@@ -67,6 +72,8 @@ static struct device_operations acp_ops = {
 	.enable_resources = pci_dev_enable_resources,
 	.init = acp_init,
 	.ops_pci = &lops_pci,
+	.acpi_name = acp_acpi_name,
+	.acpi_fill_ssdt_generator = acpi_device_write_pci_dev,
 };
 
 static const struct pci_driver acp_driver __pci_driver = {
