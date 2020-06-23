@@ -35,6 +35,12 @@ Method(_CRS, 0) {
     Subtract(Local0, TOM1, Local0)
     Store(Local0, MM1L)
 
+    /* Fix up bus resources for decode. */
+    CreateWordField(CRES, ^PSB0._MAX, BMAX)
+    CreateWordField(CRES, ^PSB0._LEN, BLEN)
+    Store(CONFIG_MMCONF_BUS_NUMBER - 1, BMAX)
+    Store(CONFIG_MMCONF_BUS_NUMBER, BLEN)
+
     Return(CRES) /* note to change the Name buffer */
 } /* end of Method(_SB.PCI0._CRS) */
 
