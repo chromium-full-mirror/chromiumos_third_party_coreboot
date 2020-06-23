@@ -129,9 +129,14 @@ static int smbios_write_wifi(struct device *dev, int *handle,
 	t->country_code_flag = 0;
 	t->country_code_value = 0;
 	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_LIARA))
-		t->board_file_extension = smbios_add_string(t->eos, "BDF_GO_LIARA");
+		t->board_file_extension = smbios_add_string(t->eos,
+							"BDF_GO_LIARA");
 	else if (IS_ENABLED(CONFIG_BOARD_GOOGLE_TREEYA))
-		t->board_file_extension = smbios_add_string(t->eos, "BDF_GO_TREEYA");
+		t->board_file_extension = smbios_add_string(t->eos,
+							"BDF_GO_TREEYA");
+	else if (IS_ENABLED(CONFIG_BOARD_GOOGLE_NUWANI))
+		t->board_file_extension = smbios_add_string(t->eos,
+							"BDF_GO_NUWANI");
 	len = t->length + smbios_string_table_len(t->eos);
 	*current += len;
 	*handle += 1;
@@ -204,7 +209,9 @@ static void kahlee_enable(struct device *dev)
 	pirq_setup();
 	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_LIARA))
 		dev->ops->get_smbios_data = smbios_write_wifi;
-	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_TREEYA))
+	else if (IS_ENABLED(CONFIG_BOARD_GOOGLE_TREEYA))
+		dev->ops->get_smbios_data = smbios_write_wifi;
+	else if (IS_ENABLED(CONFIG_BOARD_GOOGLE_NUWANI))
 		dev->ops->get_smbios_data = smbios_write_wifi;
 	dev->ops->acpi_inject_dsdt_generator = chromeos_dsdt_generator;
 }
