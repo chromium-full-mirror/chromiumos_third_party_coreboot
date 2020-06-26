@@ -243,6 +243,9 @@ asmlinkage void soc_hybrid_romstage_entry(uint32_t bist, uint64_t early_tsc)
 		.lo = (uintptr_t)s3_bsp_reentry & 0xffffffff,
 	};
 
+	sanitize_cmos();
+	cmos_post_init();
+
 	post_code(0x40);
 	if (CONFIG(COLLECT_TIMESTAMPS)) {
 		timestamp_init(early_tsc);
@@ -266,8 +269,6 @@ asmlinkage void soc_hybrid_romstage_entry(uint32_t bist, uint64_t early_tsc)
 
 	post_code(0x43);
 	init_timer();
-	sanitize_cmos();
-	cmos_post_init();
 
 	post_code(0x44);
 	exception_init();
