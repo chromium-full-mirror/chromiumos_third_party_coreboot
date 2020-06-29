@@ -13,7 +13,6 @@ static const struct soc_amd_gpio gpio_set_stage_rom_pre_v3[] = {
 	/* PEN_POWER_EN - reset */
 	PAD_GPO(GPIO_5, LOW),
 	/* EC_FCH_WAKE_L */
-	PAD_GPI(GPIO_24, PULL_UP),
 	PAD_WAKE(GPIO_24, PULL_UP, EDGE_LOW, S3_S4_S5),
 	/* NVME_AUX_RESET_L */
 	PAD_GPO(GPIO_40, HIGH),
@@ -43,7 +42,6 @@ static const struct soc_amd_gpio gpio_set_stage_rom_v3[] = {
 	/* EN_PWR_TOUCHPAD_PS2 - reset */
 	PAD_GPO(GPIO_13, LOW),
 	/* EC_FCH_WAKE_L */
-	PAD_GPI(GPIO_24, PULL_UP),
 	PAD_WAKE(GPIO_24, PULL_UP, EDGE_LOW, S3_S4_S5),
 	/* NVME_AUX_RESET_L */
 	PAD_GPO(GPIO_40, HIGH),
@@ -74,19 +72,16 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* PCIE_WAKE_L */
 	PAD_NF(GPIO_2, WAKE_L, PULL_UP),
 	/* PEN_DETECT_ODL */
-	PAD_GPI(GPIO_4, PULL_UP),
 	PAD_WAKE(GPIO_4, PULL_UP, EDGE_LOW, S3_S4_S5),
 	/* PEN_POWER_EN - Enabled*/
 	PAD_GPO(GPIO_5, HIGH),
 	/* FPMCU_INT_L */
-	PAD_GPI(GPIO_6, PULL_UP),
 	PAD_WAKE(GPIO_6, PULL_UP, EDGE_LOW, S3_S4_S5),
 	/* I2S_SDIN */
 	PAD_NF(GPIO_7, ACP_I2S_SDIN, PULL_NONE),
 	/* I2S_LRCLK - Bit banged in depthcharge */
 	PAD_NF(GPIO_8, ACP_I2S_LRCLK, PULL_NONE),
 	/* TOUCHPAD_INT_ODL */
-	PAD_GPI(GPIO_9, PULL_UP),
 	PAD_WAKE(GPIO_9, PULL_UP, EDGE_LOW, S3_S4_S5),
 	/* S0iX SLP - (unused - goes to EC & FPMCU */
 	PAD_GPI(GPIO_10, PULL_UP),
