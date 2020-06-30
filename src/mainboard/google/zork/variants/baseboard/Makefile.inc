@@ -25,7 +25,8 @@ ramstage-y += helpers.c
 ramstage-y += tpm_tis.c
 ramstage-y += ramstage_common.c
 
-smm-y += gpio_baseboard_common.c
+smm-$(CONFIG_BOARD_GOOGLE_BASEBOARD_TREMBYLE) += gpio_baseboard_trembyle.c
+smm-$(CONFIG_BOARD_GOOGLE_BASEBOARD_DALBOZ) += gpio_baseboard_dalboz.c
 
 # Add OEM ID table
 ifeq ($(CONFIG_USE_OEM_BIN),y)
