@@ -21,5 +21,6 @@
 #define _BROADWELL_RESET_H_
 
 void reset_system(void);
+void cold_reset_system(void);
 
 #endif

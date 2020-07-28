@@ -60,3 +60,11 @@ void reset_system(void)
 		hlt();
 	}
 }
+
+void cold_reset_system(void)
+{
+	outb(0x0e, 0xcf9);
+	while (1) {
+		hlt();
+	}
+}
