@@ -23,6 +23,9 @@
 #define MSR_PIC_MSG_CONTROL		0x2e
 #define CORE_THREAD_COUNT_MSR		0x35
 #define IA32_FEATURE_CONTROL		0x3a
+#define  FEATURE_CONTROL_LOCK_BIT	(1 << 0)
+#define  FEATURE_ENABLE_VMX_INSIDE_SMX	(1 << 1)
+#define  FEATURE_ENABLE_VMX_OUTSIDE_SMX	(1 << 2)
 #define  CPUID_VMX			(1 << 5)
 #define  CPUID_SMX			(1 << 6)
 #define MSR_PLATFORM_INFO		0xce

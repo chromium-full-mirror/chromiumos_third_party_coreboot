@@ -44,7 +44,12 @@
 #include <soc/rcba.h>
 #include <soc/smm.h>
 #include <soc/systemagent.h>
+#include <soc/reset.h>
 #include <soc/intel/broadwell/chip.h>
+#if CONFIG_EC_GOOGLE_CHROMEEC
+#include <ec/google/chromeec/ec.h>
+#include <ec/google/chromeec/ec_commands.h>
+#endif
 
 /* Convert time in seconds to POWER_LIMIT_1_TIME MSR value */
 static const u8 power_limit_time_sec_to_msr[] = {
@@ -683,6 +688,30 @@ static const struct cpu_driver driver __cpu_driver = {
 	.id_table = cpu_table,
 };
 
+static void validate_vmx_lock_status(void)
+{
+#if CONFIG_EC_GOOGLE_CHROMEEC
+	msr_t msr;
+
+	msr = rdmsr(IA32_FEATURE_CONTROL);
+	printk(BIOS_DEBUG, "IA32 Feature Control hi = %u, lo = %u.\n",
+			msr.hi, msr.lo);
+
+	if ((msr.lo & FEATURE_CONTROL_LOCK_BIT) &&
+	    !(msr.lo & (FEATURE_ENABLE_VMX_INSIDE_SMX |
+	                FEATURE_ENABLE_VMX_OUTSIDE_SMX))) {
+		printk(BIOS_INFO, "Feature control MSR locked. Rebooting.\n");
+		if (!google_chromeec_gsv_set(EC_CMD_GSV_PAUSE_IN_S5, 1))
+			cold_reset_system();
+		else
+			google_chromeec_reboot();
+	}
+
+	google_chromeec_gsv_set(EC_CMD_GSV_PAUSE_IN_S5, 0);
+#endif
+
+}
+
 void broadwell_init_cpus(device_t dev)
 {
 	struct bus *cpu_bus = dev->link_list;
@@ -691,6 +720,8 @@ void broadwell_init_cpus(device_t dev)
 	msr_t msr;
 	struct mp_params mp_params;
 	void *smm_save_area;
+
+	validate_vmx_lock_status();
 
 	msr = rdmsr(CORE_THREAD_COUNT_MSR);
 	num_threads = (msr.lo >> 0) & 0xffff;
