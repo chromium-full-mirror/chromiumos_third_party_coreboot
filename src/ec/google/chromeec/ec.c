@@ -126,6 +126,31 @@ int google_chromeec_clear_events_b(u32 mask)
 		EC_CMD_HOST_EVENT_CLEAR_B, mask);
 }
 
+int google_chromeec_gsv_set(u32 cmd, u32 val)
+{
+	struct chromeec_command cec_cmd;
+	struct ec_params_get_set_value set_params;
+	struct ec_response_get_set_value set_response;
+
+	/* Reboot the EC and make it come back in RO mode */
+	set_params.flags = EC_GSV_SET;
+	set_params.value = val;
+	cec_cmd.cmd_code = cmd;
+	cec_cmd.cmd_version = 0;
+	cec_cmd.cmd_data_in = &set_params;
+	cec_cmd.cmd_size_in = sizeof(set_params);
+	cec_cmd.cmd_data_out = &set_response;
+	cec_cmd.cmd_size_out = sizeof(set_response);
+	cec_cmd.cmd_dev_index = 0;
+	google_chromeec_command(&cec_cmd);
+
+	if (cec_cmd.cmd_code || set_response.value != val) {
+		printk(BIOS_ERR, "Chrome EC: could not set pause_in_s5");
+		return -1;
+	}
+	return 0;
+}
+
 #ifndef __SMM__
 void google_chromeec_reboot(void)
 {
