@@ -127,6 +127,28 @@ int google_chromeec_clear_events_b(u32 mask)
 }
 
 #ifndef __SMM__
+void google_chromeec_reboot(void)
+{
+	struct chromeec_command cec_cmd;
+	struct ec_params_reboot_ec reboot_ec;
+
+	/* Reboot the EC and make it come back in RO mode */
+	reboot_ec.cmd = EC_REBOOT_COLD;
+	reboot_ec.flags = 0;
+	cec_cmd.cmd_code = EC_CMD_REBOOT_EC;
+	cec_cmd.cmd_version = 0;
+	cec_cmd.cmd_data_in = &reboot_ec;
+	cec_cmd.cmd_size_in = sizeof(reboot_ec);
+	cec_cmd.cmd_size_out = 0; /* ignore response, if any */
+	cec_cmd.cmd_dev_index = 0;
+	printk(BIOS_DEBUG, "Rebooting with EC in RO mode:\n");
+	post_code(0); /* clear current post code */
+	google_chromeec_command(&cec_cmd);
+	udelay(1000);
+	hard_reset();
+	hlt();
+}
+
 #ifdef __PRE_RAM__
 void google_chromeec_check_ec_image(int expected_type)
 {
@@ -142,22 +164,7 @@ void google_chromeec_check_ec_image(int expected_type)
 	google_chromeec_command(&cec_cmd);
 
 	if (cec_cmd.cmd_code || cec_resp.current_image != expected_type) {
-		struct ec_params_reboot_ec reboot_ec;
-		/* Reboot the EC and make it come back in RO mode */
-		reboot_ec.cmd = EC_REBOOT_COLD;
-		reboot_ec.flags = 0;
-		cec_cmd.cmd_code = EC_CMD_REBOOT_EC;
-		cec_cmd.cmd_version = 0;
-		cec_cmd.cmd_data_in = &reboot_ec;
-		cec_cmd.cmd_size_in = sizeof(reboot_ec);
-		cec_cmd.cmd_size_out = 0; /* ignore response, if any */
-		cec_cmd.cmd_dev_index = 0;
-		printk(BIOS_DEBUG, "Rebooting with EC in RO mode:\n");
-		post_code(0); /* clear current post code */
-		google_chromeec_command(&cec_cmd);
-		udelay(1000);
-		hard_reset();
-		hlt();
+		google_chromeec_reboot();
 	}
 }
 
@@ -474,22 +481,7 @@ void google_chromeec_init(void)
 	if (cec_cmd.cmd_code ||
 	    (recovery_mode_enabled() &&
 	     (cec_resp.current_image != EC_IMAGE_RO))) {
-		struct ec_params_reboot_ec reboot_ec;
-		/* Reboot the EC and make it come back in RO mode */
-		reboot_ec.cmd = EC_REBOOT_COLD;
-		reboot_ec.flags = 0;
-		cec_cmd.cmd_code = EC_CMD_REBOOT_EC;
-		cec_cmd.cmd_version = 0;
-		cec_cmd.cmd_data_in = &reboot_ec;
-		cec_cmd.cmd_size_in = sizeof(reboot_ec);
-		cec_cmd.cmd_size_out = 0; /* ignore response, if any */
-		cec_cmd.cmd_dev_index = 0;
-		printk(BIOS_DEBUG, "Rebooting with EC in RO mode:\n");
-		post_code(0); /* clear current post code */
-		google_chromeec_command(&cec_cmd);
-		udelay(1000);
-		hard_reset();
-		hlt();
+		google_chromeec_reboot();
 	}
 
 }

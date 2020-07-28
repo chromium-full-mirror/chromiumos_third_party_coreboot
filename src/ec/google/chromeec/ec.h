@@ -45,6 +45,7 @@ void google_chromeec_check_ec_image(int expected_type);
 void google_chromeec_check_pd_image(int expected_type);
 #endif
 
+void google_chromeec_reboot(void);
 uint8_t google_chromeec_calc_checksum(const uint8_t *data, int size);
 u16 google_chromeec_get_board_version(void);
 u32 google_chromeec_get_events_b(void);
