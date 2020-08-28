@@ -1626,7 +1626,7 @@ int get_acpi_table_revision(enum acpi_tables table)
 	case VFCT: /* ACPI 2.0/3.0/4.0: 1 */
 		return 1;
 	case IVRS:
-		return IVRS_FORMAT_MIXED;
+		return IVRS_FORMAT_FIXED;
 	case DBG2:
 		return 0;
 	case FACS: /* ACPI 2.0/3.0: 1, ACPI 4.0 upto 6.3: 2 */
