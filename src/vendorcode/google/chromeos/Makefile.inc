@@ -17,6 +17,7 @@ ramstage-$(CONFIG_ELOG) += elog.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += gnvs.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-$(CONFIG_CHROMEOS_RAMOOPS) += ramoops.c
+ramstage-y += camera.c
 ramstage-y += vpd_mac.c vpd_serialno.c vpd_calibration.c
 ramstage-$(CONFIG_CHROMEOS_DISABLE_PLATFORM_HIERARCHY_ON_RESUME) += tpm2.c
 ramstage-$(CONFIG_HAVE_REGULATORY_DOMAIN) += wrdd.c
