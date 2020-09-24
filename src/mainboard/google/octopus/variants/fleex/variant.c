@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <acpi/acpi.h>
+#include <arch/acpi.h>
 #include <ec/google/chromeec/ec.h>
 #include <baseboard/variants.h>
 #include <delay.h>
