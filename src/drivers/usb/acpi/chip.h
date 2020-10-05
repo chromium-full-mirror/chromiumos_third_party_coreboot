@@ -55,6 +55,13 @@ struct drivers_usb_acpi_config {
 	struct acpi_pld custom_pld;
 
 	struct acpi_gpio reset_gpio;
+
+	/*
+	 * Define a GPIO that shows the privacy status of the USB device.
+	 * E.g. On a camera: if it is one, it is recording black frames.
+	 * E.g. On a mic: if it is one, it is recording white-noise.
+	 */
+	struct acpi_gpio privacy_gpio;
 };
 
 #endif /* __USB_ACPI_CHIP_H__ */
