@@ -404,6 +404,7 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)) \
 			$(call_strip_quotes, $(PSP_SEC_DEBUG_FILE)) \
 			$(PSP_VERSTAGE_FILE) \
 			$(PSP_VERSTAGE_SIG_FILE) \
+			$(obj)/psp_verstage.bin \
 			$$(PSP_APCB_FILES) \
 			$(AMDFWTOOL) \
 			$(obj)/fmap_config.h
