@@ -24,6 +24,8 @@ site-local
 *.pyc
 *.sw[po]
 /*.rom
+.test
+.dependencies
 
 # Development friendly files
 tags
