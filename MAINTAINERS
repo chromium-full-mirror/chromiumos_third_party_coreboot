@@ -694,13 +694,8 @@ OPTION ROM EXECUTION & X86EMU
 F:	src/device/oprom/
 
 CBFS
-M:	Julius Werner <jwerner@chromium.org>
-F:	src/include/cbfs*
-F:	src/commonlib/bsd/include/commonlib/bsd/cbfs*
-F:	src/commonlib/bsd/cbfs*
-F:	src/lib/cbfs.c
-
-CBFSTOOL
+F:	src/include/cbfs.h
+F:	src/commonlib/bsd/include/commonlib/bsd/cbfs_serialized.h
 F:	util/cbfstool/
 
 CBMEM
