@@ -50,6 +50,7 @@ void variant_smi_sleep(u8 slp_typ)
 	switch (get_board_sku()) {
 	case SKU_17_LTE:
 	case SKU_18_LTE_TS:
+	case SKU_39_1A2C_360_LTE_TS_NO_STYLUES:
 		power_off_lte_module();
 		return;
 	default:
@@ -67,6 +68,7 @@ void variant_update_devtree(struct device *dev)
 		switch (get_board_sku()) {
 		case SKU_17_LTE:
 		case SKU_18_LTE_TS:
+		case SKU_39_1A2C_360_LTE_TS_NO_STYLUES:
 			cfg->disable_xhci_lfps_pm = 1;
 			return;
 		default:
