@@ -1065,13 +1065,11 @@ static inline int acpi_is_wakeup_s3(void)
 	return (acpi_get_sleep_type() == ACPI_S3);
 }
 #else
-int acpi_is_wakeup(void);
 int acpi_is_wakeup_s3(void);
 int acpi_is_wakeup_s4(void);
 #endif
 
 #else
-static inline int acpi_is_wakeup(void) { return 0; }
 static inline int acpi_is_wakeup_s3(void) { return 0; }
 static inline int acpi_is_wakeup_s4(void) { return 0; }
 #endif
