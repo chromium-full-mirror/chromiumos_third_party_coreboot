@@ -86,4 +86,10 @@ config BOARD_OVERRIDE_LCM_ID
 	default 0x1 if BOARD_GOOGLE_BURNET || BOARD_GOOGLE_ESCHE
 	default 0x0
 
+config SPEAKER_GPIO_NAME
+	string
+	default "rt1015p sdb" if BOARD_GOOGLE_KAKADU
+	default "rt1015p sdb" if BOARD_GOOGLE_FENNEL || BOARD_GOOGLE_CERISE
+	default "speaker enable"
+
 endif
