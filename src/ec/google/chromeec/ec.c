@@ -596,6 +596,11 @@ int google_chromeec_cbi_get_oem_id(uint32_t *id)
 	return cbi_get_uint32(id, CBI_TAG_OEM_ID);
 }
 
+int google_chromeec_cbi_get_ssfc(uint32_t *ssfc)
+{
+	return cbi_get_uint32(ssfc, CBI_TAG_SSFC);
+}
+
 static int cbi_get_string(char *buf, size_t bufsize, uint32_t tag)
 {
 	struct ec_params_get_cbi p = {
