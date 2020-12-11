@@ -10,6 +10,7 @@
 #include <intelblocks/power_limit.h>
 #include <intelblocks/tcss.h>
 #include <soc/gpe.h>
+#include <soc/gpio.h>
 #include <soc/pch.h>
 #include <soc/pci_devs.h>
 #include <soc/pmc.h>
