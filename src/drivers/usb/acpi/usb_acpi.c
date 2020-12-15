@@ -92,11 +92,11 @@ static void usb_acpi_fill_ssdt_generator(struct device *dev)
 		if (reset_gpio_index >= 0)
 			acpi_dp_add_gpio(dsd, "reset-gpio", path,
 					 reset_gpio_index, 0,
-					 config->reset_gpio.active_low);
+					 config->reset_gpio.polarity);
 		if (privacy_gpio_index >= 0)
 			acpi_dp_add_gpio(dsd, "privacy-gpio", path,
 					 privacy_gpio_index, 0,
-					 config->privacy_gpio.active_low);
+					 config->privacy_gpio.polarity);
 		acpi_dp_write(dsd);
 	}
 
