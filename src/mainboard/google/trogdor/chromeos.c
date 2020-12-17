@@ -36,3 +36,9 @@ int tis_plat_irq_status(void)
 {
 	return gpio_irq_status(GPIO_H1_AP_INT);
 }
+
+void mainboard_fix_qclibs_mess(void);
+void mainboard_fix_qclibs_mess(void)
+{
+	gpio_input_irq(GPIO_H1_AP_INT, IRQ_TYPE_RISING_EDGE, GPIO_PULL_UP);
+}
