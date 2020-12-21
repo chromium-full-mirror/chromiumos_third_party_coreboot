@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <baseboard/cbi_ssfc.h>
 #include <baseboard/variants.h>
 #include <console/console.h>
 #include <nhlt.h>
@@ -20,6 +21,8 @@
 
 void __weak variant_nhlt_init(struct nhlt *nhlt)
 {
+	enum ssfc_audio_codec codec = ssfc_get_audio_codec();
+
 	/* 2 Channel DMIC array. */
 	if (!nhlt_soc_add_dmic_array(nhlt, 2))
 		printk(BIOS_ERR, "Added 2CH DMIC array.\n");
@@ -32,13 +35,15 @@ void __weak variant_nhlt_init(struct nhlt *nhlt)
 	 * Headset codec is bi-directional but uses the same configuration
 	 * settings for render and capture endpoints.
 	 */
-	if (IS_ENABLED(CONFIG_NHLT_DA7219)) {
+	if (IS_ENABLED(CONFIG_NHLT_DA7219) &&
+			codec == SSFC_AUDIO_CODEC_DA7219) {
 		/* Dialog for Headset codec */
 		if (!nhlt_soc_add_da7219(nhlt, AUDIO_LINK_SSP2))
 			printk(BIOS_ERR, "Added Dialog_7219 codec.\n");
 	}
 
-	if (IS_ENABLED(CONFIG_NHLT_RT5682)) {
+	if (IS_ENABLED(CONFIG_NHLT_RT5682) &&
+			codec == SSFC_AUDIO_CODEC_RT5682) {
 		/* Realtek for Headset codec */
 		if (!nhlt_soc_add_rt5682(nhlt, AUDIO_LINK_SSP2))
 			printk(BIOS_ERR, "Added ALC5682 codec.\n");
