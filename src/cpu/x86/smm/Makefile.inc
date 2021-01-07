@@ -25,7 +25,7 @@ endif
 
 smmstub-generic-ccopts += -D__SMM__
 smm-generic-ccopts += -D__SMM__
-smm-c-deps:=$$(OPTION_TABLE_H)
+smm-c-deps+=$$(OPTION_TABLE_H)
 
 $(obj)/smm/smm.o: $$(smm-objs) $(COMPILER_RT_smm)
 	$(LD_smm) -nostdlib -r -o $@ $(COMPILER_RT_FLAGS_smm) --whole-archive --start-group $(smm-objs) --no-whole-archive $(COMPILER_RT_smm) --end-group
