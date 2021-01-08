@@ -112,7 +112,6 @@ static void dump_te_table(void)
 
 __weak int qclib_soc_blob_load(void) { return 0; }
 
-void mainboard_fix_qclibs_mess(void);
 void qclib_load_and_run(void)
 {
 	int i;
@@ -205,8 +204,6 @@ void qclib_load_and_run(void)
 	mmu_disable();
 	mmu_restore_context(&pre_qclib_mmu_context);
 	mmu_enable();
-
-	mainboard_fix_qclibs_mess();
 
 	/* step through I/F table, handling return values */
 	for (i = 0; i < qclib_cb_if_table.num_entries; i++)
