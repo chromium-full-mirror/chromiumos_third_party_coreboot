@@ -22,6 +22,7 @@
 #include <soc/gpio.h>
 #include <soc/pcr_ids.h>
 #include <soc/pm.h>
+#include <static.h>
 #include "chip.h"
 
 static const struct lpc_mmio_range apl_lpc_fixed_mmio_ranges[] = {
@@ -91,9 +92,8 @@ void lpc_configure_pads(void)
 
 void lpc_soc_init(struct device *dev)
 {
-	const struct soc_intel_apollolake_config *cfg;
+	const struct soc_intel_apollolake_config *cfg = __pci_0_00_0_config;
 
-	cfg = dev->chip_info;
 	if (!cfg) {
 		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
 		return;

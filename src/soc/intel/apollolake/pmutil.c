@@ -35,6 +35,7 @@
 #include <soc/pm.h>
 #include <timer.h>
 #include <security/vboot/vbnv.h>
+#include <static.h>
 #include "chip.h"
 
 static uintptr_t read_pmc_mmio_bar(void)
@@ -153,15 +154,11 @@ void soc_clear_pm_registers(uintptr_t pmc_bar)
 
 void soc_get_gpi_gpe_configs(uint8_t *dw0, uint8_t *dw1, uint8_t *dw2)
 {
-	DEVTREE_CONST struct soc_intel_apollolake_config *config;
-
-	/* Look up the device in devicetree */
-	DEVTREE_CONST struct device *dev = dev_find_slot(0, SA_DEVFN_ROOT);
-	if (!dev || !dev->chip_info) {
+	DEVTREE_CONST struct soc_intel_apollolake_config *config = __pci_0_00_0_config;
+	if (!config) {
 		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
 		return;
 	}
-	config = dev->chip_info;
 
 	/* Assign to out variable */
 	*dw0 = config->gpe0_dw1;
