@@ -100,9 +100,6 @@ static void display_startup(void)
 			return;
 
 		printk(BIOS_INFO, "display init!\n");
-
-		/* Configure backlight */
-		gpio_output(GPIO_BACKLIGHT_ENABLE, 1);
 		display_init(&ed);
 		set_vbe_mode_info_valid(&ed, (uintptr_t)0);
 	} else
