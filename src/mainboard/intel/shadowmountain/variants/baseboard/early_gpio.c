@@ -29,6 +29,10 @@ static const struct pad_config early_gpio_table[] = {
 
 	/* D10 : EN_PP3300_WWAN */
 	PAD_CFG_GPO(GPP_D10, 1, DEEP),
+	/* D15 : MEM_STRAP_3 */
+	PAD_NC(GPP_D15, NONE),
+	/* D16 : EN_PP3300_SD */
+	PAD_NC(GPP_D16, UP_20K),
 
 	/* E10 : PCH_GSPI0_H1_TPM_CS_L */
 	PAD_CFG_NF(GPP_E10, NONE, DEEP, NF7),
