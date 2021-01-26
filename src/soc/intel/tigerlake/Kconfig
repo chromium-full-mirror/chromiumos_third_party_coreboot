@@ -239,4 +239,11 @@ config EARLY_TCSS_DISPLAY
 	help
 	  Enable displays to be detected over Type-C ports during boot.
 
+config SOC_INTEL_CRASHLOG
+	def_bool n
+	select SOC_INTEL_COMMON_BLOCK_CRASHLOG
+	select ACPI_BERT
+	help
+	  Enables CrashLog.
+
 endif
