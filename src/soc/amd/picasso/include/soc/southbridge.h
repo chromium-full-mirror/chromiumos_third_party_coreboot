@@ -85,6 +85,10 @@
 #define PM_USB_ENABLE			0xef
 #define   PM_USB_ALL_CONTROLLERS	0x7f
 
+#define PM1_LIMIT			16
+#define GPE0_LIMIT			32
+#define TOTAL_BITS(a)			(8 * sizeof(a))
+
 /* FCH MISC Registers 0xfed80e00 */
 #define GPP_CLK_CNTRL			0x00
 #define   GPP_CLK0_REQ_SHIFT		0
@@ -151,10 +155,6 @@
 #define   FCH_LEGACY_UART_RANGE_2F8	1
 #define   FCH_LEGACY_UART_RANGE_3E8	2
 #define   FCH_LEGACY_UART_RANGE_3F8	3
-
-#define PM1_LIMIT			16
-#define GPE0_LIMIT			28
-#define TOTAL_BITS(a)			(8 * sizeof(a))
 
 /* SATA Controller D11F0 */
 #define SATA_MISC_CONTROL_REG		0x40
