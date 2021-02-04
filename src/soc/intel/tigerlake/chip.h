@@ -320,6 +320,9 @@ struct soc_intel_tigerlake_config {
 		DEBUG_INTERFACE_TRACEHUB = (1 << 5),
 	} debug_interface_flag;
 
+	/* CNVi BT Core Enable/Disable */
+	bool CnviBtCore;
+
 	/* CNVi BT Audio Offload: Enable/Disable BT Audio Offload. */
 	enum {
 		FORCE_DISABLE,
