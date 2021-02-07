@@ -5,6 +5,7 @@
 #include <drivers/analogix/anx7625/anx7625.h>
 #include <edid.h>
 #include <gpio.h>
+#include <soc/dsi.h>
 #include <soc/i2c.h>
 #include <string.h>
 
@@ -72,4 +73,9 @@ struct panel_description *get_panel_description(int panel_id)
 		return NULL;
 	}
 	return &anx7625_panel;
+}
+
+void mtk_dsi_override_phy_timing(struct mtk_phy_timing *timing)
+{
+	timing->da_hs_trail += 9;
 }
