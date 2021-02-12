@@ -105,12 +105,6 @@ PSP_SOFTFUSE_BITS += 0
 OPT_TOKEN_UNLOCK="--token-unlock"
 endif
 
-ifeq ($(CONFIG_USE_PSPSECUREOS),y)
-# types = 0x2
-OPT_PSP_USE_PSPSECUREOS="--use-pspsecureos"
-endif
-
-
 ifeq ($(CONFIG_PSP_LOAD_MP2_FW),y)
 OPT_PSP_LOAD_MP2_FW="--load-mp2-fw"
 else
@@ -222,7 +216,7 @@ AMDFW_COMMON_ARGS=$(OPT_PSP_APCB_FILES) \
 		$(OPT_PSP_BIOSBIN_DEST) \
 		$(OPT_PSP_BIOSBIN_SIZE) \
 		$(OPT_PSP_SOFTFUSE) \
-		$(OPT_PSP_USE_PSPSECUREOS) \
+		--use-pspsecureos \
 		$(OPT_PSP_LOAD_MP2_FW) \
 		$(OPT_PSP_LOAD_S0I3_FW) \
 		$(OPT_WHITELIST_FILE) \
