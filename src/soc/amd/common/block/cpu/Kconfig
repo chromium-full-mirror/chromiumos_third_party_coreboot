@@ -32,7 +32,8 @@ config SOC_AMD_COMMON_BLOCK_SMM
 	bool
 	default n
 	help
-	  Add common SMM relocation and handler functionality to the build.
+	  Add common SMM relocation, finalization and handler functionality to
+	  the build.
 
 config SOC_AMD_COMMON_BLOCK_TSC_FAM17H_19H
 	bool
