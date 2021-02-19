@@ -143,6 +143,10 @@
 - Lazor
 - Bubs
 - Coachz
+- Homestar
+- Lazor
+- Pompom
+- Trogdor
 - Veyron_Jaq (Haier Chromebook 11)
 - Veyron_Jerry (Hisense Chromebook 11)
 - Veyron_Mighty (Haier Chromebook 11(edu))
