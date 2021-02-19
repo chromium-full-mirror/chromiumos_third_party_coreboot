@@ -97,9 +97,9 @@ static void acpigen_write_PRT(const struct device *dev)
 
 	acpigen_write_method("_PRT", 0);
 
-	/* If (PMOD) */
+	/* If (PICM) */
 	acpigen_write_if();
-	acpigen_emit_namestring("PMOD");
+	acpigen_emit_namestring("PICM");
 
 	/* Return (Package{...}) */
 	acpigen_emit_byte(RETURN_OP);
@@ -109,6 +109,7 @@ static void acpigen_write_PRT(const struct device *dev)
 		irq_index = calculate_irq(pci_routing, i);
 
 		acpigen_write_package(4);
+		/* There is only one device attached to the bridge */
 		acpigen_write_dword(0x0000FFFF);
 		acpigen_write_byte(i);
 		acpigen_write_byte(0); /* Source: GSI  */
@@ -117,7 +118,6 @@ static void acpigen_write_PRT(const struct device *dev)
 		acpigen_pop_len();
 	}
 	acpigen_pop_len(); /* Package - APIC Routing */
-	acpigen_pop_len(); /* End If */
 
 	/* Else */
 	acpigen_write_else();
@@ -132,6 +132,7 @@ static void acpigen_write_PRT(const struct device *dev)
 		link_template[8] = 'A' + (irq_index % 8);
 
 		acpigen_write_package(4);
+		/* There is only one device attached to the bridge */
 		acpigen_write_dword(0x0000FFFF);
 		acpigen_write_byte(i);
 		acpigen_emit_namestring(link_template);
@@ -160,7 +161,7 @@ static void acpigen_write_PRT(const struct device *dev)
  *
  *         Method (_PRT, 0, NotSerialized)  // _PRT: PCI Routing Table
  *         {
- *             If (PMOD)
+ *             If (PICM)
  *             {
  *                 Return (Package (0x04)
  *                 {
