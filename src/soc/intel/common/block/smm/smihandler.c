@@ -13,6 +13,7 @@
 #include <elog.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/pmclib.h>
+#include <intelblocks/rtc.h>
 #include <intelblocks/smihandler.h>
 #include <intelblocks/tco.h>
 #include <intelblocks/uart.h>
@@ -316,6 +317,15 @@ static void finalize(void)
 		printk(BIOS_DEBUG, "SMM already finalized.\n");
 		return;
 	}
+
+	/*
+	 * Lock down bytes 0x38-0x3f in upper CMOS bank before jump to payload. This is done in
+	 * finalize call in SMI handler because PCR access is not available in non-SMM mode for
+	 * platforms in POSTBOOT_SAI.
+	 */
+	if (CONFIG(LOCK_RTC_UPPER_BANK_IN_FINALIZE))
+		lock_rtc_upper_bank();
+
 	finalize_done = 1;
 
 	if (CONFIG(SPI_FLASH_SMM))
