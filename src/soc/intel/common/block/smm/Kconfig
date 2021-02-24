@@ -37,3 +37,13 @@ config HECI_DISABLE_USING_SMM
 	help
 	  HECI disable using SMM. Select this option to make HECI disable
 	  using SMM mode, independent of dedicated UPD to perform HECI disable.
+
+config LOCK_RTC_UPPER_BANK_IN_FINALIZE
+	bool
+	depends on SOC_INTEL_COMMON_BLOCK_SMM
+	default n
+	help
+	  Lock down RTC upper bank bytes (0x38-0x3f) in finalize() call so that
+	  the bank is locked before jumping out of coreboot. This needs to be done
+	  in SMI handler because PCR access is prevented in non-SMM mode in
+	  POSTBOOT_SAI.
