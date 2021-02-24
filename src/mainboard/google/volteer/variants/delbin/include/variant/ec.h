@@ -5,4 +5,6 @@
 
 #include <baseboard/ec.h>
 
+#define CMOS_EC_TRUSTED_OFFSET		184
+
 #endif
