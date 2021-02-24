@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <cpu/x86/mtrr.h>
 
+void mainboard_romstage_pre_ec_sync_entry(void);
 void mainboard_romstage_entry(void);
 
 /*

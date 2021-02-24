@@ -16,6 +16,11 @@
 
 static struct postcar_frame early_mtrrs;
 
+void __weak mainboard_romstage_pre_ec_sync_entry(void)
+{
+	/* Nothing to be done by default. */
+}
+
 static void romstage_main(unsigned long bist)
 {
 	int i;
@@ -38,6 +43,8 @@ static void romstage_main(unsigned long bist)
 
 	for (i = 0; i < num_guards; i++)
 		stack_base[i] = stack_guard;
+
+	mainboard_romstage_pre_ec_sync_entry();
 
 	if (CONFIG(VBOOT_EARLY_EC_SYNC))
 		vboot_sync_ec();
