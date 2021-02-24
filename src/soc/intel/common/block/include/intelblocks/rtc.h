@@ -34,4 +34,8 @@ enum ts_config get_rtc_buc_top_swap_status(void);
 
 /* Set RTC Configuration BILD bit. */
 void rtc_conf_set_bios_interface_lockdown(void);
+
+/* Lock RTC upper bank bytes 0x38-0x3f */
+void lock_rtc_upper_bank(void);
+
 #endif	/* SOC_INTEL_COMMON_BLOCK_RTC_H */
