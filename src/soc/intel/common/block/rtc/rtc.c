@@ -15,6 +15,12 @@
 #define PCR_RTC_BUC		0x3414
 #define  PCR_RTC_BUC_TOP_SWAP	(1 << 0)
 
+/* Lock RTC upper bank bytes 0x38-0x3f */
+void lock_rtc_upper_bank(void)
+{
+	pcr_or32(PID_RTC, PCR_RTC_CONF, PCR_RTC_CONF_UCMOS_LOCK);
+}
+
 void enable_rtc_upper_bank(void)
 {
 	/* Enable upper 128 bytes of CMOS */
