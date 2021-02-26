@@ -8,4 +8,6 @@
 /* Enable Keyboard Backlight in ACPI */
 #define EC_ENABLE_KEYBOARD_BACKLIGHT
 
+#define CMOS_EC_TRUSTED_OFFSET		184
+
 #endif
