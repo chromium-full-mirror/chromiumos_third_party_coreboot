@@ -314,7 +314,7 @@ chip soc/intel/tigerlake
 
 	register "CnviBtCore" = "true"
 
-	register "CnviBtAudioOffload" = "FORCE_ENABLE"
+	register "CnviBtAudioOffload" = "true"
 
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
