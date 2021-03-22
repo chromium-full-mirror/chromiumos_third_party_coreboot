@@ -35,5 +35,6 @@ void variant_romstage_entry(int s3_resume);
 #if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 void variant_mainboard_suspend_resume(void);
 #endif
+void variant_devtree_update(void);
 
 #endif /* __BASEBOARD_VARIANTS_H__ */
