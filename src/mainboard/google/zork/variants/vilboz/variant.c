@@ -64,7 +64,6 @@ void variant_devtree_update(void)
 |          |Vilboz|Vilboz14|Vilboz14|Vilboz|NA|Vilboz360|NA|Vilboz360|
 |          |WiFi  |WiFi    |LTE     |LTE   |  |WiFi     |  |LTE      |
 +----------+------+--------+--------+------+--+---------+--+---------+
-|SAR[26]   |0     |0       |0       |0     |0 |0        |0 |0        |
 |SAR[25]   |0     |0       |0       |0     |1 |1        |1 |1        |
 |SAR[24]   |0     |0       |1       |1     |0 |0        |1 |1        |
 |SAR[23]   |0     |1       |0       |1     |0 |1        |0 |1        |
@@ -85,17 +84,13 @@ const char *get_wifi_sar_cbfs_filename(void)
 		filename = "wifi_sar-vilboz-0.hex";
 		break;
 	case 3:
-		/*
-		TODO: Set default first. It will be replaced after the
-		new table is generated.
-		*/
-		filename = "wifi_sar_defaults.hex";
+		filename = "wifi_sar-vilboz-2.hex";
 		break;
 	case 5:
 		filename = "wifi_sar-vilboz-1.hex";
 		break;
 	case 7:
-		filename = "wifi_sar-vilboz-1.hex";
+		filename = "wifi_sar-vilboz-3.hex";
 		break;
 	}
 
