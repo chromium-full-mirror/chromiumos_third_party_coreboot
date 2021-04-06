@@ -35,13 +35,13 @@
 void mainboard_romstage_pre_ec_sync_entry(void)
 {
 	static char current_ro_fw_id[100];
-	static const char *good_ro_fw_id = "Google_Delbin.13672.74.0";
+	static const char *bad_ro_fw_id = "Google_Delbin.13672.39.0";
 
 	if (fmap_read_area("RO_FRID", current_ro_fw_id, sizeof(current_ro_fw_id)) == -1)
 		halt();
 
-	/* If the RO is a good known firmware, skip rest of the check. */
-	if (strncmp(current_ro_fw_id, good_ro_fw_id, strlen(good_ro_fw_id)) >= 0) {
+	/* No need for the additional reset if the RO is not a known bad version. */
+	if (strncmp(current_ro_fw_id, bad_ro_fw_id, strlen(bad_ro_fw_id))) {
 		printk(BIOS_DEBUG, "RO is known good.. return!\n");
 		return;
 	}
