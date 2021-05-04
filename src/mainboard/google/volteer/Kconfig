@@ -111,6 +111,7 @@ config MAINBOARD_PART_NUMBER
 	default "Drobit" if BOARD_GOOGLE_DROBIT
 	default "Copano" if BOARD_GOOGLE_COPANO
 	default "Collis" if BOARD_GOOGLE_COLLIS
+	default "Volet" if BOARD_GOOGLE_VOLET
 
 config MAX_CPUS
 	int
@@ -154,6 +155,7 @@ config VARIANT_DIR
 	default "drobit" if BOARD_GOOGLE_DROBIT
 	default "copano" if BOARD_GOOGLE_COPANO
 	default "collis" if BOARD_GOOGLE_COLLIS
+	default "volet" if BOARD_GOOGLE_VOLET
 
 config VARIANT_HAS_MIPI_CAMERA
 	bool
