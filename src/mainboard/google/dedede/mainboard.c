@@ -42,6 +42,13 @@ static void mainboard_init(void *chip_info)
 		override_pads, override_num);
 
 	mainboard_update_soc_chip_config();
+
+	variant_devtree_update();
+}
+
+void __weak variant_devtree_update(void)
+{
+	/* Override dev tree settings per board */
 }
 
 static void mainboard_dev_init(struct device *dev)
