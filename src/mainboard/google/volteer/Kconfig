@@ -159,6 +159,19 @@ config VARIANT_HAS_MIPI_CAMERA
 	bool
 	default n
 
+config VARIANT_USE_SMALL_MCACHE
+	bool
+	default n
+	help
+	  Some volteer variants had already qualified RO firmware with
+	  smaller mcache. mcache Kconfigs need to be kept in sync
+	  between RO and RW firmware for any variant. This Kconfig must
+	  be selected for any variant that has already been qualified
+	  RO firmware with original smaller mcache values as defined in
+	  arch/x86/Kconfig.
+
+if !VARIANT_USE_SMALL_MCACHE
+
 config CBFS_MCACHE_RW_PERCENTAGE
 	int
 	default 50
@@ -166,5 +179,7 @@ config CBFS_MCACHE_RW_PERCENTAGE
 config CBFS_MCACHE_SIZE
 	hex
 	default 0x4000
+
+endif # VARIANT_USE_SMALL_MCACHE
 
 endif # BOARD_GOOGLE_BASEBOARD_VOLTEER
