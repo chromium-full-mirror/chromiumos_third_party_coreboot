@@ -8,6 +8,7 @@
 #include <intelblocks/gpio.h>
 #include <intelblocks/gspi.h>
 #include <intelblocks/power_limit.h>
+#include <intelblocks/tcss.h>
 #include <soc/gpe.h>
 #include <soc/pch.h>
 #include <soc/pci_devs.h>
@@ -171,6 +172,8 @@ struct soc_intel_tigerlake_config {
 	uint16_t usb3_wake_enable_bitmap;
 	/* PCH USB2 PHY Power Gating disable */
 	uint8_t usb2_phy_sus_pg_disable;
+	/* Program OC pins for TCSS */
+	struct tcss_port_config tcss_ports[MAX_TYPE_C_PORTS];
 
 	/*
 	 * Acoustic Noise Mitigation
