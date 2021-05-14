@@ -22,6 +22,7 @@ chip soc/intel/alderlake
 	# Enable CNVi Bluetooth
 	register "CnviBtCore" = "true"
 
+
 	# FSP configuration
 	register "SaGv" = "SaGv_Disabled"
 
@@ -187,12 +188,18 @@ chip soc/intel/alderlake
 		device pci 0a.0 off end # Crash-log SRAM
 		device pci 0d.0 on  end # USB xHCI
 		device pci 0d.1 off end # USB xDCI (OTG)
-		device pci 0d.2 on  end # TBT DMA0
+		device pci 0d.2 on
+			chip drivers/intel/usb4/retimer
+				register "dfp" = "{
+					[0] = {.power_gpio = ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H19),},
+					[1] = {.power_gpio = ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H19),}}"
+				device generic 0 on end
+			end
+		end
 		device pci 0d.3 on  end # TBT DMA1
 		device pci 0e.0 off end # VMD
 		device pci 10.0 off end
 		device pci 10.1 off end
-		device pci 10.2 on  end # CNVi: BT
 		device pci 10.6 off end # THC0
 		device pci 10.7 off end # THC1
 		device pci 11.0 off end
@@ -262,7 +269,7 @@ chip soc/intel/alderlake
 			end
 		end # I2C2
 		device pci 15.3 on  end # I2C3
-		device pci 16.0 off end # HECI1
+		device pci 16.0 on end # HECI1
 		device pci 16.1 off end # HECI2
 		device pci 16.2 off end # CSME
 		device pci 16.3 off end # CSME
