@@ -14,11 +14,13 @@ chip soc/intel/alderlake
 
 	# TCSS
 	register "TcssAuxOri" = "1"
-	register "IomTypeCPortPadCfg[0]" = "0x09020005"
-	register "IomTypeCPortPadCfg[1]" = "0x09020006"
+	register "typec_aux_bias_pads[0]" = "{.pad_auxp_dc = GPP_A5, .pad_auxn_dc = GPP_A6}"
 
 	# Enable heci communication
 	register "HeciEnabled" = "1"
+
+	# Enable CNVi Bluetooth
+	register "CnviBtCore" = "true"
 
 	# FSP configuration
 	register "SaGv" = "SaGv_Disabled"
@@ -43,7 +45,6 @@ chip soc/intel/alderlake
 	register "gen2_dec" = "0x000c0201"
 	# EC memory map range is 0x900-0x9ff
 	register "gen3_dec" = "0x00fc0901"
-	register "PrmrrSize" = "0"
 
 	# Enable PCH PCIE RP 5 using CLK 1
 	register "pch_pcie_rp[PCH_RP(5)]" = "{
@@ -87,19 +88,17 @@ chip soc/intel/alderlake
 
 	register "SerialIoGSpiMode" = "{
 		[PchSerialIoIndexGSPI0] = PchSerialIoPci,
-		[PchSerialIoIndexGSPI1] = PchSerialIoPci,
+		[PchSerialIoIndexGSPI1] = PchSerialIoDisabled,
 		[PchSerialIoIndexGSPI2] = PchSerialIoDisabled,
 		[PchSerialIoIndexGSPI3] = PchSerialIoDisabled,
 	}"
 
 	register "SerialIoGSpiCsMode" = "{
 		[PchSerialIoIndexGSPI0] = 1,
-		[PchSerialIoIndexGSPI1] = 1,
 	}"
 
 	register "SerialIoGSpiCsState" = "{
 		[PchSerialIoIndexGSPI0] = 1,
-		[PchSerialIoIndexGSPI1] = 1,
 	}"
 
 	register "SerialIoUartMode" = "{
@@ -110,19 +109,9 @@ chip soc/intel/alderlake
 
 	# HD Audio
 	register "PchHdaDspEnable" = "1"
-	register "PchHdaAudioLinkHdaEnable" = "0"
-	register "PchHdaAudioLinkDmicEnable[0]" = "0"
-	register "PchHdaAudioLinkDmicEnable[1]" = "0"
-	register "PchHdaAudioLinkSspEnable[0]" = "0"
-	register "PchHdaAudioLinkSspEnable[1]" = "0"
-	register "PchHdaAudioLinkSndwEnable[0]" = "0"
-	register "PchHdaAudioLinkSndwEnable[1]" = "0"
-	# iDisp-Link T-Mode 0: 2T, 2: 4T, 3: 8T, 4: 16T
-	register "PchHdaIDispLinkTmode" = "3"
-	# iDisp-Link Freq 4: 96MHz, 3: 48MHz.
-	register "PchHdaIDispLinkFrequency" = "4"
-	# Not disconnected/enumerable
-	register "PchHdaIDispCodecDisconnect" = "0"
+	register "PchHdaIDispLinkTmode" = "HDA_TMODE_8T"
+	register "PchHdaIDispLinkFrequency" = "HDA_LINKFREQ_96MHZ"
+	register "PchHdaIDispCodecEnable" = "1"
 
 	# DP port
 	register "DdiPortAConfig" = "1"	# eDP
@@ -188,7 +177,7 @@ chip soc/intel/alderlake
 		device pci 02.0 on  end # Graphics
 		device pci 04.0 on  end # DPTF
 		device pci 05.0 on  end # IPU
-		device pci 06.0 on  end # PEG60
+		device pci 06.0 off end # PEG60
 		device pci 07.0 on  end # TBT_PCIe0
 		device pci 07.1 on  end # TBT_PCIe1
 		device pci 07.2 on  end # TBT_PCIe2
@@ -198,12 +187,7 @@ chip soc/intel/alderlake
 		device pci 0a.0 off end # Crash-log SRAM
 		device pci 0d.0 on  end # USB xHCI
 		device pci 0d.1 off end # USB xDCI (OTG)
-		device pci 0d.2 on
-			chip drivers/intel/usb4/retimer
-				register "power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H19)"
-				device generic 0 on end
-			end
-		end
+		device pci 0d.2 on  end # TBT DMA0
 		device pci 0d.3 on  end # TBT DMA1
 		device pci 0e.0 off end # VMD
 		device pci 10.0 off end
