@@ -93,7 +93,7 @@ config BOARD_OVERRIDE_LCM_ID
 
 config SPEAKER_GPIO_NAME
 	string
-	default "rt1015p sdb" if BOARD_GOOGLE_KAKADU
+	default "rt1015p sdb" if BOARD_GOOGLE_KAKADU || BOARD_GOOGLE_KATSU
 	default "rt1015p sdb" if BOARD_GOOGLE_FENNEL || BOARD_GOOGLE_CERISE || BOARD_GOOGLE_MAKOMO
 	default "speaker enable"
 
