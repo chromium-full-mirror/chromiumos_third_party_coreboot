@@ -8,8 +8,10 @@
 #include <pc80/mc146818rtc.h>
 #include <security/tpm/tss.h>
 #include <security/vboot/vboot_common.h>
+#include <security/vboot/misc.h>
 #include <variant/ec.h>
 #include <variant/gpio.h>
+#include <vb2_api.h>
 
 /*
  * This function ensures that EC has been reset at least once to restart execution in RO when
@@ -37,6 +39,7 @@ void mainboard_romstage_pre_ec_sync_entry(void)
 	static char current_ro_fw_id[100];
 	static const char *bad_ro_fw_id1 = "Google_Drawcia.13606.52.0";
 	static const char *bad_ro_fw_id2 = "Google_Drawcia.13606.74.0";
+	struct vb2_context *ctx = vboot_get_context();
 
 	/* Read the current RO Firmware ID and halt if it cannot be read. */
 	if (fmap_read_area("RO_FRID", current_ro_fw_id, sizeof(current_ro_fw_id)) == -1)
@@ -74,6 +77,8 @@ void mainboard_romstage_pre_ec_sync_entry(void)
 	}
 
 	cmos_write(1, CMOS_EC_TRUSTED_OFFSET);
+	vb2api_prepare_for_extra_reboot(ctx);
+	vboot_save_data(ctx);
 	ret = tlcl_cr50_reset_ec();
 	if (ret != TPM_SUCCESS) {
 		cmos_write(0, CMOS_EC_TRUSTED_OFFSET);
