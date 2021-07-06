@@ -16,3 +16,6 @@
 subdirs-y += ./spd
 
 ramstage-y += mainboard.c
+
+ramstage-y += audio.c
+
