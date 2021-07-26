@@ -9,6 +9,7 @@ ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-y += mainboard.c
 ramstage-y += ec.c
 ramstage-y += board_info.c
+ramstage-y += fw_config.c
 
 smm-y += smihandler.c
 
