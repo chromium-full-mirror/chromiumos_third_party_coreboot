@@ -405,6 +405,43 @@ extern "C" {
 #define EC_ACPI_MEM_USB_PORT_POWER 0x13
 
 /*
+ * USB Retimer firmware update.
+ * Read:
+ *      Result of last operation AP requested
+ * Write:
+ *      bits[3:0]: USB-C port number
+ *      bits[7:4]: Operation requested by AP
+ *
+ * NDA (no device attached) case:
+ * To update retimer firmware, AP needs set up TBT Alt mode.
+ * AP requests operations in this sequence:
+ * 1. Get port information about which ports support retimer firmware update.
+ * In the query result, each bit represents one port.
+ * 2. Get current MUX mode, it's NDA.
+ * 3. Suspend specified PD port's task.
+ * 4. AP requests EC to enter USB mode -> enter Safe mode -> enter TBT mode ->
+ * update firmware -> disconnect MUX -> resume PD task.
+ *
+ * DA (device attached) cases:
+ * Retimer firmware update is not supported in DA cases.
+ * 1. Get port information about which ports support retimer firmware update
+ * 2. Get current MUX mode, it's DA.
+ * 3. AP continues. No more retimer firmware update activities.
+ *
+ */
+#define EC_ACPI_MEM_USB_RETIMER_FW_UPDATE 0x14
+
+#define USB_RETIMER_FW_UPDATE_OP_SHIFT 4
+#define USB_RETIMER_FW_UPDATE_ERR         0xfe
+#define USB_RETIMER_FW_UPDATE_INVALID_MUX 0xff
+/* Mask to clear unused MUX bits in retimer firmware update  */
+#define USB_RETIMER_FW_UPDATE_MUX_MASK	(USB_PD_MUX_USB_ENABLED       | \
+					USB_PD_MUX_DP_ENABLED         | \
+					USB_PD_MUX_SAFE_MODE          | \
+					USB_PD_MUX_TBT_COMPAT_ENABLED | \
+					USB_PD_MUX_USB4_ENABLED)
+
+/*
  * ACPI addresses 0x20 - 0xff map to EC_MEMMAP offset 0x00 - 0xdf.  This data
  * is read-only from the AP.  Added in EC_ACPI_MEM_VERSION 2.
  */
@@ -1864,7 +1901,13 @@ enum sysinfo_flags {
 	SYSTEM_IS_FORCE_LOCKED = BIT(1),
 	SYSTEM_JUMP_ENABLED = BIT(2),
 	SYSTEM_JUMPED_TO_CURRENT_IMAGE = BIT(3),
-	SYSTEM_REBOOT_AT_SHUTDOWN = BIT(4)
+	SYSTEM_REBOOT_AT_SHUTDOWN = BIT(4),
+	/*
+	 * Used internally. It's set when EC_HOST_EVENT_KEYBOARD_RECOVERY is
+	 * set and cleared when the system shuts down (not when the host event
+	 * flag is cleared).
+	 */
+	SYSTEM_IN_MANUAL_RECOVERY = BIT(5),
 };
 
 struct ec_response_sysinfo {
@@ -2587,6 +2630,9 @@ enum motionsensor_chip {
 	MOTIONSENSE_CHIP_LIS2DS = 23,
 	MOTIONSENSE_CHIP_BMI260 = 24,
 	MOTIONSENSE_CHIP_ICM426XX = 25,
+	MOTIONSENSE_CHIP_ICM42607 = 26,
+	MOTIONSENSE_CHIP_BMA422 = 27,
+	MOTIONSENSE_CHIP_BMI323 = 28,
 	MOTIONSENSE_CHIP_MAX,
 };
 
@@ -4142,16 +4188,55 @@ struct ec_params_i2c_write {
  * discharge the battery.
  */
 #define EC_CMD_CHARGE_CONTROL 0x0096
-#define EC_VER_CHARGE_CONTROL 1
+#define EC_VER_CHARGE_CONTROL 2
 
 enum ec_charge_control_mode {
 	CHARGE_CONTROL_NORMAL = 0,
 	CHARGE_CONTROL_IDLE,
 	CHARGE_CONTROL_DISCHARGE,
+	/* Add no more entry below. */
+	CHARGE_CONTROL_COUNT,
+};
+
+#define EC_CHARGE_MODE_TEXT { \
+	[CHARGE_CONTROL_NORMAL] = "NORMAL", \
+	[CHARGE_CONTROL_IDLE] = "IDLE", \
+	[CHARGE_CONTROL_DISCHARGE] = "DISCHARGE", \
+	}
+
+enum ec_charge_control_cmd {
+	EC_CHARGE_CONTROL_CMD_SET = 0,
+	EC_CHARGE_CONTROL_CMD_GET,
 };
 
 struct ec_params_charge_control {
 	uint32_t mode;  /* enum charge_control_mode */
+
+	/* Below are the fields added in V2. */
+	uint8_t cmd;    /* enum ec_charge_control_cmd. */
+	uint8_t reserved;
+	/*
+	 * Lower and upper thresholds for battery sustainer. This struct isn't
+	 * named to avoid tainting foreign projects' name spaces.
+	 *
+	 * If charge mode is explicitly set (e.g. DISCHARGE), battery sustainer
+	 * will be disabled. To disable battery sustainer, set mode=NORMAL,
+	 * lower=-1, upper=-1.
+	 */
+	struct {
+		int8_t lower;	/* Display SoC in percentage. */
+		int8_t upper;	/* Display SoC in percentage. */
+	} sustain_soc;
+} __ec_align4;
+
+/* Added in v2 */
+struct ec_response_charge_control {
+	uint32_t mode;  /* enum charge_control_mode */
+	struct {        /* Battery sustainer thresholds */
+		int8_t lower;
+		int8_t upper;
+	} sustain_soc;
+	uint16_t reserved;
 } __ec_align4;
 
 /*****************************************************************************/
@@ -6158,6 +6243,8 @@ enum action_key {
 	TK_PLAY_PAUSE = 15,
 	TK_NEXT_TRACK = 16,
 	TK_PREV_TRACK = 17,
+	TK_KBD_BKLIGHT_TOGGLE = 18,
+	TK_MICMUTE = 19,
 };
 
 /*
@@ -6468,6 +6555,96 @@ enum tcpc_cc_polarity {
 
 #define PD_STATUS_EVENT_SOP_DISC_DONE		BIT(0)
 #define PD_STATUS_EVENT_SOP_PRIME_DISC_DONE	BIT(1)
+#define PD_STATUS_EVENT_HARD_RESET		BIT(2)
+#define PD_STATUS_EVENT_DISCONNECTED		BIT(3)
+
+/*
+ * Encode and decode for BCD revision response
+ *
+ * Note: the major revision set is written assuming that the value given is the
+ * Specification Revision from the PD header, which currently only maps to PD
+ * 1.0-3.0 with the major revision being one greater than the binary value.
+ */
+#define PD_STATUS_REV_SET_MAJOR(r)	((r + 1) << 12)
+#define PD_STATUS_REV_GET_MAJOR(r)	((r >> 12) & 0xF)
+#define PD_STATUS_REV_GET_MINOR(r)	((r >> 8)  & 0xF)
+
+/*
+ * Decode helpers for Source and Sink Capability PDOs
+ *
+ * Note: The Power Delivery Specification should be considered the ultimate
+ * source of truth on the decoding of these PDOs
+ */
+#define PDO_TYPE_FIXED     (0 << 30)
+#define PDO_TYPE_BATTERY   (1 << 30)
+#define PDO_TYPE_VARIABLE  (2 << 30)
+#define PDO_TYPE_AUGMENTED (3 << 30)
+#define PDO_TYPE_MASK      (3 << 30)
+
+/*
+ * From Table 6-9 and Table 6-14 PD Rev 3.0 Ver 2.0
+ *
+ * <31:30> : Fixed Supply
+ * <29>    : Dual-Role Power
+ * <28>    : SNK/SRC dependent
+ * <27>    : Unconstrained Power
+ * <26>    : USB Communications Capable
+ * <25>    : Dual-Role Data
+ * <24:20> : SNK/SRC dependent
+ * <19:10> : Voltage in 50mV Units
+ * <9:0>   : Maximum Current in 10mA units
+ */
+#define PDO_FIXED_DUAL_ROLE	BIT(29)
+#define PDO_FIXED_UNCONSTRAINED	BIT(27)
+#define PDO_FIXED_COMM_CAP	BIT(26)
+#define PDO_FIXED_DATA_SWAP	BIT(25)
+#define PDO_FIXED_FRS_CURR_MASK GENMASK(24, 23) /* Sink Cap only */
+#define PDO_FIXED_VOLTAGE(p)	((p >> 10 & 0x3FF) * 50)
+#define PDO_FIXED_CURRENT(p)	((p & 0x3FF) * 10)
+
+/*
+ * From Table 6-12 and Table 6-16 PD Rev 3.0 Ver 2.0
+ *
+ * <31:30> : Battery
+ * <29:20> : Maximum Voltage in 50mV units
+ * <19:10> : Minimum Voltage in 50mV units
+ * <9:0>   : Maximum Allowable Power in 250mW units
+ */
+#define PDO_BATT_MAX_VOLTAGE(p)	((p >> 20 & 0x3FF) * 50)
+#define PDO_BATT_MIN_VOLTAGE(p)	((p >> 10 & 0x3FF) * 50)
+#define PDO_BATT_MAX_POWER(p)	((p & 0x3FF) * 250)
+
+/*
+ * From Table 6-11 and Table 6-15 PD Rev 3.0 Ver 2.0
+ *
+ * <31:30> : Variable Supply (non-Battery)
+ * <29:20> : Maximum Voltage in 50mV units
+ * <19:10> : Minimum Voltage in 50mV units
+ * <9:0>   : Operational Current in 10mA units
+ */
+#define PDO_VAR_MAX_VOLTAGE(p)	((p >> 20 & 0x3FF) * 50)
+#define PDO_VAR_MIN_VOLTAGE(p)	((p >> 10 & 0x3FF) * 50)
+#define PDO_VAR_MAX_CURRENT(p)	((p & 0x3FF) * 10)
+
+/*
+ * From Table 6-13 and Table 6-17 PD Rev 3.0 Ver 2.0
+ *
+ * Note this type is reserved in PD 2.0, and only one type of APDO is
+ * supported as of the cited version.
+ *
+ * <31:30> : Augmented Power Data Object
+ * <29:28> : Programmable Power Supply
+ * <27>    : PPS Power Limited
+ * <26:25> : Reserved
+ * <24:17> : Maximum Voltage in 100mV increments
+ * <16>    : Reserved
+ * <15:8>  : Minimum Voltage in 100mV increments
+ * <7>     : Reserved
+ * <6:0>   : Maximum Current in 50mA increments
+ */
+#define PDO_AUG_MAX_VOLTAGE(p)	((p >> 17 & 0xFF) * 100)
+#define PDO_AUG_MIN_VOLTAGE(p)	((p >> 8 & 0xFF) * 100)
+#define PDO_AUG_MAX_CURRENT(p)	((p & 0x7F) * 50)
 
 struct ec_params_typec_status {
 	uint8_t port;
