@@ -3,6 +3,6 @@
 /* SKU ID enumeration */
 enum treeya_sku {
 	SKU_UNKNOWN = -1,
-	SKU_TREEYA_ALC5682_AE = 174,
-	SKU_TREEYA_ALC5682_AF = 175,
+	SKU_TREEYA_ALC5682_BE = 0xbe,
+	SKU_TREEYA_ALC5682_BF = 0xbf,
 };

@@ -40,8 +40,8 @@ void variant_devtree_update(void)
 	}
 
 	switch (google_chromeec_get_sku_id()) {
-	case SKU_TREEYA_ALC5682_AE:
-	case SKU_TREEYA_ALC5682_AF:
+	case SKU_TREEYA_ALC5682_BE:
+	case SKU_TREEYA_ALC5682_BF:
 		/* alc5682 only */
 		if (da7219_dev)
 			da7219_dev->enabled = 0;
