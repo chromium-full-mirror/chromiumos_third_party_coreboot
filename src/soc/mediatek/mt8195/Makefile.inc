@@ -51,6 +51,7 @@ romstage-y += ../common/rtc.c ../common/rtc_osc_init.c ../common/rtc_mt6359p.c
 
 ramstage-y += ../common/auxadc.c
 ramstage-y += ../common/ddp.c ddp.c
+ramstage-y += devapc.c
 ramstage-y += ../common/dpm.c
 ramstage-$(CONFIG_DPM_FOUR_CHANNEL) += dpm_4ch.c
 ramstage-y += dp_intf.c dptx.c dptx_hal.c
@@ -63,6 +64,7 @@ ramstage-y += ../common/mcupm.c
 ramstage-y += ../common/mmu_operations.c mmu_operations.c
 ramstage-y += mt6360.c
 ramstage-y += ../common/mtcmos.c mtcmos.c
+ramstage-$(CONFIG_COMMONLIB_STORAGE_MMC) += ../common/msdc.c
 ramstage-y += ../common/pll.c pll.c
 ramstage-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 ramstage-y += soc.c

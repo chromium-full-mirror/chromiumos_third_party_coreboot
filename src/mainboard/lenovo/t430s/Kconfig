@@ -45,14 +45,12 @@ config VBOOT_VBNV_OFFSET
 	default 0x2a
 
 config FMDFILE
-	string
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-rwab.fmd" if VBOOT
 
 config MAINBOARD_DIR
 	default "lenovo/t430s"
 
 config VARIANT_DIR
-	string
 	default "t430s" if BOARD_LENOVO_T430S
 	default "t431s" if BOARD_LENOVO_T431S
 

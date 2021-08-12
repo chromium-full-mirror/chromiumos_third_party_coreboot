@@ -39,14 +39,12 @@ config VBOOT_VBNV_OFFSET
 	default 0x82
 
 config FMDFILE
-	string
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-rwa.fmd" if VBOOT
 
 config MAINBOARD_DIR
 	default "lenovo/x200"
 
 config VARIANT_DIR
-	string
 	default "x200" if BOARD_LENOVO_X200
 	default "x301" if BOARD_LENOVO_X301
 

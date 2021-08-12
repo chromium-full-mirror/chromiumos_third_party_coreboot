@@ -58,14 +58,12 @@ config ELOG_BOOT_COUNT_CMOS_OFFSET
 # FMDFILE is set here so that coreboot build picks up this flash map layout
 # even when CHROMEOS is not selected when building upstream.
 config FMDFILE
-	string
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos.fmd"
 
 config MAINBOARD_DIR
 	default "google/zork"
 
 config VARIANT_DIR
-	string
 	default "ezkinil" if BOARD_GOOGLE_EZKINIL
 	default "morphius" if BOARD_GOOGLE_MORPHIUS
 	default "trembyle" if BOARD_GOOGLE_TREMBYLE

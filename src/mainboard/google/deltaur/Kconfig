@@ -43,7 +43,6 @@ config DRIVER_TPM_I2C_ADDR
 	default 0x50
 
 config FMDFILE
-	string
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-gbe.fmd" if BOARD_GOOGLE_DELTAN
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos.fmd" if BOARD_GOOGLE_DELTAUR
 
@@ -74,7 +73,6 @@ config UART_FOR_CONSOLE
 	default 2
 
 config VARIANT_DIR
-	string
 	default "deltan" if BOARD_GOOGLE_DELTAN
 	default "deltaur" if BOARD_GOOGLE_DELTAUR
 

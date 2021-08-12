@@ -76,7 +76,6 @@ config DIMM_SPD_SIZE
 	default 512
 
 config FMDFILE
-	string
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-dedede-16MiB.fmd" if BOARD_ROMSIZE_KB_16384
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-dedede-32MiB.fmd" if BOARD_ROMSIZE_KB_32768
 
@@ -112,6 +111,7 @@ config MAINBOARD_PART_NUMBER
 	default "Haboki" if BOARD_GOOGLE_HABOKI
 	default "Cappy" if BOARD_GOOGLE_CAPPY
 	default "Cappy2" if BOARD_GOOGLE_CAPPY2
+	default "Bugzzy" if BOARD_GOOGLE_BUGZZY
 
 config MAX_CPUS
 	int
@@ -125,7 +125,6 @@ config UART_FOR_CONSOLE
 	default 2
 
 config VARIANT_DIR
-	string
 	default "boten" if BOARD_GOOGLE_BOTEN
 	default "boten" if BOARD_GOOGLE_BOTEN_LEGACY
 	default "dedede" if BOARD_GOOGLE_DEDEDE
@@ -150,6 +149,7 @@ config VARIANT_DIR
 	default "haboki" if BOARD_GOOGLE_HABOKI
 	default "cappy" if BOARD_GOOGLE_CAPPY
 	default "cappy2" if BOARD_GOOGLE_CAPPY2
+	default "bugzzy" if BOARD_GOOGLE_BUGZZY
 
 endif #BOARD_GOOGLE_BASEBOARD_DEDEDE
 

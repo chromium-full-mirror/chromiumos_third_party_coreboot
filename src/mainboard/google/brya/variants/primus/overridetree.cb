@@ -168,6 +168,7 @@ chip soc/intel/alderlake
 				device generic 0 on end
 			end
 		end
+		device ref pcie_rp6 off end #PCIE6 WWAN
 		device ref pcie_rp8 on
 			chip soc/intel/common/block/pcie/rtd3
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H13)"
@@ -176,6 +177,14 @@ chip soc/intel/alderlake
 				device generic 0 on end
 			end
 		end	#PCIE8 SD card
+		device ref pcie_rp9 on
+			# Enable NVMe PCIE 9 using clk 0
+			register "pch_pcie_rp[PCH_RP(9)]" = "{
+				.clk_src = 0,
+				.clk_req = 0,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end	#PCIE9-12 SSD
 		device ref i2c0 on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5682""
@@ -273,7 +282,6 @@ chip soc/intel/alderlake
 			chip ec/google/chromeec
 				use conn0 as mux_conn[0]
 				use conn1 as mux_conn[1]
-				use conn2 as mux_conn[2]
 				device pnp 0c09.0 on end
 			end
 		end
@@ -285,15 +293,10 @@ chip soc/intel/alderlake
 						register "usb3_port_number" = "1"
 						device generic 0 alias conn0 on end
 					end
-                                        chip drivers/intel/pmc_mux/conn
-						register "usb2_port_number" = "2"
-						register "usb3_port_number" = "2"
-						device generic 1 alias conn1 on end
-					end
 					chip drivers/intel/pmc_mux/conn
 						register "usb2_port_number" = "3"
 						register "usb3_port_number" = "3"
-						device generic 2 alias conn2 on end
+						device generic 1 alias conn1 on end
 					end
 				end
 			end

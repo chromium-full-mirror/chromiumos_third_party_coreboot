@@ -12,7 +12,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select AMD_SOC_CONSOLE_UART if !AMD_LPC_DEBUG_CARD
 
 config FMDFILE
-	string
 	default "src/mainboard/amd/bilby/board.fmd"
 
 config AMD_LPC_DEBUG_CARD
@@ -106,5 +105,37 @@ config EFS_SPI_SPEED
 config EFS_SPI_MICRON_FLAG
 	int
 	default 0
+
+choice
+	prompt "DDI-0 connector type"
+	default CONNECT_DP_ON_DDI_0
+
+config CONNECT_HDMI_ON_DDI_0
+	bool "Use HDMI interface"
+
+config CONNECT_DP_ON_DDI_0
+	bool "Use Displayport interface"
+endchoice
+
+config DDI0_CONNECTOR_TYPE
+	int
+	default 0 if CONNECT_DP_ON_DDI_0
+	default 4 if CONNECT_HDMI_ON_DDI_0
+
+choice
+	prompt "DDI-1 connector type"
+	default CONNECT_DP_ON_DDI_1
+
+config CONNECT_HDMI_ON_DDI_1
+	bool "Use HDMI interface"
+
+config CONNECT_DP_ON_DDI_1
+	bool "Use Displayport interface"
+endchoice
+
+config DDI1_CONNECTOR_TYPE
+	int
+	default 0 if CONNECT_DP_ON_DDI_1
+	default 4 if CONNECT_HDMI_ON_DDI_1
 
 endif # BOARD_AMD_BILBY
