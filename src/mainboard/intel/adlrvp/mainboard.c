@@ -28,6 +28,13 @@ static void mainboard_init(void *chip_info)
 
 	if (CONFIG(EC_GOOGLE_CHROMEEC))
 		mainboard_ec_init();
+
+	variant_devtree_update();
+}
+
+void __weak variant_devtree_update(void)
+{
+	/* Override dev tree settings per board */
 }
 
 #if CONFIG(BOARD_INTEL_ADLRVP_M_EXT_EC)
@@ -68,10 +75,13 @@ const char *mainboard_vbt_filename(void)
 	switch (sku_id) {
 	case ADL_P_LP5_1:
 	case ADL_P_LP5_2:
+	case ADL_M_LP5:
 		return "vbt_adlrvp_lp5.bin";
 	case ADL_P_DDR5_1:
 	case ADL_P_DDR5_2:
 		return "vbt_adlrvp_ddr5.bin";
+	case ADL_M_LP4:
+		return "vbt_adlrvp_lp4.bin";
 	default:
 		return "vbt.bin";
 	}
