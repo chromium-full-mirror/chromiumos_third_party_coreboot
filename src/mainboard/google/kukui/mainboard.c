@@ -170,7 +170,7 @@ static bool configure_display(void)
 	}
 	mtk_ddp_mode_set(edid);
 	set_vbe_mode_info_valid(edid, 0);
-	set_vbe_framebuffer_orientation(panel->s->orientation);
+	set_vbe_framebuffer_orientation(panel->orientation);
 	return true;
 }
 

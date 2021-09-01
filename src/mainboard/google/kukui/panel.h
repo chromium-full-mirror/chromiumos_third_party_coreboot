@@ -10,6 +10,7 @@ struct panel_description {
 	const char *name;  /* Panel name for constructing CBFS file name */
 	struct panel_serializable_data *s;
 	void (*power_on)(void);  /* Callback to turn on panel */
+	enum lb_fb_orientation orientation;
 };
 
 /* Returns the panel description from given ID. */
