@@ -389,9 +389,9 @@ chip soc/amd/picasso
 			device pci 0.0 off end # AHCI
 		end
 		device pci 14.0 on  end # SM
-		device pci 14.3 on  # - D14F3 bridge
+		device pci 14.3 alias lpc_bridge on  # - D14F3 bridge
 			chip ec/google/chromeec
-				device pnp 0c09.0 on
+				device pnp 0c09.0 alias cros_ec on
 					chip ec/google/chromeec/i2c_tunnel
 						register "uid" = "0"
 						register "remote_bus" = "8"
@@ -417,7 +417,7 @@ chip soc/amd/picasso
 						register "name" = ""MSTH""
 						register "uid" = "1"
 						register "remote_bus" = "9"
-						device generic 1.0 on
+						device generic 1.0 alias cros_ec_i2c_9 on
 							chip drivers/i2c/generic
 								register "hid" = ""10EC2141""
 								register "name" = ""MSTH""
