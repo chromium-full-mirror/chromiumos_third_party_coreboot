@@ -144,6 +144,7 @@
 - Bubs
 - Coachz
 - Homestar
+- Kingoftown
 - Lazor
 - Marzipan
 - Mrbland
