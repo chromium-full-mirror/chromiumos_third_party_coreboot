@@ -103,6 +103,7 @@ static struct panel_serializable_data *get_mipi_panel(void)
 {
 	const char *cbfs_filename = NULL;
 	int panel_id = sku_id() >> 8;
+	static char buffer[4 * KiB];
 
 	if (CONFIG(BOARD_GOOGLE_MRBLAND)) {
 		switch (panel_id) {
@@ -118,14 +119,12 @@ static struct panel_serializable_data *get_mipi_panel(void)
 	if (!cbfs_filename)
 		return NULL;
 
-	struct panel_serializable_data *panel = cbfs_boot_map_with_leak(cbfs_filename,
-									CBFS_TYPE_STRUCT, NULL);
-	if (!panel) {
-		printk(BIOS_ERR, "Could not find panel data for %s!\n", cbfs_filename);
+	if (!cbfs_boot_load_file(cbfs_filename, buffer, sizeof(buffer), CBFS_TYPE_STRUCT)) {
+		printk(BIOS_ERR, "Could not load panel data for %s!\n", cbfs_filename);
 		return NULL;
 	}
 
-	return panel;
+	return (void *)buffer;
 }
 
 static enum cb_err display_init(struct panel_serializable_data *panel)
