@@ -5,13 +5,10 @@
 #include <variant/ec.h>
 #include <baseboard/variants.h>
 #include <boardid.h>
+#include <device/device.h>
+#include <drivers/usb/acpi/chip.h>
 #include <fw_config.h>
 #include <soc/soc_chip.h>
-
-static struct acpi_gpio lte_reset_gpio = ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H0);
-static struct acpi_gpio lte_enable_gpio = ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A10);
-/* New lte reset for drapwer DVT*/
-static struct acpi_gpio lte_new_reset_gpio =  ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H17);
 
 static void ext_vr_update(void)
 {
@@ -22,13 +19,20 @@ static void ext_vr_update(void)
 
 void variant_devtree_update(void)
 {
-
 	uint32_t board_version = board_id();
+	struct device *lte_usb2 = DEV_PTR(lte_usb2);
+	struct drivers_usb_acpi_config *config;
+	struct acpi_gpio lte_reset_gpio = ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H0);
 
-	if (board_version <= 9) /* board version 9 is drawper EVT */
-		update_lte_device(&lte_reset_gpio, &lte_enable_gpio);
-	else
-		update_lte_device(&lte_new_reset_gpio, &lte_enable_gpio);
+	/* board version 9 is drawper EVT */
+	if (board_version > 9)
+		return;
+
+	if (lte_usb2 == NULL)
+		return;
+
+	config = config_of(lte_usb2);
+	config->reset_gpio = lte_reset_gpio;
 	ext_vr_update();
 }
 

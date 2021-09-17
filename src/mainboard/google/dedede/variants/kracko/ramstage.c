@@ -4,9 +4,6 @@
 #include <fw_config.h>
 #include <soc/soc_chip.h>
 
-static struct acpi_gpio lte_reset_gpio = ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H17);
-static struct acpi_gpio lte_enable_gpio = ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A10);
-
 static void ext_vr_update(void)
 {
 	struct soc_intel_jasperlake_config *cfg = config_of_soc();
@@ -16,6 +13,5 @@ static void ext_vr_update(void)
 
 void variant_devtree_update(void)
 {
-	update_lte_device(&lte_reset_gpio, &lte_enable_gpio);
 	ext_vr_update();
 }
