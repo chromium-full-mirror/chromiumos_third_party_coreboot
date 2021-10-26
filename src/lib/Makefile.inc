@@ -144,6 +144,7 @@ ramstage-$(CONFIG_TRACE) += trace.c
 postcar-$(CONFIG_TRACE) += trace.c
 ramstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 ramstage-$(CONFIG_COVERAGE) += libgcov.c
+ramstage-y += dp_aux.c
 ramstage-y += edid.c
 ifneq ($(CONFIG_NO_EDID_FILL_FB),y)
 ramstage-y += edid_fill_fb.c
