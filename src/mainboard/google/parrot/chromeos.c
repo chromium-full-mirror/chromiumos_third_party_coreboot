@@ -55,6 +55,7 @@ static const struct cros_gpio cros_gpios[] = {
 	CROS_GPIO_REC_AH(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE_NAME),
 	CROS_GPIO_WP_AL(GPIO_SPI_WP, CROS_GPIO_DEVICE_NAME),
 };
+<<<<<<< HEAD
 
 const struct cros_gpio *variant_cros_gpios(size_t *num)
 {
@@ -68,6 +69,9 @@ const struct cros_gpio *variant_cros_gpios(size_t *num)
 	return cros_gpios;
 >>>>>>> f6dbd8aec4 (UPSTREAM: ChromeOS: Promote variant_cros_gpio())
 }
+=======
+DECLARE_CROS_GPIOS(cros_gpios);
+>>>>>>> 80ad324379 (UPSTREAM: ChromeOS: Add DECLARE_x_CROS_GPIOS())
 
 int get_ec_is_trusted(void)
 {
