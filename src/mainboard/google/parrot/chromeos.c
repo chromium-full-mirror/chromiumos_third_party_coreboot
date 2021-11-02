@@ -56,12 +56,17 @@ static const struct cros_gpio cros_gpios[] = {
 	CROS_GPIO_WP_AL(GPIO_SPI_WP, CROS_GPIO_DEVICE_NAME),
 };
 
-void mainboard_chromeos_acpi_generate(void)
+const struct cros_gpio *variant_cros_gpios(size_t *num)
 {
+<<<<<<< HEAD
 	if (CONFIG(CHROMEOS_NVS) && !parrot_ec_running_ro())
 		chromeos_set_ecfw_rw();
 
 	chromeos_acpi_gpio_generate(cros_gpios, ARRAY_SIZE(cros_gpios));
+=======
+	*num = ARRAY_SIZE(cros_gpios);
+	return cros_gpios;
+>>>>>>> f6dbd8aec4 (UPSTREAM: ChromeOS: Promote variant_cros_gpio())
 }
 
 int get_ec_is_trusted(void)
