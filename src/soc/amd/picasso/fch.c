@@ -250,7 +250,6 @@ void southbridge_init(void *chip_info)
 		acpi_pm_gpe_add_events_print_events(&state->gpe_state);
 		gpio_add_events(&state->gpio_state);
 	}
-	acpi_clear_pm_gpe_status();
 
 	al2ahb_clock_gate();
 
