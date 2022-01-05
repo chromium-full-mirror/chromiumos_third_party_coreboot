@@ -4,4 +4,3 @@ bootblock-y += gpio.c
 
 ramstage-y += gpio.c
 ramstage-y += ramstage.c
-ramstage-y += variant.c
