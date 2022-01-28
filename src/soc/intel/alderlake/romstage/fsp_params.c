@@ -208,9 +208,6 @@ static void fill_fspm_misc_params(FSP_M_CONFIG *m_cfg,
 	/* Skip GPIO configuration from FSP */
 	m_cfg->GpioOverride = 0x1;
 
-	/* Skip generation of MBP HOB from FSP. coreboot doesn't consume it */
-	m_cfg->SkipMbpHob = 1;
-
 	/* CNVi DDR RFI Mitigation */
 	const struct device_path path[] = {
 		{ .type = DEVICE_PATH_PCI, .pci.devfn = PCH_DEVFN_CNVI_WIFI },
