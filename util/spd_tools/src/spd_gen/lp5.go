@@ -44,7 +44,7 @@ type LP5DensityParams struct {
 }
 
 type LP5SpeedParams struct {
-	TCKMinPs      int
+	defaultTCKMinPs int
 	MaxCASLatency int
 }
 
@@ -57,6 +57,11 @@ type LP5SPDAttribTableEntry struct {
 
 type LP5Set struct {
 	SPDRevision    byte
+	getBankArch  LP5SetFunc
+	optionalFeatures  byte
+	otherOptionalFeatures  byte
+	busWidthEncoding  byte
+	speedToTCKMinPs map[int]int
 }
 
 /* ------------------------------------------------------------------------------------------ */
@@ -191,6 +196,35 @@ var LP5PlatformSetMap = map[int][]int{
 var LP5SetInfo = map[int]LP5Set{
 	0: {
 		SPDRevision: LP5SPDValueRevision1_0,
+		getBankArch: LP5GetBankArchSet0,
+		/*
+		 * From JEDEC spec:
+		 * 5:4 (Maximum Activate Window) = 00 (8192 * tREFI)
+		 * 3:0 (Maximum Activate Count) = 1000 (Unlimited MAC)
+		 * Set to 0x08.
+		 */
+		optionalFeatures: 0x08,
+		/*
+		 * For ADL (as per advisory #616599):
+		 * 7:5 (Number of system channels) = 000 (1 channel always)
+		 * 4:3 (Bus width extension) = 00 (no ECC)
+		 * 2:0 (Bus width) = 001 (x16 always)
+		 * Set to 0x01.
+		 */
+		 busWidthEncoding: 0x01,
+		/*
+		 * TCKMinPs:
+		 * LPDDR5 has two clocks: the command/address clock (CK) and the data clock (WCK). They are
+		 * related by the WCK:CK ratio, which can be either 4:1 or 2:1. On ADL, 4:1 is used.
+		 * For ADL, the MRC expects the tCKmin to encode the CK cycle time.
+		 *   tCKmin   = 1 / CK rate
+		 *            = 1 / (WCK rate / WCK:CK)
+		 *            = 1 / (speed grade / 2 / WCK:CK)      // "double data rate"
+		 */
+		 speedToTCKMinPs: map[int]int{
+			 6400 : 1250, /* 1 / (6400 / 2 / 4) */
+			 5500 : 1455, /* 1 / (5500 / 2 / 4) */
+		 },
 	},
 	1: {
 		SPDRevision: LP5SPDValueRevision1_1,
@@ -275,23 +309,20 @@ var LP5RowAddressBitsEncoding = map[int]byte{
 
 /*
  * TCKMinPs:
- * LPDDR5 has two clocks: the command/address clock (CK) and the data clock (WCK). They are
- * related by the WCK:CK ratio, which can be either 4:1 or 2:1. On ADL, 4:1 is used.
- * For ADL, the MRC expects the tCKmin to encode the CK period. This is calculated as:
- *   tCKmin = 1 / CK rate
- *          = 1 / (WCK rate / WCK:CK)
- *          = 1 / (speed grade / 2 / WCK:CK)      // "double data rate"
+ * Data sheets recommend encoding the the WCK cycle time.
+ *   tCKmin   = 1 / WCK rate
+ *            = 1 / (speed grade / 2)      // "double data rate"
  *
  * MaxCASLatency:
  * From Table 220 of JESD209-5B, using a 4:1 WCK:CK ratio and Set 0.
  */
 var LP5SpeedMbpsToSPDEncoding = map[int]LP5SpeedParams{
 	6400: {
-		TCKMinPs:      1250, /* 1 / (6400 / 2 / 4) */
+		defaultTCKMinPs : 312, /* 1 / (6400 / 2) */
 		MaxCASLatency: 17,
 	},
 	5500: {
-		TCKMinPs:      1455, /* 1 / (5500 / 2 / 4) */
+		defaultTCKMinPs : 363, /* 1 / (5500 / 2) */
 		MaxCASLatency: 15,
 	},
 }
@@ -409,6 +440,51 @@ func LP5EncodeModuleOrganization(memAttribs *LP5MemAttributes) byte {
 	return b
 }
 
+func LP5EncodeOptionalFeatures(memAttribs *LP5MemAttributes) byte {
+	f, ok := LP5SetInfo[LP5CurrSet]
+
+	if ok == false {
+		return 0
+	}
+
+	return f.optionalFeatures
+}
+
+func LP5EncodeOtherOptionalFeatures(memAttribs *LP5MemAttributes) byte {
+	f, ok := LP5SetInfo[LP5CurrSet]
+
+	if ok == false {
+		return 0
+	}
+
+	return f.otherOptionalFeatures
+}
+
+func LP5EncodeBusWidth(memAttribs *LP5MemAttributes) byte {
+	f, ok := LP5SetInfo[LP5CurrSet]
+
+	if ok == false {
+		return 0
+	}
+
+	return f.busWidthEncoding
+}
+
+func LP5GetTCKMinPs(memAttribs *LP5MemAttributes) int {
+	f, ok := LP5SetInfo[LP5CurrSet]
+
+	if ok == false || f.speedToTCKMinPs == nil {
+		return LP5SpeedMbpsToSPDEncoding[memAttribs.SpeedMbps].defaultTCKMinPs
+	}
+
+	tCKMinPs, ok := f.speedToTCKMinPs[memAttribs.SpeedMbps]
+	if ok == false || tCKMinPs == 0 {
+		fmt.Printf("TCKMinPs not defined for speed %d(Mbps) in LP5Set %d\n", memAttribs.SpeedMbps, LP5CurrSet)
+	}
+
+	return tCKMinPs
+}
+
 func LP5EncodeTCKMin(memAttribs *LP5MemAttributes) byte {
 	return convPsToMtbByte(memAttribs.TCKMinPs)
 }
@@ -467,7 +543,7 @@ func LP5EncodeTRFCPBMinLsb(memAttribs *LP5MemAttributes) byte {
 
 func LP5UpdateTCKMin(memAttribs *LP5MemAttributes) {
 	if memAttribs.TCKMinPs == 0 {
-		memAttribs.TCKMinPs = LP5SpeedMbpsToSPDEncoding[memAttribs.SpeedMbps].TCKMinPs
+		memAttribs.TCKMinPs = LP5GetTCKMinPs(memAttribs)
 	}
 }
 
