@@ -1589,6 +1589,13 @@ void preload_acpi_dsdt(void)
 	cbfs_preload(file);
 }
 
+static uintptr_t coreboot_rsdp;
+
+uintptr_t get_coreboot_rsdp(void)
+{
+	return coreboot_rsdp;
+}
+
 unsigned long write_acpi_tables(unsigned long start)
 {
 	unsigned long current;
@@ -1696,6 +1703,7 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	/* We need at least an RSDP and an RSDT Table */
 	rsdp = (acpi_rsdp_t *) current;
+	coreboot_rsdp = (uintptr_t)rsdp;
 	current += sizeof(acpi_rsdp_t);
 	current = acpi_align_current(current);
 	rsdt = (acpi_rsdt_t *) current;
