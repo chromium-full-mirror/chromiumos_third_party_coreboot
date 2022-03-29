@@ -329,6 +329,8 @@ struct cse_boot_perf_rsp {
 /* set up device for use in early boot enviroument with temp bar */
 void heci_init(uintptr_t bar);
 
+enum cse_tx_rx_status
+heci_send(const void *msg, size_t len, uint8_t host_addr, uint8_t client_addr);
 /*
  * Send message from BIOS_HOST_ADDR to cse_addr.
  * Sends snd_msg of size snd_sz, and reads message into buffer pointed by
