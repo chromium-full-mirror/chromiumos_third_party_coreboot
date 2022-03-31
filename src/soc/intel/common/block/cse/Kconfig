@@ -127,6 +127,32 @@ config SOC_INTEL_CSE_SET_EOP
 	  just prior to loading the payload. This is a security feature so the
 	  CSE will no longer respond to Pre-Boot commands.
 
+config SOC_INTEL_CSE_SEND_EOP_ASYNCHRONOUSLY
+	bool
+	default n
+	depends on SOC_INTEL_CSE_SET_EOP
+	help
+	  This config ensures coreboot sends the End-of-POST message to CSE
+	  asynchronously.
+
+	  Typically, CSE takes longer to provide a response after receiving
+	  the EOP command. EOP message has significant importance towards CSE to
+	  ensure platform security and start manageability services. CSE might performs
+	  a bunch of operations immediately after receiving the EOP command hence, the
+	  response is getting delayed.
+
+	  The code block implemented under this config is to decouple the CSE EOP send
+	  communication without waiting for CSE to respond after receiving the EOP
+	  command. coreboot to check the EOP command state prior to loading the payload
+	  and initiate the recovery flow as documented in the ME BWG if CSE has not received
+	  the EOP command. This approach is to avoid idle wait time at the host CPU after
+	  sending the EOP message and optimizing the boot time.
+
+	  Note: the decoupling CSE EOP command send and receive the response might results
+	  into having a unread EOP response data into the CSE buffer after an interval of
+	  receiving the EOP message, hence, CSE communication post sending asynchronous EOP
+	  command should reset the HECI before initiating the next operation.
+
 config SOC_INTEL_CSE_SUB_PART_UPDATE
 	bool "Enable the CSE sub-partition update Feature"
 	default n

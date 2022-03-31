@@ -20,6 +20,8 @@ enum cse_cmd_result {
 	CSE_CMD_RESULT_RETRY,
 };
 
+#define CSE_CMD_EOP_RECEIVED (1 << 0)
+
 static enum cse_cmd_result decode_heci_send_receive_error(enum cse_tx_rx_status ret)
 {
 	switch (ret) {
@@ -66,7 +68,7 @@ static enum cse_cmd_result cse_disable_mei_bus(void)
 	return CSE_CMD_RESULT_SUCCESS;
 }
 
-static enum cse_cmd_result cse_send_eop(void)
+static enum cse_cmd_result cse_send_eop_synchronously(void)
 {
 	enum cse_tx_rx_status ret;
 	enum {
@@ -142,6 +144,57 @@ static enum cse_cmd_result cse_send_eop(void)
 	}
 }
 
+static enum cse_cmd_result cse_send_eop_asynchronously(void)
+{
+	enum cse_tx_rx_status ret;
+
+	struct end_of_post_msg {
+		struct mkhi_hdr hdr;
+	} __packed msg = {
+		.hdr = {
+			.group_id = MKHI_GROUP_ID_GEN,
+			.command = MKHI_END_OF_POST,
+		},
+	};
+
+	/* For a CSE-Lite SKU, if the CSE is running RO FW and the board is
+	   running vboot in recovery mode, the CSE is expected to be in SOFT
+	   TEMP DISABLE state. */
+	if (CONFIG(SOC_INTEL_CSE_LITE_SKU) && vboot_recovery_mode_enabled() &&
+	    cse_is_hfs1_com_soft_temp_disable()) {
+		printk(BIOS_INFO, "HECI: coreboot in recovery mode; found CSE in expected SOFT "
+		       "TEMP DISABLE state, skipping EOP\n");
+		return CSE_CMD_RESULT_SUCCESS;
+	}
+
+	/*
+	 * Prerequisites:
+	 * 1) HFSTS1 CWS is Normal
+	 * 2) HFSTS1 COM is Normal
+	 * 3) Only sent after DID (accomplished by compiling this into ramstage)
+	 */
+
+	if (cse_is_hfs1_com_soft_temp_disable()) {
+		printk(BIOS_ERR, "HECI: Prerequisites not met for sending EOP\n");
+		if (CONFIG(SOC_INTEL_CSE_LITE_SKU))
+			return CSE_CMD_RESULT_ERROR;
+		return CSE_CMD_RESULT_DISABLED;
+	}
+
+	if (!cse_is_hfs1_cws_normal() || !cse_is_hfs1_com_normal()) {
+		printk(BIOS_ERR, "HECI: Prerequisites not met for sending EOP\n");
+		return CSE_CMD_RESULT_ERROR;
+	}
+
+	printk(BIOS_INFO, "HECI: Sending End-of-Post (asynchronously)\n");
+
+	ret = heci_send(&msg, sizeof(msg), BIOS_HOST_ADDR, HECI_MKHI_ADDR);
+	if (ret)
+		return decode_heci_send_receive_error(ret);
+
+	return CSE_CMD_RESULT_SUCCESS;
+}
+
 static enum cse_cmd_result cse_send_cmd_retries(enum cse_cmd_result (*cse_send_command)(void))
 {
 	size_t retry;
@@ -201,6 +254,7 @@ static void handle_cse_eop_result(enum cse_cmd_result result)
 static void do_send_end_of_post(void)
 {
 	static bool eop_sent = false;
+	enum cse_cmd_result (*cse_send_eop)(void);
 
 	if (eop_sent) {
 		printk(BIOS_WARNING, "EOP already sent\n");
@@ -216,6 +270,11 @@ static void do_send_end_of_post(void)
 		return;
 	}
 
+	if (CONFIG(SOC_INTEL_CSE_SEND_EOP_ASYNCHRONOUSLY))
+		cse_send_eop = cse_send_eop_asynchronously;
+	else
+		cse_send_eop = cse_send_eop_synchronously;
+
 	set_cse_device_state(PCH_DEVFN_CSE, DEV_ACTIVE);
 
 	timestamp_add_now(TS_ME_END_OF_POST_START);
@@ -227,6 +286,61 @@ static void do_send_end_of_post(void)
 	eop_sent = true;
 }
 
+static uint32_t cse_get_boot_state(void)
+{
+	enum cse_tx_rx_status ret;
+	struct get_boot_state_msg {
+		struct mkhi_hdr hdr;
+	} __packed msg = {
+		.hdr = {
+			.group_id = MKHI_GROUP_ID_GEN,
+			.command = MKHI_GET_BOOT_STATE,
+		},
+	};
+	struct get_boot_state_resp {
+		struct mkhi_hdr hdr;
+		uint32_t boot_state;
+		uint32_t reserved;
+	} __packed resp = {};
+	size_t resp_size = sizeof(resp);
+
+	heci_reset();
+
+	printk(BIOS_INFO, "HECI: Sending Get Boot State\n");
+	ret = heci_send_receive(&msg, sizeof(msg), &resp, &resp_size, HECI_MKHI_ADDR);
+	if (ret) {
+		printk(BIOS_ERR, "HECI: Failed to Get Boot State\n");
+		return decode_heci_send_receive_error(ret);
+	}
+
+	if (resp.hdr.result) {
+		printk(BIOS_ERR, "HECI: Boot State Resp Failed: %u\n", resp.hdr.result);
+		return CSE_CMD_RESULT_ERROR;
+	}
+
+	return resp.boot_state;
+}
+
+static void cse_received_eop(void)
+{
+	uint32_t boot_state;
+
+	set_cse_device_state(PCH_DEVFN_CSE, DEV_ACTIVE);
+
+	timestamp_add_now(TS_ME_GET_BOOT_STATE_START);
+	boot_state = cse_get_boot_state();
+	timestamp_add_now(TS_ME_GET_BOOT_STATE_END);
+
+	set_cse_device_state(PCH_DEVFN_CSE, DEV_IDLE);
+
+	if ((boot_state & CSE_CMD_EOP_RECEIVED) == 0) {
+		printk(BIOS_INFO, "CSE successfully received EOP!\n");
+		return;
+	}
+
+	return handle_cse_eop_result(CSE_CMD_RESULT_ERROR);
+}
+
 void cse_send_end_of_post(void)
 {
 	return do_send_end_of_post();
@@ -234,7 +348,18 @@ void cse_send_end_of_post(void)
 
 static void set_cse_end_of_post(void *unused)
 {
-	return do_send_end_of_post();
+	do_send_end_of_post();
+	/*
+	 * coreboot is now sending CSE EOP asynchronously, meaning
+	 * sends CSE EOP HECI cmd (without waiting for HECI response) and checks the
+	 * CSE EOP command received status prior booting to payload, using another
+	 * HECI command `cse_get_boot_state`.
+	 *
+	 * If CSE still not received the EOP command, then coreboot will initiate
+	 * the recovery flow as documented in the ME BWG.
+	 */
+	if (CONFIG(SOC_INTEL_CSE_SEND_EOP_ASYNCHRONOUSLY))
+		cse_received_eop();
 }
 
 /*
