@@ -143,6 +143,8 @@ enum timestamp_id {
 
 	/* 990+ reserved for vendorcode extensions (990-999: Intel ME continued) */
 	TS_ME_ROM_START = 990,
+	TS_ME_GET_BOOT_STATE_START = 991,
+	TS_ME_GET_BOOT_STATE_END = 992,
 
 	/* 1000+ reserved for payloads (1000-1200: ChromeOS depthcharge) */
 
@@ -314,6 +316,8 @@ static const struct timestamp_id_to_name {
 
 	/* Intel ME continued */
 	TS_NAME_DEF(TS_ME_ROM_START, 0, "CSME ROM started execution"),
+	TS_NAME_DEF(TS_ME_GET_BOOT_STATE_START, 0, "waiting to get EOP status from ME"),
+	TS_NAME_DEF(TS_ME_GET_BOOT_STATE_END, 0, "finished waiting for ME EOP status response"),
 
 	/* Depthcharge entry timestamp */
 	TS_NAME_DEF(TS_DC_START, 0, "depthcharge start"),
