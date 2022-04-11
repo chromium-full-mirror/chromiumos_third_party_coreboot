@@ -1,15 +1,20 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <acpi/acpi.h>
 #include <cpu/x86/smm.h>
 #include <ec/google/chromeec/ec.h>
 #include <ec/google/chromeec/smm.h>
 #include <elog.h>
 #include <intelblocks/smihandler.h>
+#include <intelblocks/xhci.h>
 #include <variant/ec.h>
 
 void mainboard_smi_sleep(u8 slp_typ)
 {
 	chromeec_smi_sleep(slp_typ, MAINBOARD_EC_S3_WAKE_EVENTS, MAINBOARD_EC_S5_WAKE_EVENTS);
+	/* USB sleep preparations */
+	if (slp_typ == ACPI_S5)
+		xhci_host_reset();
 }
 
 int mainboard_smi_apmc(u8 apmc)
