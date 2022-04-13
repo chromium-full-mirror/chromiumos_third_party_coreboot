@@ -67,8 +67,6 @@ union log_state {
 	};
 };
 
-#define LOG_FAST(state) (HAS_ONLY_FAST_CONSOLES || ((state).level == CONSOLE_LOG_FAST))
-
 static void wrap_interactive_printf(const char *fmt, ...)
 {
 	va_list args;
@@ -86,7 +84,7 @@ static void line_start(union log_state state)
 	   LOG_FAST mode, just write the marker to CBMC and exit -- the rest of this function
 	   implements the LOG_ALL case. */
 	unsigned char marker = BIOS_LOG_LEVEL_TO_MARKER(state.level);
-	if (LOG_FAST(state)) {
+	if (state.speed == CONSOLE_LOG_FAST) {
 		__cbmemc_tx_byte(marker);
 		return;
 	}
@@ -101,7 +99,7 @@ static void line_start(union log_state state)
 
 static void line_end(union log_state state)
 {
-	if (CONFIG(CONSOLE_USE_ANSI_ESCAPES) && !LOG_FAST(state))
+	if (CONFIG(CONSOLE_USE_ANSI_ESCAPES) && state.speed != CONSOLE_LOG_FAST)
 		wrap_interactive_printf(BIOS_LOG_ESCAPE_RESET);
 }
 
@@ -118,7 +116,7 @@ static void wrap_putchar(unsigned char byte, void *data)
 		line_started = true;
 	}
 
-	if (LOG_FAST(state))
+	if (state.speed == CONSOLE_LOG_FAST)
 		__cbmemc_tx_byte(byte);
 	else
 		console_tx_byte(byte);
@@ -141,7 +139,7 @@ int vprintk(int msg_level, const char *fmt, va_list args)
 	console_time_run();
 
 	i = vtxprintf(wrap_putchar, fmt, args, state.as_ptr);
-	if (LOG_FAST(state))
+	if (state.speed != CONSOLE_LOG_FAST)
 		console_tx_flush();
 
 	console_time_stop();
