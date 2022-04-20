@@ -3,6 +3,9 @@
 #include <libpayload.h>
 #include <pci.h>
 
+/* Set bits from `high` to `low` (inclusive). */
+#define GENMASK(high, low) (((~0ULL) << (low)) & (~0ULL >> (63 - (high))))
+
 #define PCIE_CFGNUM_REG			0x140
 #define PCIE_CFG_DEVFN(devfn)		((devfn) & GENMASK(7, 0))
 #define PCIE_CFG_BUS(bus)		(((bus) << 8) & GENMASK(15, 8))
