@@ -173,6 +173,7 @@ config MAINBOARD_PART_NUMBER
 	default "Moli" if BOARD_GOOGLE_MOLI
 	default "Kinox" if BOARD_GOOGLE_KINOX
 	default "Osiris" if BOARD_GOOGLE_OSIRIS
+	default "Mithrax" if BOARD_GOOGLE_MITHRAX
 
 config VARIANT_DIR
 	default "brya0" if BOARD_GOOGLE_BRYA0
@@ -201,6 +202,7 @@ config VARIANT_DIR
 	default "moli" if BOARD_GOOGLE_MOLI
 	default "kinox" if BOARD_GOOGLE_KINOX
 	default "osiris" if BOARD_GOOGLE_OSIRIS
+	default "mithrax" if BOARD_GOOGLE_MITHRAX
 
 config VBOOT
 	select VBOOT_EARLY_EC_SYNC
