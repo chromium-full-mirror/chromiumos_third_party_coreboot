@@ -304,6 +304,35 @@ static uint32_t cse_get_boot_state(void)
 	} __packed resp = {};
 	size_t resp_size = sizeof(resp);
 
+	/* For a CSE-Lite SKU, if the CSE is running RO FW and the board is
+	   running vboot in recovery mode, the CSE is expected to be in SOFT
+	   TEMP DISABLE state, hence, skip sending Get Boot Mode command. */
+	if (CONFIG(SOC_INTEL_CSE_LITE_SKU) && vboot_recovery_mode_enabled() &&
+	    cse_is_hfs1_com_soft_temp_disable()) {
+		printk(BIOS_INFO, "HECI: coreboot in recovery mode; found CSE in expected SOFT "
+		       "TEMP DISABLE state, skipping Get Boot State\n");
+		return 0;
+	}
+
+	/*
+	 * Prerequisites:
+	 * 1) HFSTS1 CWS is Normal
+	 * 2) HFSTS1 COM is Normal
+	 * 3) Only sent after DID (accomplished by compiling this into ramstage)
+	 */
+
+	if (cse_is_hfs1_com_soft_temp_disable()) {
+		printk(BIOS_ERR, "HECI: Prerequisites not met for sending Get Boot State\n");
+		if (CONFIG(SOC_INTEL_CSE_LITE_SKU))
+			return CSE_CMD_RESULT_ERROR;
+		return CSE_CMD_RESULT_DISABLED;
+	}
+
+	if (!cse_is_hfs1_cws_normal() || !cse_is_hfs1_com_normal()) {
+		printk(BIOS_ERR, "HECI: Prerequisites not met for sending Get Boot State\n");
+		return CSE_CMD_RESULT_ERROR;
+	}
+
 	heci_reset();
 
 	printk(BIOS_INFO, "HECI: Sending Get Boot State\n");
