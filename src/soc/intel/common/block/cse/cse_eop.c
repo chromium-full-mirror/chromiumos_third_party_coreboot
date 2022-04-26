@@ -354,6 +354,15 @@ static void cse_received_eop(void)
 {
 	uint32_t boot_state;
 
+	/*
+	 * If CSE is already hidden then accessing CSE registers would be wrong and will
+	 * receive junk, hence, return as CSE is already disabled.
+	 */
+	if (!is_cse_enabled()) {
+		printk(BIOS_DEBUG, "CSE is disabled, cannot send Get Boot State message\n");
+		return;
+	}
+
 	set_cse_device_state(PCH_DEVFN_CSE, DEV_ACTIVE);
 
 	timestamp_add_now(TS_ME_GET_BOOT_STATE_START);
