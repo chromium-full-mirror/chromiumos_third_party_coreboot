@@ -419,8 +419,10 @@ void tcss_configure(const struct typec_aux_bias_pads aux_bias_pads[MAX_TYPE_C_PO
 	if (port_map == NULL)
 		return;
 
-	for (i = 0; i < num_ports; i++)
-		tcss_init_mux(i, &port_map[i]);
+	if (!platform_is_resuming()) {
+		for (i = 0; i < num_ports; i++)
+			tcss_init_mux(i, &port_map[i]);
+	}
 
 	/* This should be performed before alternate modes are entered */
 	tcss_configure_aux_bias_pads(aux_bias_pads);
