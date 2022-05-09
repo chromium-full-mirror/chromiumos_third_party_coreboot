@@ -146,9 +146,9 @@ enum timestamp_id {
 	TS_ME_GET_BOOT_STATE_START = 991,
 	TS_ME_GET_BOOT_STATE_END = 992,
 
-	/* 1000+ reserved for payloads (1000-1200: ChromeOS depthcharge) */
+	/* 1000+ reserved for payloads */
 
-	/* Depthcharge entry IDs start at 1000 */
+	/* 1000-1200: Depthcharge */
 	TS_DC_START = 1000,
 
 	TS_RO_PARAMS_INIT = 1001,
@@ -166,6 +166,16 @@ enum timestamp_id {
 
 	TS_KERNEL_START = 1101,
 	TS_KERNEL_DECOMPRESSION = 1102,
+
+	/* 1200-1300: Chrome OS Hypervisor */
+	TS_CRHV_BOOT = 1200,
+	TS_CRHV_PLATFORM_INIT = 1201,
+	TS_CRHV_SERVICES_STARTED = 1202,
+	TS_CRHV_HW_PASSTRHOUGH_START = 1203,
+	TS_CRHV_HW_PASSTRHOUGH_END = 1204,
+	TS_CRHV_PSTORE_START = 1205,
+	TS_CRHV_PSTORE_END = 1206,
+	TS_CRHV_VMM_START = 1207,
 };
 
 #define TS_NAME_DEF(id, id_end, desc) {(id), (id_end),  STRINGIFY(id), (desc)}
@@ -337,6 +347,18 @@ static const struct timestamp_id_to_name {
 
 	TS_NAME_DEF(TS_KERNEL_START, 0, "jumping to kernel"),
 	TS_NAME_DEF(TS_KERNEL_DECOMPRESSION, 0, "starting kernel decompression/relocation"),
+
+	/* Chrome OS hypervisor */
+	TS_NAME_DEF(TS_CRHV_BOOT, 0, "hypervisor boot finished"),
+	TS_NAME_DEF(TS_CRHV_PLATFORM_INIT, 0, "hypervisor platform initialized"),
+	TS_NAME_DEF(TS_CRHV_SERVICES_STARTED, 0, "hypervisor services started"),
+	TS_NAME_DEF(TS_CRHV_HW_PASSTRHOUGH_START, TS_CRHV_HW_PASSTRHOUGH_END,
+		    "hypervisor hardware passtrough setup start"),
+	TS_NAME_DEF(TS_CRHV_HW_PASSTRHOUGH_END, 0,
+		    "hypervisor hardware passtrhough setup complete"),
+	TS_NAME_DEF(TS_CRHV_PSTORE_START, TS_CRHV_PSTORE_END, "hypervisor pstore init start"),
+	TS_NAME_DEF(TS_CRHV_PSTORE_END, 0, "hypervisor pstore init complete"),
+	TS_NAME_DEF(TS_CRHV_VMM_START, 0, "hypervisor OS VMM start"),
 };
 
 #endif
