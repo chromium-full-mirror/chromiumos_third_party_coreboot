@@ -242,7 +242,7 @@ static const struct pad_config gpio_table[] = {
 	/* F16 : NC */
 	PAD_NC(GPP_F16, NONE),
 	/* F17 : THC1_SPI2_RST# ==> EC_SOC_WAKE_ODL */
-	PAD_CFG_GPI_SCI(GPP_F17, NONE, DEEP, LEVEL, INVERT),
+	PAD_CFG_GPI_IRQ_WAKE_LOCK(GPP_F17, NONE, LEVEL, INVERT, LOCK_CONFIG),
 	/* F18 : THC1_SPI2_INT# ==> EC_IN_RW_OD */
 	PAD_CFG_GPI(GPP_F18, NONE, DEEP),
 	/* F19 : Not available */
