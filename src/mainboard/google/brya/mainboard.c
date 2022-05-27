@@ -70,6 +70,11 @@ void __weak variant_init(void)
 	/* default implementation does nothing */
 }
 
+void __weak fw_config_gpio_padbased_override(struct pad_config *padbased_table)
+{
+	/* default implementation does nothing */
+}
+
 static void mainboard_init(void *chip_info)
 {
 	const struct pad_config *base_pads;
