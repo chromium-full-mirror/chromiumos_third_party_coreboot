@@ -261,13 +261,6 @@ static void cb_parse_cbmem_entry(void *ptr, struct sysinfo_t *info)
 	}
 }
 
-static void cb_parse_pcie(void *ptr, struct sysinfo_t *info)
-{
-	const struct cb_pcie *pcie = ptr;
-
-	info->pcie_ctrl_base = pcie->ctrl_base;
-}
-
 static void cb_parse_rsdp(void *ptr, struct sysinfo_t *info)
 {
 	const struct cb_acpi_rsdp *cb_acpi_rsdp = ptr;
@@ -416,9 +409,6 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 #endif
 		case CB_TAG_ACPI_RSDP:
 			cb_parse_rsdp(ptr, info);
-			break;
-		case CB_TAG_PCIE:
-			cb_parse_pcie(ptr, info);
 			break;
 		default:
 			cb_parse_arch_specific(rec, info);
