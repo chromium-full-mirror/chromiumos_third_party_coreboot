@@ -18,5 +18,6 @@
 
 #include <baseboard/ec.h>
 #define EC_ENABLE_MULTIPLE_DPTF_PROFILES
-
+/* Enable MKBP for buttons and switches */
+#define EC_ENABLE_MKBP_DEVICE
 #endif
