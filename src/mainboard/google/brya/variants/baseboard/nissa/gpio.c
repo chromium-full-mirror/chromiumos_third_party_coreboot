@@ -232,11 +232,7 @@ static const struct pad_config gpio_table[] = {
 	/* F11 : NC */
 	PAD_NC(GPP_F11, NONE),
 	/* F12 : GSXDOUT ==> WWAN_RST_L */
-<<<<<<< HEAD   (402c7c UPSTREAM: mb/google/brya: Disable PCH USB2 phy power gating )
-	PAD_CFG_GPO(GPP_F12, 1, DEEP),
-=======
 	PAD_NC_LOCK(GPP_F12, NONE, LOCK_CONFIG),
->>>>>>> CHANGE (18eae3 UPSTREAM: mb/google/nissa: Rework LTE GPIO configuration)
 	/* F13 : GSXSLOAD ==> SOC_PEN_DETECT_R_ODL */
 	PAD_CFG_GPI_INT_LOCK(GPP_F13, NONE, EDGE_BOTH, LOCK_CONFIG),
 	/* F14 : GSXDIN ==> TCHPAD_INT_ODL */
