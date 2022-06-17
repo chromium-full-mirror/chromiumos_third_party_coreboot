@@ -30,9 +30,6 @@
 /* Get Firmware Version Command Id */
 #define MKHI_GEN_GET_FW_VERSION	0x2
 
-/* Get CSE Boot State */
-#define MKHI_GET_BOOT_STATE	0xa
-
 /* MEI bus disable command. Must be sent to MEI client endpoint, not MKHI */
 #define MEI_BUS_DISABLE_COMMAND	0xc
 
