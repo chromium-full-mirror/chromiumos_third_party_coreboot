@@ -173,7 +173,7 @@ void mainboard_romstage_entry(void)
 	if (!CONFIG(INTEL_TXT))
 		disable_intel_txt();
 
-	if (CONFIG(SOC_INTEL_CSE_LITE_SKU) && !s3wake)
+	if (CONFIG(SOC_INTEL_CSE_LITE_SYNC_IN_ROMSTAGE) && !s3wake)
 		cse_fw_sync();
 
 	/* Program to Disable UFS Controllers */
