@@ -27,7 +27,7 @@ config CR50_IMMEDIATELY_COMMIT_FW_SECDATA
 	default y if TPM_CR50
 
 config CHROMEOS_RAMOOPS
-	bool "Reserve space for Chrome OS ramoops"
+	bool "Reserve space for ChromeOS ramoops"
 	default y
 
 config CHROMEOS_RAMOOPS_RAM_SIZE

@@ -39,7 +39,7 @@ void chromeos_init_chromeos_acpi(void);
 enum cb_err get_dsm_calibration_from_key(const char *key, uint64_t *value);
 
 /*
- * Declaration for mainboards to use to generate ACPI-specific Chrome OS needs.
+ * Declaration for mainboards to use to generate ACPI-specific ChromeOS needs.
  */
 void chromeos_acpi_gpio_generate(void);
 
