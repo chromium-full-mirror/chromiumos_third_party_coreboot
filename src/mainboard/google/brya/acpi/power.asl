@@ -223,6 +223,7 @@ Method (NPON, 0, Serialized)
 	Else
 	{
 		PGON ()
+		\_SB.PCI0.PEG0.LD23 ()
 	}
 }
 
@@ -241,6 +242,7 @@ Method (NPOF, 0, Serialized)
 	}
 	Else
 	{
+		\_SB.PCI0.PEG0.DL23 ()
 		PGOF ()
 	}
 }
