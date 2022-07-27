@@ -211,6 +211,7 @@ config MAINBOARD_PART_NUMBER
 	default "Craask" if BOARD_GOOGLE_CRAASK
 	default "Skolas" if BOARD_GOOGLE_SKOLAS
 	default "Skolas4ES" if BOARD_GOOGLE_SKOLAS4ES
+	default "Gaelin4ADL" if BOARD_GOOGLE_GAELIN4ADL
 
 config VARIANT_DIR
 	default "brya0" if BOARD_GOOGLE_BRYA0
@@ -245,6 +246,7 @@ config VARIANT_DIR
 	default "craask" if BOARD_GOOGLE_CRAASK
 	default "skolas" if BOARD_GOOGLE_SKOLAS
 	default "skolas4es" if BOARD_GOOGLE_SKOLAS4ES
+	default "gaelin" if BOARD_GOOGLE_GAELIN4ADL
 
 config VBOOT
 	select VBOOT_EARLY_EC_SYNC if !BOARD_GOOGLE_BASEBOARD_NISSA
