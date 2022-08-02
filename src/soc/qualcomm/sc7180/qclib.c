@@ -35,8 +35,7 @@ int qclib_soc_blob_load(void)
 		printk(BIOS_INFO, "Using DCB for Longsys 1.8V memory based on fuse setting\n");
 		dcb = CONFIG_CBFS_PREFIX "/dcb_longsys1p8";
 	}
-	size = cbfs_boot_load_file(CONFIG_CBFS_PREFIX "/dcb",
-			_dcb, REGION_SIZE(dcb), CBFS_TYPE_RAW);
+	size = cbfs_boot_load_file(dcb, _dcb, REGION_SIZE(dcb), CBFS_TYPE_RAW);
 	if (!size)
 		return -1;
 	qclib_add_if_table_entry(QCLIB_TE_DCB_SETTINGS, _dcb, size, 0);
