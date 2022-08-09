@@ -6,6 +6,10 @@
  * re-evaluate their _PPC and _CST tables.
  */
 
+// DTT OEM variables change notification
+#define EC_OEM_VARIABLE_DATA_MASK	0x7
+#define INT3400_ODVP_CHANGED		0x88
+
 // Mainboard specific throttle handler
 #ifdef DPTF_ENABLE_CHARGER
 External (\_SB.DPTF.TCHG, DeviceObj)
@@ -13,6 +17,12 @@ External (\_SB.DPTF.TCHG, DeviceObj)
 /* Enable DPTC interface with AMD ALIB */
 #ifdef EC_ENABLE_AMD_DPTC_SUPPORT
 External(\_SB.DPTC, MethodObj)
+#endif
+
+#ifdef DPTF_ENABLE_OEM_VARIABLES
+External (\_SB.DPTF.ODVP, MethodObj)
+External (\_SB.DPTF.ODGT, MethodObj)
+External (\_SB.DPTF.ODUP, MethodObj)
 #endif
 
 Device (EC0)
@@ -327,6 +337,14 @@ Device (EC0)
 #ifdef EC_ENABLE_THROTTLING_HANDLER
 		Printf ("EC: THROTTLE START")
 		\_TZ.THRT (1)
+#endif
+
+#ifdef DPTF_ENABLE_OEM_VARIABLES
+		Local0 = ToInteger(EOVD) & EC_OEM_VARIABLE_DATA_MASK
+		\_SB.DPTF.ODUP(0, Local0)
+		Local0 = \_SB.DPTF.ODGT(0)
+		\_SB.DPTF.ODVP()
+		Notify (\_SB.DPTF, INT3400_ODVP_CHANGED)
 #endif
 	}
 

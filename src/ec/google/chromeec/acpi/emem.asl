@@ -51,3 +51,4 @@ Offset (0x80),
 ALS0, 16,	// ALS reading 0 in lux
 Offset (0xa6),
 GPUD, 8,	// GPU Data
+EOVD, 8,	// EC OEM Variable Data
