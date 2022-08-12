@@ -180,10 +180,20 @@ static void wrapper_init_core_prmrr(void *unused)
 
 void before_post_cpus_init(void)
 {
-	if (mp_run_on_all_cpus(&wrapper_init_core_prmrr, NULL) != CB_SUCCESS)
+	/*
+	 * Ensure all APs finish the task and continue if coreboot decides to
+	 * perform multiprocessor initialization using native coreboot drivers
+	 * instead using FSP MP PPI implementation.
+	 *
+	 * Ignore if USE_COREBOOT_MP_INIT is not enabled.
+	 */
+	if (!CONFIG(USE_COREBOOT_MP_INIT))
+		return;
+
+	if (mp_run_on_all_cpus(wrapper_init_core_prmrr, NULL) != CB_SUCCESS)
 		printk(BIOS_ERR, "core PRMRR sync failure\n");
 
-	if (mp_run_on_all_cpus(&wrapper_set_bios_done, NULL) != CB_SUCCESS)
+	if (mp_run_on_all_cpus(wrapper_set_bios_done, NULL) != CB_SUCCESS)
 		printk(BIOS_ERR, "Set BIOS Done failure\n");
 }
 
