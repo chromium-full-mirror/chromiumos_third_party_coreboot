@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+External (\_SB.PCI0.PMC.IPCS, MethodObj)
 
 /* Voltage rail control signals */
 #define GPIO_1V8_PWR_EN		GPP_E18
@@ -21,6 +22,18 @@
 
 /* 250ms in "Timer" units (i.e. 100ns increments) */
 #define MIN_OFF_TIME_TIMERS	2500000
+
+#define SRCCLK_DISABLE		0
+#define SRCCLK_ENABLE		1
+
+/*
+ * For board revs 3 and later, the PG pin for the NVVDD VR moved from
+ * GPP_E16 to GPP_E3. To accommodate this, this DSDT contains a Name
+ * that the `variant.c` code will write the correct GPIO # to depending
+ * on the board rev, and we'll use that instead.
+ */
+/* Dynamically-assigned NVVDD PG GPIO, set in _INI in SSDT */
+Name (NVPG, 0)
 
 /* Optimus Power Control State */
 Name (OPCS, OPTIMUS_POWER_CONTROL_DISABLE)
@@ -51,6 +64,32 @@ Name (DFCO, 0)
 /* GCOFF Timer */
 Name (GCOT, 0)
 
+#define PMC_SRCCLK_PIN	0x1
+#define PMC_SRCCLK_ENABLE	0x1
+#define PMC_SRCCLK_DISABLE	0x0
+
+#define PMC_RP_IDX		(1 << 27)
+#define PMC_RP_ENABLE		(1 << 27)
+#define PMC_RP_DISABLE		0x0
+
+/* Control the PCIe SRCCLK# for dGPU */
+Method (SRCC, 1, Serialized)
+{
+	If (!Arg0)
+	{
+		Local0 = PMC_SRCCLK_DISABLE
+		Local1 = PMC_RP_DISABLE
+	}
+	Else
+	{
+		Local0 = PMC_SRCCLK_ENABLE
+		Local1 = PMC_RP_ENABLE
+	}
+
+	\_SB.PCI0.PMC.IPCS (0xac, 0, 16, PMC_SRCCLK_PIN,
+			    Local0, PMC_RP_IDX, Local1)
+}
+
 /* "GC6 In", i.e. GC6 Entry Sequence */
 Method (GC6I, 0, Serialized)
 {
@@ -78,6 +117,9 @@ Method (GC6I, 0, Serialized)
 	/* Assert GPU_PERST_L */
 	\_SB.PCI0.CTXS (GPIO_GPU_PERST_L)
 
+	/* Disable PCIe SRCCLK# */
+	SRCC (SRCCLK_DISABLE)
+
 	Printf ("dGPU entered GC6")
 	GC6E = GC6_STATE_ENTERED
 }
@@ -86,6 +128,9 @@ Method (GC6I, 0, Serialized)
 Method (GC6O, 0, Serialized)
 {
 	GC6E = GC6_STATE_TRANSITION
+
+	/* Re-enable PCIe SRCCLK# */
+	SRCC (SRCCLK_ENABLE)
 
 	/* Deassert GPU_PERST_L */
 	\_SB.PCI0.STXS (GPIO_GPU_PERST_L)
@@ -222,6 +267,7 @@ Method (NPON, 0, Serialized)
 	}
 	Else
 	{
+		SRCC (SRCCLK_ENABLE)
 		PGON ()
 		\_SB.PCI0.PEG0.LD23 ()
 	}
@@ -244,6 +290,7 @@ Method (NPOF, 0, Serialized)
 	{
 		\_SB.PCI0.PEG0.DL23 ()
 		PGOF ()
+		SRCC (SRCCLK_DISABLE)
 	}
 }
 
