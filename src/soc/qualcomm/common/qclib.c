@@ -11,6 +11,7 @@
 #include <cbfs.h>
 #include <console/console.h>
 #include <mrc_cache.h>
+#include <reset.h>
 #include <soc/mmu.h>
 #include <soc/mmu_common.h>
 #include <soc/qclib_common.h>
@@ -204,6 +205,11 @@ void qclib_load_and_run(void)
 	mmu_disable();
 	mmu_restore_context(&pre_qclib_mmu_context);
 	mmu_enable();
+
+	if (qclib_cb_if_table.global_attributes & QCLIB_GA_FORCE_COLD_REBOOT) {
+		printk(BIOS_NOTICE, "QcLib requested cold reboot\n");
+		board_reset();
+	}
 
 	/* step through I/F table, handling return values */
 	for (i = 0; i < qclib_cb_if_table.num_entries; i++)
