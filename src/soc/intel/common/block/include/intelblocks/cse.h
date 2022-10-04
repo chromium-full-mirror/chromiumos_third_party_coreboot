@@ -31,6 +31,14 @@
 /* Get Firmware Version Command Id */
 #define MKHI_GEN_GET_FW_VERSION	0x2
 
+/* Firmware Feature Shipment Time State Override Command Id */
+#define MKHI_GEN_FW_FEATURE_SHIPMENT_OVER	0x14
+#define   ME_FW_FEATURE_PTT			BIT(29)
+
+/* Get Firmware Feature State Command Id */
+#define MKHI_FWCAPS_GET_FW_FEATURE_STATE	0x02
+#define   ME_FEATURE_STATE_RULE_ID		0x20
+
 /* MEI bus disable command. Must be sent to MEI client endpoint, not MKHI */
 #define MEI_BUS_DISABLE_COMMAND	0xc
 
@@ -556,5 +564,17 @@ bool is_cse_fw_update_required(void);
  * Returns true if CSE is booting from RW slot, false otherwise
  */
 bool is_cse_boot_to_rw(void);
+
+/*
+ * Changes Intel PTT feature state at runtime. Global reset is required after
+ * successful HECI command completion.
+ */
+void cse_enable_ptt(bool state);
+
+/*
+ * Queries CSE for runtime status of firmware features.
+ * Returns 0 on success and < 0 on failure.
+ */
+enum cb_err cse_get_fw_feature_state(uint32_t *feature_state);
 
 #endif // SOC_INTEL_COMMON_CSE_H
