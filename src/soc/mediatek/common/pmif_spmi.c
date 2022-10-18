@@ -25,6 +25,11 @@ DEFINE_BIT(SPI_EINT_MODE_GATING_EN, 13)
 DEFINE_BITFIELD(SPM_SLEEP_REQ_SEL, 1, 0)
 DEFINE_BITFIELD(SCP_SLEEP_REQ_SEL, 10, 9)
 
+__weak void pmif_spmi_iocfg(void)
+{
+	/* Do nothing. */
+}
+
 static int spmi_read_check(struct pmif *pmif_arb, int slvid)
 {
 	u32 rdata = 0;
