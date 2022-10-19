@@ -213,6 +213,7 @@ config MAINBOARD_PART_NUMBER
 	default "Skolas4ES" if BOARD_GOOGLE_SKOLAS4ES
 	default "Gaelin4ADL" if BOARD_GOOGLE_GAELIN4ADL
 	default "Lisbon" if BOARD_GOOGLE_LISBON
+	default "Gladios" if BOARD_GOOGLE_GLADIOS
 
 config VARIANT_DIR
 	default "brya0" if BOARD_GOOGLE_BRYA0
@@ -249,6 +250,7 @@ config VARIANT_DIR
 	default "skolas4es" if BOARD_GOOGLE_SKOLAS4ES
 	default "gaelin" if BOARD_GOOGLE_GAELIN4ADL
 	default "lisbon" if BOARD_GOOGLE_LISBON
+	default "gladios" if BOARD_GOOGLE_GLADIOS
 
 config VBOOT
 	select VBOOT_EARLY_EC_SYNC if !BOARD_GOOGLE_BASEBOARD_NISSA
