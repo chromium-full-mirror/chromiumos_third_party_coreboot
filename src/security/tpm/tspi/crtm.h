@@ -8,15 +8,34 @@
 #include <types.h>
 #include <vb2_sha.h>
 
-/* CRTM */
-#define TPM_CRTM_PCR 2
+#if CONFIG(TPM_LOG_CB) && CONFIG(TPM1)
+#  define TPM_MEASURE_ALGO VB2_HASH_SHA1
+#elif CONFIG(TPM_LOG_CB) && CONFIG(TPM2)
+#  define TPM_MEASURE_ALGO VB2_HASH_SHA256
+#elif CONFIG(TPM_LOG_TPM1)
+#  define TPM_MEASURE_ALGO VB2_HASH_SHA1
+#elif CONFIG(TPM_LOG_TPM2)
+#  if CONFIG(TPM_HASH_SHA1)
+#    define TPM_MEASURE_ALGO VB2_HASH_SHA1
+#  endif
+#  if CONFIG(TPM_HASH_SHA256)
+#    define TPM_MEASURE_ALGO VB2_HASH_SHA256
+#  endif
+#  if CONFIG(TPM_HASH_SHA384)
+#    define TPM_MEASURE_ALGO VB2_HASH_SHA384
+#  endif
+#  if CONFIG(TPM_HASH_SHA512)
+#    define TPM_MEASURE_ALGO VB2_HASH_SHA512
+#  endif
+#endif
 
-/* PCR for measuring data which changes during runtime
- * e.g. CMOS, NVRAM...
- */
-#define TPM_RUNTIME_DATA_PCR 3
-
-#define TPM_MEASURE_ALGO (CONFIG(TPM1) ? VB2_HASH_SHA1 : VB2_HASH_SHA256)
+#if !defined(TPM_MEASURE_ALGO)
+#  if !CONFIG(TPM_MEASURED_BOOT)
+#    define TPM_MEASURE_ALGO VB2_HASH_INVALID
+#  else
+#    error "Misconfiguration: failed to determine TPM hashing algorithm"
+#  endif
+#endif
 
 /**
  * Measure digests cached in TCPA log entries into PCRs
