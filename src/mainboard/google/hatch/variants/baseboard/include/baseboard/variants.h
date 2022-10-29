@@ -44,10 +44,19 @@ const struct pad_config *variant_early_gpio_table(size_t *num);
 /* Return ChromeOS gpio table and fill in number of entries. */
 const struct cros_gpio *variant_cros_gpios(size_t *num);
 
+/* Return GPIO pads that need to be configured after ramstage */
+const struct pad_config *variant_finalize_gpio_table(size_t *num);
+
 /* Modify devictree settings during ramstage. */
 void variant_devtree_update(void);
 
 /* Perform variant specific initialization early on in ramstage. */
 void variant_ramstage_init(void);
+
+/* Perform variant specific mainboard finalization */
+void variant_final(void);
+
+/* Perform variant specific mainboard initialization */
+void variant_mainboard_enable(struct device *dev);
 
 #endif /* BASEBOARD_VARIANTS_H */
