@@ -28,6 +28,7 @@
 #define TPM_ACCESS_REG    (TPM_LOCALITY_0_SPI_BASE + 0)
 #define TPM_STS_REG       (TPM_LOCALITY_0_SPI_BASE + 0x18)
 #define TPM_DATA_FIFO_REG (TPM_LOCALITY_0_SPI_BASE + 0x24)
+#define TPM_INTF_ID_REG   (TPM_LOCALITY_0_SPI_BASE + 0x30)
 #define TPM_DID_VID_REG   (TPM_LOCALITY_0_SPI_BASE + 0xf00)
 #define TPM_RID_REG       (TPM_LOCALITY_0_SPI_BASE + 0xf04)
 #define TPM_FW_VER	  (TPM_LOCALITY_0_SPI_BASE + 0xf90)
@@ -412,7 +413,7 @@ static const uint32_t supported_did_vids[] = {
 
 tpm_result_t tpm2_init(struct spi_slave *spi_if)
 {
-	uint32_t did_vid, status;
+	uint32_t did_vid, status, intf_id;
 	uint8_t cmd;
 	int retries;
 
