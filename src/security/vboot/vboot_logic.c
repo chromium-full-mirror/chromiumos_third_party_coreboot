@@ -281,7 +281,6 @@ void verstage_main(void)
 					"Next reboot will hibernate to reset TPM");
 			/* Command the EC to hibernate on next AP shutdown */
 			if (google_chromeec_reboot(
-					0,
 					EC_REBOOT_HIBERNATE,
 					EC_REBOOT_FLAG_ON_AP_SHUTDOWN)) {
 				printk(BIOS_ERR, "Failed to get EC to schedule hibernate");
