@@ -54,7 +54,7 @@ static const struct soc_amd_gpio override_early_gpio_table[] = {
 };
 
 /* This table is used by guybrush variant */
-static const struct soc_amd_gpio override_pcie_gpio_table[] = {
+static const struct soc_amd_gpio override_romstage_gpio_table[] = {
 	/* Unused TP195*/
 	PAD_NC(GPIO_18),
 	/* Unused TP217*/
@@ -79,10 +79,10 @@ const struct soc_amd_gpio *variant_early_override_gpio_table(size_t *size)
 	return override_early_gpio_table;
 }
 
-const struct soc_amd_gpio *variant_pcie_override_gpio_table(size_t *size)
+const struct soc_amd_gpio *variant_romstage_override_gpio_table(size_t *size)
 {
-	*size = ARRAY_SIZE(override_pcie_gpio_table);
-	return override_pcie_gpio_table;
+	*size = ARRAY_SIZE(override_romstage_gpio_table);
+	return override_romstage_gpio_table;
 }
 
 const struct soc_amd_gpio *variant_bootblock_override_gpio_table(size_t *size)
