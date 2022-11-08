@@ -6,6 +6,9 @@
  * re-evaluate their _PPC and _CST tables.
  */
 
+
+#define ACPI_NOTIFY_CROS_EC_PANIC	0xB0
+
 // Mainboard specific throttle handler
 #ifdef DPTF_ENABLE_CHARGER
 External (\_SB.DPTF.TCHG, DeviceObj)
@@ -365,6 +368,13 @@ Device (EC0)
 			Notify (BAT1, 0x80)
 		}
 #endif
+	}
+
+	// EC Panic
+	Method (_Q18, 0, NotSerialized)
+	{
+		Printf ("EC: PANIC")
+		Notify (CREC, ACPI_NOTIFY_CROS_EC_PANIC)
 	}
 
 	// MKBP interrupt.
