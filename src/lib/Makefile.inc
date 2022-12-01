@@ -333,6 +333,7 @@ $(objcbfs)/%.debug.rmod: $(objcbfs)/%.debug | $(RMODTOOL)
 $(obj)/%.elf.rmod: $(obj)/%.elf | $(RMODTOOL)
 	$(RMODTOOL) -i $< -o $@
 
+romstage-$(CONFIG_ROMSTAGE_ADA) += cb.ads
 ramstage-$(CONFIG_RAMSTAGE_ADA) += cb.ads
 
 ifneq (,$(filter y, $(CONFIG_RAMSTAGE_LIBHWBASE) $(CONFIG_ROMSTAGE_LIBHWBASE)))
