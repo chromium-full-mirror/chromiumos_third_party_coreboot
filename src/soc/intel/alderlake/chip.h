@@ -5,6 +5,7 @@
 
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <device/pci_ids.h>
+#include <drivers/intel/gma/gma.h>
 #include <intelblocks/cfg.h>
 #include <intelblocks/gpio.h>
 #include <intelblocks/gspi.h>
@@ -653,6 +654,11 @@ struct soc_intel_alderlake_config {
 	 * Default is set to 0 and set to 1 to skip the MBP HOB.
 	 */
 	bool skip_mbp_hob;
+
+	/*
+	 * IGD panel configuration
+	 */
+	struct i915_gpu_panel_config panel_cfg;
 };
 
 typedef struct soc_intel_alderlake_config config_t;
