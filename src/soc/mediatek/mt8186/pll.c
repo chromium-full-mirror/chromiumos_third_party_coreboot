@@ -525,11 +525,6 @@ void mt_pll_set_usb_clock(void)
 	SET32_BITFIELDS(&mtk_topckgen->usb_top_cfg, USB_TOP_CFG_MACRO_CTRL, 3);
 }
 
-void spmi_mux_select(void)
-{
-	mux_set_sel(&muxes[mux_sels[49].id], 4);
-}
-
 u32 mt_fmeter_get_freq_khz(enum fmeter_type type, u32 id)
 {
 	u32 output, count, clk_dbg_cfg, clk_misc_cfg_0, clk26cali_0, clk26cali_1;
