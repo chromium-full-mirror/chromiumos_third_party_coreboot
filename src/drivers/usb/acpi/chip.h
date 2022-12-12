@@ -66,6 +66,12 @@ struct drivers_usb_acpi_config {
 	 * E.g. On a mic: if it is one, it is recording white-noise.
 	 */
 	struct acpi_gpio privacy_gpio;
+
+	/*
+	 * Generate _DSM method Function 5 to disable USB U1/U2 transition
+	 * for a port
+	 */
+	bool usb_lpm_incapable;
 };
 
 /* Method to get PLD structure from USB device */
