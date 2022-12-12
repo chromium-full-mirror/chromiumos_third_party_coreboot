@@ -11,12 +11,6 @@
 #include <soc/spmi.h>
 #include <timer.h>
 
-__weak int pmif_spi_init(struct pmif *arb)
-{
-	/* do nothing */
-	return 0;
-}
-
 static int pmif_check_swinf(struct pmif *arb, long timeout_us, u32 expected_status)
 {
 	u32 reg_rdata;
