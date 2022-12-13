@@ -3,12 +3,9 @@
 #include <arch/stages.h>
 #include <console/console.h>
 #include <delay.h>
-#include <soc/cpu_ids.h>
 #include <soc/emi.h>
-#include <soc/mt6315.h>
 #include <soc/mt6366.h>
 #include <soc/pll_common.h>
-#include <soc/pmif.h>
 #include <soc/regulator.h>
 #include <soc/rtc.h>
 
@@ -30,11 +27,5 @@ void platform_romstage_main(void)
 	mt6366_init();
 	raise_little_cpu_freq();
 	rtc_boot();
-
-	if (MTK_CPU_ID_MT8186T == get_cpuid()) {
-		mtk_pmif_init();
-		mt6315_init();
-	}
-
 	mtk_dram_init();
 }
