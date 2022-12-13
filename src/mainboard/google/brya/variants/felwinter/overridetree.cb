@@ -354,6 +354,7 @@ chip soc/intel/alderlake
 							.horizontal_position = PLD_HORIZONTAL_POSITION_LEFT,
 							.shape = PLD_SHAPE_OVAL,
 							.group = ACPI_PLD_GROUP(1, 1)}"
+						register "usb_lpm_incapable" = "true"
 						device ref tcss_usb3_port2 on end
 					end
 					chip drivers/usb/acpi
