@@ -152,10 +152,10 @@ config DRIVER_TPM_I2C_BUS
 	default 0x1 if BOARD_GOOGLE_SKOLAS
 	default 0x1 if BOARD_GOOGLE_SKOLAS4ES
 	default 0x1 if BOARD_GOOGLE_LISBON
-	default 0x1 if BOARD_GOOGLE_GAELIN4ADL
 	default 0x1 if BOARD_GOOGLE_ZYDRON
 	default 0x1 if BOARD_GOOGLE_MARASOV
 	default 0x1 if BOARD_GOOGLE_GLADIOS
+	default 0x1 if BOARD_GOOGLE_GAELIN
 
 config DRIVER_TPM_I2C_ADDR
 	hex
@@ -218,7 +218,7 @@ config MAINBOARD_PART_NUMBER
 	default "Craask" if BOARD_GOOGLE_CRAASK
 	default "Skolas" if BOARD_GOOGLE_SKOLAS
 	default "Skolas4ES" if BOARD_GOOGLE_SKOLAS4ES
-	default "Gaelin4ADL" if BOARD_GOOGLE_GAELIN4ADL
+	default "Gaelin" if BOARD_GOOGLE_GAELIN
 	default "Lisbon" if BOARD_GOOGLE_LISBON
 	default "Gladios" if BOARD_GOOGLE_GLADIOS
 	default "Marasov" if BOARD_GOOGLE_MARASOV
@@ -258,7 +258,7 @@ config VARIANT_DIR
 	default "craask" if BOARD_GOOGLE_CRAASK
 	default "skolas" if BOARD_GOOGLE_SKOLAS
 	default "skolas4es" if BOARD_GOOGLE_SKOLAS4ES
-	default "gaelin" if BOARD_GOOGLE_GAELIN4ADL
+	default "gaelin" if BOARD_GOOGLE_GAELIN
 	default "lisbon" if BOARD_GOOGLE_LISBON
 	default "gladios" if BOARD_GOOGLE_GLADIOS
 	default "marasov" if BOARD_GOOGLE_MARASOV
