@@ -19,6 +19,7 @@
 #include <cpu/intel/cpu_ids.h>
 #include <timestamp.h>
 #include <string.h>
+#include <security/intel/txt/txt.h>
 
 #define FSP_SMBIOS_MEMORY_INFO_GUID	\
 {	\
@@ -137,6 +138,13 @@ void mainboard_romstage_entry(void)
 
 	if (CONFIG(SOC_INTEL_COMMON_BASECODE_DEBUG_FEATURE))
 		dbg_feature_cntrl_init();
+	/*
+	 * Disable Intel TXT if `CPU is unsupported` or `SoC haven't selected the config`.
+	 *
+	 * It would help to access VGA framebuffer prior calling into FSP-M.
+	 */
+	if (!CONFIG(INTEL_TXT))
+		disable_intel_txt();
 
 	s3wake = pmc_fill_power_state(ps) == ACPI_S3;
 
