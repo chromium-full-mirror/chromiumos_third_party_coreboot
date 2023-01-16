@@ -126,13 +126,9 @@ static void save_dimm_info(void)
 
 void mainboard_romstage_entry(void)
 {
-	bool s3wake;
 	struct chipset_power_state *ps = pmc_get_power_state();
+	bool s3wake = pmc_fill_power_state(ps) == ACPI_S3;
 
-	/* Program MCHBAR, DMIBAR, GDXBAR and EDRAMBAR */
-	systemagent_early_init();
-	/* Program SMBus base address and enable it */
-	smbus_common_init();
 	/* Initialize HECI interface */
 	cse_init(HECI1_BASE_ADDRESS);
 
@@ -146,10 +142,13 @@ void mainboard_romstage_entry(void)
 	if (!CONFIG(INTEL_TXT))
 		disable_intel_txt();
 
-	s3wake = pmc_fill_power_state(ps) == ACPI_S3;
-
 	if (CONFIG(SOC_INTEL_CSE_LITE_SYNC_IN_ROMSTAGE) && !s3wake)
 		cse_fw_sync();
+
+	/* Program MCHBAR, DMIBAR, GDXBAR and EDRAMBAR */
+	systemagent_early_init();
+	/* Program SMBus base address and enable it */
+	smbus_common_init();
 
 	/* Update coreboot timestamp table with CSE timestamps */
 	if (CONFIG(SOC_INTEL_CSE_PRE_CPU_RESET_TELEMETRY))
