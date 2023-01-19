@@ -21,6 +21,8 @@
 #include <string.h>
 #include <security/intel/txt/txt.h>
 
+#include "ux.h"
+
 #define FSP_SMBIOS_MEMORY_INFO_GUID	\
 {	\
 	0xd4, 0x71, 0x20, 0x9b, 0x54, 0xb0, 0x0c, 0x4e,	\
@@ -122,6 +124,16 @@ static void save_dimm_info(void)
 	}
 	mem_info->dimm_cnt = index;
 	printk(BIOS_DEBUG, "%d DIMMs found\n", mem_info->dimm_cnt);
+}
+
+void cse_board_fw_update(void)
+{
+	ux_inform_user_of_update_operation("CSE update");
+}
+
+void cse_board_reset(void)
+{
+	early_graphics_stop();
 }
 
 void mainboard_romstage_entry(void)
