@@ -350,11 +350,6 @@ __weak void cse_board_reset(void)
 	/* Default weak implementation, does nothing. */
 }
 
-__weak void cse_board_fw_update(void)
-{
-	/* Default weak implementation, does nothing. */
-}
-
 /* Set the CSE's next boot partition and issues system reset */
 static bool cse_set_and_boot_from_next_bp(enum boot_partition_id bp)
 {
@@ -744,7 +739,6 @@ static enum csme_failure_reason cse_trigger_fw_update(const struct cse_bp_info *
 		goto error_exit;
 	}
 
-	cse_board_fw_update();
 	rv = cse_update_rw(cse_bp_info, cse_cbfs_rw, size, target_rdev);
 
 error_exit:
