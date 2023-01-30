@@ -163,6 +163,14 @@ void mainboard_romstage_entry(void)
 	/* Initialize HECI interface */
 	heci_init(HECI1_BASE_ADDRESS);
 
+	/*
+	 * Disable Intel TXT if `CPU is unsupported` or `SoC haven't selected the config`.
+	 *
+	 * It would help to access VGA framebuffer prior calling into FSP-M.
+	 */
+	if (!CONFIG(INTEL_TXT))
+		disable_intel_txt();
+
 	if (CONFIG(SOC_INTEL_CSE_LITE_SKU) && !s3wake) {
 		timestamp_add_now(TS_CSE_FW_SYNC_START);
 		cse_fw_sync();
@@ -184,14 +192,6 @@ void mainboard_romstage_entry(void)
 	systemagent_early_init();
 	/* Program SMBus base address and enable it */
 	smbus_common_init();
-
-	/*
-	 * Disable Intel TXT if `CPU is unsupported` or `SoC haven't selected the config`.
-	 *
-	 * It would help to access VGA framebuffer prior calling into FSP-M.
-	 */
-	if (!CONFIG(INTEL_TXT))
-		disable_intel_txt();
 
 	/* Update coreboot timestamp table with CSE timestamps */
 	if (CONFIG(SOC_INTEL_CSE_PRE_CPU_RESET_TELEMETRY))
