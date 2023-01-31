@@ -158,7 +158,7 @@ static void eventlog_print_type(const struct event_header *event)
 		{ELOG_TYPE_EC_DEVICE_EVENT, "EC Device"},
 		{ELOG_TYPE_EXTENDED_EVENT, "Extended Event"},
 		{ELOG_TYPE_CROS_DIAGNOSTICS, "Diagnostics Mode"},
-
+		{ELOG_TYPE_FW_EARLY_SOL, "Early Sign of Life"},
 		{ELOG_TYPE_EOL, "End of log"},
 	};
 
@@ -539,6 +539,12 @@ static int eventlog_print_data(const struct event_header *event)
 		{0, NULL},
 	};
 
+	static const struct valstr early_sol_path_types[] = {
+		{ELOG_FW_EARLY_SOL_CSE_SYNC, "CSE Sync Early SOL Screen Shown"},
+		{ELOG_FW_EARLY_SOL_MRC, "MRC Early SOL Screen Shown"},
+		{0, NULL},
+	};
+
 	switch (event->type) {
 	case ELOG_TYPE_LOG_CLEAR: {
 		const uint16_t *bytes = event_get_data(event);
@@ -623,6 +629,11 @@ static int eventlog_print_data(const struct event_header *event)
 	case ELOG_TYPE_CROS_DIAGNOSTICS: {
 		const uint8_t *type = event_get_data(event);
 		eventlog_printf("%s", val2str(*type, cros_diagnostics_types));
+	}
+	case ELOG_TYPE_FW_EARLY_SOL: {
+		const uint8_t *sol_event = event_get_data(event);
+		eventlog_printf("%s", val2str(*sol_event, early_sol_path_types));
+		break;
 	}
 	default:
 		break;
