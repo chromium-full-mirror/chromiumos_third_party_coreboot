@@ -157,6 +157,7 @@ config DRIVER_TPM_I2C_BUS
 	default 0x1 if BOARD_GOOGLE_GAELIN
 	default 0x1 if BOARD_GOOGLE_GAELIN4ADL
 	default 0x1 if BOARD_GOOGLE_OMNIGUL
+	default 0x1 if BOARD_GOOGLE_CONSTITUTION
 
 config DRIVER_TPM_I2C_ADDR
 	hex
@@ -225,6 +226,7 @@ config MAINBOARD_PART_NUMBER
 	default "Marasov" if BOARD_GOOGLE_MARASOV
 	default "Zydron" if BOARD_GOOGLE_ZYDRON
 	default "Omnigul" if BOARD_GOOGLE_OMNIGUL
+	default "Constitution" if BOARD_GOOGLE_CONSTITUTION
 
 config VARIANT_DIR
 	default "brya0" if BOARD_GOOGLE_BRYA0
@@ -265,6 +267,7 @@ config VARIANT_DIR
 	default "marasov" if BOARD_GOOGLE_MARASOV
 	default "zydron" if BOARD_GOOGLE_ZYDRON
 	default "omnigul" if BOARD_GOOGLE_OMNIGUL
+	default "constitution" if BOARD_GOOGLE_CONSTITUTION
 
 config VBOOT
 	select VBOOT_EARLY_EC_SYNC if !BOARD_GOOGLE_BASEBOARD_NISSA
