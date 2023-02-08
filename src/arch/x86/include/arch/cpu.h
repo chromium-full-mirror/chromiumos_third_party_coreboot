@@ -216,6 +216,8 @@ struct device;
 #define CPUID_EXACT_MATCH_MASK		0xffffffff
 #define CPUID_ALL_STEPPINGS_MASK	0xfffffff0
 
+#define CPU_TABLE_END	{ X86_VENDOR_INVALID, 0, 0 }
+
 struct cpu_device_id {
 	unsigned int vendor;
 	uint32_t device;
