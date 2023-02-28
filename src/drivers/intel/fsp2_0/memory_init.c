@@ -24,6 +24,10 @@
 #include <types.h>
 #include <mode_switch.h>
 
+#if CONFIG(SOC_INTEL_COMMON_BASECODE_TOM)
+#include <intelbasecode/tom.h>
+#endif
+
 static uint8_t temp_ram[CONFIG_FSP_TEMP_RAM_SIZE] __aligned(sizeof(uint64_t));
 
 static void save_memory_training_data(bool s3wake, uint32_t fsp_version)
@@ -271,6 +275,12 @@ static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 					memmap) != CB_SUCCESS)
 		die_with_post_code(POST_INVALID_VENDOR_BINARY,
 			"FSPM_ARCH_UPD not found!\n");
+
+	/* Early caching of TOM region if valid mrc cache data is found */
+#if (CONFIG(SOC_INTEL_COMMON_BASECODE_TOM))
+	if (arch_upd->NvsBufferPtr)
+		early_tom_enable_cache_range();
+#endif
 
 	/* Give SoC and mainboard a chance to update the UPD */
 	platform_fsp_memory_init_params_cb(&fspm_upd, fsp_version);
