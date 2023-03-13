@@ -218,6 +218,7 @@ config MAINBOARD_PART_NUMBER
 	default "Lisbon" if BOARD_GOOGLE_LISBON
 	default "Zydron" if BOARD_GOOGLE_ZYDRON
 	default "Gladios" if BOARD_GOOGLE_GLADIOS
+	default "Uldren" if BOARD_GOOGLE_ULDREN
 
 config VARIANT_DIR
 	default "brya0" if BOARD_GOOGLE_BRYA0
@@ -258,6 +259,7 @@ config VARIANT_DIR
 	default "lisbon" if BOARD_GOOGLE_LISBON
 	default "zydron" if BOARD_GOOGLE_ZYDRON
 	default "gladios" if BOARD_GOOGLE_GLADIOS
+	default "uldren" if BOARD_GOOGLE_ULDREN
 
 config VBOOT
 	select VBOOT_EARLY_EC_SYNC if !BOARD_GOOGLE_BASEBOARD_NISSA
