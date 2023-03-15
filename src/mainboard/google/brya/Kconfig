@@ -230,6 +230,7 @@ config MAINBOARD_PART_NUMBER
 	default "Zydron" if BOARD_GOOGLE_ZYDRON
 	default "Gladios" if BOARD_GOOGLE_GLADIOS
 	default "Uldren" if BOARD_GOOGLE_ULDREN
+	default "Yavilla" if BOARD_GOOGLE_YAVILLA
 
 config VARIANT_DIR
 	default "brya0" if BOARD_GOOGLE_BRYA0
@@ -271,6 +272,7 @@ config VARIANT_DIR
 	default "zydron" if BOARD_GOOGLE_ZYDRON
 	default "gladios" if BOARD_GOOGLE_GLADIOS
 	default "uldren" if BOARD_GOOGLE_ULDREN
+	default "yavilla" if BOARD_GOOGLE_YAVILLA
 
 config VBOOT
 	select VBOOT_EARLY_EC_SYNC if !BOARD_GOOGLE_BASEBOARD_NISSA
