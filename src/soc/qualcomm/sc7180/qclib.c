@@ -18,7 +18,7 @@ static int dcb_fuse_longsys1p8(void)
 	return bit_value;
 }
 
-int qclib_soc_blob_load(void)
+int qclib_soc_override(struct qclib_cb_if_table *table)
 {
 	size_t size;
 	const char *dcb = CONFIG_CBFS_PREFIX "/dcb";
@@ -39,6 +39,11 @@ int qclib_soc_blob_load(void)
 	if (!size)
 		return -1;
 	qclib_add_if_table_entry(QCLIB_TE_DCB_SETTINGS, _dcb, size, 0);
+
+	/* Lazor boards need a hack to limit DDR frequency on certain memory parts to work
+	   around a stability issue. */
+	if (CONFIG(BOARD_GOOGLE_LAZOR))
+		table->global_attributes |= QCLIB_GA_DDR_FMAX_LIMIT_HYNIX8GB;
 
 	return 0;
 }

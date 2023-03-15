@@ -111,7 +111,7 @@ static void dump_te_table(void)
 	}
 }
 
-__weak int qclib_soc_blob_load(void) { return 0; }
+__weak int qclib_soc_override(struct qclib_cb_if_table *table) { return 0; }
 
 void qclib_load_and_run(void)
 {
@@ -141,12 +141,6 @@ void qclib_load_and_run(void)
 	qclib_add_if_table_entry(QCLIB_TE_DDR_TRAINING_DATA,
 				 _ddr_training, REGION_SIZE(ddr_training), 0);
 
-	/* hook for SoC specific binary blob loads */
-	if (qclib_soc_blob_load()) {
-		printk(BIOS_ERR, "qclib_soc_blob_load failed\n");
-		goto fail;
-	}
-
 	/* Enable QCLib serial output, based on Kconfig */
 	if (CONFIG(CONSOLE_SERIAL))
 		qclib_cb_if_table.global_attributes =
@@ -170,6 +164,12 @@ void qclib_load_and_run(void)
 		printk(BIOS_INFO, "qcsdi.entry[%p]\n", qcsdi.entry);
 	}
 
+	/* hook for SoC specific binary blob loads */
+	if (qclib_soc_override(&qclib_cb_if_table)) {
+		printk(BIOS_ERR, "qclib_soc_override failed\n");
+		goto fail;
+	}
+
 	dump_te_table();
 
 	/* Attempt to load QCLib elf */
@@ -185,7 +185,7 @@ void qclib_load_and_run(void)
 	prog_set_entry(&qclib, prog_entry(&qclib), &qclib_cb_if_table);
 
 	printk(BIOS_DEBUG, "\n\n\nQCLib is about to Initialize DDR\n");
-	printk(BIOS_DEBUG, "Global Attributes[%x]..Table Entries Count[%d]\n",
+	printk(BIOS_DEBUG, "Global Attributes[%#x]..Table Entries Count[%d]\n",
 		qclib_cb_if_table.global_attributes,
 		qclib_cb_if_table.num_entries);
 	printk(BIOS_DEBUG, "Jumping to QCLib code at %p(%p)\n",
