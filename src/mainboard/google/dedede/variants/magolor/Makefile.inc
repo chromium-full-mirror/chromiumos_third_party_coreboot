@@ -2,3 +2,5 @@
 
 ramstage-$(CONFIG_FW_CONFIG) += variant.c
 ramstage-y += gpio.c
+ramstage-y += ramstage.c
+
