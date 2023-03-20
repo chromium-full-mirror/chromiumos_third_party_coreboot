@@ -407,7 +407,7 @@ send_one_message(uint32_t hdr, const void *buff)
  * Returns CSE_TX_RX_SUCCESS on success and other enum values on failure scenarios.
  * Also, in case of errors, heci_reset() is triggered.
  */
-enum cse_tx_rx_status
+static enum cse_tx_rx_status
 heci_send(const void *msg, size_t len, uint8_t host_addr, uint8_t client_addr)
 {
 	uint8_t retry;
