@@ -156,8 +156,8 @@ uint32_t get_pstate_core_power(msr_t pstate_def)
 		/* Voltage off for VID codes 0xF8 to 0xFF */
 		voltage_in_uvolts = 0;
 	} else {
-		voltage_in_uvolts =
-			SERIAL_VID_MAX_MICROVOLTS - (SERIAL_VID_DECODE_MICROVOLTS * core_vid);
+		voltage_in_uvolts = SERIAL_VID_2_MAX_MICROVOLTS -
+					(SERIAL_VID_2_DECODE_MICROVOLTS * core_vid);
 	}
 
 	/* Power in mW */
