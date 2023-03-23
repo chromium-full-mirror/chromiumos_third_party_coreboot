@@ -145,7 +145,7 @@ uint32_t get_pstate_core_power(msr_t pstate_def)
 	pstate_reg.raw = pstate_def.raw;
 
 	/* Core voltage ID */
-	core_vid = pstate_reg.cpu_vid_0_7;
+	core_vid = pstate_reg.cpu_vid_0_7 | pstate_reg.cpu_vid_8 << 8;
 
 	/* Current value in amps */
 	current_value_amps = pstate_reg.idd_value;
