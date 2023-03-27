@@ -50,13 +50,13 @@
  * +                +-----------+-------+-------+---------+-------------+----------+
  * |                |    GT     |  3.2  |  3.2  |    55   |      86     |  28000   |
  * +----------------+-----------+-------+-------+---------+-------------+----------+
- * | RPL-P 482(28W) |    IA     |  2.3  |  2.3  |   102   |      54     |  28000   |
+ * | RPL-P 482(28W) |    IA     |  2.3  |  2.3  |   102   |      33     |  28000   |
  * +                +-----------+-------+-------+---------+-------------+----------+
- * |                |    GT     |  3.2  |  3.2  |    55   |      54     |  28000   |
+ * |                |    GT     |  3.2  |  3.2  |    55   |      33     |  28000   |
  * +----------------+-----------+-------+-------+---------+-------------+----------+
- * | RPL-P 282(15W) |    IA     |  2.8  |  2.8  |    80   |      41     |  28000   |
+ * | RPL-P 282(15W) |    IA     |  2.8  |  2.8  |    80   |      22     |  28000   |
  * +                +-----------+-------+-------+---------+-------------+----------+
- * |                |    GT     |  3.2  |  3.2  |    40   |      41     |  28000   |
+ * |                |    GT     |  3.2  |  3.2  |    40   |      22     |  28000   |
  * +----------------+-----------+-------+-------+---------+-------------+----------+
  */
 
@@ -191,10 +191,10 @@ static const struct vr_lookup vr_config_tdc_currentlimit[] = {
 	{ PCI_DID_INTEL_ADL_P_ID_7, 15, VR_CFG_ALL_DOMAINS_TDC_CURRENT(20, 20) },
 	{ PCI_DID_INTEL_ADL_P_ID_10, 15, VR_CFG_ALL_DOMAINS_TDC_CURRENT(20, 20) },
 	{ PCI_DID_INTEL_RPL_P_ID_1, 45, VR_CFG_ALL_DOMAINS_TDC_CURRENT(86, 86) },
-	{ PCI_DID_INTEL_RPL_P_ID_2, 28, VR_CFG_ALL_DOMAINS_TDC_CURRENT(54, 54) },
-	{ PCI_DID_INTEL_RPL_P_ID_3, 15, VR_CFG_ALL_DOMAINS_TDC_CURRENT(41, 41) },
-	{ PCI_DID_INTEL_RPL_P_ID_4, 15, VR_CFG_ALL_DOMAINS_TDC_CURRENT(41, 41) },
-	{ PCI_DID_INTEL_RPL_P_ID_5, 15, VR_CFG_ALL_DOMAINS_TDC_CURRENT(41, 41) },
+	{ PCI_DID_INTEL_RPL_P_ID_2, 28, VR_CFG_ALL_DOMAINS_TDC_CURRENT(33, 33) },
+	{ PCI_DID_INTEL_RPL_P_ID_3, 15, VR_CFG_ALL_DOMAINS_TDC_CURRENT(22, 22) },
+	{ PCI_DID_INTEL_RPL_P_ID_4, 15, VR_CFG_ALL_DOMAINS_TDC_CURRENT(22, 22) },
+	{ PCI_DID_INTEL_RPL_P_ID_5, 15, VR_CFG_ALL_DOMAINS_TDC_CURRENT(22, 22) },
 	{ PCI_DID_INTEL_ADL_S_ID_1,  150, VR_CFG_ALL_DOMAINS_TDC_CURRENT(132, 132) },
 	{ PCI_DID_INTEL_ADL_S_ID_1,  125, VR_CFG_ALL_DOMAINS_TDC_CURRENT(132, 132) },
 	{ PCI_DID_INTEL_ADL_S_ID_1,  65,  VR_CFG_ALL_DOMAINS_TDC_CURRENT(89, 89) },
