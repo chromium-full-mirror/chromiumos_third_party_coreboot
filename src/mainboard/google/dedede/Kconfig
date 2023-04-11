@@ -119,6 +119,7 @@ config MAINBOARD_PART_NUMBER
 	default "Bugzzy" if BOARD_GOOGLE_BUGZZY
 	default "Beadrix" if BOARD_GOOGLE_BEADRIX
 	default "Shotzo" if BOARD_GOOGLE_SHOTZO
+	default "Taranza" if BOARD_GOOGLE_TARANZA
 
 config MAX_CPUS
 	int
@@ -158,6 +159,7 @@ config VARIANT_DIR
 	default "bugzzy" if BOARD_GOOGLE_BUGZZY
 	default "beadrix" if BOARD_GOOGLE_BEADRIX
 	default "shotzo" if BOARD_GOOGLE_SHOTZO
+	default "taranza" if BOARD_GOOGLE_TARANZA
 
 endif #BOARD_GOOGLE_BASEBOARD_DEDEDE
 
