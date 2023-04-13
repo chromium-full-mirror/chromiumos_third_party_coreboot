@@ -599,10 +599,4 @@ void soc_disable_heci1_using_pcr(void);
  */
 void cse_get_telemetry_data(void);
 
-/*
- * The function sends a HECI command to get the partition information of the shared ID.
- * The retrieved partition is stored in the memory pointed to by the resp pointer.
- * The function returns 0 on success and < 0 on failure.
- */
-enum cb_err cse_get_fpt_partition_info(enum fpt_partition_id id, struct fw_version_resp *resp);
 #endif // SOC_INTEL_COMMON_CSE_H
