@@ -135,6 +135,18 @@ struct fw_version_resp {
 	struct flash_partition_data manifest_data;
 };
 
+/* ISHC version */
+struct cse_fw_ish_version_info {
+	struct fw_version prev_cse_fw_version;
+	struct fw_version cur_ish_fw_version;
+};
+
+/* CSE and ISHC version */
+struct cse_fw_partition_info {
+	struct fw_version cur_cse_fw_version;
+	struct cse_fw_ish_version_info ish_partition_info;
+};
+
 /* CSE RX and TX error status */
 enum cse_tx_rx_status {
 	/*
