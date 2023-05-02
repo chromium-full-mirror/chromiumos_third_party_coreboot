@@ -403,3 +403,5 @@ endif
 ramstage-y += uuid.c
 
 romstage-$(CONFIG_SPD_CACHE_IN_FMAP) += spd_cache.c
+
+romstage-y += ux_locales.c
