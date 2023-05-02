@@ -430,3 +430,5 @@ cbfs-files-$(NEED_CBFS_POINTER) += header_pointer
 header_pointer-file := master_header_pointer.c:struct
 header_pointer-position := -4
 header_pointer-type := "cbfs header"
+
+romstage-y += ux_locales.c
