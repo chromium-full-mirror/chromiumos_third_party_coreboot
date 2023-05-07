@@ -2,6 +2,8 @@ romstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_CSE) += cse.c
 ramstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_CSE) += cse.c
 romstage-$(CONFIG_SOC_INTEL_CSE_LITE_SKU) += cse_lite.c
 ramstage-$(CONFIG_SOC_INTEL_CSE_LITE_SKU) += cse_lite.c
+ramstage-$(CONFIG_SOC_INTEL_CSE_LITE_SKU) += cse_lite_cmos.c
+romstage-$(CONFIG_SOC_INTEL_CSE_LITE_SKU) += cse_lite_cmos.c
 ramstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_CSE) += disable_heci.c
 smm-$(CONFIG_SOC_INTEL_COMMON_BLOCK_CSE) += disable_heci.c
 
