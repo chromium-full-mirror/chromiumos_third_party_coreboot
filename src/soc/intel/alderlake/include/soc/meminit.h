@@ -109,7 +109,7 @@ struct mb_cfg {
 	uint8_t LpDdrDqDqsReTraining;
 
 	/* Enable/Disable Cs Pi Start with High value in Ect */
-	uint8_t CsPiStartHighinEct;
+	uint8_t cs_pi_start_high_in_ect;
 
 };
 

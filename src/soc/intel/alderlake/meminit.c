@@ -241,7 +241,7 @@ void memcfg_init(FSPM_UPD *memupd, const struct mb_cfg *mb_cfg,
 	FSP_M_CONFIG *mem_cfg = &memupd->FspmConfig;
 
 #if CONFIG(SOC_INTEL_RAPTORLAKE)
-	mem_cfg->CsPiStartHighinEct = mb_cfg->CsPiStartHighinEct;
+	mem_cfg->CsPiStartHighinEct = mb_cfg->cs_pi_start_high_in_ect;
 #endif
 	mem_cfg->ECT = mb_cfg->ect;
 	mem_cfg->UserBd = mb_cfg->UserBd;
