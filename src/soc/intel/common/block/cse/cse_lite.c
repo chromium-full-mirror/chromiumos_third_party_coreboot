@@ -1200,52 +1200,6 @@ enum cb_err cse_get_fpt_partition_info(enum fpt_partition_id id, struct fw_versi
 	return send_get_fpt_partition_info_cmd(id, resp);
 }
 
-/*
- * Helper function to read ISH version from CSE FPT using HECI command.
- *
- * The HECI command only be executed after memory has been initialized.
- * This is because the command relies on resources that are not available
- * until DRAM initialization command has been sent.
- */
-static void store_ish_version(void)
-{
-	if (!ENV_RAMSTAGE)
-		return;
-
-	if (vboot_recovery_mode_enabled())
-		return;
-
-	struct cse_fw_partition_info *version;
-	size_t size = sizeof(struct fw_version);
-	version = cbmem_find(CBMEM_ID_CSE_PARTITION_VERSION);
-	if (version == NULL)
-		return;
-
-	/*
-	 * Compare if stored cse version (from the previous boot) is same as current
-	 * running cse version.
-	 */
-	if (memcmp(&version->ish_partition_info.prev_cse_fw_version,
-		&version->cur_cse_fw_version, sizeof(struct fw_version))) {
-		/*
-		 * Current running CSE version is different than previous stored CSE version
-		 * which could be due to CSE update or rollback, hence, need to send ISHC
-		 * partition info cmd to know the currently running ISH version.
-		 */
-
-		struct fw_version_resp resp;
-		if (cse_get_fpt_partition_info(FPT_PARTITION_NAME_ISHC, &resp) == CB_SUCCESS) {
-			/* Update stored cse version with current version */
-			memcpy(&(version->ish_partition_info.prev_cse_fw_version),
-				&(version->cur_cse_fw_version), size);
-
-			/* Since cse version has been updated, ish version needs to be updated. */
-			memcpy(&(version->ish_partition_info.cur_ish_fw_version),
-				&(resp.manifest_data.version), size);
-		}
-	}
-}
-
 static void ramstage_cse_fw_sync(void *unused)
 {
 	bool s3wake;
@@ -1256,10 +1210,8 @@ static void ramstage_cse_fw_sync(void *unused)
 		cse_fw_sync();
 		timestamp_add_now(TS_CSE_FW_SYNC_END);
 
-		if (CONFIG(SOC_INTEL_STORE_CSE_FPT_PARTITION_VERSION)) {
+		if (CONFIG(SOC_INTEL_STORE_CSE_FPT_PARTITION_VERSION))
 			store_cse_rw_fw_version();
-			store_ish_version();
-		}
 	}
 }
 
@@ -1268,12 +1220,10 @@ static void ramstage_store_cse_fpt_info(void *unused)
 	if (acpi_get_sleep_type() == ACPI_S3)
 		return;
 
-	/* Store the CSE/ISH RW Firmware Version into CBMEM */
+	/* Store the CSE RW Firmware Version into CBMEM */
 	if (CONFIG(SOC_INTEL_CSE_LITE_SYNC_IN_ROMSTAGE)
-		&& CONFIG(SOC_INTEL_STORE_CSE_FPT_PARTITION_VERSION)) {
+		&& CONFIG(SOC_INTEL_STORE_CSE_FPT_PARTITION_VERSION))
 		store_cse_rw_fw_version();
-		store_ish_version();
-	}
 }
 
 BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, ramstage_store_cse_fpt_info, NULL);
