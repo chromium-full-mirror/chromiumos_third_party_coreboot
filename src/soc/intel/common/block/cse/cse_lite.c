@@ -1184,8 +1184,7 @@ static enum cb_err send_get_fpt_partition_info_cmd(enum fpt_partition_id id,
 	return CB_SUCCESS;
 }
 
-static enum cb_err cse_get_fpt_partition_info(enum fpt_partition_id id,
-		 struct fw_version_resp *resp)
+enum cb_err cse_get_fpt_partition_info(enum fpt_partition_id id, struct fw_version_resp *resp)
 {
 	if (vboot_recovery_mode_enabled()) {
 		printk(BIOS_WARNING,
