@@ -15,6 +15,7 @@
 
 #include <arch/cpu.h>
 #include <stdbool.h>
+#include <stddef.h>
 
 static inline void wbinvd(void)
 {
@@ -32,6 +33,7 @@ static inline void clflush(void *addr)
 }
 
 bool clflush_supported(void);
+void clflush_region(const uintptr_t start, const size_t size);
 
 /* The following functions require the __always_inline due to AMD
  * function STOP_CAR_AND_CPU that disables cache as
