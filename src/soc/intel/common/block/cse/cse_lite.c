@@ -10,6 +10,7 @@
 #include <security/vboot/misc.h>
 #include <soc/intel/common/reset.h>
 #include <arch/cpu.h>
+#include <timestamp.h>
 
 #define BPDT_HEADER_SZ		sizeof(struct bpdt_header)
 #define BPDT_ENTRY_SZ		sizeof(struct bpdt_entry)
@@ -1006,7 +1007,7 @@ static uint8_t cse_sub_part_fw_update(const struct cse_bp_info *cse_bp_info)
 	return handle_cse_sub_part_fw_update_rv(rv);
 }
 
-void cse_fw_sync(void)
+static void do_cse_fw_sync(void)
 {
 	static struct get_bp_info_rsp cse_bp_info;
 
@@ -1078,6 +1079,13 @@ void cse_fw_sync(void)
 		printk(BIOS_ERR, "cse_lite: Failed to switch to RW\n");
 		cse_trigger_vboot_recovery(CSE_LITE_SKU_RW_SWITCH_ERROR);
 	}
+}
+
+void cse_fw_sync(void)
+{
+	timestamp_add_now(TS_CSE_FW_SYNC_START);
+	do_cse_fw_sync();
+	timestamp_add_now(TS_CSE_FW_SYNC_END);
 }
 
 static enum cb_err send_get_fpt_partition_info_cmd(enum fpt_partition_id id,
