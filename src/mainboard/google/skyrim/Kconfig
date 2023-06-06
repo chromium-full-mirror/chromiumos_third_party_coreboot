@@ -62,6 +62,7 @@ config DRIVER_TPM_I2C_ADDR
 
 config AMDFW_CONFIG_FILE
 	string
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/variants/\$(CONFIG_VARIANT_DIR)/amdfw.cfg" if BOARD_GOOGLE_MARKARTH
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/amdfw.cfg"
 	help
 	  Custom firmware list excluding the fwTPM binary.
