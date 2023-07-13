@@ -20,6 +20,8 @@
 #include <soc/vr_config.h>
 #include <stdint.h>
 
+#define MAX_HD_AUDIO_SDI_LINKS	2
+
 /* Types of different SKUs */
 enum soc_intel_alderlake_power_limits {
 	ADL_P_142_242_282_15W_CORE,
@@ -326,6 +328,7 @@ struct soc_intel_alderlake_config {
 	/* Audio related */
 	uint8_t pch_hda_audio_link_hda_enable;
 	uint8_t pch_hda_dsp_enable;
+	bool pch_hda_sdi_enable[MAX_HD_AUDIO_SDI_LINKS];
 
 	/* iDisp-Link T-Mode 0: 2T, 2: 4T, 3: 8T, 4: 16T */
 	enum {
