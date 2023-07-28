@@ -76,6 +76,12 @@ config SOC_AMD_COMMON_BLOCK_TSC_FAM17H_19H
 	  frequency of AMD family 17h and 19h CPUs/APUs and to provide TSC-
 	  based monotonic timer functionality to the build.
 
+config SOC_AMD_COMMON_BLOCK_CPU_SYNC_PSP_ADDR_MSR
+	bool
+	help
+	  Select this option to have coreboot sync the PSP_ADDR_MSR from
+	  the BSP to all APs.
+
 config SOC_AMD_COMMON_BLOCK_UCODE
 	bool
 	help
