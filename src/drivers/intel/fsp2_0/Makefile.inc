@@ -30,6 +30,7 @@ ramstage-y += silicon_init.c
 ramstage-$(CONFIG_DISPLAY_UPD_DATA) += upd_display.c
 ramstage-y += util.c
 ramstage-$(CONFIG_MMA) += mma_core.c
+ramstage-$(CONFIG_BMP_LOGO) += fsp_gop_blt.c
 
 ifneq ($(CONFIG_NO_FSP_TEMP_RAM_EXIT),y)
 postcar-$(CONFIG_FSP_CAR) += temp_ram_exit.c
