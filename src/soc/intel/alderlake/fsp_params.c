@@ -11,6 +11,7 @@
 #include <drivers/intel/gma/i915_reg.h>
 #include <fsp/api.h>
 #include <fsp/fsp_debug_event.h>
+#include <fsp/fsp_gop_blt.h>
 #include <fsp/ppi/mp_service_ppi.h>
 #include <fsp/util.h>
 #include <option.h>
@@ -1297,4 +1298,15 @@ void platform_fsp_multi_phase_init_cb(uint32_t phase_index)
 __weak void mainboard_silicon_init_params(FSP_S_CONFIG *s_cfg)
 {
 	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
+}
+
+/* Handle FSP logo params */
+void soc_load_logo(FSPS_UPD *supd)
+{
+	fsp_convert_bmp_to_gop_blt(&supd->FspsConfig.LogoPtr,
+			 &supd->FspsConfig.LogoSize,
+			 &supd->FspsConfig.BltBufferAddress,
+			 &supd->FspsConfig.BltBufferSize,
+			 &supd->FspsConfig.LogoPixelHeight,
+			 &supd->FspsConfig.LogoPixelWidth);
 }
