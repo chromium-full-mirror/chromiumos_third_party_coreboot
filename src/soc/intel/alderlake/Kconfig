@@ -207,6 +207,7 @@ config IED_REGION_SIZE
 
 config HEAP_SIZE
 	hex
+	default 0x80000 if BMP_LOGO
 	default 0x10000
 
 # Intel recommends reserving the following resources per PCIe TBT root port,
