@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <console/console.h>
 #include <bootmode.h>
+#include <ec/google/chromeec/ec.h>
 #include <fmap.h>
 #include <security/tpm/tspi/crtm.h>
 #include <security/tpm/tss/vendor/cr50/cr50.h>
@@ -238,6 +239,7 @@ void verstage_main(void)
 {
 	struct vb2_context *ctx;
 	vb2_error_t rv;
+	int tpm_rc = TPM_SUCCESS;
 
 	timestamp_add_now(TS_VBOOT_START);
 
@@ -263,9 +265,22 @@ void verstage_main(void)
 	 * check the return value here because vb2api_fw_phase1 will catch
 	 * invalid secdata and tell us what to do (=reboot). */
 	timestamp_add_now(TS_TPMINIT_START);
-	if (vboot_setup_tpm(ctx) == TPM_SUCCESS) {
+	tpm_rc = vboot_setup_tpm(ctx);
+	if (tpm_rc == TPM_SUCCESS) {
 		antirollback_read_space_firmware(ctx);
 		antirollback_read_space_kernel(ctx);
+	} else if (CONFIG(TPM_SETUP_HIBERNATE_ON_ERR) &&
+				tpm_rc == -TPM_E_COMMUNICATION_ERROR) {
+		printk(BIOS_ERR, "Failed to communicate with TPM\n"
+				"Next reboot will hibernate to reset TPM");
+		/* Command the EC to hibernate on next AP shutdown */
+		if (google_chromeec_reboot(
+				EC_REBOOT_HIBERNATE,
+				EC_REBOOT_FLAG_ON_AP_SHUTDOWN)) {
+			printk(BIOS_ERR, "Failed to get EC to schedule hibernate");
+		}
+		vb2api_fail(ctx, VB2_RECOVERY_RO_TPM_S_ERROR,
+			(uint8_t)TPM_E_COMMUNICATION_ERROR);
 	}
 	timestamp_add_now(TS_TPMINIT_END);
 
