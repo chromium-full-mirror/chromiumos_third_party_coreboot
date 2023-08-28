@@ -85,7 +85,7 @@ static struct tpm_inf_dev tpm_dev;
  */
 static int iic_tpm_read(uint8_t addr, uint8_t *buffer, size_t len)
 {
-	int rc;
+	int rv;
 	int count;
 
 	if (tpm_dev.addr == 0)
@@ -96,15 +96,15 @@ static int iic_tpm_read(uint8_t addr, uint8_t *buffer, size_t len)
 	case UNKNOWN:
 		/* slb9635 protocol should work in both cases */
 		for (count = 0; count < MAX_COUNT; count++) {
-			rc = i2c_write_raw(tpm_dev.bus, tpm_dev.addr,
+			rv = i2c_write_raw(tpm_dev.bus, tpm_dev.addr,
 					   &addr, 1);
-			if (rc == 0)
+			if (rv == 0)
 				break;  /* success, break to skip sleep */
 
 			udelay(tpm_dev.sleep_short);
 		}
 
-		if (rc)
+		if (rv)
 			return -1;
 
 		/* After the TPM has successfully received the register address
@@ -113,9 +113,9 @@ static int iic_tpm_read(uint8_t addr, uint8_t *buffer, size_t len)
 		 */
 		for (count = 0; count < MAX_COUNT; count++) {
 			udelay(tpm_dev.sleep_short);
-			rc = i2c_read_raw(tpm_dev.bus, tpm_dev.addr,
+			rv = i2c_read_raw(tpm_dev.bus, tpm_dev.addr,
 					  buffer, len);
-			if (rc == 0)
+			if (rv == 0)
 				break;  /* success, break to skip sleep */
 
 		}
@@ -135,9 +135,9 @@ static int iic_tpm_read(uint8_t addr, uint8_t *buffer, size_t len)
 					.slave = tpm_dev.addr,
 					.buf = buffer, .len = len };
 		for (count = 0; count < MAX_COUNT; count++) {
-			rc = i2c_transfer(tpm_dev.bus, &aseg, 1) ||
+			rv = i2c_transfer(tpm_dev.bus, &aseg, 1) ||
 			     i2c_transfer(tpm_dev.bus, &dseg, 1);
-			if (rc == 0)
+			if (rv == 0)
 				break;  /* break here to skip sleep */
 			udelay(tpm_dev.sleep_short);
 		}
@@ -146,7 +146,7 @@ static int iic_tpm_read(uint8_t addr, uint8_t *buffer, size_t len)
 
 	/* take care of 'guard time' */
 	udelay(tpm_dev.sleep_short);
-	if (rc)
+	if (rv)
 		return -1;
 
 	return 0;
@@ -156,7 +156,7 @@ static int iic_tpm_write_generic(uint8_t addr, uint8_t *buffer, size_t len,
 				unsigned int sleep_time,
 				uint8_t max_count)
 {
-	int rc = 0;
+	int rv = 0;
 	int count;
 
 	if (len > TPM_BUFSIZE) {
@@ -172,9 +172,9 @@ static int iic_tpm_write_generic(uint8_t addr, uint8_t *buffer, size_t len,
 	if (tpm_dev.addr == 0)
 		return -1;
 	for (count = 0; count < max_count; count++) {
-		rc = i2c_write_raw(tpm_dev.bus, tpm_dev.addr,
+		rv = i2c_write_raw(tpm_dev.bus, tpm_dev.addr,
 				   tpm_dev.buf, len + 1);
-		if (rc == 0)
+		if (rv == 0)
 			break;  /* success, break to skip sleep */
 
 		udelay(sleep_time);
@@ -182,7 +182,7 @@ static int iic_tpm_write_generic(uint8_t addr, uint8_t *buffer, size_t len,
 
 	/* take care of 'guard time' */
 	udelay(tpm_dev.sleep_short);
-	if (rc)
+	if (rv)
 		return -1;
 
 	return 0;
@@ -332,7 +332,7 @@ static int recv_data(uint8_t *buf, size_t count)
 
 	while (size < count) {
 		ssize_t burstcnt = get_burstcount();
-		int rc;
+		int rv;
 
 		/* burstcount < 0 = TPM is busy */
 		if (burstcnt < 0)
@@ -342,10 +342,10 @@ static int recv_data(uint8_t *buf, size_t count)
 		if (burstcnt > (count - size))
 			burstcnt = count - size;
 
-		rc = iic_tpm_read(TPM_DATA_FIFO(tpm_dev.locality),
+		rv = iic_tpm_read(TPM_DATA_FIFO(tpm_dev.locality),
 				  &(buf[size]),
 				  burstcnt);
-		if (rc == 0)
+		if (rv == 0)
 			size += burstcnt;
 	}
 	return size;

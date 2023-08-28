@@ -48,7 +48,7 @@ int tis_init(void)
 static ssize_t tpm_transmit(const uint8_t *sbuf, size_t sbufsiz, void *rbuf,
 			size_t rbufsiz)
 {
-	int rc;
+	int rv;
 	uint32_t count;
 
 	memcpy(&count, sbuf + TPM_CMD_COUNT_BYTE, sizeof(count));
@@ -68,8 +68,8 @@ static ssize_t tpm_transmit(const uint8_t *sbuf, size_t sbufsiz, void *rbuf,
 	}
 
 	ASSERT(chip.send);
-	rc = chip.send((uint8_t *)sbuf, count);
-	if (rc < 0) {
+	rv = chip.send((uint8_t *)sbuf, count);
+	if (rv < 0) {
 		printk(BIOS_DEBUG, "%s: tpm_send error\n", __func__);
 		goto out;
 	}
@@ -85,7 +85,7 @@ static ssize_t tpm_transmit(const uint8_t *sbuf, size_t sbufsiz, void *rbuf,
 		if (status == chip.req_canceled) {
 			printk(BIOS_DEBUG,
 				"%s: Operation Canceled\n", __func__);
-			rc = -1;
+			rv = -1;
 			goto out;
 		}
 		mdelay(TPM_TIMEOUT);
@@ -95,16 +95,16 @@ static ssize_t tpm_transmit(const uint8_t *sbuf, size_t sbufsiz, void *rbuf,
 	ASSERT(chip.cancel);
 	chip.cancel();
 	printk(BIOS_DEBUG, "%s: Operation Timed out\n", __func__);
-	rc = -1; //ETIME;
+	rv = -1; //ETIME;
 	goto out;
 
 out_recv:
 
-	rc = chip.recv((uint8_t *)rbuf, rbufsiz);
-	if (rc < 0)
-		printk(BIOS_DEBUG, "%s: tpm_recv: error %d\n", __func__, rc);
+	rv = chip.recv((uint8_t *)rbuf, rbufsiz);
+	if (rv < 0)
+		printk(BIOS_DEBUG, "%s: tpm_recv: error %d\n", __func__, rv);
 out:
-	return rc;
+	return rv;
 }
 
 int tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size,
