@@ -23,6 +23,7 @@
 #include <drivers/tpm/cr50.h>
 #include <endian.h>
 #include <security/tpm/tis.h>
+#include <security/tpm/tss_errors.h>
 #include <string.h>
 #include <types.h>
 #include <timer.h>
@@ -84,7 +85,7 @@ static int cr50_i2c_read(uint8_t addr, uint8_t *buffer, size_t len)
 	/* Send the register address byte to the TPM */
 	if (i2c_write_raw(tpm_dev.bus, tpm_dev.addr, &addr, 1)) {
 		printk(BIOS_ERR, "%s: Address write failed\n", __func__);
-		return -1;
+		return -TPM_E_COMMUNICATION_ERROR;
 	}
 
 	/* Wait for TPM to be ready with response data */
@@ -94,7 +95,7 @@ static int cr50_i2c_read(uint8_t addr, uint8_t *buffer, size_t len)
 	/* Read response data from the TPM */
 	if (i2c_read_raw(tpm_dev.bus, tpm_dev.addr, buffer, len)) {
 		printk(BIOS_ERR, "%s: Read response failed\n", __func__);
-		return -1;
+		return -TPM_E_COMMUNICATION_ERROR;
 	}
 
 	return 0;
@@ -130,7 +131,7 @@ static int cr50_i2c_write(uint8_t addr, const uint8_t *buffer, size_t len)
 	/* Send write request buffer with address */
 	if (i2c_write_raw(tpm_dev.bus, tpm_dev.addr, tpm_dev.buf, len + 1)) {
 		printk(BIOS_ERR, "%s: Error writing to TPM\n", __func__);
-		return -1;
+		return -TPM_E_COMMUNICATION_ERROR;
 	}
 
 	/* Wait for TPM to be ready */
@@ -180,12 +181,14 @@ static int process_reset(void)
 		return 0;
 	} while (!stopwatch_expired(&sw));
 
-	if (rc)
-		printk(BIOS_ERR, "Failed to read TPM\n");
-	else
+	if (rc) {
+		printk(BIOS_ERR, "TPM Error(%d): Failed to read TPM\n", rc);
+		return rc;
+	} else {
 		printk(BIOS_ERR,
 			"TPM failed to reset after %lld ms, status: %#x\n",
 			stopwatch_duration_msecs(&sw), access);
+	}
 
 	return -1;
 }
@@ -199,9 +202,11 @@ static int claim_locality(void)
 {
 	uint8_t access;
 	const uint8_t mask = TPM_ACCESS_VALID | TPM_ACCESS_ACTIVE_LOCALITY;
+	int rc = 0;
 
-	if (cr50_i2c_read(TPM_ACCESS(0), &access, sizeof(access)))
-		return -1;
+	rc = cr50_i2c_read(TPM_ACCESS(0), &access, sizeof(access));
+	if (rc)
+		return rc;
 
 	if ((access & mask) == mask) {
 		printk(BIOS_INFO, "Locality already claimed\n");
@@ -209,12 +214,14 @@ static int claim_locality(void)
 	}
 
 	access = TPM_ACCESS_REQUEST_USE;
-	if (cr50_i2c_write(TPM_ACCESS(0),
-			   &access, sizeof(access)))
-		return -1;
+	rc = cr50_i2c_write(TPM_ACCESS(0),
+			   &access, sizeof(access));
+	if (rc)
+		return rc;
 
-	if (cr50_i2c_read(TPM_ACCESS(0), &access, sizeof(access)))
-		return -1;
+	rc = cr50_i2c_read(TPM_ACCESS(0), &access, sizeof(access));
+	if (rc)
+		return rc;
 
 	if ((access & mask) != mask) {
 		printk(BIOS_INFO, "Failed to claim locality.\n");
@@ -249,11 +256,13 @@ static int cr50_i2c_wait_burststs(uint8_t mask, size_t *burst, int *status)
 {
 	uint8_t buf[4];
 	struct stopwatch sw;
+	int rc = 0;
 
 	stopwatch_init_msecs_expire(&sw, CR50_TIMEOUT_LONG_MS);
 
 	while (!stopwatch_expired(&sw)) {
-		if (cr50_i2c_read(TPM_STS(tpm_dev.locality), buf, sizeof(buf)) != 0) {
+		rc = cr50_i2c_read(TPM_STS(tpm_dev.locality), buf, sizeof(buf));
+		if (rc != 0) {
 			mdelay(CR50_TIMEOUT_SHORT_MS);
 			continue;
 		}
@@ -270,7 +279,7 @@ static int cr50_i2c_wait_burststs(uint8_t mask, size_t *burst, int *status)
 	}
 
 	printk(BIOS_ERR, "%s: Timeout reading burst and status\n", __func__);
-	return -1;
+	return rc ? rc : -1;
 }
 
 static int cr50_i2c_tis_recv(uint8_t *buf, size_t buf_len)
@@ -419,6 +428,7 @@ int tpm_vendor_probe(unsigned int bus, uint32_t addr)
 static int cr50_i2c_probe(uint32_t *did_vid)
 {
 	int retries;
+	int rc = 0;
 
 	/*
 	 * 1s should be enough to synchronize with the TPM even under the
@@ -429,7 +439,6 @@ static int cr50_i2c_probe(uint32_t *did_vid)
 	printk(BIOS_INFO, "Probing TPM I2C: ");
 
 	for (retries = 100; retries > 0; retries--) {
-		int rc;
 
 		rc = cr50_i2c_read(TPM_DID_VID(0), (uint8_t *)did_vid, 4);
 
@@ -449,7 +458,7 @@ static int cr50_i2c_probe(uint32_t *did_vid)
 	 * I2C reads failed, or the DID and VID didn't match
 	 */
 	printk(BIOS_ERR, "DID_VID 0x%08x not recognized\n", *did_vid);
-	return -1;
+	return rc ? rc : -1;
 }
 
 int tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t dev_addr)
