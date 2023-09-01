@@ -16,6 +16,9 @@ void cse_board_reset(void)
 	tpm_result_t rc;
 	struct cr50_firmware_version version;
 
+	if (CONFIG(CSE_RESET_CLEAR_EC_AP_IDLE_FLAG))
+		google_chromeec_clear_ec_ap_idle();
+
 	if (CONFIG(TPM2) && CONFIG(TPM_GOOGLE_CR50)) {
 		/* Initialize TPM and get the cr50 firmware version. */
 		rc = tlcl_lib_init();

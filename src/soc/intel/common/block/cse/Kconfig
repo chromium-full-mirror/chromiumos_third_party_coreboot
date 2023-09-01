@@ -352,3 +352,11 @@ config CSE_OEMP_FILE
 	  the key owned by trusted owner.
 
 endif
+
+config CSE_RESET_CLEAR_EC_AP_IDLE_FLAG
+	bool
+	default y if !SYSTEM_TYPE_LAPTOP
+	help
+	  Select this if the variant is a Chromebox/base. This allows AP to direct EC
+	  to clear AP_IDLE flag before triggering reset to make sure AP can boot up
+	  after reset.
