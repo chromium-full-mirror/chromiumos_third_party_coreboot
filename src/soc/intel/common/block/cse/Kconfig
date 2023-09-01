@@ -72,3 +72,11 @@ config SOC_INTEL_CSE_RW_VERSION
 	 This config contains the Intel CSE RW version of the blob that is provided by
 	 SOC_INTEL_CSE_RW_FILE config and the version must be set in the format
 	 major.minor.hotfix.build (ex: 14.0.40.1209).
+
+config CSE_RESET_CLEAR_EC_AP_IDLE_FLAG
+	bool
+	default y if !SYSTEM_TYPE_LAPTOP
+	help
+	  Select this if the variant is a Chromebox/base. This allows AP to direct EC
+	  to clear AP_IDLE flag before triggering reset to make sure AP can boot up
+	  after reset.
