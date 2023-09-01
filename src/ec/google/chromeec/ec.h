@@ -422,6 +422,11 @@ bool google_chromeec_is_battery_present(void);
  */
 bool google_chromeec_get_ucsi_enabled(void);
 
+/**
+ * Clear EC AP_IDLE flag
+ */
+void google_chromeec_clear_ec_ap_idle(void);
+
 #if CONFIG(HAVE_ACPI_TABLES)
 /**
  * Writes USB Type-C PD related information to the SSDT
