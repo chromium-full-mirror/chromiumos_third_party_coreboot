@@ -146,7 +146,7 @@ static int cr50_i2c_write(uint8_t addr, const uint8_t *buffer, size_t len)
 static int process_reset(void)
 {
 	struct stopwatch sw;
-	int rv = 0;
+	int rc = 0;
 	uint8_t access;
 
 	/*
@@ -162,9 +162,9 @@ static int process_reset(void)
 		const uint8_t mask =
 			TPM_ACCESS_VALID | TPM_ACCESS_ACTIVE_LOCALITY;
 
-		rv = cr50_i2c_read(TPM_ACCESS(0),
+		rc = cr50_i2c_read(TPM_ACCESS(0),
 				   &access, sizeof(access));
-		if (rv || ((access & mask) == mask)) {
+		if (rc || ((access & mask) == mask)) {
 			/*
 			 * Don't bombard the chip with traffic, let it keep
 			 * processing the command.
@@ -179,7 +179,7 @@ static int process_reset(void)
 		return 0;
 	} while (!stopwatch_expired(&sw));
 
-	if (rv)
+	if (rc)
 		printk(BIOS_ERR, "Failed to read TPM\n");
 	else
 		printk(BIOS_ERR,

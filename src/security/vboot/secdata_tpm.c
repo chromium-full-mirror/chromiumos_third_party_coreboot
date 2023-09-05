@@ -18,11 +18,11 @@
 	printk(BIOS_INFO, "%s():%d: " format,  __func__, __LINE__, ## args)
 
 #define RETURN_ON_FAILURE(tpm_cmd) do {				\
-		uint32_t result_;					\
-		if ((result_ = (tpm_cmd)) != TPM_SUCCESS) {		\
+		uint32_t rc_;					\
+		if ((rc_ = (tpm_cmd)) != TPM_SUCCESS) {		\
 			VBDEBUG("Antirollback: %08x returned by " #tpm_cmd \
-				 "\n", (int)result_);			\
-			return result_;					\
+				 "\n", (int)rc_);			\
+			return rc_;					\
 		}							\
 	} while (0)
 
@@ -59,17 +59,17 @@ uint32_t antirollback_read_space_kernel(struct vb2_context *ctx)
 	}
 
 	uint8_t size = VB2_SECDATA_KERNEL_SIZE;
-	uint32_t ret;
+	uint32_t rc;
 
-	/* Start with the version 1.0 size used by all modern cr50-boards. */
-	ret = tlcl_read(KERNEL_NV_INDEX, ctx->secdata_kernel, size);
-	if (ret == TPM_E_RANGE) {
+	/* Start with the version 1.0 size used by all modern Cr50/Ti50 boards. */
+	rc = tlcl_read(KERNEL_NV_INDEX, ctx->secdata_kernel, size);
+	if (rc == TPM_E_RANGE) {
 		/* Fallback to version 0.2(minimum) size and re-read. */
 		VBDEBUG("Antirollback: NV read out of range, trying min size\n");
 		size = VB2_SECDATA_KERNEL_MIN_SIZE;
-		ret = tlcl_read(KERNEL_NV_INDEX, ctx->secdata_kernel, size);
+		rc = tlcl_read(KERNEL_NV_INDEX, ctx->secdata_kernel, size);
 	}
-	RETURN_ON_FAILURE(ret);
+	RETURN_ON_FAILURE(rc);
 
 	if (vb2api_secdata_kernel_check(ctx, &size) == VB2_ERROR_SECDATA_KERNEL_INCOMPLETE)
 		/* Re-read. vboot will run the check and handle errors. */
@@ -214,11 +214,11 @@ static uint32_t define_space(const char *name, uint32_t index, uint32_t length,
 			     const TPMA_NV nv_attributes,
 			     const uint8_t *nv_policy, size_t nv_policy_size)
 {
-	uint32_t rv;
+	uint32_t rc;
 
-	rv = tlcl_define_space(index, length, nv_attributes, nv_policy,
+	rc = tlcl_define_space(index, length, nv_attributes, nv_policy,
 			       nv_policy_size);
-	if (rv == TPM_E_NV_DEFINED) {
+	if (rc == TPM_E_NV_DEFINED) {
 		/*
 		 * Continue with writing: it may be defined, but not written
 		 * to. In that case a subsequent tlcl_read() would still return
@@ -228,10 +228,10 @@ static uint32_t define_space(const char *name, uint32_t index, uint32_t length,
 		 * in writing once again even if it was written already.
 		 */
 		VBDEBUG("%s: %s space already exists\n", __func__, name);
-		rv = TPM_SUCCESS;
+		rc = TPM_SUCCESS;
 	}
 
-	return rv;
+	return rc;
 }
 
 /* Nothing special in the TPM2 path yet. */
@@ -244,12 +244,12 @@ static uint32_t setup_space(const char *name, uint32_t index, const void *data,
 			    uint32_t length, const TPMA_NV nv_attributes,
 			    const uint8_t *nv_policy, size_t nv_policy_size)
 {
-	uint32_t rv;
+	uint32_t rc;
 
-	rv = define_space(name, index, length, nv_attributes, nv_policy,
+	rc = define_space(name, index, length, nv_attributes, nv_policy,
 			  nv_policy_size);
-	if (rv != TPM_SUCCESS)
-		return rv;
+	if (rc != TPM_SUCCESS)
+		return rc;
 
 	return safe_write(index, data, length);
 }
@@ -299,7 +299,7 @@ static uint32_t set_mrc_hash_space(uint32_t index, const uint8_t *data)
  */
 static uint32_t setup_zte_spaces(void)
 {
-	uint32_t rv;
+	uint32_t rc;
 	uint64_t rma_bytes_counter_default = 0;
 	uint8_t rma_sn_bits_default[16];
 	uint8_t board_id_default[12];
@@ -310,47 +310,47 @@ static uint32_t setup_zte_spaces(void)
 	memset(board_id_default, 0xFF, ARRAY_SIZE(board_id_default));
 
 	/* Set up RMA + SN Bits */
-	rv = setup_space("RMA + SN Bits", ZTE_RMA_SN_BITS_INDEX,
+	rc = setup_space("RMA + SN Bits", ZTE_RMA_SN_BITS_INDEX,
 			 rma_sn_bits_default, sizeof(rma_sn_bits_default),
 			 zte_attr,
 			 unsatisfiable_policy, sizeof(unsatisfiable_policy));
-	if (rv != TPM_SUCCESS) {
+	if (rc != TPM_SUCCESS) {
 		VBDEBUG("%s: Failed to set up RMA + SN Bits space\n", __func__);
-		return rv;
+		return rc;
 	}
 
-	rv = setup_space("Board ID", ZTE_BOARD_ID_NV_INDEX,
+	rc = setup_space("Board ID", ZTE_BOARD_ID_NV_INDEX,
 			 board_id_default, sizeof(board_id_default),
 			 zte_attr,
 			 unsatisfiable_policy, sizeof(unsatisfiable_policy));
-	if (rv != TPM_SUCCESS) {
+	if (rc != TPM_SUCCESS) {
 		VBDEBUG("%s: Failed to set up Board ID space\n", __func__);
-		return rv;
+		return rc;
 	}
 
 	/* Set up RMA Bytes counter */
-	rv = define_space("RMA Bytes Counter", ZTE_RMA_BYTES_COUNTER_INDEX,
+	rc = define_space("RMA Bytes Counter", ZTE_RMA_BYTES_COUNTER_INDEX,
 			  sizeof(rma_bytes_counter_default),
 			  zte_rma_bytes_attr,
 			  unsatisfiable_policy, sizeof(unsatisfiable_policy));
-	if (rv != TPM_SUCCESS) {
+	if (rc != TPM_SUCCESS) {
 		VBDEBUG("%s: Failed to define RMA Bytes space\n", __func__);
-		return rv;
+		return rc;
 	}
 
 	/*
 	 * Since the RMA counter has the BITS attribute, we need to call
 	 * TPM2_NV_SetBits() in order to initialize it.
 	 */
-	rv = tlcl_set_bits(ZTE_RMA_BYTES_COUNTER_INDEX,
+	rc = tlcl_set_bits(ZTE_RMA_BYTES_COUNTER_INDEX,
 			   rma_bytes_counter_default);
-	if (rv != TPM_SUCCESS) {
+	if (rc != TPM_SUCCESS) {
 		VBDEBUG("%s: Failed to init RMA Bytes counter space\n",
 			__func__);
-		return rv;
+		return rc;
 	}
 
-	return rv;
+	return rc;
 }
 
 /*
@@ -371,13 +371,17 @@ static uint32_t enterprise_rollback_create_space(void)
 
 static uint32_t setup_widevine_counter_spaces(void)
 {
-	uint32_t index, rv;
+	uint32_t index, rc;
 
 	for (index = 0; index < NUM_WIDEVINE_COUNTERS; index++) {
-		rv = define_space(WIDEVINE_COUNTER_NAME, WIDEVINE_COUNTER_NV_INDEX(index),
-				WIDEVINE_COUNTER_SIZE, rw_orderly_counter_attributes, NULL, 0);
-		if (rv != TPM_SUCCESS)
-			return rv;
+		rc = define_space(WIDEVINE_COUNTER_NAME,
+				WIDEVINE_COUNTER_NV_INDEX(index),
+				WIDEVINE_COUNTER_SIZE,
+				rw_orderly_counter_attributes,
+				NULL,
+				0);
+		if (rc != TPM_SUCCESS)
+			return rc;
 	}
 	return TPM_SUCCESS;
 }
@@ -451,7 +455,7 @@ uint32_t antirollback_read_space_mrc_hash(uint32_t index, uint8_t *data, uint32_
 uint32_t antirollback_write_space_mrc_hash(uint32_t index, const uint8_t *data, uint32_t size)
 {
 	uint8_t spc_data[HASH_NV_SIZE];
-	uint32_t rv;
+	uint32_t rc;
 
 	if (size != HASH_NV_SIZE) {
 		VBDEBUG("TPM: Incorrect buffer size for hash idx 0x%x. "
@@ -460,8 +464,8 @@ uint32_t antirollback_write_space_mrc_hash(uint32_t index, const uint8_t *data, 
 		return TPM_E_WRITE_FAILURE;
 	}
 
-	rv = read_space_mrc_hash(index, spc_data);
-	if (rv == TPM_E_BADINDEX) {
+	rc = read_space_mrc_hash(index, spc_data);
+	if (rc == TPM_E_BADINDEX) {
 		/*
 		 * If space is not defined already for hash, define
 		 * new space.
@@ -470,8 +474,8 @@ uint32_t antirollback_write_space_mrc_hash(uint32_t index, const uint8_t *data, 
 		return set_mrc_hash_space(index, data);
 	}
 
-	if (rv != TPM_SUCCESS)
-		return rv;
+	if (rc != TPM_SUCCESS)
+		return rc;
 
 	return safe_write(index, data, size);
 }
@@ -492,12 +496,12 @@ uint32_t antirollback_lock_space_mrc_hash(uint32_t index)
 
 static uint32_t safe_write(uint32_t index, const void *data, uint32_t length)
 {
-	uint32_t result = tlcl_write(index, data, length);
-	if (result == TPM_E_MAXNVWRITES) {
+	uint32_t rc = tlcl_write(index, data, length);
+	if (rc == TPM_E_MAXNVWRITES) {
 		RETURN_ON_FAILURE(tpm_clear_and_reenable());
 		return tlcl_write(index, data, length);
 	} else {
-		return result;
+		return rc;
 	}
 }
 
@@ -509,26 +513,26 @@ static uint32_t safe_write(uint32_t index, const void *data, uint32_t length)
  */
 static uint32_t safe_define_space(uint32_t index, uint32_t perm, uint32_t size)
 {
-	uint32_t result = tlcl_define_space(index, perm, size);
-	if (result == TPM_E_MAXNVWRITES) {
+	uint32_t rc = tlcl_define_space(index, perm, size);
+	if (rc == TPM_E_MAXNVWRITES) {
 		RETURN_ON_FAILURE(tpm_clear_and_reenable());
 		return tlcl_define_space(index, perm, size);
 	} else {
-		return result;
+		return rc;
 	}
 }
 
 static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
 {
 	TPM_PERMANENT_FLAGS pflags;
-	uint32_t result;
+	uint32_t rc;
 
 	vb2api_secdata_firmware_create(ctx);
 	vb2api_secdata_kernel_create_v0(ctx);
 
-	result = tlcl_get_permanent_flags(&pflags);
-	if (result != TPM_SUCCESS)
-		return result;
+	rc = tlcl_get_permanent_flags(&pflags);
+	if (rc != TPM_SUCCESS)
+		return rc;
 
 	/*
 	 * TPM may come from the factory without physical presence finalized.
@@ -592,7 +596,7 @@ uint32_t antirollback_lock_space_firmware(void)
  */
 static uint32_t factory_initialize_tpm(struct vb2_context *ctx)
 {
-	uint32_t result;
+	uint32_t rc;
 
 	VBDEBUG("TPM: factory initialization\n");
 
@@ -604,13 +608,13 @@ static uint32_t factory_initialize_tpm(struct vb2_context *ctx)
 	 * test---specifically the ones that set lifetime flags, and are only
 	 * executed once per physical TPM.
 	 */
-	result = tlcl_self_test_full();
-	if (result != TPM_SUCCESS)
-		return result;
+	rc = tlcl_self_test_full();
+	if (rc != TPM_SUCCESS)
+		return rc;
 
-	result = _factory_initialize_tpm(ctx);
-	if (result != TPM_SUCCESS)
-		return result;
+	rc = _factory_initialize_tpm(ctx);
+	if (rc != TPM_SUCCESS)
+		return rc;
 
 	/* _factory_initialize_tpm() writes initial secdata values to TPM
 	   immediately, so let vboot know that it's up to date now. */
@@ -624,16 +628,16 @@ static uint32_t factory_initialize_tpm(struct vb2_context *ctx)
 
 uint32_t antirollback_read_space_firmware(struct vb2_context *ctx)
 {
-	uint32_t rv;
+	uint32_t rc;
 
 	/* Read the firmware space. */
-	rv = read_space_firmware(ctx);
-	if (rv == TPM_E_BADINDEX) {
+	rc = read_space_firmware(ctx);
+	if (rc == TPM_E_BADINDEX) {
 		/* This seems the first time we've run. Initialize the TPM. */
 		VBDEBUG("TPM: Not initialized yet.\n");
 		RETURN_ON_FAILURE(factory_initialize_tpm(ctx));
-	} else if (rv != TPM_SUCCESS) {
-		VBDEBUG("TPM: Firmware space in a bad state; giving up.\n");
+	} else if (rc != TPM_SUCCESS) {
+		printk(BIOS_ERR, "TPM: Failed to read firmware space: %#x\n", rc);
 		return TPM_E_CORRUPTED_STATE;
 	}
 
@@ -669,10 +673,10 @@ uint32_t antirollback_write_space_kernel(struct vb2_context *ctx)
 
 vb2_error_t vb2ex_tpm_clear_owner(struct vb2_context *ctx)
 {
-	uint32_t rv;
+	uint32_t rc;
 	printk(BIOS_INFO, "Clearing TPM owner\n");
-	rv = tpm_clear_and_reenable();
-	if (rv)
+	rc = tpm_clear_and_reenable();
+	if (rc)
 		return VB2_ERROR_EX_TPM_CLEAR_OWNER;
 	return VB2_SUCCESS;
 }
