@@ -13,13 +13,13 @@
 
 void cse_board_reset(void)
 {
-	int rc;
+	tpm_result_t rc;
 	struct cr50_firmware_version version;
 
 	if (CONFIG(TPM2) && CONFIG(TPM_GOOGLE_CR50)) {
 		/* Initialize TPM and get the cr50 firmware version. */
 		rc = tlcl_lib_init();
-		if (rc != VB2_SUCCESS) {
+		if (rc != TPM_SUCCESS) {
 			printk(BIOS_ERR, "tlcl_lib_init() failed: %#x\n", rc);
 			return;
 		}

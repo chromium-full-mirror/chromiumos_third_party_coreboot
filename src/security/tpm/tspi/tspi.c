@@ -10,16 +10,16 @@
 #include <vb2_sha.h>
 
 #if CONFIG(TPM1)
-static uint32_t tpm1_invoke_state_machine(void)
+static tpm_result_t tpm1_invoke_state_machine(void)
 {
 	uint8_t disabled;
 	uint8_t deactivated;
-	uint32_t rc = TPM_SUCCESS;
+	tpm_result_t rc = TPM_SUCCESS;
 
 	/* Check that the TPM is enabled and activated. */
 	rc = tlcl_get_flags(&disabled, &deactivated, NULL);
 	if (rc != TPM_SUCCESS) {
-		printk(BIOS_ERR, "TPM: Can't read capabilities.\n");
+		printk(BIOS_ERR, "TPM Error (%#x): Can't read capabilities.\n", rc);
 		return rc;
 	}
 
@@ -28,7 +28,7 @@ static uint32_t tpm1_invoke_state_machine(void)
 
 		rc = tlcl_set_enable();
 		if (rc != TPM_SUCCESS) {
-			printk(BIOS_ERR, "TPM: Can't set enabled state.\n");
+			printk(BIOS_ERR, "TPM Error (%#x): Can't set enabled state.\n", rc);
 			return rc;
 		}
 	}
@@ -39,7 +39,7 @@ static uint32_t tpm1_invoke_state_machine(void)
 		rc = tlcl_set_deactivated(!deactivated);
 		if (rc != TPM_SUCCESS) {
 			printk(BIOS_ERR,
-			       "TPM: Can't toggle deactivated state.\n");
+			       "TPM Error (%#x): Can't toggle deactivated state.\n", rc);
 			return rc;
 		}
 
@@ -51,11 +51,9 @@ static uint32_t tpm1_invoke_state_machine(void)
 }
 #endif
 
-static uint32_t tpm_setup_s3_helper(void)
+static tpm_result_t tpm_setup_s3_helper(void)
 {
-	uint32_t rc;
-
-	rc = tlcl_resume();
+	tpm_result_t rc = tlcl_resume();
 	switch (rc) {
 	case TPM_SUCCESS:
 		break;
@@ -77,7 +75,7 @@ static uint32_t tpm_setup_s3_helper(void)
 	return rc;
 }
 
-static uint32_t tpm_setup_epilogue(uint32_t rc)
+static tpm_result_t tpm_setup_epilogue(tpm_result_t rc)
 {
 	if (rc != TPM_SUCCESS)
 		post_code(POST_TPM_FAILURE);
@@ -132,13 +130,13 @@ static inline int tspi_tpm_is_setup(void)
  * to the TPM flashram at every reboot or wake-up, because of concerns about
  * the durability of the NVRAM.
  */
-uint32_t tpm_setup(int s3flag)
+tpm_result_t tpm_setup(int s3flag)
 {
-	uint32_t rc;
+	tpm_result_t rc;
 
 	rc = tlcl_lib_init();
 	if (rc != TPM_SUCCESS) {
-		printk(BIOS_ERR, "TPM: Can't initialize.\n");
+		printk(BIOS_ERR, "TPM Error (%#x): Can't initialize.\n", rc);
 		return tpm_setup_epilogue(rc);
 	}
 
@@ -151,11 +149,11 @@ uint32_t tpm_setup(int s3flag)
 	rc = tlcl_startup();
 	if (CONFIG(TPM_STARTUP_IGNORE_POSTINIT)
 	    && rc == TPM_INVALID_POSTINIT) {
-		printk(BIOS_DEBUG, "TPM: ignoring invalid POSTINIT\n");
+		printk(BIOS_DEBUG, "TPM Warn(%#x): ignoring invalid POSTINIT\n", rc);
 		rc = TPM_SUCCESS;
 	}
 	if (rc != TPM_SUCCESS) {
-		printk(BIOS_ERR, "TPM: Can't run startup command.\n");
+		printk(BIOS_ERR, "TPM Error (%#x): Can't run startup command.\n", rc);
 		return tpm_setup_epilogue(rc);
 	}
 
@@ -168,13 +166,13 @@ uint32_t tpm_setup(int s3flag)
 		 */
 		rc = tlcl_physical_presence_cmd_enable();
 		if (rc != TPM_SUCCESS) {
-			printk(BIOS_ERR, "TPM: Can't enable physical presence command.\n");
+			printk(BIOS_ERR, "TPM Error (%#x): Can't enable physical presence command.\n", rc);
 			return tpm_setup_epilogue(rc);
 		}
 
 		rc = tlcl_assert_physical_presence();
 		if (rc != TPM_SUCCESS) {
-			printk(BIOS_ERR, "TPM: Can't assert physical presence.\n");
+			printk(BIOS_ERR, "TPM Error (%#x): Can't assert physical presence.\n", rc);
 			return tpm_setup_epilogue(rc);
 		}
 	}
@@ -189,27 +187,27 @@ uint32_t tpm_setup(int s3flag)
 	return tpm_setup_epilogue(rc);
 }
 
-uint32_t tpm_clear_and_reenable(void)
+tpm_result_t tpm_clear_and_reenable(void)
 {
-	uint32_t rc;
+	tpm_result_t rc;
 
 	printk(BIOS_INFO, "TPM: Clear and re-enable\n");
 	rc = tlcl_force_clear();
 	if (rc != TPM_SUCCESS) {
-		printk(BIOS_ERR, "TPM: Can't initiate a force clear.\n");
+		printk(BIOS_ERR, "TPM Error (%#x): Can't initiate a force clear.\n", rc);
 		return rc;
 	}
 
 #if CONFIG(TPM1)
 	rc = tlcl_set_enable();
 	if (rc != TPM_SUCCESS) {
-		printk(BIOS_ERR, "TPM: Can't set enabled state.\n");
+		printk(BIOS_ERR, "TPM Error (%#x): Can't set enabled state.\n", rc);
 		return rc;
 	}
 
 	rc = tlcl_set_deactivated(0);
 	if (rc != TPM_SUCCESS) {
-		printk(BIOS_ERR, "TPM: Can't set deactivated state.\n");
+		printk(BIOS_ERR, "TPM Error (%#x): Can't set deactivated state.\n", rc);
 		return rc;
 	}
 #endif
@@ -217,10 +215,10 @@ uint32_t tpm_clear_and_reenable(void)
 	return TPM_SUCCESS;
 }
 
-uint32_t tpm_extend_pcr(int pcr, enum vb2_hash_algorithm digest_algo,
+tpm_result_t tpm_extend_pcr(int pcr, enum vb2_hash_algorithm digest_algo,
 			const uint8_t *digest, size_t digest_len, const char *name)
 {
-	uint32_t rc;
+	tpm_result_t rc;
 
 	if (!digest)
 		return TPM_IOERROR;
@@ -228,15 +226,15 @@ uint32_t tpm_extend_pcr(int pcr, enum vb2_hash_algorithm digest_algo,
 	if (tspi_tpm_is_setup()) {
 		rc = tlcl_lib_init();
 		if (rc != TPM_SUCCESS) {
-			printk(BIOS_ERR, "TPM: Can't initialize library.\n");
+			printk(BIOS_ERR, "TPM Error (%#x): Can't initialize library.\n", rc);
 			return rc;
 		}
 
 		printk(BIOS_DEBUG, "TPM: Extending digest for `%s` into PCR %d\n", name, pcr);
 		rc = tlcl_extend(pcr, digest, digest_algo);
 		if (rc != TPM_SUCCESS) {
-			printk(BIOS_ERR, "TPM: Extending hash for `%s` into PCR %d failed.\n",
-			       name, pcr);
+			printk(BIOS_ERR, "TPM Error (%#x): Extending hash for `%s` into PCR %d failed.\n",
+			       rc, name, pcr);
 			return rc;
 		}
 	}
@@ -252,7 +250,7 @@ uint32_t tpm_extend_pcr(int pcr, enum vb2_hash_algorithm digest_algo,
 }
 
 #if CONFIG(VBOOT_LIB)
-uint32_t tpm_measure_region(const struct region_device *rdev, uint8_t pcr,
+tpm_result_t tpm_measure_region(const struct region_device *rdev, uint8_t pcr,
 			    const char *rname)
 {
 	uint8_t digest[TPM_PCR_MAX_LEN], digest_len;

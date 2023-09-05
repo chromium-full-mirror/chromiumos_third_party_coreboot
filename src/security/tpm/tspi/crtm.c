@@ -29,25 +29,27 @@ static inline int tcpa_log_available(void)
  *    stage.
  *
  * Takes the current vboot context as parameter for s3 checks.
- * returns on success VB2_SUCCESS, else a vboot error.
+ * returns on success TPM_SUCCESS, else a TPM error.
  */
-static uint32_t tspi_init_crtm(void)
+static tpm_result_t tspi_init_crtm(void)
 {
-	/* Initialize TCPA PRERAM log. */
-	if (!tcpa_log_available()) {
-		tcpa_preram_log_clear();
-		tcpa_log_initialized = 1;
+	tpm_result_t rc = TPM_SUCCESS;
+	/* Initialize TPM PRERAM log. */
+	if (!tpm_log_available()) {
+		tpm_preram_log_clear();
+		tpm_log_initialized = 1;
 	} else {
 		printk(BIOS_WARNING, "TSPI: CRTM already initialized!\n");
-		return VB2_SUCCESS;
+		return TPM_SUCCESS;
 	}
 
 	struct region_device fmap;
 	if (fmap_locate_area_as_rdev("FMAP", &fmap) == 0) {
-		if (tpm_measure_region(&fmap, CONFIG_PCR_SRTM, "FMAP: FMAP")) {
+		rc = tpm_measure_region(&fmap, CONFIG_PCR_SRTM, "FMAP: FMAP");
+		if (rc) {
 			printk(BIOS_ERR,
-			       "TSPI: Couldn't measure FMAP into CRTM!\n");
-			return VB2_ERROR_UNKNOWN;
+			       "TSPI: Couldn't measure FMAP into CRTM! rc %#x\n", rc);
+			return rc;
 		}
 	} else {
 		printk(BIOS_ERR, "TSPI: Could not find FMAP!\n");
@@ -57,10 +59,11 @@ static uint32_t tspi_init_crtm(void)
 	if (!CONFIG(ARCH_X86)) {
 		struct region_device bootblock_fmap;
 		if (fmap_locate_area_as_rdev("BOOTBLOCK", &bootblock_fmap) == 0) {
-			if (tpm_measure_region(&bootblock_fmap,
+			rc = tpm_measure_region(&bootblock_fmap,
 					CONFIG_PCR_SRTM,
-					"FMAP: BOOTBLOCK"))
-				return VB2_ERROR_UNKNOWN;
+					"FMAP: BOOTBLOCK");
+			if (rc)
+				return rc;
 		}
 	} else if (CONFIG(BOOTBLOCK_IN_CBFS)){
 		/* Mapping measures the file. We know we can safely map here because
@@ -70,7 +73,7 @@ static uint32_t tspi_init_crtm(void)
 		if (!mapping) {
 			printk(BIOS_INFO,
 			       "TSPI: Couldn't measure bootblock into CRTM!\n");
-			return VB2_ERROR_UNKNOWN;
+			return TPM_CB_FAIL;
 		}
 		cbfs_unmap(mapping);
 	} else {
@@ -80,11 +83,11 @@ static uint32_t tspi_init_crtm(void)
 		if (tspi_soc_measure_bootblock(CONFIG_PCR_SRTM)) {
 			printk(BIOS_INFO,
 			       "TSPI: Couldn't measure bootblock into CRTM on SoC level!\n");
-			return VB2_ERROR_UNKNOWN;
+			return TPM_CB_FAIL;
 		}
 	}
 
-	return VB2_SUCCESS;
+	return TPM_SUCCESS;
 }
 
 static bool is_runtime_data(const char *name)
@@ -106,16 +109,18 @@ static bool is_runtime_data(const char *name)
 	return !strcmp(allowlist, name);
 }
 
-uint32_t tspi_cbfs_measurement(const char *name, uint32_t type, const struct vb2_hash *hash)
+tpm_result_t tspi_cbfs_measurement(const char *name, uint32_t type, const struct vb2_hash *hash)
 {
 	uint32_t pcr_index;
-	char tcpa_metadata[TCPA_PCR_HASH_NAME];
+	tpm_result_t rc = TPM_SUCCESS;
+	char tpm_log_metadata[TPM_CB_LOG_PCR_HASH_NAME];
 
-	if (!tcpa_log_available()) {
-		if (tspi_init_crtm() != VB2_SUCCESS) {
+	if (!tpm_log_available()) {
+		rc = tspi_init_crtm();
+		if (rc) {
 			printk(BIOS_WARNING,
 			       "Initializing CRTM failed!\n");
-			return 0;
+			return rc;
 		}
 		printk(BIOS_DEBUG, "CRTM initialized.\n");
 	}
@@ -148,32 +153,32 @@ uint32_t tspi_cbfs_measurement(const char *name, uint32_t type, const struct vb2
 			      tcpa_metadata);
 }
 
-int tspi_measure_cache_to_pcr(void)
+tpm_result_t tspi_measure_cache_to_pcr(void)
 {
 	int i;
 	struct tcpa_table *tclt = tcpa_log_init();
 
 	/* This means the table is empty. */
-	if (!tcpa_log_available())
-		return VB2_SUCCESS;
+	if (!tpm_log_available())
+		return TPM_SUCCESS;
 
-	if (!tclt) {
-		printk(BIOS_WARNING, "TCPA: Log non-existent!\n");
-		return VB2_ERROR_UNKNOWN;
+	if (tpm_log_init() == NULL) {
+		printk(BIOS_WARNING, "TPM LOG: log non-existent!\n");
+		return TPM_CB_FAIL;
 	}
 
 	printk(BIOS_DEBUG, "TPM: Write digests cached in TPM log to PCR\n");
 	i = 0;
 	while (!tpm_log_get(i++, &pcr, &digest_data, &digest_algo, &event_name)) {
 		printk(BIOS_DEBUG, "TPM: Write digest for %s into PCR %d\n", event_name, pcr);
-		int rc = tlcl_extend(pcr, digest_data, digest_algo);
+		tpm_result_t rc = tlcl_extend(pcr, digest_data, digest_algo);
 		if (rc != TPM_SUCCESS) {
 			printk(BIOS_ERR,
 			       "TPM: Writing digest of %s into PCR failed with error %d\n",
 				event_name, rc);
-			return VB2_ERROR_UNKNOWN;
+			return rc;
 		}
 	}
 
-	return VB2_SUCCESS;
+	return TPM_SUCCESS;
 }

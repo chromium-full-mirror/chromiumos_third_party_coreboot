@@ -410,7 +410,7 @@ static const uint32_t supported_did_vids[] = {
 	0x0000104a   /* ST33HTPH2E32 */
 };
 
-int tpm2_init(struct spi_slave *spi_if)
+tpm_result_t tpm2_init(struct spi_slave *spi_if)
 {
 	uint32_t did_vid, status;
 	uint8_t cmd;
@@ -449,10 +449,24 @@ int tpm2_init(struct spi_slave *spi_if)
 	if (!retries) {
 		printk(BIOS_ERR, "\n%s: Failed to connect to the TPM\n",
 		       __func__);
-		return -1;
+		return TPM_CB_FAIL;
 	}
 
 	printk(BIOS_INFO, " done!\n");
+
+	/* Google TPMs haven't always been 100% accurate in reflecting the spec (particularly
+	 * on older versions) and are always TPM 2.0. */
+	if (!CONFIG(TPM_GOOGLE)) {
+		if (tpm2_read_reg(TPM_INTF_ID_REG, &intf_id, sizeof(intf_id)) != CB_SUCCESS) {
+			printk(BIOS_ERR, "\n%s: Failed to read interface ID register\n",
+			       __func__);
+			return TPM_CB_FAIL;
+		}
+		if ((be32toh(intf_id) & 0xF) == 0xF) {
+			printk(BIOS_DEBUG, "\n%s: Not a TPM2 device\n", __func__);
+			return TPM_CB_FAIL;
+		}
+	}
 
 	// FIXME: Move this to tpm_setup()
 	if (tpm_first_access_this_boot())
@@ -461,16 +475,16 @@ int tpm2_init(struct spi_slave *spi_if)
 		 * initialization after reset.
 		 */
 		if (tpm2_claim_locality() != CB_SUCCESS)
-			return -1;
+			return TPM_CB_FAIL;
 
 	if (read_tpm_sts(&status) != CB_SUCCESS) {
 		printk(BIOS_ERR, "Reading status reg failed\n");
-		return -1;
+		return TPM_CB_FAIL;
 	}
 	if ((status & TPM_STS_FAMILY_MASK) != TPM_STS_FAMILY_TPM_2_0) {
 		printk(BIOS_ERR, "unexpected TPM family value, status: %#x\n",
 		       status);
-		return -1;
+		return TPM_CB_FAIL;
 	}
 
 	/*
@@ -494,7 +508,7 @@ int tpm2_init(struct spi_slave *spi_if)
                         cr50_set_board_cfg();
 		}
 	}
-	return 0;
+	return TPM_SUCCESS;
 }
 
 /*
