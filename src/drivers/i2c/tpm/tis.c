@@ -30,13 +30,10 @@ int tis_open(void)
 
 	rc = tpm_vendor_init(&chip, CONFIG_DRIVER_TPM_I2C_BUS,
 			     CONFIG_DRIVER_TPM_I2C_ADDR);
-	if (rc < 0)
+	if (rc)
 		chip.is_open = 0;
 
-	if (rc)
-		return -1;
-
-	return 0;
+	return rc;
 }
 
 int tis_init(void)

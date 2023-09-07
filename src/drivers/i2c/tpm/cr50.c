@@ -455,6 +455,7 @@ static int cr50_i2c_probe(uint32_t *did_vid)
 int tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t dev_addr)
 {
 	uint32_t did_vid = 0;
+	int rc = 0;
 
 	if (dev_addr == 0) {
 		printk(BIOS_ERR, "%s: missing device address\n", __func__);
@@ -465,16 +466,19 @@ int tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t dev_addr)
 	tpm_dev.addr = dev_addr;
 
 	cr50_vendor_init(chip);
+	rc = cr50_i2c_probe(&did_vid);
+	if (rc)
+		return rc;
 
-	if (cr50_i2c_probe(&did_vid))
-		return -1;
+	if (ENV_SEPARATE_VERSTAGE || ENV_BOOTBLOCK) {
+		rc = process_reset();
+		if (rc)
+			return rc;
+	}
 
-	if (ENV_SEPARATE_VERSTAGE || ENV_BOOTBLOCK)
-		if (process_reset())
-			return -1;
-
-	if (claim_locality())
-		return -1;
+	rc = claim_locality();
+	if (rc)
+		return rc;
 
 	printk(BIOS_DEBUG, "cr50 TPM 2.0 (i2c %u:0x%02x id 0x%x)\n",
 	       bus, dev_addr, did_vid >> 16);
@@ -486,7 +490,7 @@ int tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t dev_addr)
 	}
 
 	chip->is_open = 1;
-	return 0;
+	return rc;
 }
 
 enum cb_err tis_vendor_write(unsigned int addr, const void *buffer, size_t bytes)

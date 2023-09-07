@@ -206,22 +206,27 @@ static uint8_t tlcl_init_done;
 /* This function is called directly by vboot, uses vboot return types. */
 uint32_t tlcl_lib_init(void)
 {
+	uint32_t rc = 0;
 	if (tlcl_init_done)
-		return VB2_SUCCESS;
+		return rc;
 
-	if (tis_init()) {
-		printk(BIOS_ERR, "%s: tis_init returned error\n", __func__);
-		return VB2_ERROR_UNKNOWN;
+	rc = tis_init();
+	if (rc) {
+		printk(BIOS_ERR, "%s: tis_init returned error %d\n",
+			__func__, rc);
+		return rc;
 	}
 
-	if (tis_open()) {
-		printk(BIOS_ERR, "%s: tis_open returned error\n", __func__);
-		return VB2_ERROR_UNKNOWN;
+	rc = tis_open();
+	if (rc) {
+		printk(BIOS_ERR, "%s: tis_open returned error %d\n",
+			__func__, rc);
+		return rc;
 	}
 
 	tlcl_init_done = 1;
 
-	return VB2_SUCCESS;
+	return rc;
 }
 
 uint32_t tlcl_physical_presence_cmd_enable(void)
