@@ -14,6 +14,8 @@ ramstage-y += iobuf.c
 smm-y += iobuf.c
 postcar-y += iobuf.c
 
+all-y += list.c
+
 bootblock-y += region.c
 verstage-y += region.c
 romstage-y += region.c

@@ -43,3 +43,7 @@ libc-$(CONFIG_LP_LIBC) += fpmath.c
 ifeq ($(CONFIG_LP_LIBC),y)
 libc-srcs += $(coreboottop)/src/commonlib/bsd/elog.c
 endif
+
+ifeq ($(CONFIG_LP_GPL),y)
+libc-srcs += $(coreboottop)/src/commonlib/list.c
+endif
