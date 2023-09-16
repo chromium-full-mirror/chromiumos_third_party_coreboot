@@ -2,11 +2,16 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <assert.h>
-#include <console/console.h>
+#include <commonlib/device_tree.h>
 #include <ctype.h>
-#include <device_tree.h>
 #include <endian.h>
 #include <stdint.h>
+#ifdef __COREBOOT_
+#include <console/console.h>
+#else
+#define printk(level, ...) printf(__VA_ARGS__)
+#endif
+#include <stdio.h>
 #include <string.h>
 #include <stddef.h>
 #include <stdlib.h>

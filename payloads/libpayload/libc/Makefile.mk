@@ -44,5 +44,6 @@ libc-srcs += $(coreboottop)/src/commonlib/bsd/elog.c
 endif
 
 ifeq ($(CONFIG_LP_GPL),y)
+libc-srcs += $(coreboottop)/src/commonlib/device_tree.c
 libc-srcs += $(coreboottop)/src/commonlib/list.c
 endif
