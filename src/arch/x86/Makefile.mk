@@ -260,6 +260,7 @@ ramstage-y += ebda.c
 ramstage-y += exception.c
 ramstage-y += idt.S
 ramstage-$(CONFIG_IOAPIC) += ioapic.c
+ramstage-y += dma.c
 ramstage-y += memcpy.c
 ramstage-y += memmove.c
 ramstage-y += memset.c

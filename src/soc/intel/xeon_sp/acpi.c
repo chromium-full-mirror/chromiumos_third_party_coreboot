@@ -4,6 +4,8 @@
 #include <intelblocks/acpi.h>
 #include <soc/pci_devs.h>
 #include <soc/util.h>
+#include <stdint.h>
+#include <stdlib.h>
 
 #include "chip.h"
 

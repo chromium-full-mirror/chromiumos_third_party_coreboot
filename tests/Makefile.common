@@ -53,7 +53,7 @@ TEST_CFLAGS += -I$(dir $(TEST_KCONFIG_AUTOHEADER))
 
 TEST_CFLAGS += -std=gnu11 -Os -ffunction-sections -fdata-sections -fno-builtin
 
-TEST_CFLAGS += -D__TEST__
+TEST_CFLAGS += -D__TEST__ -D__COREBOOT__
 
 TEST_CFLAGS += -I$(cmockasrc)/include
 
