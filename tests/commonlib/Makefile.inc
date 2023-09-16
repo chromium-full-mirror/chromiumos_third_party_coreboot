@@ -2,7 +2,11 @@
 
 subdirs-y += bsd
 
+tests-y += list-test
 tests-y += region-test
+
+list-test-srcs += tests/commonlib/list-test.c
+list-test-srcs += src/commonlib/list.c
 
 region-test-srcs += tests/commonlib/region-test.c
 region-test-srcs += src/commonlib/region.c

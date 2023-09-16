@@ -63,6 +63,9 @@ INCLUDES := -Iinclude -Iinclude/$(ARCHDIR-y) -I$(obj)
 INCLUDES += -include include/kconfig.h -include include/compiler.h
 INCLUDES += -I$(coreboottop)/src/commonlib/bsd/include
 INCLUDES += -I$(VBOOT_SOURCE)/firmware/include
+ifeq ($(CONFIG_LP_GPL),y)
+INCLUDES += -I$(coreboottop)/src/commonlib/include
+endif
 
 CFLAGS += $(INCLUDES) -Os -pipe -nostdinc -ggdb3
 CFLAGS += -nostdlib -fno-builtin -ffreestanding -fomit-frame-pointer
