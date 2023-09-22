@@ -11,6 +11,7 @@
 #include <intelblocks/gspi.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/power_limit.h>
+#include <intelblocks/xhci.h>
 #include <stdint.h>
 #include <soc/gpe.h>
 #include <soc/gpio.h>
