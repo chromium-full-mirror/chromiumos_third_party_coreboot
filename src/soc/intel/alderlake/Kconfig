@@ -486,4 +486,7 @@ config SI_DESC_REGION_SZ
 	help
 	  Size of Descriptor Region in the FMAP
 
+config HAVE_BMP_LOGO_COMPRESS_LZMA
+	default n
+
 endif
