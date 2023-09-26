@@ -159,6 +159,7 @@ static void eventlog_print_type(const struct event_header *event)
 		{ELOG_TYPE_EXTENDED_EVENT, "Extended Event"},
 		{ELOG_TYPE_CROS_DIAGNOSTICS, "Diagnostics Mode"},
 		{ELOG_TYPE_FW_EARLY_SOL, "Early Sign of Life"},
+		{ELOG_TYPE_FW_SPLASH_SCREEN, "Firmware Splash Screen"},
 		{ELOG_TYPE_EOL, "End of log"},
 	};
 
@@ -633,6 +634,11 @@ static int eventlog_print_data(const struct event_header *event)
 	case ELOG_TYPE_FW_EARLY_SOL: {
 		const uint8_t *sol_event = event_get_data(event);
 		eventlog_printf("%s", val2str(*sol_event, early_sol_path_types));
+		break;
+	}
+	case ELOG_TYPE_FW_SPLASH_SCREEN: {
+		const uint8_t *fw_splash_screen_event = event_get_data(event);
+		eventlog_printf("%s", *fw_splash_screen_event ? "Enabled" : "Disabled");
 		break;
 	}
 	default:
