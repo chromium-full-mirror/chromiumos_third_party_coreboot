@@ -1466,6 +1466,39 @@ static void unlock_descriptor(const char *filename, char *image, int size)
 	write_image(filename, image, size);
 }
 
+static void disable_gpr0(const char *filename, char *image, int size)
+{
+	struct fpsba *fpsba = find_fpsba(image, size);
+	if (!fpsba)
+		exit(EXIT_FAILURE);
+
+	/* Offset expressed as number of 32-bit fields from FPSBA */
+	uint32_t gpr0_offset;
+	switch (platform) {
+	case PLATFORM_CNL:
+		gpr0_offset = 0x10;
+		break;
+	case PLATFORM_JSL:
+		gpr0_offset = 0x12;
+		break;
+	case PLATFORM_TGL:
+	case PLATFORM_ADL:
+		gpr0_offset = 0x15;
+		break;
+	case PLATFORM_MTL:
+		gpr0_offset = 0x40;
+		break;
+	default:
+		fprintf(stderr, "Disabling GPR0 not supported on this platform\n");
+		exit(EXIT_FAILURE);
+	}
+
+	/* 0 means GPR0 protection is disabled */
+	fpsba->pchstrp[gpr0_offset] = 0;
+
+	write_image(filename, image, size);
+}
+
 static void set_pchstrap(struct fpsba *fpsba, const struct fdbar *fdb, const int strap,
 			const unsigned int value)
 {
@@ -1805,6 +1838,7 @@ static void print_usage(const char *name)
 	       "   -l | --lock                           Lock firmware descriptor and ME region\n"
 	       "   -r | --read				 Enable CPU/BIOS read access for ME region\n"
 	       "   -u | --unlock                         Unlock firmware descriptor and ME region\n"
+	       "   -g | --gpr0-disable                   Disable GPR0 (Global Protected Range) register\n"
 	       "   -M | --altmedisable <0|1>             Set the MeDisable and AltMeDisable (or HAP for skylake or newer platform)\n"
 	       "                                         bits to disable ME\n"
 	       "   -p | --platform                       Add platform-specific quirks\n"
@@ -1837,6 +1871,7 @@ int main(int argc, char *argv[])
 	int mode_em100 = 0, mode_locked = 0, mode_unlocked = 0, mode_validate = 0;
 	int mode_layout = 0, mode_newlayout = 0, mode_density = 0, mode_setstrap = 0;
 	int mode_read = 0, mode_altmedisable = 0, altmedisable = 0, mode_fmap_template = 0;
+	int mode_gpr0_disable = 0;
 	char *region_type_string = NULL, *region_fname = NULL;
 	const char *layout_fname = NULL;
 	char *new_filename = NULL;
@@ -1862,6 +1897,7 @@ int main(int argc, char *argv[])
 		{"lock", 0, NULL, 'l'},
 		{"read", 0, NULL, 'r'},
 		{"unlock", 0, NULL, 'u'},
+		{"gpr0-disable", 0, NULL, 'g'},
 		{"version", 0, NULL, 'v'},
 		{"help", 0, NULL, 'h'},
 		{"platform", 0, NULL, 'p'},
@@ -1871,7 +1907,7 @@ int main(int argc, char *argv[])
 		{0, 0, 0, 0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "S:V:df:F:D:C:M:xi:n:O:s:p:elruvth?",
+	while ((opt = getopt_long(argc, argv, "S:V:df:F:D:C:M:xi:n:O:s:p:elrugvth?",
 					long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'd':
@@ -2074,6 +2110,9 @@ int main(int argc, char *argv[])
 				exit(EXIT_FAILURE);
 			}
 			break;
+		case 'g':
+			mode_gpr0_disable = 1;
+			break;
 		case 'p':
 			if (!strcmp(optarg, "aplk")) {
 				platform = PLATFORM_APL;
@@ -2126,7 +2165,8 @@ int main(int argc, char *argv[])
 
 	if ((mode_dump + mode_layout + mode_fmap_template + mode_extract + mode_inject +
 			mode_setstrap + mode_newlayout + (mode_spifreq | mode_em100 |
-			mode_unlocked | mode_locked) + mode_altmedisable + mode_validate) > 1) {
+			mode_unlocked | mode_locked) + mode_altmedisable + mode_validate +
+			mode_gpr0_disable) > 1) {
 		fprintf(stderr, "You may not specify more than one mode.\n\n");
 		fprintf(stderr, "run '%s -h' for usage\n", argv[0]);
 		exit(EXIT_FAILURE);
@@ -2134,7 +2174,8 @@ int main(int argc, char *argv[])
 
 	if ((mode_dump + mode_layout + mode_fmap_template + mode_extract + mode_inject +
 			mode_setstrap + mode_newlayout + mode_spifreq + mode_em100 +
-			mode_locked + mode_unlocked + mode_density + mode_altmedisable + mode_validate) == 0) {
+			mode_locked + mode_unlocked + mode_density + mode_altmedisable +
+			mode_validate + mode_gpr0_disable) == 0) {
 		fprintf(stderr, "You need to specify a mode.\n\n");
 		fprintf(stderr, "run '%s -h' for usage\n", argv[0]);
 		exit(EXIT_FAILURE);
@@ -2230,6 +2271,9 @@ int main(int argc, char *argv[])
 
 	if (mode_unlocked)
 		unlock_descriptor(new_filename, image, size);
+
+	if (mode_gpr0_disable)
+		disable_gpr0(new_filename, image, size);
 
 	if (mode_setstrap) {
 		struct fpsba *fpsba = find_fpsba(image, size);
