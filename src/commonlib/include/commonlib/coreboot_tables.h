@@ -270,6 +270,11 @@ enum lb_fb_orientation {
 	LB_FB_ORIENTATION_RIGHT_UP = 3,
 };
 
+struct lb_framebuffer_flags {
+	uint8_t has_external_display : 1;
+	uint8_t reserved : 7;
+};
+
 struct lb_framebuffer {
 	uint32_t tag;
 	uint32_t size;
@@ -288,6 +293,8 @@ struct lb_framebuffer {
 	uint8_t reserved_mask_pos;
 	uint8_t reserved_mask_size;
 	uint8_t orientation;
+	struct lb_framebuffer_flags flags;
+	uint8_t pad;
 };
 
 struct lb_gpio {
