@@ -465,3 +465,9 @@ const struct cros_gpio *__weak variant_cros_gpios(size_t *num)
 	*num = ARRAY_SIZE(cros_gpios);
 	return cros_gpios;
 }
+
+const gpio_t *__weak variant_hpd_gpios(size_t *num)
+{
+	*num = 0;
+	return NULL;
+}
