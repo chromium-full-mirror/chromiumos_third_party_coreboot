@@ -466,8 +466,7 @@ void acpigen_write_mutex(const char *name, const uint8_t flags)
 {
 	/* MutexOp */
 	acpigen_emit_ext_op(MUTEX_OP);
-	/* NameString 4 chars only */
-	acpigen_emit_simple_namestring(name);
+	acpigen_emit_namestring(name);
 	acpigen_emit_byte(flags);
 }
 
@@ -475,8 +474,7 @@ void acpigen_write_acquire(const char *name, const uint16_t val)
 {
 	/* AcquireOp */
 	acpigen_emit_ext_op(ACQUIRE_OP);
-	/* NameString 4 chars only */
-	acpigen_emit_simple_namestring(name);
+	acpigen_emit_namestring(name);
 	acpigen_emit_word(val);
 }
 
@@ -484,8 +482,7 @@ void acpigen_write_release(const char *name)
 {
 	/* ReleaseOp */
 	acpigen_emit_ext_op(RELEASE_OP);
-	/* NameString 4 chars only */
-	acpigen_emit_simple_namestring(name);
+	acpigen_emit_namestring(name);
 }
 
 static void acpigen_write_field_length(uint32_t len)
