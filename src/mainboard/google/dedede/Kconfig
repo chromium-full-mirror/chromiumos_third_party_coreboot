@@ -122,6 +122,7 @@ config MAINBOARD_PART_NUMBER
 	default "Taranza" if BOARD_GOOGLE_TARANZA
 	default "Boxy" if BOARD_GOOGLE_BOXY
 	default "Dexi" if BOARD_GOOGLE_DEXI
+	default "Dita" if BOARD_GOOGLE_DITA
 
 config MAX_CPUS
 	int
@@ -164,6 +165,7 @@ config VARIANT_DIR
 	default "taranza" if BOARD_GOOGLE_TARANZA
 	default "boxy" if BOARD_GOOGLE_BOXY
 	default "dexi" if BOARD_GOOGLE_DEXI
+	default "dita" if BOARD_GOOGLE_DITA
 
 endif #BOARD_GOOGLE_BASEBOARD_DEDEDE
 
