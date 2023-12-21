@@ -967,6 +967,32 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 }
 #endif
 
+void acpi_create_wdat(acpi_header_t *header, void *unused)
+{
+	if (!IS_ENABLED(CONFIG_ACPI_WDAT_WDT))
+		return;
+
+	acpi_wdat_t *wdat = (acpi_wdat_t *)header;
+	unsigned long current = (unsigned long)wdat + sizeof(acpi_wdat_t);
+
+	memset((void *)wdat, 0, sizeof(acpi_wdat_t));
+
+	/* Fill out header fields. */
+	memcpy(header->signature, "WDAT", 4);
+	memcpy(header->oem_id, OEM_ID, 6);
+	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
+	memcpy(header->asl_compiler_id, ASLC, 4);
+
+	header->length = sizeof(acpi_wdat_t);
+	header->revision = 1; /* ACPI 1.0: N/A, 2.0: 1, 3.0: 2, 4.0: 3 */
+
+	current = acpi_soc_fill_wdat(wdat, current);
+
+	/* (Re)calculate length and checksum. */
+	header->length = current - (unsigned long)wdat;
+	header->checksum = acpi_checksum((void *) wdat, header->length);
+}
+
 unsigned long __attribute__((weak)) fw_cfg_acpi_tables(unsigned long start)
 {
 	return 0;
