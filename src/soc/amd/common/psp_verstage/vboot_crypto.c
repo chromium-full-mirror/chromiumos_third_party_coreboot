@@ -157,7 +157,7 @@ vb2_error_t vb2ex_hwcrypto_modexp(const struct vb2_public_key *key,
 		return VB2_ERROR_EX_HWCRYPTO_UNSUPPORTED;
 	}
 
-	if ((void *)&output_buffer[key->arrsize] - workbuf < workbuf_size)
+	if ((void *)&output_buffer[key->arrsize] - workbuf > workbuf_size)
 		return VB2_ERROR_WORKBUF_SMALL;
 
 	for (i = 0; i < key->arrsize; i++)
