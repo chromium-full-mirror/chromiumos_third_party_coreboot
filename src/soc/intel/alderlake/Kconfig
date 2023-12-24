@@ -489,4 +489,7 @@ config BUILDING_WITH_DEBUG_FSP
 	help
 	  Set this option if debug build of FSP is used.
 
+config HAVE_BMP_LOGO_COMPRESS_LZMA
+	default n
+
 endif
