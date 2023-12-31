@@ -39,6 +39,13 @@ void chromeos_init_chromeos_acpi(void);
 enum cb_err get_dsm_calibration_from_key(const char *key, uint64_t *value);
 
 /*
+ * The factory config space is a one-time programmable info page.
+ * For the unprovisioned one, the read will be 0x0.
+ * Return `-1` in case of error.
+ */
+int64_t chromeos_get_factory_config(void);
+
+/*
  * Declaration for mainboards to use to generate ACPI-specific ChromeOS needs.
  */
 void chromeos_acpi_gpio_generate(void);
