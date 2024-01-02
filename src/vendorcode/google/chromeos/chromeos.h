@@ -16,6 +16,8 @@ static inline void mark_watchdog_tombstone(void) { return; }
 static inline void reboot_from_watchdog(void) { return; }
 #endif /* CONFIG_CHROMEOS */
 
+#define UNDEFINED_FACTORY_CONFIG	~((uint64_t)0)
+
 /**
  * Perform any platform specific actions required prior to resetting the Cr50.
  * Defined as weak function in cr50_enable_update.c
@@ -41,9 +43,9 @@ enum cb_err get_dsm_calibration_from_key(const char *key, uint64_t *value);
 /*
  * The factory config space is a one-time programmable info page.
  * For the unprovisioned one, the read will be 0x0.
- * Return `-1` in case of error.
+ * Return "UNDEFINED_FACTORY_CONFIG" in case of error.
  */
-int64_t chromeos_get_factory_config(void);
+uint64_t chromeos_get_factory_config(void);
 /*
  * Determines whether a ChromeOS device is branded as a Chromebook Plus
  * based on specific bit flags:
