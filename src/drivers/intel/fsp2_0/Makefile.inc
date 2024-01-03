@@ -98,6 +98,7 @@ $(obj)/Fsp_T.fd: $(call strip_quotes,$(CONFIG_FSP_FD_PATH)) $(obj)/Fsp_M.fd
 endif
 
 # Add logo to the cbfs image
+ifneq ($(CONFIG_HAVE_CUSTOM_BMP_LOGO),y)
 cbfs-files-$(CONFIG_BMP_LOGO) += logo.bmp
 logo.bmp-file := $(call strip_quotes,$(CONFIG_FSP2_0_LOGO_FILE_NAME))
 logo.bmp-type := raw
@@ -105,6 +106,7 @@ ifeq ($(CONFIG_BMP_LOGO_COMPRESS_LZMA),y)
 logo.bmp-compression := LZMA
 else ifeq ($(CONFIG_BMP_LOGO_COMPRESS_LZ4),y)
 logo.bmp-compression := LZ4
+endif
 endif
 
 ifneq ($(call strip_quotes,$(CONFIG_FSP_HEADER_PATH)),)
