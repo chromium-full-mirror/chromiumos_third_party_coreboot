@@ -125,18 +125,18 @@ static void pch_finalize_script(void)
 	 */
 	pch_thermal_configuration();
 
+	reg8 = read8(pmcbase + PCH_PWRM_ACPI_TMR_CTL);
 	/*
 	 * Disable ACPI PM timer based on dt policy
 	 *
 	 * Disabling ACPI PM timer is necessary for XTAL OSC shutdown.
 	 * Disabling ACPI PM timer also switches off TCO
 	 */
-
-	if (config->PmTimerDisabled) {
-		reg8 = read8(pmcbase + PCH_PWRM_ACPI_TMR_CTL);
+	if (config->PmTimerDisabled)
 		reg8 |= (1 << 1);
-		write8(pmcbase + PCH_PWRM_ACPI_TMR_CTL, reg8);
-	}
+	else
+		reg8 &= ~(1 << 1);
+	write8(pmcbase + PCH_PWRM_ACPI_TMR_CTL, reg8);
 
 	/* Disable XTAL shutdown qualification for low power idle. */
 	if (config->s0ix_enable) {
