@@ -121,3 +121,7 @@ config DECOMPRESS_OFAST
 	default y
 	help
 	  Compile the decompressing function in -Ofast instead of standard -Os
+
+config HAVE_CUSTOM_BMP_LOGO
+	def_bool n
+	depends on BMP_LOGO
