@@ -132,3 +132,5 @@ config BOARD_GOOGLE_VOLMAR
 config BOARD_GOOGLE_ZYDRON
 	bool "->  Zydron"
 
+config BOARD_GOOGLE_XOL
+	bool "->  Xol"
