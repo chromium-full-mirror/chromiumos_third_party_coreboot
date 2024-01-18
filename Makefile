@@ -43,7 +43,7 @@ rwildcard=$(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
 SYMLINK_LIST = $(call rwildcard,site-local/,symlink.txt)
 
 
-# directory containing the toplevel Makefile.inc
+# Directory containing the toplevel Makefile.mk
 TOPLEVEL := .
 
 CONFIG_SHELL := sh
@@ -92,7 +92,7 @@ help_coreboot help::
 
 # This include must come _before_ the pattern rules below!
 # Order _does_ matter for pattern rules.
-include $(srck)/Makefile.inc
+include $(srck)/Makefile.mk
 
 # The cases where we don't need fully populated $(obj) lists:
 # 1. when no .config exists
@@ -143,11 +143,12 @@ ifeq ($(NOCOMPILE),1)
 HOSTCC ?= $(if $(shell type gcc 2>/dev/null),gcc,cc)
 HOSTCXX ?= g++
 
-include $(TOPLEVEL)/Makefile.inc
-include $(TOPLEVEL)/payloads/Makefile.inc
-include $(TOPLEVEL)/util/testing/Makefile.inc
+include $(TOPLEVEL)/Makefile.mk
+include $(TOPLEVEL)/payloads/Makefile.mk
+include $(TOPLEVEL)/util/testing/Makefile.mk
+-include $(TOPLEVEL)/site-local/Makefile.mk
 -include $(TOPLEVEL)/site-local/Makefile.inc
-include $(TOPLEVEL)/tests/Makefile.inc
+include $(TOPLEVEL)/tests/Makefile.mk
 real-all:
 	@echo "Error: Trying to build, but NOCOMPILE is set." >&2
 	@echo "  Please file a bug with the following information:"
@@ -191,7 +192,7 @@ CFLAGS_x86_32 += -mno-mmx
 endif
 
 ifneq ($(UNIT_TEST),1)
-include toolchain.inc
+include toolchain.mk
 endif
 
 strip_quotes = $(strip $(subst ",,$(subst \",,$(1))))
@@ -265,7 +266,7 @@ src-to-ali=\
 	$(subst .$(1),,\
 	$(filter %.ads %.adb,$(2)))))))))
 
-# Clean -y variables, include Makefile.inc
+# Clean -y variables, include Makefile.mk & Makefile.inc
 # Add paths to files in X-y to X-srcs
 # Add subdirs-y to subdirs
 includemakefiles= \
@@ -283,9 +284,12 @@ includemakefiles= \
 
 # For each path in $(subdirs) call includemakefiles
 # Repeat until subdirs is empty
+# TODO: Remove Makefile.inc support
 evaluate_subdirs= \
 	$(eval cursubdirs:=$(subdirs)) \
 	$(eval subdirs:=) \
+	$(foreach dir,$(cursubdirs), \
+		$(eval $(call includemakefiles,$(dir)/Makefile.mk))) \
 	$(foreach dir,$(cursubdirs), \
 		$(eval $(call includemakefiles,$(dir)/Makefile.inc))) \
 	$(if $(subdirs),$(eval $(call evaluate_subdirs)))
@@ -294,11 +298,11 @@ evaluate_subdirs= \
 subdirs:=$(TOPLEVEL)
 postinclude-hooks :=
 
-# Don't iterate through Makefile.incs under src/ when building tests
+# Don't iterate through Makefiles under src/ when building tests
 ifneq ($(UNIT_TEST),1)
 $(eval $(call evaluate_subdirs))
 else
-include $(TOPLEVEL)/tests/Makefile.inc
+include $(TOPLEVEL)/tests/Makefile.mk
 endif
 
 ifeq ($(FAILBUILD),1)
