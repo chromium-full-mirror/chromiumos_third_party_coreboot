@@ -9,6 +9,12 @@ config BOARD_GOOGLE_ANAHERA
 config BOARD_GOOGLE_ANAHERA4ES
 	bool "->  Anahera4ES"
 
+config BOARD_GOOGLE_AURASH
+	bool "->  Aurash"
+
+config BOARD_GOOGLE_BANSHEE
+	bool "->  Banshee"
+
 config BOARD_GOOGLE_BRASK
 	bool "->  Brask"
 
@@ -18,8 +24,23 @@ config BOARD_GOOGLE_BRYA0
 config BOARD_GOOGLE_BRYA4ES
 	bool "->  Brya4ES"
 
+config BOARD_GOOGLE_CONSTITUTION
+	bool "->  Constitution"
+
+config BOARD_GOOGLE_CRAASK
+	bool "->  Craask"
+
+config BOARD_GOOGLE_CROTA
+	bool "->  Crota"
+
+config BOARD_GOOGLE_DOCHI
+	bool "->  Dochi"
+
 config BOARD_GOOGLE_FELWINTER
 	bool "->  Felwinter"
+
+config BOARD_GOOGLE_GAELIN
+	bool "->  Gaelin"
 
 config BOARD_GOOGLE_GHOST
 	bool "->  Ghost"
@@ -36,14 +57,44 @@ config BOARD_GOOGLE_GIMBLE
 config BOARD_GOOGLE_GIMBLE4ES
 	bool "->  Gimble4ES"
 
+config BOARD_GOOGLE_GLADIOS
+	bool "->  Gladios"
+
+config BOARD_GOOGLE_HADES
+	bool "->  Hades"
+
 config BOARD_GOOGLE_KANO
 	bool "->  Kano"
+
+config BOARD_GOOGLE_KINOX
+	bool "->  Kinox"
+
+config BOARD_GOOGLE_KULDAX
+	bool "->  Kuldax"
+
+config BOARD_GOOGLE_LISBON
+	bool "->  Lisbon"
+
+config BOARD_GOOGLE_MARASOV
+	bool "->  Marasov"
+
+config BOARD_GOOGLE_MITHRAX
+	bool "->  Mithrax"
+
+config BOARD_GOOGLE_MOLI
+	bool "->  Moli"
+
+config BOARD_GOOGLE_NEREID
+	bool "->  Nereid"
 
 config BOARD_GOOGLE_NIVVIKS
 	bool "->  Nivviks"
 
-config BOARD_GOOGLE_NEREID
-	bool "->  Nereid"
+config BOARD_GOOGLE_OMNIGUL
+	bool "->  Omnigul"
+
+config BOARD_GOOGLE_OSIRIS
+	bool "->  Osiris"
 
 config BOARD_GOOGLE_PRIMUS
 	bool "->  Primus"
@@ -78,56 +129,6 @@ config BOARD_GOOGLE_VELL
 config BOARD_GOOGLE_VOLMAR
 	bool "->  Volmar"
 
-config BOARD_GOOGLE_BANSHEE
-	bool "->  Banshee"
-
-config BOARD_GOOGLE_CROTA
-	bool "->  Crota"
-
-config BOARD_GOOGLE_MOLI
-	bool "->  Moli"
-
-config BOARD_GOOGLE_KINOX
-	bool "->  Kinox"
-
-config BOARD_GOOGLE_CRAASK
-	bool "->  Craask"
-
-config BOARD_GOOGLE_OSIRIS
-	bool "->  Osiris"
-
-config BOARD_GOOGLE_MITHRAX
-	bool "->  Mithrax"
-
-config BOARD_GOOGLE_KULDAX
-	bool "->  Kuldax"
-
-config BOARD_GOOGLE_GAELIN
-	bool "->  Gaelin"
-
-config BOARD_GOOGLE_LISBON
-	bool "->  Lisbon"
-
 config BOARD_GOOGLE_ZYDRON
 	bool "->  Zydron"
 
-config BOARD_GOOGLE_GLADIOS
-	bool "->  Gladios"
-
-config BOARD_GOOGLE_MARASOV
-	bool "->  Marasov"
-
-config BOARD_GOOGLE_OMNIGUL
-	bool "->  Omnigul"
-
-config BOARD_GOOGLE_CONSTITUTION
-	bool "->  Constitution"
-
-config BOARD_GOOGLE_AURASH
-	bool "->  Aurash"
-
-config BOARD_GOOGLE_HADES
-	bool "->  Hades"
-
-config BOARD_GOOGLE_DOCHI
-	bool "->  Dochi"
