@@ -43,11 +43,5 @@ tarballs/
 
 doxygen/*
 
-# blobs needed to build some boards, not under git control
-3rdparty/arm-trusted-firmware/
-3rdparty/amd_blobs/
-3rdparty/blobs/
-3rdparty/intel-microcode/
-3rdparty/libgfxinit/
-3rdparty/libhwbase/
-3rdparty/qc_blobs/
+# Allow some files excluded above
+!3rdparty/libhwbase/configs/defconfig
