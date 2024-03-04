@@ -302,7 +302,7 @@ config VARIANT_DIR
 	default "pirrha" if BOARD_GOOGLE_PIRRHA
 	default "quandiso" if BOARD_GOOGLE_QUANDISO
 	default "anraggar" if BOARD_GOOGLE_ANRAGGAR
-	default "Glassway" if BOARD_GOOGLE_GLASSWAY
+	default "glassway" if BOARD_GOOGLE_GLASSWAY
 
 config VBOOT
 	select VBOOT_EARLY_EC_SYNC if !BOARD_GOOGLE_BASEBOARD_NISSA
