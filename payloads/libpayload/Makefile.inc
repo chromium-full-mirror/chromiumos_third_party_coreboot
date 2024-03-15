@@ -137,6 +137,13 @@ install: real-target
 		install -m 755 -d "$(DESTDIR)/libpayload/`dirname $$dest_file`"; \
 		install -m 644 "$$file" "$(DESTDIR)/libpayload/$$dest_file"; \
 	done
+ifeq ($(CONFIG_LP_GPL),y)
+	for file in `find $(coreboottop)/src/commonlib/include -name *.h -type f`; do \
+		dest_file=$$(realpath --relative-to=$(coreboottop)/src/commonlib/ $$file); \
+		install -m 755 -d "$(DESTDIR)/libpayload/`dirname $$dest_file`"; \
+		install -m 644 "$$file" "$(DESTDIR)/libpayload/$$dest_file"; \
+	done
+endif
 	install -m 644 $(obj)/libpayload-config.h $(DESTDIR)/libpayload/include
 	$(foreach item,$(includes), \
 		install -m 755 -d $(DESTDIR)/libpayload/include/$(call extract_nth,2,$(item)); \
