@@ -33,6 +33,7 @@ TEST_CONFIG_ := CONFIG_LP_
 TEST_CFLAGS := -include include/kconfig.h -include include/compiler.h
 TEST_CFLAGS += -Iinclude -Iinclude/mock
 TEST_CFLAGS += -I$(coreboottop)/src/commonlib/bsd/include
+TEST_CFLAGS += -I$(coreboottop)/src/commonlib/include
 TEST_CFLAGS += -I$(dir $(TEST_KCONFIG_AUTOHEADER))
 TEST_CFLAGS += -I$(VBOOT_SOURCE)/firmware/include
 
