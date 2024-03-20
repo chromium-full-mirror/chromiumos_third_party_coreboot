@@ -179,6 +179,7 @@ config DRIVER_TPM_I2C_BUS
 	default 0x0 if BOARD_GOOGLE_QUANDISO
 	default 0x0 if BOARD_GOOGLE_ANRAGGAR
 	default 0x0 if BOARD_GOOGLE_GLASSWAY
+	default 0x0 if BOARD_GOOGLE_SUNDANCE
 
 config DRIVER_TPM_I2C_ADDR
 	hex
@@ -256,6 +257,7 @@ config MAINBOARD_PART_NUMBER
 	default "Quandiso" if BOARD_GOOGLE_QUANDISO
 	default "Anraggar" if BOARD_GOOGLE_ANRAGGAR
 	default "Glassway" if BOARD_GOOGLE_GLASSWAY
+	default "Sundance" if BOARD_GOOGLE_SUNDANCE
 
 config VARIANT_DIR
 	default "brya0" if BOARD_GOOGLE_BRYA0
@@ -305,6 +307,7 @@ config VARIANT_DIR
 	default "quandiso" if BOARD_GOOGLE_QUANDISO
 	default "anraggar" if BOARD_GOOGLE_ANRAGGAR
 	default "glassway" if BOARD_GOOGLE_GLASSWAY
+	default "sundance" if BOARD_GOOGLE_SUNDANCE
 
 config VBOOT
 	select VBOOT_EARLY_EC_SYNC if !BOARD_GOOGLE_BASEBOARD_NISSA
