@@ -38,6 +38,8 @@ enum ps2_action_key {
 void acpigen_ps2_keyboard_dsd(const char *scope, uint8_t num_top_row_keys,
 			      enum ps2_action_key action_keys[],
 			      bool can_send_function_keys,
-			      bool has_numeric_keypad, bool has_scrnlock_key);
+			      bool has_numeric_keypad, bool has_scrnlock_key,
+			      bool has_assistant_key,
+			      bool has_alpha_num_punct_keys);
 
 #endif /* __ACPI_ACPIGEN_PS2_KEYBD_H__ */
