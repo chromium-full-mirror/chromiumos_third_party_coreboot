@@ -18,6 +18,23 @@
 #define ACPI_DP_UUID		"daffd814-6eba-4d8c-8a91-bc9bbf4aa301"
 #define ACPI_DP_CHILD_UUID	"dbb8e3e6-5886-4ba6-8795-1319f52a966b"
 
+/* Write GPIO descriptor of DSD property */
+int acpi_device_write_dsd_gpio(struct acpi_gpio *gpio, int *curr_index)
+{
+	int ret = -1;
+
+	if (!gpio || !curr_index)
+		return ret;
+
+	if (gpio->pin_count == 0)
+		return ret;
+
+	acpi_device_write_gpio(gpio);
+	ret = (*curr_index)++;
+
+	return ret;
+}
+
 /* Write empty word value and return pointer to it */
 static void *acpi_device_write_zero_len(void)
 {
