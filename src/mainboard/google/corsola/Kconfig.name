@@ -29,6 +29,9 @@ config BOARD_GOOGLE_CHINCHOU
 config BOARD_GOOGLE_SKITTY
 	bool "->  Skitty"
 
+config BOARD_GOOGLE_VELUZA
+	bool "->  Veluza"
+
 comment "Staryu"
 
 config BOARD_GOOGLE_STARMIE
