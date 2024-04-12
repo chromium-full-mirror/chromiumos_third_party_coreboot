@@ -712,7 +712,7 @@ Scope (\_SB.PCI0)
 
 		Method (_STA, 0x0, NotSerialized)
 		{
-			If (TRE0 == 1) {
+			If (VDID != 0xFFFFFFFF) {
 				Return (0x0F)
 			} Else {
 				Return (0x0)
@@ -742,7 +742,7 @@ Scope (\_SB.PCI0)
 
 		Method (_STA, 0x0, NotSerialized)
 		{
-			If (TRE1 == 1) {
+			If (VDID != 0xFFFFFFFF) {
 				Return (0x0F)
 			} Else {
 				Return (0x0)
@@ -772,7 +772,7 @@ Scope (\_SB.PCI0)
 
 		Method (_STA, 0x0, NotSerialized)
 		{
-			If (TRE2 == 1) {
+			If (VDID != 0xFFFFFFFF) {
 				Return (0x0F)
 			} Else {
 				Return (0x0)
@@ -802,7 +802,7 @@ Scope (\_SB.PCI0)
 
 		Method (_STA, 0x0, NotSerialized)
 		{
-			If (TRE3 == 1) {
+			If (VDID != 0xFFFFFFFF) {
 				Return (0x0F)
 			} Else {
 				Return (0x0)
