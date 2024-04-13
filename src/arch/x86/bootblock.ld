@@ -29,7 +29,7 @@ SECTIONS {
 	 * may cause the total size of a section to change when the start
 	 * address gets applied.
 	 */
-	PROGRAM_SZ = SIZEOF(.text) + 512;
+	PROGRAM_SZ = SIZEOF(.text) + CONFIG_X86_BOOTBLOCK_EXTRA_PROGRAM_SZ;
 
 	. = MIN(_ECFW_PTR, MIN(_ID_SECTION, _FIT_POINTER)) - EARLYASM_SZ;
 	. = CONFIG(SIPI_VECTOR_IN_ROM) ? ALIGN(4096) : ALIGN(16);
