@@ -407,6 +407,13 @@ int google_chromeec_regulator_set_voltage(uint32_t index, uint32_t min_mv,
  */
 int google_chromeec_regulator_get_voltage(uint32_t index, uint32_t *voltage_mv);
 
+/**
+ * Determine if the UCSI stack is currently active.
+ *
+ * @return true if EC implements the UCSI stack
+ */
+bool google_chromeec_get_ucsi_enabled(void);
+
 #if CONFIG(HAVE_ACPI_TABLES)
 /**
  * Writes USB Type-C PD related information to the SSDT
