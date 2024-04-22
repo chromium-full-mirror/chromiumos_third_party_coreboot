@@ -442,6 +442,8 @@ static const unsigned short pci_device_ids[] = {
 	PCI_DID_INTEL_ADL_N_GT1,
 	PCI_DID_INTEL_ADL_N_GT2,
 	PCI_DID_INTEL_ADL_N_GT3,
+	PCI_DID_INTEL_TWL_GT1_1,
+	PCI_DID_INTEL_TWL_GT1_2,
 	0,
 };
 

@@ -4010,6 +4010,8 @@
 #define PCI_DID_INTEL_RPL_P_GT4				0xa7a9
 #define PCI_DID_INTEL_RPL_P_GT5				0xa7a1
 #define PCI_DID_INTEL_RPL_P_GT6				0xa721
+#define PCI_DID_INTEL_TWL_GT1_1				0x46D3
+#define PCI_DID_INTEL_TWL_GT1_2				0x46D4
 
 /* Intel Northbridge Ids */
 #define PCI_DID_INTEL_APL_NB			0x5af0
