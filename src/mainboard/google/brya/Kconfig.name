@@ -389,6 +389,7 @@ config BOARD_GOOGLE_SUNDANCE
 config BOARD_GOOGLE_PUJJOGA
 	bool "->  Pujjoga"
 	select BOARD_GOOGLE_BASEBOARD_NISSA
+	select DRIVERS_GENERIC_GPIO_KEYS
 
 config BOARD_GOOGLE_RIVEN
 	bool "->  Riven"
