@@ -2,6 +2,7 @@
 
 #include <arch/null_breakpoint.h>
 #include <bootsplash.h>
+#include <bootstate.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <commonlib/fsp.h>
@@ -147,9 +148,6 @@ static void do_silicon_init(struct fsp_header *hdr)
 	timestamp_add_now(TS_FSP_SILICON_INIT_END);
 	post_code(POST_FSP_SILICON_EXIT);
 
-	if (CONFIG(BMP_LOGO))
-		bmp_release_logo();
-
 	fsp_debug_after_silicon_init(status);
 	fsps_return_value_handler(FSP_SILICON_INIT_API, status);
 
@@ -255,3 +253,11 @@ void fsp_silicon_init(void)
 }
 
 __weak void soc_load_logo(FSPS_UPD *supd) { }
+
+static void release_logo(void *arg_unused)
+{
+	if (CONFIG(BMP_LOGO))
+		bmp_release_logo();
+}
+
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT, release_logo, NULL);
