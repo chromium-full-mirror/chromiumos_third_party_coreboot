@@ -250,6 +250,7 @@ static uint32_t fsp_mrc_version(void)
 	return ver;
 }
 
+#include <security/vboot/vboot_common.h>
 static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 {
 	uint32_t status;
@@ -330,6 +331,8 @@ static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 	fsp_raminit = (void *)(uintptr_t)(hdr->image_base + hdr->fsp_memory_init_entry_offset);
 	fsp_debug_before_memory_init(fsp_raminit, upd, &fspm_upd);
 
+	vboot_check_secdata_corruption(3);
+
 	/* FSP disables the interrupt handler so remove debug exceptions temporarily  */
 	null_breakpoint_disable();
 	post_code(POST_FSP_MEMORY_INIT);
@@ -344,6 +347,7 @@ static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 
 	post_code(POST_FSP_MEMORY_EXIT);
 	timestamp_add_now(TS_FSP_MEMORY_INIT_END);
+	vboot_check_secdata_corruption(4);
 
 	/* Handle any errors returned by FspMemoryInit */
 	fsp_handle_reset(status);

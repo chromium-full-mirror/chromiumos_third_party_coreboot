@@ -38,8 +38,10 @@ void __noreturn romstage_main(void)
 	for (i = 0; i < num_guards; i++)
 		stack_base[i] = stack_guard;
 
+	vboot_check_secdata_corruption(0);
 	if (CONFIG(VBOOT_EARLY_EC_SYNC))
 		vboot_sync_ec();
+	vboot_check_secdata_corruption(1);
 
 	/*
 	 * We can generally jump between C and Ada code back and forth
@@ -65,6 +67,7 @@ void __noreturn romstage_main(void)
 	if (CONFIG(SMM_TSEG))
 		smm_list_regions();
 
+	vboot_check_secdata_corruption(2);
 	prepare_and_run_postcar();
 	/* We do not return here. */
 }
