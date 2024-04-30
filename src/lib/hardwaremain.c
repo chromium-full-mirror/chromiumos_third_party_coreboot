@@ -315,6 +315,7 @@ static struct state_tracker {
 	.seq = BS_ON_ENTRY,
 };
 
+#include <security/vboot/vboot_common.h>
 static void bs_walk_state_machine(void)
 {
 
@@ -337,6 +338,8 @@ static void bs_walk_state_machine(void)
 		bs_run_timers(0);
 
 		bs_sample_time(state);
+
+		vboot_check_secdata_corruption(0x10 + current_phase.state_id);
 
 		bs_call_callbacks(state, current_phase.seq);
 		/* Update the current sequence so that any calls to block the

@@ -82,4 +82,6 @@ void vboot_save_data(struct vb2_context *ctx);
  */
 void vboot_sync_ec(void);
 
+void vboot_check_secdata_corruption(int index);
+
 #endif /* __VBOOT_VBOOT_COMMON_H__ */

@@ -88,6 +88,7 @@ static void fsp_fill_common_arch_params(FSPS_UPD *supd)
 #endif
 }
 
+#include <security/vboot/vboot_common.h>
 static void do_silicon_init(struct fsp_header *hdr)
 {
 	FSPS_UPD *upd, *supd;
@@ -132,6 +133,7 @@ static void do_silicon_init(struct fsp_header *hdr)
 				 hdr->fsp_silicon_init_entry_offset);
 	fsp_debug_before_silicon_init(silicon_init, supd, upd);
 
+	vboot_check_secdata_corruption(5);
 	timestamp_add_now(TS_FSP_SILICON_INIT_START);
 	post_code(POST_FSP_SILICON_INIT);
 
@@ -147,6 +149,7 @@ static void do_silicon_init(struct fsp_header *hdr)
 
 	timestamp_add_now(TS_FSP_SILICON_INIT_END);
 	post_code(POST_FSP_SILICON_EXIT);
+	vboot_check_secdata_corruption(6);
 
 	if (CONFIG(BMP_LOGO))
 		bmp_release_logo();
