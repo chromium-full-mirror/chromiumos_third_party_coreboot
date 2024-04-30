@@ -1063,6 +1063,7 @@ static void fill_mp_state(struct mp_state *state, const struct mp_ops *ops)
 		mp_state.ops.per_cpu_smm_trigger = smm_initiate_relocation;
 }
 
+#include <security/vboot/vboot_common.h>
 int mp_init_with_smm(struct bus *cpu_bus, const struct mp_ops *mp_ops)
 {
 	int ret;
@@ -1097,12 +1098,16 @@ int mp_init_with_smm(struct bus *cpu_bus, const struct mp_ops *mp_ops)
 	mp_params.flight_plan = &mp_steps[0];
 	mp_params.num_records = ARRAY_SIZE(mp_steps);
 
+	vboot_check_secdata_corruption(7);
+
 	/* Perform backup of default SMM area. */
 	default_smm_area = backup_default_smm_area();
 
 	ret = mp_init(cpu_bus, &mp_params);
 
 	restore_default_smm_area(default_smm_area);
+
+	vboot_check_secdata_corruption(8);
 
 	/* Signal callback on success if it's provided. */
 	if (ret == 0 && mp_state.ops.post_mp_init != NULL)

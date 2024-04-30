@@ -44,11 +44,13 @@ static void romstage_main(unsigned long bist)
 	for (i = 0; i < num_guards; i++)
 		stack_base[i] = stack_guard;
 
+	vboot_check_secdata_corruption(0);
 	mainboard_romstage_pre_ec_sync_entry();
 
 	if (CONFIG(VBOOT_EARLY_EC_SYNC))
 		vboot_sync_ec();
 
+	vboot_check_secdata_corruption(1);
 	mainboard_romstage_entry();
 
 	/* Check the stack. */
@@ -61,6 +63,7 @@ static void romstage_main(unsigned long bist)
 	if (CONFIG(SMM_TSEG))
 		smm_list_regions();
 
+	vboot_check_secdata_corruption(2);
 	prepare_and_run_postcar(&early_mtrrs);
 	/* We do not return here. */
 }

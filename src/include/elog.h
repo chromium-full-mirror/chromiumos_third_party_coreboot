@@ -206,6 +206,8 @@ struct elog_event_mem_cache_update {
 #define ELOG_TYPE_MI_HRPC                 0xb4
 #define ELOG_TYPE_MI_HR                   0xb5
 
+#define ELOG_TYPE_HACK_SECDATA_CORRUPT    0xbf
+
 struct elog_event_extended_event {
 	u8 event_type;
 	u32 event_complement;

@@ -64,3 +64,21 @@ void vboot_reboot(void)
 	vboot_platform_prepare_reboot();
 	board_reset();
 }
+
+#include <elog.h>
+void vboot_check_secdata_corruption(int index)
+{
+	struct vb2_context *ctx = vboot_get_context();
+	uint16_t info = vb2hack_is_secdata_compromised(ctx, index);
+
+	if (info)
+		elog_add_event_word(ELOG_TYPE_HACK_SECDATA_CORRUPT, info);
+	/*
+	 * We want to interfere with the bug itself as little as possible here
+	 * to ensure that it fails in exactly the same way and we get devices
+	 * RMA'ed with reason 0x5d again. That's why we don't immediately want
+	 * to vboot_save_data() and reboot here, we just write the recovery
+	 * reason and wait for it to write back whenever it would have otherwise
+	 * written back.
+	 */
+}
