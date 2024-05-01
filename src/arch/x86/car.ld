@@ -28,7 +28,11 @@
 	 * use CAR it can be reused. The chipset/SoC is expected to provide
 	 * the stack size. */
 	_car_stack = .;
+#if ENV_ROMSTAGE
 	. += CONFIG_DCACHE_BSP_STACK_SIZE;
+#else
+	. += CONFIG_DCACHE_RO_STACK_SIZE;
+#endif
 	_ecar_stack = .;
 	/* The pre-ram cbmem console as well as the timestamp region are fixed
 	 * in size. Therefore place them above the car global section so that

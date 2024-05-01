@@ -32,6 +32,41 @@ _start:
 	call	gdt_init
 #endif
 
+#if ENV_ROMSTAGE
+	/*
+	 * DEDEDE-HACK: Relocate persistent memory regions that moved between RO
+	 * and RW stages. We should do this before initializing the stack pointer
+	 * so that we don't need to worry about the case that the new _ecar_stack
+	 * might overlap some of the data we want to save from the old layout,
+	 * because otherwise it might get overwritten before we can copy it.
+	 *
+	 * The difference between the two layouts is that the size of the stack
+	 * increased (i.e. _ecar_stack moved to a higher address), and we know
+	 * that no persistent regions exist after _bss, so relocate everything
+	 * between _ecar_stack and _bss. On Dedede, this is the CBMEM console,
+	 * the timestamps and the FMAP cache (as well as unused areas for pdpt
+	 * and ehci_dbg_info).
+	 */
+
+	/* We memmove() stuff forward, so need to copy backward */
+	std
+
+	movl	$(_bss), %ecx
+
+	/* EDI = _bss(RW) - 4 (first destination word, from the back) */
+	leal	-4(%ecx), %edi
+
+	/* ESI = EDI - RW + RO = _bss(RO) - 4 (first source word, from the back) */
+	leal	-CONFIG_DCACHE_BSP_STACK_SIZE+CONFIG_DCACHE_RO_STACK_SIZE(%edi), %esi
+
+	/* ECX = (_bss - _ecar_stack) / 4 */
+	movl	$(_ecar_stack), %eax
+	sub	%eax, %ecx
+	shr	$2, %ecx
+
+	rep	movsl
+#endif
+
 	/* reset stack pointer to CAR/EARLYRAM stack */
 	mov	$_STACK_TOP, %esp
 
