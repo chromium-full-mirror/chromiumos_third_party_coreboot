@@ -76,12 +76,19 @@ config DCACHE_RAM_SIZE
 
 config DCACHE_BSP_STACK_SIZE
 	hex
+	default 0x40000
+	help
+	  We have seen strange memory corruption issues on JSL that could be
+	  related to a stack overflow, so for this branch only the stack size
+	  has been increased by 63KB.
+
+config DCACHE_RO_STACK_SIZE
+	hex
 	default 0x30400
 	help
-	  The amount of anticipated stack usage in CAR by bootblock and
-	  other stages. In the case of FSP_USES_CB_STACK default value
-	  will be sum of FSP-M stack requirement(192 KiB) and CB romstage
-	  stack requirement(~1KiB).
+	  In order to have a consistent RO/RW handoff regardless of whether the
+	  RO version was built before or after the stack size change, we need
+	  to make sure RO stages always use the old stack size.
 
 config FSP_TEMP_RAM_SIZE
 	hex
