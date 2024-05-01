@@ -27,7 +27,11 @@
 	/* Stack for CAR stages. Since it persists across all stages that
 	 * use CAR it can be reused. The chipset/SoC is expected to provide
 	 * the stack size. */
+#if ENV_ROMSTAGE
 	REGION(car_stack, ., CONFIG_DCACHE_BSP_STACK_SIZE, 4)
+#else
+	REGION(car_stack, ., CONFIG_DCACHE_RO_STACK_SIZE, 4)
+#endif
 	/* The pre-ram cbmem console as well as the timestamp region are fixed
 	 * in size. Therefore place them above the car global section so that
 	 * multiple stages (romstage and verstage) have a consistent
