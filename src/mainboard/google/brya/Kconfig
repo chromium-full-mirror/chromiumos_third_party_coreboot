@@ -201,6 +201,7 @@ config DRIVER_TPM_I2C_BUS
 	default 0x0 if BOARD_GOOGLE_GLASSWAY
 	default 0x0 if BOARD_GOOGLE_SUNDANCE
 	default 0x0 if BOARD_GOOGLE_PUJJOGA
+	default 0x0 if BOARD_GOOGLE_ORISA
 
 config DRIVER_TPM_I2C_ADDR
 	hex
@@ -282,6 +283,7 @@ config MAINBOARD_PART_NUMBER
 	default "Glassway" if BOARD_GOOGLE_GLASSWAY
 	default "Sundance" if BOARD_GOOGLE_SUNDANCE
 	default "Pujjoga" if BOARD_GOOGLE_PUJJOGA
+	default "Orisa" if BOARD_GOOGLE_ORISA
 
 config VARIANT_DIR
 	default "brya0" if BOARD_GOOGLE_BRYA0
@@ -335,6 +337,7 @@ config VARIANT_DIR
 	default "glassway" if BOARD_GOOGLE_GLASSWAY
 	default "sundance" if BOARD_GOOGLE_SUNDANCE
 	default "pujjoga" if BOARD_GOOGLE_PUJJOGA
+	default "orisa" if BOARD_GOOGLE_ORISA
 
 config VBOOT
 	select VBOOT_EARLY_EC_SYNC if !BOARD_GOOGLE_BASEBOARD_NISSA
