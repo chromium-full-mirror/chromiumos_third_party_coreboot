@@ -48,6 +48,5 @@ doxygen/*
 3rdparty/amd_blobs/
 3rdparty/blobs/
 3rdparty/intel-microcode/
-3rdparty/libgfxinit/
 3rdparty/libhwbase/
 3rdparty/qc_blobs/
