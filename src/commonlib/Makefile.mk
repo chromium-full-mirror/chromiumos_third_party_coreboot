@@ -61,3 +61,7 @@ ramstage-y += sort.c
 romstage-y += bsd/elog.c
 ramstage-y += bsd/elog.c
 smm-y += bsd/elog.c
+
+decompressor-y += bsd/string.c
+smm-y += bsd/string.c
+all-y += bsd/string.c
