@@ -159,6 +159,7 @@ static void eventlog_print_type(const struct event_header *event)
 		{ELOG_TYPE_EXTENDED_EVENT, "Extended Event"},
 		{ELOG_TYPE_CROS_DIAGNOSTICS, "Diagnostics Mode"},
 		{ELOG_TYPE_FW_VBOOT_INFO, "Firmware vboot info"},
+		{ELOG_TYPE_FW_EARLY_SOL, "Early Sign of Life"},
 		{ELOG_TYPE_FW_SPLASH_SCREEN, "Firmware Splash Screen"},
 
 		{ELOG_TYPE_EOL, "End of log"},
@@ -461,6 +462,12 @@ static int eventlog_print_data(const struct event_header *event)
 		{0, NULL},
 	};
 
+	static const struct valstr early_sol_path_types[] = {
+		{ELOG_FW_EARLY_SOL_CSE_SYNC, "CSE Sync Early SOL Screen Shown"},
+		{ELOG_FW_EARLY_SOL_MRC, "MRC Early SOL Screen Shown"},
+		{0, NULL},
+	};
+
 	switch (event->type) {
 	case ELOG_TYPE_LOG_CLEAR: {
 		const uint16_t *bytes = event_get_data(event);
@@ -597,6 +604,11 @@ static int eventlog_print_data(const struct event_header *event)
 		eventlog_printf("fw_try_count=%d", info->tries);
 		eventlog_printf("fw_prev_tried=%s", vb2_slot_string(info->prev_slot));
 		eventlog_printf("fw_prev_result=%s", vb2_result_string(info->prev_result));
+		break;
+	}
+	case ELOG_TYPE_FW_EARLY_SOL: {
+		const uint8_t *sol_event = event_get_data(event);
+		eventlog_printf("%s", val2str(*sol_event, early_sol_path_types));
 		break;
 	}
 	case ELOG_TYPE_FW_SPLASH_SCREEN: {
