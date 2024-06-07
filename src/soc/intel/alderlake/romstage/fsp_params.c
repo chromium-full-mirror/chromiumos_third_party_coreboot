@@ -6,6 +6,7 @@
 #include <cpu/intel/cpu_ids.h>
 #include <device/device.h>
 #include <drivers/wifi/generic/wifi.h>
+#include <elog.h>
 #include <fsp/fsp_debug_event.h>
 #include <fsp/util.h>
 #include <intelblocks/cpulib.h>
@@ -353,6 +354,7 @@ static void inform_user_of_memory_training(void)
 	printk(BIOS_INFO, "Informing user on-display of memory training.\n");
 	vga_write_text(VGA_TEXT_CENTER, VGA_TEXT_HORIZONTAL_MIDDLE,
 		       "Your device is finishing an update. This may take 1-2 minutes.\nPlease do not turn off your device.");
+	elog_add_event_byte(ELOG_TYPE_FW_EARLY_SOL, ELOG_FW_EARLY_SOL_MRC);
 }
 
 static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
