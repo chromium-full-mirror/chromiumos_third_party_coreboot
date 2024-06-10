@@ -35,7 +35,8 @@
 #define CR50_TIMEOUT_SHORT_MS	2	/* Short timeout during transactions */
 #define CR50_TIMEOUT_NOIRQ_MS	20	/* Timeout for TPM ready without IRQ */
 #define CR50_DID_VID		0x00281ae0L
-#define TI50_DID_VID		0x504a6666L
+#define TI50_DT_DID_VID		0x504a6666L
+#define TI50_OT_DID_VID		0x50666666L
 
 struct tpm_inf_dev {
 	int bus;
@@ -440,7 +441,8 @@ static int cr50_i2c_probe(struct tpm_chip *chip, uint32_t *did_vid)
 		rc = cr50_i2c_read(TPM_DID_VID(0), (uint8_t *)did_vid, 4);
 
 		/* Exit once DID and VID verified */
-		if (!rc && (*did_vid == CR50_DID_VID || *did_vid == TI50_DID_VID)) {
+		if (!rc && (*did_vid == CR50_DID_VID || *did_vid == TI50_DT_DID_VID ||
+			    *did_vid == TI50_OT_DID_VID)) {
 			printk(BIOS_INFO, "done! DID_VID 0x%08x\n", *did_vid);
 			return 0;
 		}
