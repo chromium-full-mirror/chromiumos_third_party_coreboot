@@ -123,6 +123,7 @@ config MAINBOARD_PART_NUMBER
 	default "Boxy" if BOARD_GOOGLE_BOXY
 	default "Dexi" if BOARD_GOOGLE_DEXI
 	default "Dita" if BOARD_GOOGLE_DITA
+	default "Awasuki" if BOARD_GOOGLE_AWASUKI
 
 config MAX_CPUS
 	int
@@ -166,6 +167,7 @@ config VARIANT_DIR
 	default "boxy" if BOARD_GOOGLE_BOXY
 	default "dexi" if BOARD_GOOGLE_DEXI
 	default "dita" if BOARD_GOOGLE_DITA
+	default "awasuki" if BOARD_GOOGLE_AWASUKI
 
 endif #BOARD_GOOGLE_BASEBOARD_DEDEDE
 
