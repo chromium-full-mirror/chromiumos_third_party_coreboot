@@ -1,0 +1,11 @@
+--- gcc-13.2.0/libgcc/config/riscv/value-unwind.h~	2023-12-05 12:43:24.145951059 +0100
++++ gcc-13.2.0/libgcc/config/riscv/value-unwind.h	2023-12-05 12:43:41.838105942 +0100
+@@ -29,7 +29,7 @@
+ {
+   register long vlenb asm ("a0");
+   /* 0xc2202573 == csrr a0, 0xc22 */
+-  asm (".insn 0xc2202573" : "=r"(vlenb));
++  __builtin_exit(1);
+   return vlenb;
+ }
+

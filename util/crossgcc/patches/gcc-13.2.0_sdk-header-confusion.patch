@@ -1,0 +1,42 @@
+--- a/gcc/ada/adaint.c	2023-12-05 10:54:21.213703486 +0100
++++ b/gcc/ada/adaint.c	2023-12-05 10:46:23.505752344 +0100
+@@ -102,6 +102,7 @@
+ #endif
+
+ #if defined (__linux__)
++#define _GNU_SOURCE
+ #include <sched.h>
+ #endif
+
+--- a/gcc/ada/adaint.h	2023-07-27 10:13:03.000000000 +0200
++++ b/gcc/ada/adaint.h	2023-12-05 09:56:35.337434972 +0100
+@@ -52,12 +52,12 @@
+    For now we just list the platforms we have manually tested. */
+
+ #if (defined (__GLIBC__) && !defined(STANDALONE)) || defined (__sun__) || defined (__QNX__)
+-#define GNAT_FOPEN fopen64
+-#define GNAT_OPEN open64
+-#define GNAT_STAT stat64
+-#define GNAT_FSTAT fstat64
+-#define GNAT_LSTAT lstat64
+-#define GNAT_STRUCT_STAT struct stat64
++#define GNAT_FOPEN fopen
++#define GNAT_OPEN open
++#define GNAT_STAT stat
++#define GNAT_FSTAT fstat
++#define GNAT_LSTAT lstat
++#define GNAT_STRUCT_STAT struct stat
+
+ #elif defined(_WIN32)
+ #define GNAT_FOPEN fopen64
+--- a/gcc/ada/init.c	2023-12-05 10:54:21.213703486 +0100
++++ b/gcc/ada/init.c	2023-12-05 10:46:46.305942123 +0100
+@@ -419,6 +419,7 @@
+
+ #elif defined (__linux__)
+
++#define __USE_GNU 1 /* required to get REG_EIP/RIP from glibc's ucontext.h */
+ #include <signal.h>
+
+ #define __USE_GNU 1 /* required to get REG_EIP/RIP from glibc's ucontext.h */
+
