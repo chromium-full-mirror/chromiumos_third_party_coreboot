@@ -603,6 +603,7 @@ LDFLAGS_common := --gc-sections
 LDFLAGS_common += -nostdlib
 LDFLAGS_common += --nmagic
 LDFLAGS_common += -static
+LDFLAGS_common += -z noexecstack
 
 # Workaround for RISC-V linker bug, merge back into above line when fixed.
 # https://sourceware.org/bugzilla/show_bug.cgi?id=27180
