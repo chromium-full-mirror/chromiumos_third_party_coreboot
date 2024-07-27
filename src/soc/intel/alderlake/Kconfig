@@ -190,7 +190,7 @@ config DCACHE_BSP_STACK_SIZE
 
 config DCACHE_RO_STACK_SIZE
 	hex
-	default DCACHE_BSP_STACK_SIZE if BOARD_GOOGLE_BASEBOARD_TRULO
+	default DCACHE_BSP_STACK_SIZE if SOC_INTEL_TWINLAKE
 	default 0x80400
 	help
 	  In order to have a consistent RO/RW handoff regardless of whether the
