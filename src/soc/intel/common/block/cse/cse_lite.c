@@ -800,6 +800,21 @@ static enum cb_err get_cse_ver_from_cbfs(struct fw_version *cbfs_rw_version)
 	return CB_SUCCESS;
 }
 
+static bool is_cse_sync_enforced(const struct cse_bp_info *cse_bp_info)
+{
+	/*
+	 * Force test CSE firmware update scenario if below conditions are being met:
+	 *  - VB2_GBB_FLAG_FORCE_CSE_SYNC flag is set
+	 *  - CSE FW is in RO
+	 */
+	struct vb2_context *ctx = vboot_get_context();
+	if ((vb2api_gbb_get_flags(ctx) & VB2_GBB_FLAG_FORCE_CSE_SYNC) &&
+		 cse_get_current_bp(cse_bp_info) == RO) {
+		return true;
+	}
+	return false;
+}
+
 static enum cse_update_status cse_check_update_status(const struct cse_bp_info *cse_bp_info,
 							struct region_device *target_rdev)
 {
@@ -819,12 +834,18 @@ static enum cse_update_status cse_check_update_status(const struct cse_bp_info *
 			cbfs_rw_version.build);
 
 	ret = cse_compare_sub_part_version(&cbfs_rw_version, cse_get_rw_version(cse_bp_info));
-	if (ret == 0)
+	if (ret == 0) {
+		if (is_cse_sync_enforced(cse_bp_info)) {
+			printk(BIOS_WARNING, "Force CSE Firmware upgrade for Autotest\n");
+			return CSE_UPDATE_UPGRADE;
+		}
 		return CSE_UPDATE_NOT_REQUIRED;
-	else if (ret < 0)
-		return CSE_UPDATE_DOWNGRADE;
-	else
-		return CSE_UPDATE_UPGRADE;
+	} else {
+		if (ret < 0)
+			return CSE_UPDATE_DOWNGRADE;
+		else
+			return CSE_UPDATE_UPGRADE;
+	}
 }
 
 static bool cse_write_rw_region(const struct region_device *target_rdev,
@@ -970,6 +991,11 @@ bool is_cse_fw_update_required(void)
 
 	if (cse_get_bp_info(&cse_bp_info) != CB_SUCCESS)
 		printk(BIOS_ERR, "cse_lite: Failed to get CSE boot partition info\n");
+
+	/* Check if CSE sync is enforced */
+	if (is_cse_sync_enforced(&cse_bp_info.bp_info)) {
+		return true;
+	}
 
 	return !!cse_compare_sub_part_version(&cbfs_rw_version,
 			 cse_get_rw_version(&cse_bp_info.bp_info));
