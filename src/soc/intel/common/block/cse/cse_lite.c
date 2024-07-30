@@ -767,6 +767,21 @@ static bool read_ver_field(const char *start, char **curr, size_t size, uint16_t
 	return true;
 }
 
+static bool is_cse_sync_enforced(const struct cse_bp_info *cse_bp_info)
+{
+	/*
+	 * Force test CSE firmware update scenario if below conditions are being met:
+	 *  - VB2_GBB_FLAG_FORCE_CSE_SYNC flag is set
+	 *  - CSE FW is in RO
+	 */
+	struct vb2_context *ctx = vboot_get_context();
+	if ((vb2api_gbb_get_flags(ctx) & VB2_GBB_FLAG_FORCE_CSE_SYNC) &&
+		 cse_get_current_bp(cse_bp_info) == RO) {
+		return true;
+	}
+	return false;
+}
+
 static enum cse_update_status cse_check_update_status(const struct cse_bp_info *cse_bp_info,
 						      struct region_device *target_rdev)
 {
@@ -802,12 +817,18 @@ static enum cse_update_status cse_check_update_status(const struct cse_bp_info *
 	cbfs_unmap(version_str);
 
 	ret = cse_compare_sub_part_version(&cbfs_rw_version, cse_get_rw_version(cse_bp_info));
-	if (ret == 0)
+	if (ret == 0) {
+		if (is_cse_sync_enforced(cse_bp_info)) {
+			printk(BIOS_WARNING, "Force CSE Firmware upgrade for Autotest\n");
+			return CSE_UPDATE_UPGRADE;
+		}
 		return CSE_UPDATE_NOT_REQUIRED;
-	else if (ret < 0)
-		return CSE_UPDATE_DOWNGRADE;
-	else
-		return CSE_UPDATE_UPGRADE;
+	} else {
+		if (ret < 0)
+			return CSE_UPDATE_DOWNGRADE;
+		else
+			return CSE_UPDATE_UPGRADE;
+	}
 }
 
 static bool cse_write_rw_region(const struct region_device *target_rdev,
