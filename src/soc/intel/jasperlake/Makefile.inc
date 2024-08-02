@@ -45,6 +45,7 @@ ramstage-y += systemagent.c
 ramstage-y += sd.c
 ramstage-y += me.c
 ramstage-y += xhci.c
+ramstage-$(CONFIG_SOC_INTEL_CRASHLOG) += crashlog_lib.c
 
 smm-y += gpio.c
 smm-y += p2sb.c
