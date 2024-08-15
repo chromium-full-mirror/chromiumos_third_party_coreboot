@@ -1,6 +1,8 @@
 # Release Notes
 ## [microcode-20240813](https://github.com/intel/Intel-Linux-Processor-Microcode-Data-Files/releases/tag/microcode-20240813)
 
+## Update: Corrected the MCU file for 06-a5-03
+
 ### Purpose
 
 - Security updates for [INTEL-SA-01083](https://www.intel.com/content/www/us/en/security-center/advisory/intel-sa-01083.html)
