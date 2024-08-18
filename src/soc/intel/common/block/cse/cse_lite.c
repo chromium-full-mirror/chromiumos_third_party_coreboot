@@ -951,6 +951,28 @@ error_exit:
 	return rv;
 }
 
+/*
+ * Check if a CSE Firmware update is required
+ * returns true if an update is required, false otherwise
+ */
+bool is_cse_fw_update_required(void)
+{
+	struct fw_version cbfs_rw_version;
+	static struct get_bp_info_rsp cse_bp_info;
+
+	if (!is_cse_fw_update_enabled())
+		return false;
+
+	if (get_cse_ver_from_cbfs(&cbfs_rw_version) == CB_ERR)
+		return false;
+
+	if (cse_get_bp_info(&cse_bp_info) != CB_SUCCESS)
+		printk(BIOS_ERR, "cse_lite: Failed to get CSE boot partition info\n");
+
+	return !!cse_compare_sub_part_version(&cbfs_rw_version,
+			 cse_get_rw_version(&cse_bp_info.bp_info));
+}
+
 static uint8_t cse_fw_update(const struct cse_bp_info *cse_bp_info)
 {
 	struct region_device target_rdev;
