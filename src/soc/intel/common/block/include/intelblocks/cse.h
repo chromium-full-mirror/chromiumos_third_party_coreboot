@@ -545,4 +545,10 @@ void soc_cbmem_inject_telemetry_data(s64 *ts, s64 current_time);
  */
 void cse_get_telemetry_data(void);
 
+/*
+ * Check if a CSE Firmware update is required
+ * Returns true if an update is required, false otherwise
+ */
+bool is_cse_fw_update_required(void);
+
 #endif // SOC_INTEL_COMMON_CSE_H
