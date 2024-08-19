@@ -219,5 +219,7 @@ void mainboard_romstage_entry(void)
 	 * - Allow PEIM graphics driver to smoothly execute in ramstage if
 	 *   RUN_FSP_GOP is selected
 	 */
-	early_graphics_stop();
+	if (!CONFIG(SOC_INTEL_CSE_LITE_SYNC_IN_RAMSTAGE))
+		/* Keep eSOL active if CSE sync in ramstage config is enabled */
+		early_graphics_stop();
 }
