@@ -1,14 +1,1 @@
-# For the "Find Owners" tool: Developers around the world and across platforms
-pgeorgi@chromium.org
-martinroth@chromium.org
-kramasub@chromium.org
-jwerner@chromium.org
-twawrzynczak@chromium.org
-hungte@chromium.org
-dossym@chromium.org
-lmajczak@google.com
-pbusse@google.com
-
-# All firmware and SIE team members can approve.
-include chromiumos/owners:v1:/firmware/OWNERS.cros_ap
-include chromiumos/owners:v1:/sie/OWNERS.chromeos_sie
+include chromiumos/owners:v1:/firmware/OWNERS.android
