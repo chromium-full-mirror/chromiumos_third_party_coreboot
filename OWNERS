@@ -1,11 +1,1 @@
-# For the "Find Owners" tool: Developers around the world and across platforms
-pgeorgi@chromium.org
-martinroth@chromium.org
-kramasub@chromium.org
-jwerner@chromium.org
-twawrzynczak@chromium.org
-hungte@chromium.org
-dossym@chromium.org
-
-# Do not depend commit access on OWNERS
-*
+include chromiumos/owners:v1:/firmware/OWNERS.android
