@@ -6,6 +6,8 @@ jwerner@chromium.org
 twawrzynczak@chromium.org
 hungte@chromium.org
 dossym@chromium.org
+lmajczak@google.com
+pbusse@google.com
 
 # All firmware and SIE team members can approve.
 include chromiumos/owners:v1:/firmware/OWNERS.cros_ap
