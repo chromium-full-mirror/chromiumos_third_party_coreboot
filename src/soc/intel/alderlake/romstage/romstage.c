@@ -207,13 +207,15 @@ void mainboard_romstage_entry(void)
 	if (!s3wake)
 		save_dimm_info();
 
+	/* Keep eSOL active if CSE sync is pending at ramstage */
+	if (CONFIG(SOC_INTEL_CSE_LITE_SYNC_IN_RAMSTAGE) && is_cse_fw_update_required())
+		return;
+
 	/*
 	 * Turn-off early graphics configuration with two purposes:
 	 * - Clear any potentially still on-screen message
 	 * - Allow PEIM graphics driver to smoothly execute in ramstage if
 	 *   RUN_FSP_GOP is selected
 	 */
-	if (!CONFIG(SOC_INTEL_CSE_LITE_SYNC_IN_RAMSTAGE))
-		/* Keep eSOL active if CSE sync in ramstage config is enabled */
-		early_graphics_stop();
+	early_graphics_stop();
 }
