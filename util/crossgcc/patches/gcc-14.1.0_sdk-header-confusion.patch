@@ -1,6 +1,6 @@
---- a/gcc/ada/adaint.c	2023-12-05 10:54:21.213703486 +0100
-+++ b/gcc/ada/adaint.c	2023-12-05 10:46:23.505752344 +0100
-@@ -102,6 +102,7 @@
+--- a/gcc/ada/adaint.c
++++ b/gcc/ada/adaint.c
+@@ -105,6 +105,7 @@
  #endif
 
  #if defined (__linux__)
@@ -8,9 +8,10 @@
  #include <sched.h>
  #endif
 
---- a/gcc/ada/adaint.h	2023-07-27 10:13:03.000000000 +0200
-+++ b/gcc/ada/adaint.h	2023-12-05 09:56:35.337434972 +0100
-@@ -52,12 +52,12 @@
+ /* glibc versions earlier than 2.7 do not define the routines to handle
+--- a/gcc/ada/adaint.h
++++ b/gcc/ada/adaint.h
+@@ -52,12 +52,12 @@ extern "C" {
     For now we just list the platforms we have manually tested. */
 
  #if (defined (__GLIBC__) && !defined(STANDALONE)) || defined (__sun__) || defined (__QNX__)
@@ -29,14 +30,18 @@
 
  #elif defined(_WIN32)
  #define GNAT_FOPEN fopen64
---- a/gcc/ada/init.c	2023-12-05 10:54:21.213703486 +0100
-+++ b/gcc/ada/init.c	2023-12-05 10:46:46.305942123 +0100
-@@ -419,6 +419,7 @@
+--- a/gcc/ada/init.c
++++ b/gcc/ada/init.c
+@@ -414,10 +414,8 @@ __gnat_install_handler (void)
+ /*********************/
 
  #elif defined (__linux__)
-
-+#define __USE_GNU 1 /* required to get REG_EIP/RIP from glibc's ucontext.h */
- #include <signal.h>
-
+-
+-#include <signal.h>
+-
  #define __USE_GNU 1 /* required to get REG_EIP/RIP from glibc's ucontext.h */
++#include <signal.h>
+ #include <sys/ucontext.h>
+
+ /* GNU/Linux, which uses glibc, does not define NULL in included
 
