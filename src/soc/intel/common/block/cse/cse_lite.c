@@ -7,6 +7,7 @@
 #include <cbfs.h>
 #include <commonlib/region.h>
 #include <crc_byte.h>
+#include <elog.h>
 #include <fmap.h>
 #include <intelblocks/cse.h>
 #include <intelblocks/cse_layout.h>
@@ -845,6 +846,7 @@ static bool cse_write_rw_region(const struct region_device *target_rdev,
 		return false;
 
 	printk(BIOS_INFO, "cse_lite: CSE RW Update Successful\n");
+	elog_add_event_byte(ELOG_TYPE_FW_EARLY_SOL, ELOG_FW_EARLY_SOL_CSE_SYNC);
 	return true;
 }
 
