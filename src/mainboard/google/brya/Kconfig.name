@@ -161,3 +161,6 @@ config BOARD_GOOGLE_YAVILLA
 
 config BOARD_GOOGLE_ZYDRON
 	bool "->  Zydron"
+
+config BOARD_GOOGLE_TELITH
+	bool "->  Telith"
