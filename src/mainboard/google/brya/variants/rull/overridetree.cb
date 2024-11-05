@@ -240,7 +240,6 @@ chip soc/intel/alderlake
 			end
 			probe WIFI WIFI_CNVI_WIFI6E
 			probe WIFI WIFI_UNKNOWN
-
 		end
 		device ref pcie_rp4 on
 			# PCIe 4 WLAN
@@ -406,8 +405,8 @@ chip soc/intel/alderlake
 			}"
 			chip soc/intel/common/block/pcie/rtd3
 				# enable_gpio is EN_PP3300_SSD
-				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B4)"
-				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D11)"
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D11)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_B4)"
 				register "srcclk_pin" = "1"
 				device generic 0 on end
 			end
