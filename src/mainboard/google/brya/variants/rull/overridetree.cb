@@ -6,6 +6,7 @@ fw_config
 	field WIFI 8 9
 		option WIFI_CNVI_WIFI6E		0
 		option WIFI_PCIE_WIFI7		1
+		option WIFI_UNKNOWN		2
 	end
 
 end
@@ -203,8 +204,6 @@ chip soc/intel/alderlake
 				register "device_count" = "4"
 				# DDIA for eDP
 				register "device[0].name" = ""LCD0""
-				# Internal panel on the first port of the graphics chip
-				register "device[0].type" = "panel"
 				# DDIB for HDMI
 				# If HDMI is not enumerated in the kernel, then no GFX device should be added for DDIB
 				register "device[1].name" = ""DD01""
@@ -239,8 +238,9 @@ chip soc/intel/alderlake
 				register "add_acpi_dma_property" = "true"
 				device generic 0 on end
 			end
-                        probe WIFI WIFI_CNVI_WIFI6E
-			probe unprovisioned
+			probe WIFI WIFI_CNVI_WIFI6E
+			probe WIFI WIFI_UNKNOWN
+
 		end
 		device ref pcie_rp4 on
 			# PCIe 4 WLAN
@@ -255,7 +255,7 @@ chip soc/intel/alderlake
 				device pci 00.0 on end
 			end
 			probe WIFI WIFI_PCIE_WIFI7
-			probe unprovisioned
+			probe WIFI WIFI_UNKNOWN
 		end
 		device ref pch_espi on
 			chip ec/google/chromeec
@@ -365,6 +365,7 @@ chip soc/intel/alderlake
 						register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D4)"
 						device ref usb2_port10 on
 							probe WIFI WIFI_CNVI_WIFI6E
+							probe WIFI WIFI_UNKNOWN
 						end
 					end
 					chip drivers/usb/acpi
@@ -411,11 +412,11 @@ chip soc/intel/alderlake
 				device generic 0 on end
 			end
 			probe STORAGE STORAGE_NVME
-			probe unprovisioned
+			probe STORAGE STORAGE_UNKNOWN
 		end
 		device ref emmc on
 			probe STORAGE STORAGE_EMMC
-			probe unprovisioned
+			probe STORAGE STORAGE_UNKNOWN
 		end
 		device ref hda on
 			chip drivers/sof
