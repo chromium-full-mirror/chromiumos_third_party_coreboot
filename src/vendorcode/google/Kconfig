@@ -9,3 +9,12 @@ config GOOGLE_SMBIOS_MAINBOARD_VERSION
 	help
 	  Provide a common implementation for mainboard version,
 	  which returns a formatted 'rev%d' board_id() string.
+
+config MAINBOARD_HAS_GOOGLE_STRAUSS_KEYBOARD
+	bool
+	default n
+	help
+	  Select this config to indicate that a board has Strauss keyboard.
+
+config ACPI_FNKEY_GEN_SCANCODE
+	default 94 if MAINBOARD_HAS_GOOGLE_STRAUSS_KEYBOARD
