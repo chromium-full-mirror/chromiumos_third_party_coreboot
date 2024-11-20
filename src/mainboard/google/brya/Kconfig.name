@@ -150,6 +150,9 @@ config BOARD_GOOGLE_ULDREN
 config BOARD_GOOGLE_TRULO
 	bool "->  Trulo"
 
+config BOARD_GOOGLE_ULDRENITE
+	bool "->  Uldrenite"
+
 config BOARD_GOOGLE_VELL
 	bool "->  Vell"
 

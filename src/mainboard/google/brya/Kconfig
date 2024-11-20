@@ -492,6 +492,9 @@ config BOARD_GOOGLE_ULDREN
 	select DRIVERS_I2C_CS42L42
 	select HAVE_WWAN_POWER_SEQUENCE
 
+config BOARD_GOOGLE_ULDRENITE
+	select BOARD_GOOGLE_BASEBOARD_TRULO
+
 config BOARD_GOOGLE_VELL
 	select BOARD_GOOGLE_BASEBOARD_BRYA
 	select CHROMEOS_WIFI_SAR if CHROMEOS
@@ -768,6 +771,7 @@ config MAINBOARD_PART_NUMBER
 	default "Zydron" if BOARD_GOOGLE_ZYDRON
 	default "Gladios" if BOARD_GOOGLE_GLADIOS
 	default "Uldren" if BOARD_GOOGLE_ULDREN
+	default "Uldrenite" if BOARD_GOOGLE_ULDRENITE
 	default "Yavilla" if BOARD_GOOGLE_YAVILLA
 	default "Gothrax" if BOARD_GOOGLE_GOTHRAX
 	default "Craaskov" if BOARD_GOOGLE_CRAASKOV
@@ -828,6 +832,7 @@ config VARIANT_DIR
 	default "zydron" if BOARD_GOOGLE_ZYDRON
 	default "gladios" if BOARD_GOOGLE_GLADIOS
 	default "uldren" if BOARD_GOOGLE_ULDREN
+	default "uldrenite" if BOARD_GOOGLE_ULDRENITE
 	default "yavilla" if BOARD_GOOGLE_YAVILLA
 	default "gothrax" if BOARD_GOOGLE_GOTHRAX
 	default "craaskov" if BOARD_GOOGLE_CRAASKOV
