@@ -438,6 +438,14 @@ bool google_chromeec_get_ucsi_enabled(void);
  */
 void google_chromeec_clear_ec_ap_idle(void);
 
+/**
+ * Check if battery level is below critical threshold.
+ *
+ * @return		true: if the battery level is below critical threshold
+ *			false: any the above conditions is not true
+ */
+bool google_chromeec_is_below_critical_threshold(void);
+
 #if CONFIG(HAVE_ACPI_TABLES)
 /**
  * Writes USB Type-C PD related information to the SSDT
