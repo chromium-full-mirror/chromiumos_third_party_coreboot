@@ -1959,3 +1959,28 @@ bool google_chromeec_is_battery_present_and_above_critical_threshold(void)
 
 	return false;
 }
+
+bool google_chromeec_is_below_critical_threshold(void)
+{
+	struct ec_params_battery_dynamic_info params = {
+		.index = 0,
+	};
+	struct ec_response_battery_dynamic_info resp;
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_BATTERY_GET_DYNAMIC,
+		.cmd_version = 0,
+		.cmd_data_in = &params,
+		.cmd_size_in = sizeof(params),
+		.cmd_data_out = &resp,
+		.cmd_size_out = sizeof(resp),
+		.cmd_dev_index = 0,
+	};
+
+	if (google_chromeec_command(&cmd))
+		return false;
+
+	if (resp.flags & EC_BATT_FLAG_LEVEL_CRITICAL)
+		return true;
+
+	return false;
+}

@@ -430,6 +430,14 @@ int google_chromeec_regulator_get_voltage(uint32_t index, uint32_t *voltage_mv);
  */
 bool google_chromeec_is_battery_present_and_above_critical_threshold(void);
 
+/**
+ * Check if battery level is below critical threshold.
+ *
+ * @return		true: if the battery level is below critical threshold
+ *			false: any the above conditions is not true
+ */
+bool google_chromeec_is_below_critical_threshold(void);
+
 #if CONFIG(HAVE_ACPI_TABLES)
 /**
  * Writes USB Type-C PD related information to the SSDT
