@@ -1193,6 +1193,33 @@ bool google_chromeec_is_usb_pd_attached(void)
 	return resp.type == USB_CHG_TYPE_PD;
 }
 
+/* This API checks if charger is present. */
+bool google_chromeec_is_charger_present(void)
+{
+	struct ec_params_battery_dynamic_info params = {
+		.index = 0,
+	};
+	struct ec_response_battery_dynamic_info resp;
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_BATTERY_GET_DYNAMIC,
+		.cmd_version = 0,
+		.cmd_data_in = &params,
+		.cmd_size_in = sizeof(params),
+		.cmd_data_out = &resp,
+		.cmd_size_out = sizeof(resp),
+		.cmd_dev_index = 0,
+	};
+
+	if (google_chromeec_command(&cmd))
+		return false;
+
+	/* Check if AC charger is present */
+	if (resp.flags & EC_BATT_FLAG_AC_PRESENT)
+		return true;
+
+	return false;
+}
+
 int google_chromeec_override_dedicated_charger_limit(uint16_t current_lim,
 						     uint16_t voltage_lim)
 {
