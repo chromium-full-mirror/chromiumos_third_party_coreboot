@@ -30,6 +30,9 @@ config BOARD_GOOGLE_CRAASKOV
 config BOARD_GOOGLE_CROTA
 	bool "->  Crota"
 
+config BOARD_GOOGLE_DIRKS
+	bool "->  Dirks"
+
 config BOARD_GOOGLE_DOMIKA
 	bool "->  Domika"
 
