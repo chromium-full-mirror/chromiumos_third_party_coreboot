@@ -84,6 +84,9 @@ config BOARD_GOOGLE_MITHRAX
 config BOARD_GOOGLE_MOLI
 	bool "->  Moli"
 
+config BOARD_GOOGLE_MOXIE
+	bool "->  Moxie"
+
 config BOARD_GOOGLE_NEREID
 	bool "->  Nereid"
 
