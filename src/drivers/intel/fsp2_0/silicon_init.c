@@ -247,6 +247,9 @@ void fsp_silicon_init(void)
 	fsps_load();
 	do_silicon_init(&fsps_hdr);
 
+	if (platform_is_low_battery_shutdown_needed())
+		do_low_battery_poweroff();
+
 	if (CONFIG(DISPLAY_FSP_TIMESTAMPS))
 		fsp_display_timestamp();
 }
