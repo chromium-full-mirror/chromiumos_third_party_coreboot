@@ -7,11 +7,13 @@
 #include <device/device.h>
 #include <drivers/wifi/generic/wifi.h>
 #include <elog.h>
+#include <fsp/api.h>
 #include <fsp/fsp_debug_event.h>
 #include <fsp/util.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/pcie_rp.h>
 #include <soc/gpio.h>
+#include <soc/intel/common/reset.h>
 #include <soc/iomap.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
@@ -434,6 +436,29 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	 * user with an on-screen text message.
 	 */
 	if (!arch_upd->NvsBufferPtr) {
+		/*
+		 * Low Battery Check During Firmware Update (Chrome OS specific):
+		 *    - If `PLATFORM_HAS_EARLY_LOW_BATTERY_INDICATOR` is enabled AND the
+		 *      system is in firmware update mode (If valid MRC cache data is not found,
+		 *      it means that the system needs to perform), it checks if the battery level is
+		 *      critically low.
+		 *    - This is because memory training, which can take a significant amount of
+		 *      time, might cause an abrupt shutdown due to low battery, interrupting the
+		 *      firmware update process and potentially leaving the system in an unstable
+		 *      state.
+		 *    - To prevent this, if the battery is critically low, the system is powered
+		 *      off to allow it to charge. This ensures that the firmware update process
+		 *      can complete without interruption.
+		 *    - Since a functional GFX mode display may not be ready at this stage, VGA
+		 *      mode is used to display a text message informing the user about the
+		 *      shutdown.
+		 */
+		if (CONFIG(PLATFORM_HAS_EARLY_LOW_BATTERY_INDICATOR) &&
+				 platform_is_low_battery_shutdown_needed()) {
+			ux_inform_user_of_poweroff_operation("low-battery shutdown");
+			do_low_battery_poweroff();
+		}
+
 		if (ux_inform_user_of_update_operation("memory training"))
 			elog_add_event_byte(ELOG_TYPE_FW_EARLY_SOL, ELOG_FW_EARLY_SOL_MRC);
 	}
