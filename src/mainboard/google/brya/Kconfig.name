@@ -182,3 +182,6 @@ config BOARD_GOOGLE_ZYDRON
 
 config BOARD_GOOGLE_TELITH
 	bool "->  Telith"
+
+config BOARD_GOOGLE_MELIKS
+	bool "->  Meliks"
