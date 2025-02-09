@@ -446,6 +446,14 @@ bool google_chromeec_is_battery_present_and_above_critical_threshold(void);
  */
 bool google_chromeec_is_below_critical_threshold(void);
 
+/*
+ * Performs early power off.
+ *
+ * This function handles the necessary steps to initiate an early power off
+ * sequence.
+ */
+void google_chromeec_do_early_poweroff(void);
+
 #if CONFIG(HAVE_ACPI_TABLES)
 /**
  * Writes USB Type-C PD related information to the SSDT
