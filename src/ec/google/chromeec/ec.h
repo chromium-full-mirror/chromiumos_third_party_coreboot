@@ -434,6 +434,14 @@ int google_chromeec_regulator_get_voltage(uint32_t index, uint32_t *voltage_mv);
  */
 bool google_chromeec_is_battery_present(void);
 
+/*
+ * Performs early power off.
+ *
+ * This function handles the necessary steps to initiate an early power off
+ * sequence.
+ */
+void google_chromeec_do_early_poweroff(void);
+
 /**
  * Determine if the UCSI stack is currently active.
  *
