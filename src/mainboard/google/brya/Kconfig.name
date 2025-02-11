@@ -54,6 +54,9 @@ config BOARD_GOOGLE_GLADIOS
 config BOARD_GOOGLE_GOTHRAX
 	bool "->  Gothrax"
 
+config BOARD_GOOGLE_GUREN
+	bool "->  Guren"
+
 config BOARD_GOOGLE_JOXER
 	bool "->  Joxer"
 
