@@ -28,6 +28,6 @@ uint32_t fsp_get_pch_reset_status(void);
  *
  * Call this function to power off the platform if the battery level is critically low.
  */
-void do_low_battery_poweroff(void);
+__noreturn void do_low_battery_poweroff(void);
 
 #endif	/* _INTEL_COMMON_RESET_H_ */
