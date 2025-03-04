@@ -188,6 +188,11 @@ Device (EC0)
 			\_SB.DPTC()
 		}
 #endif
+
+#ifdef DPTF_FEATURE_DYNAMIC_THERMAL_TABLE_SWITCH
+		\_SB.DPTF.ODUP(0, STTB)
+		Notify (\_SB.DPTF, INT3400_ODVP_CHANGED)
+#endif
 	}
 
 	/* Read requested temperature and check against EC error values */
@@ -444,6 +449,11 @@ Device (EC0)
 		If (CondRefOf (\_SB.DPTC)) {
 			\_SB.DPTC()
 		}
+#endif
+
+#ifdef DPTF_FEATURE_DYNAMIC_THERMAL_TABLE_SWITCH
+		\_SB.DPTF.ODUP(0, STTB)
+		Notify (\_SB.DPTF, INT3400_ODVP_CHANGED)
 #endif
 	}
 
