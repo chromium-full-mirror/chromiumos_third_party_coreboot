@@ -662,6 +662,13 @@ static void fill_fsps_tcss_params(FSP_S_CONFIG *s_cfg,
 		if (is_dev_enabled(tcss_port_arr[i]))
 			s_cfg->UsbTcPortEn |= BIT(i);
 	}
+
+	for (int i = 0; i < MAX_TYPE_C_PORTS; i++) {
+		if (config->enabletcsscovtypea[i]) {
+			s_cfg->EnableTcssCovTypeA[i] = config->enabletcsscovtypea[i];
+			s_cfg->MappingPchXhciUsbA[i] = config->mappingpchxhciusba[i];
+		}
+	}
 }
 
 static void fill_fsps_chipset_lockdown_params(FSP_S_CONFIG *s_cfg,
