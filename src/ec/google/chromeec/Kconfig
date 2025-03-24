@@ -123,6 +123,12 @@ config EC_GOOGLE_CHROMEEC_PD_BOARDNAME
 	  the PD firmware.  If set, the coreboot build with also
 	  build the EC firmware and add it to the image.
 
+config EC_GOOGLE_CHROMEEC_SMBIOS
+	def_bool n
+	help
+	  Enable support to get SKU and board information for SMBIOS table
+	  using Chrome EC host commands.
+
 config EC_GOOGLE_CHROMEEC_RTC
 	depends on EC_GOOGLE_CHROMEEC
 	bool "Enable ChromeOS EC RTC"
