@@ -1,6 +1,6 @@
 /** @file
 
-Copyright (c) 2022, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2025, Intel Corporation. All rights reserved.<BR>
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -2226,8 +2226,8 @@ typedef struct {
   UINT8                       SataRstPcieDeviceResetDelay[3];
 
 /** Offset 0x0A42 - UFS enable/disable
-  Enable/Disable UFS controller, One byte for each Controller - (1,0) to enable controller
-  0 and (0,1) to enable controller 1
+  PCIe Storage Device Reset Delay in milliseconds. Default value is 100ms
+  $EN_DIS
 **/
   UINT8                       UfsEnable[2];
 
@@ -3855,7 +3855,18 @@ typedef struct {
 
 /** Offset 0x0F96 - Reserved
 **/
-  UINT8                       Reserved53[16];
+  UINT8                       Reserved53[8];
+
+/** Offset 0x0F9E - Type C Port x Convert to TypeA
+  Enable / Disable(default) Type C Port x Convert to TypeA
+  $EN_DIS
+**/
+  UINT8                       EnableTcssCovTypeA[4];
+
+/** Offset 0x0FA2 - PCH xhci port x for Type C Port x mapping
+  input PCH xhci port x for Type C Port 0 mapping.
+**/
+  UINT8                       MappingPchXhciUsbA[4];
 
 /** Offset 0x0FA6 - FOMS Control Policy
   Choose the Foms Control Policy, <b>Default = 0 </b>
