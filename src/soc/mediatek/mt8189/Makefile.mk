@@ -21,6 +21,6 @@ CPPFLAGS_common += -Isrc/soc/mediatek/mt8189/include
 CPPFLAGS_common += -Isrc/soc/mediatek/common/include
 
 $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin
-	./util/mtkheader/gen-bl-img.py mt8189 sf $< $@
+	./util/mediatek/gen-bl-img.py mt8189 sf $< $@
 
 endif
