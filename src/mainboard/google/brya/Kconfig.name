@@ -173,3 +173,6 @@ config BOARD_GOOGLE_ZYDRON
 
 config BOARD_GOOGLE_TELITH
 	bool "->  Telith"
+
+config BOARD_GOOGLE_PUJJOCENTO
+	bool "->  Pujjocento"
