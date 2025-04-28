@@ -171,6 +171,33 @@ config BOARD_GOOGLE_YAVILLA
 config BOARD_GOOGLE_ZYDRON
 	bool "->  Zydron"
 
+config BOARD_GOOGLE_XOL
+	bool "->  Xol"
+
+config BOARD_GOOGLE_NOVA
+	bool "->  Nova"
+
+config BOARD_GOOGLE_BUJIA
+	bool "->  Bujia"
+
+config BOARD_GOOGLE_YAVISTA
+	bool "->  Yavista"
+
+config BOARD_GOOGLE_SUNDANCE
+	bool "->  Sundance"
+
+config BOARD_GOOGLE_PUJJOGA
+	bool "->  Pujjoga"
+
+config BOARD_GOOGLE_PUJJOGATWIN
+	bool "->  Pujjogatwin"
+
+config BOARD_GOOGLE_PUJJOLO
+	bool "->  Pujjolo"
+
+config BOARD_GOOGLE_ORISA
+	bool "->  Orisa"
+
 config BOARD_GOOGLE_TELITH
 	bool "->  Telith"
 
