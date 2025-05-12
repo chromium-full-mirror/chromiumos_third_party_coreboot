@@ -5,4 +5,3 @@ include chromiumos/owners:v1:/bots/OWNERS.copybot #{LAST_RESORT_SUGGESTION}
 
 # Android Owners
 include chromiumos/owners:v1:/firmware/OWNERS.android
-
