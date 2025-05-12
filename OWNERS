@@ -1,9 +1,7 @@
 # All firmware and SIE team members can approve.
 include chromiumos/owners:v1:/firmware/OWNERS.cros_ap
 include chromiumos/owners:v1:/sie/OWNERS.chromeos_sie
-
-# ChromeOS Prod
-chromeos-ci-prod@chromeos-bot.iam.gserviceaccount.com #{LAST_RESORT_SUGGESTION}
+include chromiumos/owners:v1:/bots/OWNERS.copybot #{LAST_RESORT_SUGGESTION}
 
 # Android Owners
 include chromiumos/owners:v1:/firmware/OWNERS.android
