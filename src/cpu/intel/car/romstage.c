@@ -39,7 +39,7 @@ void __noreturn romstage_main(void)
 		stack_base[i] = stack_guard;
 
 	vboot_check_secdata_corruption(0);
-	if (CONFIG(VBOOT_EARLY_EC_SYNC))
+	if (CONFIG(VBOOT_EARLY_EC_SYNC) && !CONFIG(VBOOT_EC_SYNC_ESOL))
 		vboot_sync_ec();
 	vboot_check_secdata_corruption(1);
 
