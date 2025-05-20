@@ -22,6 +22,7 @@ ramstage-y += watchdog.c
 
 romstage-$(CONFIG_CHROMEOS_DRAM_PART_NUMBER_IN_CBI) += dram_part_num_override.c
 ramstage-$(CONFIG_CHROMEOS_FW_SPLASH_SCREEN) += splash.c
+ramstage-$(CONFIG_CHROMEOS_PVMFW_CBMEM) += pvmfw_cbmem.c
 
 # Add logo to the cbfs image
 cbfs-files-$(CONFIG_CHROMEOS_FW_SPLASH_SCREEN) += cb_logo.bmp

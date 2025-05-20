@@ -3,4 +3,3 @@
 subdirs-$(CONFIG_CHROMEOS) += chromeos
 
 ramstage-$(CONFIG_GOOGLE_SMBIOS_MAINBOARD_VERSION) += smbios.c
-ramstage-$(CONFIG_GOOGLE_PVMFW_CBMEM) += pvmfw_cbmem.c
