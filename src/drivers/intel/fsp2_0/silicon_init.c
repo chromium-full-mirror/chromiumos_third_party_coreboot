@@ -148,6 +148,15 @@ static void do_silicon_init(struct fsp_header *hdr)
 	fsp_debug_after_silicon_init(status);
 	fsps_return_value_handler(FSP_SILICON_INIT_API, status);
 
+	/* Only applies for SoC platforms prior to FSP 2.2 specification. */
+	if (!CONFIG(PLATFORM_USES_FSP2_2) && CONFIG(BMP_LOGO)) {
+		/*
+		 * This applies regardless of whether FSP or coreboot handled
+		 * the rendering.
+		 */
+		timestamp_add_now(TS_FIRMWARE_SPLASH_RENDERED);
+	}
+
 	/* Reinitialize CPUs if FSP-S has done MP Init */
 	if (CONFIG(USE_INTEL_FSP_MP_INIT))
 		do_mpinit_after_fsp();
@@ -195,6 +204,14 @@ static void do_silicon_init(struct fsp_header *hdr)
 	}
 	timestamp_add_now(TS_FSP_MULTI_PHASE_SI_INIT_END);
 	post_code(POST_FSP_MULTI_PHASE_SI_INIT_EXIT);
+
+	if (CONFIG(BMP_LOGO)) {
+		/*
+		 * This applies regardless of whether FSP or coreboot handled
+		 * the rendering.
+		 */
+		timestamp_add_now(TS_FIRMWARE_SPLASH_RENDERED);
+	}
 }
 
 static void *fsps_allocator(void *arg_unused, size_t size, const union cbfs_mdata *mdata_unused)
