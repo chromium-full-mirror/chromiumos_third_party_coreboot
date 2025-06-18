@@ -82,6 +82,20 @@ config HAVE_ACPI_TABLES
 	  This variable specifies whether a given board has ACPI table support.
 	  It is usually set in mainboard/*/Kconfig.
 
+config ACPI_BUILD_DSDT
+	bool
+	default n if ACPI_DONT_BUILD_DSDT
+	default y
+	depends on HAVE_ACPI_TABLES
+	help
+	  Control whether to build DSDT from "dsdt.asl" in mainboard directory.
+
+config ACPI_DONT_BUILD_DSDT
+	bool
+	depends on HAVE_ACPI_TABLES
+	help
+	  Selected by mainboards that don't want to build DSDT from source.
+
 config ACPI_LPIT
 	bool
 	depends on HAVE_ACPI_TABLES

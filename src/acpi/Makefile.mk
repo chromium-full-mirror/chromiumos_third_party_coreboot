@@ -31,6 +31,9 @@ smm-y += acpi_pm.c
 ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/acpi_tables.c),)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/acpi_tables.c
 endif
+
+ifeq ($(CONFIG_ACPI_BUILD_DSDT),y)
 $(eval $(call asl_template,dsdt))
+endif
 
 endif # CONFIG_HAVE_ACPI_TABLES
