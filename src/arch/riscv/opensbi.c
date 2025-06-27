@@ -4,6 +4,7 @@
 #include <arch/encoding.h>
 #include <stdint.h>
 #include <stddef.h>
+#include <cbmem.h>
 
 #define FW_DYNAMIC_INFO_VERSION_2    2
 #define FW_DYNAMIC_INFO_MAGIC_VALUE  0x4942534f // "OSBI"
@@ -19,6 +20,7 @@ static struct __packed fw_dynamic_info {
 	unsigned long next_mode; // Next booting stage mode (usually supervisor mode)
 	unsigned long options;   // options for OpenSBI library
 	unsigned long boot_hart; // usually CONFIG_RISCV_WORKING_HARTID
+	unsigned long cbtable;
 } info;
 
 void run_opensbi(const int hart_id,
@@ -33,6 +35,10 @@ void run_opensbi(const int hart_id,
 	info.next_addr = (uintptr_t)payload,
 	info.options = 0,
 	info.boot_hart = CONFIG_OPENSBI_FW_DYNAMIC_BOOT_HART,
+	info.cbtable = 0;
+	if (CONFIG(HAVE_ACPI_TABLES)) {
+		info.cbtable = (uintptr_t)cbmem_find(CBMEM_ID_CBTABLE);
+	}
 
 	write_csr(mepc, opensbi); // set program counter to OpenSBI (jumped to with mret)
 	asm volatile (
