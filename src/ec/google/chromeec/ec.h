@@ -408,6 +408,14 @@ int google_chromeec_regulator_set_voltage(uint32_t index, uint32_t min_mv,
 int google_chromeec_regulator_get_voltage(uint32_t index, uint32_t *voltage_mv);
 
 /**
+ * Check if battery is present.
+ *
+ * @return		true: if the battery is present
+ *			false: if the battery is not present
+ */
+ bool google_chromeec_is_battery_present(void);
+
+ /**
  * Determine if the UCSI stack is currently active.
  *
  * @return true if EC implements the UCSI stack
