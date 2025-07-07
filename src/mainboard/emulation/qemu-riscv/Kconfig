@@ -87,6 +87,6 @@ config OPENSBI_PLATFORM
 
 config OPENSBI_TEXT_START
 	hex
-	default 0x80020000
+	default 0x80040000
 
 endif #  BOARD_EMULATION_QEMU_RISCV
