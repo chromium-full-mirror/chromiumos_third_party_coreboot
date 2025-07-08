@@ -66,6 +66,9 @@
 #include <string.h>
 #include <time.h>
 #include <sys/types.h>
+#if CONFIG(LP_ARCH_RISCV_RV64)
+#include <arch/boothart.h>
+#endif
 #include <arch/types.h>
 #include <arch/io.h>
 #include <arch/virtual.h>

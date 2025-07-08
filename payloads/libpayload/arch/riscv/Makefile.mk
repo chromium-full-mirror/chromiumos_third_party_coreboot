@@ -2,6 +2,6 @@
 
 libc-y += head.S
 libc-y += main.c sysinfo.c
-libc-y += timer.c coreboot.c cache.c util.S virtual.c
+libc-y += timer.c coreboot.c cache.c util.S virtual.c boothart.c
 
 CFLAGS += -mcmodel=medany
