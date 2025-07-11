@@ -21,6 +21,10 @@ void gfx_set_init_done(int done)
 
 int display_init_required(void)
 {
+	/* Need display for showing splash screen. */
+	if (CONFIG(BMP_LOGO))
+		return 1;
+
 	/* For vboot, honor VB2_CONTEXT_DISPLAY_INIT. */
 	if (CONFIG(VBOOT)) {
 		/*
