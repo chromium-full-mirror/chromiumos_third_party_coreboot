@@ -10,6 +10,8 @@
 /* board_id is provided by ec/google/chromeec/ec_boardid.c */
 
 #define ADC_LEVELS 8
+#define CIRI_SKU_0_11 12
+#define PANEL_ID_MAX 4
 
 enum {
 	/* RAM IDs */
@@ -55,6 +57,49 @@ static const unsigned int *adc_voltages[] = {
 	[PANEL_ID_LOW_CHANNEL] = panel_voltages,
 };
 
+/* SKU matrix for Ciri SKU 0 to 11 to remap SKU IDs with different panels */
+static const uint32_t sku_matrix[CIRI_SKU_0_11][PANEL_ID_MAX] = {
+	/*
+	 * 1st dimension: CBI SKU ID
+	 * | CBI SKU ID | Original Panel | Audio Codec | Smart Amp |
+	 * |------------|----------------|-------------|-----------|
+	 * | 0          | BOE            | RT5682S     | MAX98390  |
+	 * | 1          | IVO            | ES8326      | MAX98390  |
+	 * | 2          | BOE            | ES8326      | MAX98390  |
+	 * | 3          | IVO            | RT5682S     | MAX98390  |
+	 * | 4          | BOE            | RT5682S     | TAS2563   |
+	 * | 5          | IVO            | ES8326      | TAS2563   |
+	 * | 6          | BOE            | ES8326      | TAS2563   |
+	 * | 7          | IVO            | RT5682S     | TAS2563   |
+	 * | 8          | CSOT           | RT5682S     | MAX98390  |
+	 * | 9          | CSOT           | ES8326      | MAX98390  |
+	 * | 10         | CSOT           | RT5682S     | TAS2563   |
+	 * | 11         | CSOT           | ES8326      | TAS2563   |
+	 *
+	 * 2nd dimension: Panel ID (simplified)
+	 * | Panel ID  | Detected Panel |
+	 * |-----------|----------------|
+	 * | 0         | <Reserved>     |
+	 * | 1         | BOE            |
+	 * | 2         | IVO            |
+	 * | 3         | CSOT           |
+	 *
+	 * Cell: The actual SKU ID
+	 */
+	[0] =  { CROS_SKU_UNKNOWN, 0, 3, 8 },
+	[1] =  { CROS_SKU_UNKNOWN, 2, 1, 9 },
+	[2] =  { CROS_SKU_UNKNOWN, 2, 1, 9 },
+	[3] =  { CROS_SKU_UNKNOWN, 0, 3, 8 },
+	[4] =  { CROS_SKU_UNKNOWN, 4, 7, 10 },
+	[5] =  { CROS_SKU_UNKNOWN, 6, 5, 11 },
+	[6] =  { CROS_SKU_UNKNOWN, 6, 5, 11 },
+	[7] =  { CROS_SKU_UNKNOWN, 4, 7, 10 },
+	[8] =  { CROS_SKU_UNKNOWN, 0, 3, 8 },
+	[9] =  { CROS_SKU_UNKNOWN, 2, 1, 9 },
+	[10] = { CROS_SKU_UNKNOWN, 4, 7, 10 },
+	[11] = { CROS_SKU_UNKNOWN, 6, 5, 11 },
+};
+
 static uint32_t get_adc_index(unsigned int channel)
 {
 	unsigned int value = auxadc_get_voltage_uv(channel);
@@ -73,6 +118,29 @@ static uint32_t get_adc_index(unsigned int channel)
 	return id;
 }
 
+/*
+ * The panel can be replaced during RMA process, meaning the panel implied in
+ * SKU 0 to 11 may be inaccurate.
+ * Resolve the SKU ID based on CBI SKU ID and panel ID for those SKUs.
+ */
+static uint32_t resolve_sku_id(uint32_t cbi_sku_id, uint32_t panel_id)
+{
+	/*
+	 * Valid panel IDs: 0x11 (BOE), 0x22 (IVO), 0x33(CSOT).
+	 * The low channel can uniquely identify the panel on Ciri.
+	 */
+	uint32_t panel_high_ch = (panel_id >> 4) & 0xF;
+	uint32_t panel_low_ch = panel_id & 0xF;
+
+	if (panel_high_ch != panel_low_ch)
+		return CROS_SKU_UNKNOWN;
+
+	if (panel_low_ch >= PANEL_ID_MAX)
+		return CROS_SKU_UNKNOWN;
+
+	return sku_matrix[cbi_sku_id][panel_low_ch];
+}
+
 /* Returns the ID for LCD module (type of panel). */
 uint32_t panel_id(void)
 {
@@ -89,19 +157,31 @@ uint32_t sku_id(void)
 {
 	static uint32_t cached_sku_code = BOARD_ID_INIT;
 
-	if (cached_sku_code == BOARD_ID_INIT) {
-		cached_sku_code = google_chromeec_get_board_sku();
+	if (cached_sku_code != BOARD_ID_INIT)
+		return cached_sku_code;
 
-		if (cached_sku_code == CROS_SKU_UNKNOWN ||
-		    cached_sku_code == CROS_SKU_UNPROVISIONED) {
-			printk(BIOS_WARNING, "SKU code from EC: %s\n",
-			       (cached_sku_code == CROS_SKU_UNKNOWN) ?
-			       "CROS_SKU_UNKNOWN" : "CROS_SKU_UNPROVISIONED");
-			/* Reserve last 8 bits to report PANEL_IDs */
-			cached_sku_code = 0x7FFFFF00UL | panel_id();
-		}
-		printk(BIOS_DEBUG, "SKU Code: %#02x\n", cached_sku_code);
+	const uint32_t cbi_sku_id = google_chromeec_get_board_sku();
+
+	if (cbi_sku_id == CROS_SKU_UNKNOWN ||
+	    cbi_sku_id == CROS_SKU_UNPROVISIONED) {
+		printk(BIOS_WARNING, "SKU code from EC: %s\n",
+		       (cbi_sku_id == CROS_SKU_UNKNOWN) ?
+		       "CROS_SKU_UNKNOWN" : "CROS_SKU_UNPROVISIONED");
+		/* Reserve last 8 bits to report PANEL_IDs */
+		cached_sku_code = 0x7FFFFF00UL | panel_id();
+	} else if (CONFIG(BOARD_GOOGLE_CIRI) && cbi_sku_id < CIRI_SKU_0_11) {
+		/* Workaround for SKU 0 to 11 */
+		cached_sku_code = resolve_sku_id(cbi_sku_id, panel_id());
+
+		if (cached_sku_code == CROS_SKU_UNKNOWN)
+			printk(BIOS_ERR, "Failed to resolve SKU ID\n");
+	} else {
+		/* Encode panel ID dynamically for newer boards and SKUs */
+		cached_sku_code = (panel_id() << 8) | (cbi_sku_id & 0xFF);
 	}
+	printk(BIOS_DEBUG,
+	       "CBI SKU ID: %#02x, panel ID: %#02x, cached SKU code: %#02x\n",
+	       cbi_sku_id, panel_id(), cached_sku_code);
 
 	return cached_sku_code;
 }
