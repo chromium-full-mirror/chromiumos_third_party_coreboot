@@ -119,8 +119,6 @@ void exit(int status)
 	halt();
 }
 
-int errno;
-
 char *getenv(const char *name)
 {
 	return NULL;
