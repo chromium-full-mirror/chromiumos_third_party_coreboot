@@ -338,6 +338,17 @@
             "speedMbps": 7500,
             "lp5x": true
             }
+        },
+        {
+        "name":  "H58GE6AK8BX104",
+        "attribs": {
+            "densityPerDieGb": 12,
+            "diesPerPackage": 4,
+            "bitWidthPerChannel": 16,
+            "ranksPerChannel": 2,
+            "speedMbps": 8533,
+            "lp5x": true
+            }
         }
     ]
 }
