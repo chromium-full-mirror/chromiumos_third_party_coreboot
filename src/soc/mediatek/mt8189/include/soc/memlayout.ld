@@ -4,9 +4,20 @@
 
 SECTIONS
 {
-	/* MT8189 has 64KB SRAM. */
+	/*
+	 * MT8189 has 64KB SRAM. On AP reset, the following regions will be
+	 * overwritten by BootROM:
+	 *
+	 * 0x00100030 - 0x00100A00
+	 * 0x00101900 - 0x00101D00
+	 * 0x00102A00 - 0x00102D00
+	 * 0x00103300 - 0x00108D68
+	 * 0x0010B800 - 0x0010FFFF
+	 *
+	 * Therefore, sections that need to be preserved across AP resets
+	 * (such as WATCHDOG_TOMBSTONE) must be put outside these regions.
+	 */
 	SRAM_START(0x00100000)
-	WATCHDOG_TOMBSTONE(0x00100030, 4)
 
 	/*
 	 * MCUPM uses the following regions to exchange data with kernel.
@@ -58,7 +69,8 @@ SECTIONS
 	DMA_COHERENT(0x020DC000, 4K)
 	STACK(0x020DD000, 15K)
 	TIMESTAMP(0x020E0C00, 1K)
-	PRERAM_CBMEM_CONSOLE(0x020E1000, 124K)
+	PRERAM_CBMEM_CONSOLE(0x020E1000, 123K)
+	WATCHDOG_TOMBSTONE(0x0020FFC00, 4)
 	SRAM_L2C_END(0x02100000)
 
 	DRAM_START(0x40000000)
