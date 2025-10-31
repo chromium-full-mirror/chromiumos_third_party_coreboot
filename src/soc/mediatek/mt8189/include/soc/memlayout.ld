@@ -5,17 +5,9 @@
 SECTIONS
 {
 	/*
-	 * MT8189 has 64KB SRAM. On AP reset, the following regions will be
-	 * overwritten by BootROM:
-	 *
-	 * 0x00100030 - 0x00100A00
-	 * 0x00101900 - 0x00101D00
-	 * 0x00102A00 - 0x00102D00
-	 * 0x00103300 - 0x00108D68
-	 * 0x0010B800 - 0x0010FFFF
-	 *
-	 * Therefore, sections that need to be preserved across AP resets
-	 * (such as WATCHDOG_TOMBSTONE) must be put outside these regions.
+	 * MT8189 has 64KB SRAM. Per HW design, on SoC reset via GPIO
+	 * AP_SYSRST_ODL (SYSRSTB), SRAM will be powered down. That means
+	 * SRAM data will be lost across SoC resets.
 	 */
 	SRAM_START(0x00100000)
 
