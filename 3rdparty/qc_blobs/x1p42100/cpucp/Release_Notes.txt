@@ -1,3 +1,20 @@
+================== Release 092  ================================
+This Release Notes file covers these blobs:
+ * cpucp.elf
+ * cpucp_dtbs.elf
+ 
+ Version : 00092
+ 
+ Release Date : Dec 22, 2025
+ 
+ Supported Silicon : x1p42100
+ 
+ Changes since last version:
+ * PDP version picked is lnx 1.8.22
+ * Basic DCVS is enabled but cases like Limits and 0c WA should not be executed
+ * RVBAR handling for TFA-SDI entry in pass1 fixed
+ * Temporary WA added for pass1 hang issue.
+
 ================== Release 063  ================================
 This Release Notes file covers these blobs:
  * cpucp.elf

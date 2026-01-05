@@ -1,0 +1,28 @@
+=================== Release 00455 ================================
+This Release Notes file covers these blobs:
+ * tz_ac_config.elf
+ * hyp_ac_config.elf
+
+Version : 00455
+
+Release Date : Dec 22, 2025
+
+Supported Silicon : x1p42100
+
+Changes since last version :
+ * AC policy for TFA and TZ memory regions.
+ * SW aperture changes w.r.t QPSI access.
+ * AC policy changes to enable SMMU configuration.
+
+=================== Release 00373 ================================
+This Release Notes file covers these blobs:
+ * tz_ac_config.elf
+ * hyp_ac_config.elf
+
+Version : 00373
+
+Release Date : Oct 08, 2025
+
+Supported Silicon : x1p42100
+
+Changes since last version : NA

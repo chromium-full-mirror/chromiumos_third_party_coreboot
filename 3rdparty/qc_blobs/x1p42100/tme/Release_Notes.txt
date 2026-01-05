@@ -1,3 +1,14 @@
+=================== Release 00007 ================================
+This Release Notes file covers these blobs:
+ * signed_firmware_soc_view.elf
+
+Version : 00007
+
+Release Date : Oct 10, 2025
+
+Supported Silicon : x1p42100
+
+Changes since last version : support for latest ac policy updates
 =================== Release 00002 ================================
 This Release Notes file covers these blobs:
  * sequencer_ram.elf

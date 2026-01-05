@@ -1,0 +1,45 @@
+=================== Release 00222.11 ================================
+This Release Notes file covers these blobs:
+ * tz.mbn
+ * tz_oem_config.mbn
+ * tz_qti_config.mbn
+
+Version : 00222.11
+
+Release Date : Dec 22, 2025
+
+Supported Silicon : x1p42100
+
+Changes since last version :
+ * ADSP/CDSP PIL support
+ * TA load
+ * Enable CL5 and SS3 LPMs
+ * NOC error enablement
+ * Enable SMMU functionality
+
+=================== Release 00200 ================================
+This Release Notes file covers these blobs:
+ * tz.mbn
+ * tz_oem_config.mbn
+ * tz_qti_config.mbn
+
+Version : 00200
+
+Release Date : Nov 18, 2025
+
+Supported Silicon : x1p42100
+
+Changes since last version : ICB and clock driver enablement
+=================== Release 00149 ================================
+This Release Notes file covers these blobs:
+ * tz.mbn
+ * tz_oem_config.mbn
+ * tz_qti_config.mbn
+
+Version : 00149
+
+Release Date : Oct 31, 2025
+
+Supported Silicon : x1p42100
+
+Changes since last version : NA
