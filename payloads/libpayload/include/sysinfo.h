@@ -173,6 +173,8 @@ struct sysinfo_t {
 	/* pvmfw buffer location */
 	uintptr_t pvmfw;
 	uint32_t pvmfw_size;
+
+	uintptr_t cb_panel_poweroff;
 };
 
 extern struct sysinfo_t lib_sysinfo;

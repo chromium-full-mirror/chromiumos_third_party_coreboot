@@ -291,6 +291,11 @@ static void cb_parse_rsdp(void *ptr, struct sysinfo_t *info)
 	info->acpi_rsdp = cb_acpi_rsdp->rsdp_pointer;
 }
 
+static void cb_parse_panel_poweroff(unsigned char *ptr, struct sysinfo_t *info)
+{
+	info->cb_panel_poweroff = virt_to_phys(ptr);
+}
+
 int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 {
 	struct cb_header *header;
@@ -436,6 +441,9 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 			break;
 		case CB_TAG_PCIE:
 			cb_parse_pcie(ptr, info);
+			break;
+		case CB_TAG_PANEL_POWEROFF:
+			cb_parse_panel_poweroff(ptr, info);
 			break;
 		default:
 			cb_parse_arch_specific(rec, info);
