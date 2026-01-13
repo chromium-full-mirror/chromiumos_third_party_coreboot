@@ -12,6 +12,8 @@ enum panel_flag {
 	PANEL_FLAG_CPHY = BIT(0),
 };
 
+#define PANEL_POWEROFF_CMD_MAX_LEN 16
+
 /*
  * The data to be serialized and put into CBFS.
  * Note some fields, for example edid.mode.name, were actually pointers and
@@ -20,7 +22,9 @@ enum panel_flag {
 struct panel_serializable_data {
 	u32 flags; /* flags of panel_flag */
 	struct edid edid;  /* edid info of this panel */
-	u8 init[]; /* A packed array of panel_init_command */
+	/* Packed arrays of panel_command */
+	u8 poweroff[PANEL_POWEROFF_CMD_MAX_LEN];
+	u8 init[];
 };
 
 #endif /* __MIPI_PANEL_H__ */
