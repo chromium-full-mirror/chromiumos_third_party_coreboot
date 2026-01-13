@@ -12,6 +12,8 @@
 #include <soc/mtcmos.h>
 #include <stdio.h>
 
+static struct panel_serializable_data *mipi_data;
+
 static struct panel_serializable_data *get_mipi_cmd_from_cbfs(struct panel_description *desc)
 {
 	/*
@@ -98,8 +100,6 @@ int mtk_display_init(void)
 			return -1;
 		}
 	} else {
-		struct panel_serializable_data *mipi_data = NULL;
-
 		if (panel->get_edid) {
 			if (panel->get_edid(&edid) < 0)
 				return -1;
@@ -157,4 +157,9 @@ int mtk_display_init(void)
 		fb_set_orientation(info, panel->orientation);
 
 	return 0;
+}
+
+const struct panel_serializable_data *mtk_get_mipi_panel_data(void)
+{
+	return mipi_data;
 }
