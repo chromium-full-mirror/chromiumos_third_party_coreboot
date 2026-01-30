@@ -72,6 +72,9 @@ config BOARD_GOOGLE_KINOX
 config BOARD_GOOGLE_KULDAX
 	bool "->  Kuldax"
 
+config BOARD_GOOGLE_KULNEX
+	bool "->  Kulnex"
+
 config BOARD_GOOGLE_LISBON
 	bool "->  Lisbon"
 
