@@ -13,6 +13,9 @@
 
 #define ADC_LEVELS 12
 
+#define WUGTRIO_SKU_0_7 8
+#define WUGTRIO_PANEL_INDEX_MAX 5
+
 #define CROS_SKU_UNPROVISIONED_MT8186T 0x7FFFFEFF
 
 enum {
@@ -70,6 +73,49 @@ static const unsigned int *adc_voltages_detachable[] = {
 	[SKU_ID_HIGH_CHANNEL] = lcm_voltages,
 };
 
+/* SKU matrix for Wugtrio SKUs 0 to 7 to remap SKU IDs with panels */
+#define SKU_GROUP_0_3_4_6 { CROS_SKU_UNKNOWN, 0, 4, 3, 6 }  /* LTE skus */
+#define SKU_GROUP_1_2_5_7 { CROS_SKU_UNKNOWN, 2, 1, 5, 7 }  /* non-LTE skus */
+
+static const uint32_t wugtrio_sku_matrix
+	[WUGTRIO_SKU_0_7][WUGTRIO_PANEL_INDEX_MAX] = {
+	/*
+	 * 1st dimension: CBI SKU ID
+	 * | CBI SKU ID | Original Panel     | LTE     |
+	 * |------------|--------------------|---------|
+	 * | 0          | KD_KD101NE3_40TI   | TRUE    |
+	 * | 1          | STA_ER88577        | NO      |
+	 * | 2          | KD_KD101NE3_40TI   | NO      |
+	 * | 3          | LCE_LMFBX101117480 | TRUE    |
+	 * | 4          | STA_ER88577        | TRUE    |
+	 * | 5          | LCE_LMFBX101117480 | NO      |
+	 * | 6          | TG_XTI05101        | TRUE    |
+	 * | 7          | TG_XTI05101        | NO      |
+
+	 * 2nd dimension: Panel ID (simplified)
+	 * | Panel ID  | Detected Panel     |
+	 * |-----------|--------------------|
+	 * | 0         | Reserve            |
+	 * | 1         | KD_KD101NE3_40TI   |
+	 * | 2         | STA_ER88577        |
+	 * | 3         | LCE_LMFBX101117480 |
+	 * | 4         | TG_XTI05101        |
+	 *
+	 * Cell: The actual SKU ID
+	 */
+	[0] = SKU_GROUP_0_3_4_6,
+	[1] = SKU_GROUP_1_2_5_7,
+	[2] = SKU_GROUP_1_2_5_7,
+	[3] = SKU_GROUP_0_3_4_6,
+	[4] = SKU_GROUP_0_3_4_6,
+	[5] = SKU_GROUP_1_2_5_7,
+	[6] = SKU_GROUP_0_3_4_6,
+	[7] = SKU_GROUP_1_2_5_7,
+};
+
+#undef SKU_GROUP_0_3_4_6
+#undef SKU_GROUP_1_2_5_7
+
 static uint32_t get_adc_index(unsigned int channel)
 {
 	unsigned int value = auxadc_get_voltage_uv(channel);
@@ -95,13 +141,44 @@ static uint32_t get_adc_index(unsigned int channel)
 	return id;
 }
 
+/*
+ * The panel of Wugtrio can be replaced during RMA process,
+ * meaning the panel implied in SKUs 0-7 may not be feasible.
+ * Resolve the SKU ID based on CBI SKU ID and panel ID for those SKUs.
+ * Valid panel IDs: 0x0 (STA_ER88577), 0x4 (KD_KD101NE3_40TI),
+ * 0x7(LCE_LMFBX101117480), 0xA(TG_XTI05101).
+ */
+static int panel_id_to_index(uint32_t panel_id)
+{
+	switch (panel_id) {
+	case 0x0: /* STA_ER88577 */
+		return 2;
+	case 0x4: /* KD_KD101NE3_40TI */
+		return 1;
+	case 0x7: /* LCE_LMFBX101117480 */
+		return 3;
+	case 0xA: /* TG_XTI05101 */
+		return 4;
+	default:
+		return 0;
+	}
+}
+
+static uint32_t resolve_sku_id(uint32_t cbi_sku_id, uint32_t panel_id)
+{
+	int panel_index = panel_id_to_index(panel_id);
+	return wugtrio_sku_matrix[cbi_sku_id][panel_index];
+}
+
 /* Detachables use ADC channel 5 for panel ID */
 uint32_t panel_id(void)
 {
 	static uint32_t cached_panel_id = BOARD_ID_INIT;
 
-	if (cached_panel_id == BOARD_ID_INIT)
+	if (cached_panel_id == BOARD_ID_INIT) {
 		cached_panel_id = get_adc_index(SKU_ID_HIGH_CHANNEL);
+		printk(BIOS_DEBUG, "%s: %#02x\n", __func__, cached_panel_id);
+	}
 
 	return cached_panel_id;
 }
@@ -113,11 +190,12 @@ uint32_t sku_id(void)
 	if (cached_sku_code != BOARD_ID_INIT)
 		return cached_sku_code;
 
-	cached_sku_code = google_chromeec_get_board_sku();
+	const uint32_t cbi_sku_id = google_chromeec_get_board_sku();
+	cached_sku_code = cbi_sku_id;
 
-	if (cached_sku_code == CROS_SKU_UNPROVISIONED ||
-	    cached_sku_code == CROS_SKU_UNKNOWN) {
-		printk(BIOS_WARNING, "SKU code from EC: 0x%x\n", cached_sku_code);
+	if (cbi_sku_id == CROS_SKU_UNPROVISIONED ||
+	    cbi_sku_id == CROS_SKU_UNKNOWN) {
+		printk(BIOS_WARNING, "SKU code from EC: 0x%x\n", cbi_sku_id);
 		cached_sku_code = CROS_SKU_UNPROVISIONED;
 		if (get_cpu_id() == MTK_CPU_ID_MT8186T)
 			cached_sku_code = CROS_SKU_UNPROVISIONED_MT8186T;
@@ -127,9 +205,25 @@ uint32_t sku_id(void)
 			cached_sku_code &= ~0xF;
 			cached_sku_code |= panel_id();
 		}
+	} else if (CONFIG(BOARD_GOOGLE_WUGTRIO) &&
+		   cbi_sku_id < WUGTRIO_SKU_0_7) {
+		/* Workaround for SKU 0 to 7 */
+		cached_sku_code = resolve_sku_id(cbi_sku_id, panel_id());
+
+		if (cached_sku_code == CROS_SKU_UNKNOWN)
+			printk(BIOS_ERR, "Failed to resolve SKU ID\n");
+	} else if (CONFIG(BOARD_GOOGLE_STARMIE) ||
+		   CONFIG(BOARD_GOOGLE_WYRDEER)) {
+		/* resolve_sku_id() not implemented for these boards. */
+	} else if (CONFIG(BOARD_GOOGLE_STARYU_COMMON)) {
+		/* Encode panel ID for new boards and SKUs. */
+		cached_sku_code = (panel_id() << 8) | (cbi_sku_id & 0xFF);
 	}
 
-	printk(BIOS_DEBUG, "SKU Code: %#02x\n", cached_sku_code);
+	printk(BIOS_DEBUG,
+	       "CBI SKU ID: %#02x, cached SKU code: %#02x\n",
+	       cbi_sku_id, cached_sku_code);
+
 	return cached_sku_code;
 }
 
