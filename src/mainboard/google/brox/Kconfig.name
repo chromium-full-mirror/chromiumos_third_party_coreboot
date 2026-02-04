@@ -20,5 +20,8 @@ config BOARD_GOOGLE_GREENBAYUPOC
 config BOARD_GOOGLE_JUBILANT
 	bool "->  Jubilant"
 
+config BOARD_GOOGLE_JUCHI
+	bool "->  Juchi"
+
 config BOARD_GOOGLE_LOTSO
 	bool "->  Lotso"
