@@ -223,5 +223,6 @@ void mtk_dsi_cphy_vdo_timing(const u32 lanes, const struct edid *edid,
 			     s32 *hbp_byte, s32 *hfp_byte, u32 *hsync_active_byte);
 int mtk_dsi_init(u32 mode_flags, u32 format, u32 lanes, const struct edid *edid,
 		 const u8 *init_commands);
+int mtk_dsi_panel_poweroff(u32 mode_flags, const u8 *poweroff_cmds);
 
 #endif /* SOC_MEDIATEK_DSI_COMMON_H */

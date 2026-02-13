@@ -30,6 +30,7 @@ struct panel_description {
 struct panel_description *get_active_panel(void);
 void mtk_display_disable_secure_mode(void);
 int mtk_display_init(void);
+int mtk_mipi_panel_poweroff(void);
 
 void mtk_ddp_init(void);
 void mtk_ddp_mode_set(const struct edid *edid, enum disp_path_sel path);
