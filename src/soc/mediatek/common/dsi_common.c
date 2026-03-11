@@ -230,6 +230,8 @@ static void mtk_dsi_config_vdo_timing(u32 mode_flags, u32 format, u32 lanes,
 	u32 packet_fmt;
 	u32 hactive;
 	bool is_cphy = !!(mode_flags & MIPI_DSI_MODE_CPHY);
+	bool cphy_mode;
+	u32 hfp_wc_upper = 0;
 
 	bytes_per_pixel = DIV_ROUND_UP(mtk_dsi_get_bits_per_pixel(format), 8);
 	vbp_byte = edid->mode.vbl - edid->mode.vso - edid->mode.vspw -
@@ -253,9 +255,11 @@ static void mtk_dsi_config_vdo_timing(u32 mode_flags, u32 format, u32 lanes,
 		hbp_byte = (hbp + edid->mode.hspw) * bytes_per_pixel - 10;
 	hfp_byte = hfp * bytes_per_pixel;
 
-	if (CONFIG(MEDIATEK_DSI_CPHY) && is_cphy)
+	cphy_mode = CONFIG(MEDIATEK_DSI_CPHY) && is_cphy;
+
+	if (cphy_mode)
 		mtk_dsi_cphy_vdo_timing(lanes, edid, phy_timing, bytes_per_pixel, hbp, hfp,
-					&hbp_byte, &hfp_byte, &hsync_active_byte);
+					&hbp_byte, &hfp_byte, &hsync_active_byte, &hfp_wc_upper);
 	else
 		mtk_dsi_dphy_vdo_timing(mode_flags, lanes, edid, phy_timing, bytes_per_pixel,
 					hbp, hfp, &hbp_byte, &hfp_byte, &hsync_active_byte);
@@ -277,7 +281,7 @@ static void mtk_dsi_config_vdo_timing(u32 mode_flags, u32 format, u32 lanes,
 
 	write32(&dsi0->dsi_hsa_wc, hsync_active_byte);
 	write32(&dsi0->dsi_hbp_wc, hbp_byte);
-	write32(&dsi0->dsi_hfp_wc, hfp_byte);
+	write32(&dsi0->dsi_hfp_wc, hfp_byte | hfp_wc_upper);
 
 	switch (format) {
 	case MIPI_DSI_FMT_RGB888:

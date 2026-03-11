@@ -220,7 +220,8 @@ void mtk_dsi_cphy_timing(u32 data_rate, struct mtk_phy_timing *timing);
 void mtk_dsi_cphy_vdo_timing(const u32 lanes, const struct edid *edid,
 			     const struct mtk_phy_timing *phy_timing,
 			     const u32 bytes_per_pixel, const u32 hbp, const u32 hfp,
-			     s32 *hbp_byte, s32 *hfp_byte, u32 *hsync_active_byte);
+			     s32 *hbp_byte, s32 *hfp_byte, u32 *hsync_active_byte,
+			     u32 *hfp_wc_upper);
 int mtk_dsi_init(u32 mode_flags, u32 format, u32 lanes, const struct edid *edid,
 		 const u8 *init_commands);
 int mtk_dsi_panel_poweroff(u32 mode_flags, const u8 *poweroff_cmds);
