@@ -20,6 +20,8 @@ struct panel_serializable_data TM_TL121BVMS07_00C = {
 	},
 	.init = {
 		PANEL_DELAY(24),
+		PANEL_DCS(0x00),
+		PANEL_DELAY(2),
 		PANEL_DCS(0xFF, 0x5A, 0xA5, 0x06),
 		PANEL_DCS(0x3E, 0x62),
 		PANEL_DCS(0x90, 0x55),
