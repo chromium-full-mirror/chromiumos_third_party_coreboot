@@ -66,6 +66,17 @@
 #define __printf(a, b) __attribute__((format(printf, a, b)))
 #endif
 
+// This checks the support for the nonstring attribute on multidimensional character arrays.
+#if (defined(__GNUC__) && __GNUC__ >= 15) || (defined(__clang__) && __clang_major__ >= 21)
+#define __nonstring __attribute__((__nonstring__))
+#else
+#define __nonstring
+#endif
+
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ < 202311L
+#define typeof(x) __typeof__(x)
+#endif
+
 /*
  * This evaluates to the type of the first expression, unless that is constant
  * in which case it evaluates to the type of the second. This is useful when
@@ -75,7 +86,7 @@
  * literal is assigned to the temporary variable. If the literal doesn't fit in
  * the chosen type, -Werror=overflow will catch it, so this should be safe.
  */
-#define __TYPEOF_UNLESS_CONST(expr, fallback_expr) __typeof__( \
+#define __TYPEOF_UNLESS_CONST(expr, fallback_expr) typeof( \
 	__builtin_choose_expr(__builtin_constant_p(expr), fallback_expr, expr))
 
 /* This creates a unique local variable name for use in macros. */
