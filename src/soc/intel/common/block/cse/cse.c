@@ -290,6 +290,13 @@ bool cse_is_hfs1_com_soft_temp_disable(void)
 	return cse_check_hfs1_com(ME_HFS1_COM_SOFT_TEMP_DISABLE);
 }
 
+bool cse_is_hfs1_cos_default(void)
+{
+	union me_hfsts1 hfs1;
+	hfs1.data = me_read_config32(PCI_ME_HFSTS1);
+	return hfs1.fields.operation_state == ME_HFS1_COS_DEFAULT;
+}
+
 /*
  * Starting from TGL platform, HFSTS1.spi_protection_mode replaces mfg_mode to indicate
  * SPI protection status as well as end-of-manufacturing(EOM) status where EOM flow is
