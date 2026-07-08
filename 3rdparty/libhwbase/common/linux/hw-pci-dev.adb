@@ -142,7 +142,7 @@ is
       File.Size (Length, Path);
    end Resource_Size;
 
-   procedure Initialize (Success : out Boolean; MMConf_Base : Word64 := 0)
+   procedure Initialize (Success : out Boolean; MMConf_Base : Word64 := PCI.Dev.MMConf_Base)
    is
       Addr  : Word64;
       Path  : String (1 .. 43) := "/sys/devices/pci0000:xx/0000:xx:xx.x/config";

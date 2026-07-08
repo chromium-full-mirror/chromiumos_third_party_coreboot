@@ -12,8 +12,6 @@
 -- GNU General Public License for more details.
 --
 
-with HW.Config;
-
 package body HW.PCI.MMConf
 with
    Refined_State =>
@@ -24,7 +22,7 @@ with
 is
 
    Default_Base_Address : constant Word64 :=
-      Calc_Base_Address (Config.Default_MMConf_Base, Dev);
+      Calc_Base_Address (MMConf_Base, Dev);
 
    type Index16 is new Index range 0 .. Index'Last / 2;
    type Index32 is new Index range 0 .. Index'Last / 4;

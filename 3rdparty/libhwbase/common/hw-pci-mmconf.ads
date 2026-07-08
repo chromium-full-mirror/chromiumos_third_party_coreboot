@@ -13,12 +13,14 @@
 --
 
 with System;
+with HW.Config;
 with HW.MMIO_Range;
 
 pragma Elaborate_All (HW.MMIO_Range);
 
 generic
    Dev : Address := (0, 0, 0);
+   MMConf_Base : Word64 := Config.Default_MMConf_Base;
 package HW.PCI.MMConf
 with
    Abstract_State => (Address_State, (PCI_State with External)),

@@ -25,7 +25,7 @@ with
       PCI_State      => MM.PCI_State)
 is
 
-   package MM is new HW.PCI.MMConf (Dev);
+   package MM is new HW.PCI.MMConf (Dev, MMConf_Base);
 
    procedure Read8 (Value : out Word8; Offset : Index) renames MM.Read8;
    procedure Read16 (Value : out Word16; Offset : Index) renames MM.Read16;
@@ -103,7 +103,9 @@ is
       Write16 (PCI.Command, Cmd);
    end Resource_Size;
 
-   procedure Initialize (Success : out Boolean; MMConf_Base : Word64 := 0)
+   procedure Initialize
+     (Success     :    out Boolean;
+      MMConf_Base : in     Word64 := PCI.Dev.MMConf_Base)
    is
    begin
       if MMConf_Base /= 0 then

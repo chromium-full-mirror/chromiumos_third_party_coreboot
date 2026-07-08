@@ -14,6 +14,7 @@
 
 generic
    Dev : PCI.Address := (0, 0, 0);
+   MMConf_Base : Word64 := 0;
 package HW.PCI.Dev
 with
    Abstract_State => (Address_State, (PCI_State with External)),
@@ -50,7 +51,9 @@ is
 
    pragma Warnings (GNATprove, Off, "unused variable ""MMConf_Base""*",
                     Reason => "Used for a common interface");
-   procedure Initialize (Success : out Boolean; MMConf_Base : Word64 := 0);
+   procedure Initialize
+     (Success     :    out Boolean;
+      MMConf_Base : in     Word64 := PCI.Dev.MMConf_Base);
    pragma Warnings (GNATprove, On, "unused variable ""MMConf_Base""*");
 
 end HW.PCI.Dev;
