@@ -176,7 +176,6 @@ static void rtc_measure_all_clock(struct rtc_clk_freq *result)
 static bool rtc_frequency_meter_check(void)
 {
 	struct rtc_clk_freq result;
-	u16 osc32con, val;
 
 	if (!wait_us(EOSC_CHECK_CLK_TIMEOUT_US,
 		     (rtc_measure_all_clock(&result), rtc_eosc_check_clock(&result)))) {
@@ -184,13 +183,7 @@ static bool rtc_frequency_meter_check(void)
 		return false;
 	}
 
-	val = rtc_eosc_cali();
-	printk(BIOS_DEBUG, "before set ENB_HW_Mode: EOSC cali val = %#x\n", val);
-	/* ENB_HW_Mode */
-	osc32con = OSC32CON_ANALOG_SETTING | RTC_REG_XOSC32_ENB;
-	val = (val & RTC_XOSCCALI_MASK) | osc32con;
-	printk(BIOS_DEBUG, "after set ENB_HW_Mode: EOSC cali val = %#x\n", val);
-	return rtc_xosc_write(val);
+	return true;
 }
 
 static bool rtc_clrset_trigger(u16 addr, u16 clr_bits, u16 set_bits)
@@ -219,10 +212,30 @@ bool rtc_gpio_init(void)
 	return rtc_write_trigger();
 }
 
+static bool rtc_eosc_cali_and_write(void)
+{
+	u16 osc32con, val;
+
+	val = rtc_eosc_cali();
+	printk(BIOS_DEBUG, "before set ENB_HW_Mode: EOSC cali val = %#x\n", val);
+	/* ENB_HW_Mode */
+	osc32con = OSC32CON_ANALOG_SETTING | RTC_REG_XOSC32_ENB;
+	val = (val & RTC_XOSCCALI_MASK) | osc32con;
+	printk(BIOS_DEBUG, "after set ENB_HW_Mode: EOSC cali val = %#x\n", val);
+	if (!rtc_xosc_write(val)) {
+		printk(BIOS_ERR, "%s: rtc_xosc_write failed\n", __func__);
+		return false;
+	}
+	return true;
+}
+
 static bool rtc_hw_init(void)
 {
 	struct stopwatch sw;
 	u16 rdata;
+
+	if (!rtc_eosc_cali_and_write())
+		return false;
 
 	stopwatch_init_usecs_expire(&sw, BBPU_RELOAD_TIMEOUT_US);
 
