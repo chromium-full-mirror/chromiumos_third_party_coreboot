@@ -33,7 +33,7 @@ romstage-y += ../common/mt6315.c mt6315.c
 romstage-y += ../common/mt6359p.c mt6359p.c
 romstage-y += ../common/pmif.c ../common/pmif_clk.c ../common/pmif_init.c pmif_clk.c
 romstage-y += ../common/pmif_spi.c pmif_spi.c
-romstage-y += ../common/pmif_spmi.c ../common/pmif_spmi_v1.c pmif_spmi.c
+romstage-y += ../common/pmif_spmi.c ../common/pmif_spmi_v2.c pmif_spmi.c
 romstage-y += ../common/rtc.c ../common/rtc_osc_init.c ../common/rtc_mt6359p.c
 romstage-y += ../common/srclken_rc.c srclken_rc.c
 
@@ -62,7 +62,7 @@ ramstage-y += ../common/mtk_mipi_dphy_v1.c
 ramstage-y += ../common/pi_image.c
 ramstage-y += ../common/pmif.c ../common/pmif_clk.c ../common/pmif_init.c pmif_clk.c
 ramstage-y += ../common/pmif_spi.c pmif_spi.c
-ramstage-y += ../common/pmif_spmi.c ../common/pmif_spmi_v1.c pmif_spmi.c
+ramstage-y += ../common/pmif_spmi.c ../common/pmif_spmi_v2.c pmif_spmi.c
 ramstage-y += ../common/rtc.c ../common/rtc_mt6359p.c ../common/rtc_osc_init.c
 ramstage-y += soc.c
 ramstage-y += ../common/spm.c ../common/spm_v2.c spm.c
