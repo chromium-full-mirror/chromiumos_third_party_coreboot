@@ -25,6 +25,8 @@
 
 #define DELAY_FOR_SHIP_MODE 11000 /* 11sec */
 #define IMEM_COOKIE_TYPE_OFFSET 108
+#define IMEM_STORAGE_SELECT_OFFSET 28
+#define DLOAD_STORAGE 0x02
 
 static enum boot_mode_t boot_mode = LB_BOOT_MODE_NORMAL;
 static bool battery_present = true;
@@ -320,6 +322,16 @@ static bool check_ramdump_mode_is_set(void)
 	return false;
 }
 
+static void qcom_set_dload_mode(void)
+{
+	if (!CONFIG(QC_RAMDUMP_ENABLE))
+		return;
+
+	printk(BIOS_DEBUG, "Setting ramdump mode to minidump\n");
+	write32p(TCSR_BOOT_MISC_DETECT, DLOAD_MINI_DUMP);
+	write32p(_shared_imem + IMEM_STORAGE_SELECT_OFFSET, DLOAD_STORAGE);
+}
+
 static void check_first_boot_and_reset(enum boot_mode_t mode)
 {
 	if (platform_get_soc_id() == SOC_ID_HAMOA)
@@ -391,6 +403,8 @@ void platform_romstage_postram(void)
 		*boot_mode_ptr = boot_mode;
 		printk(BIOS_INFO, "Boot mode is %d\n", *boot_mode_ptr);
 	}
+
+	qcom_set_dload_mode();
 
 	/* USB C1 GPIO init step 2 */
 	gpio_output(GPIO_USB_C1_EN_PP1800, 1);
