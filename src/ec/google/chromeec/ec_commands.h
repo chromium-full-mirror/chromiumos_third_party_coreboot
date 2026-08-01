@@ -9383,6 +9383,13 @@ struct ec_response_battery_get_misc_info {
 	uint32_t battery_status;
 	int32_t dfet_status;
 } __ec_align4;
+
+/* Scheduled AP reset */
+#define EC_CMD_AP_RESET_SCHEDULED 0x0146
+
+struct ec_params_ap_reset_scheduled {
+	uint32_t delay_ms;
+} __ec_align4;
 /*****************************************************************************/
 /*
  * Reserve a range of host commands for board-specific, experimental, or
