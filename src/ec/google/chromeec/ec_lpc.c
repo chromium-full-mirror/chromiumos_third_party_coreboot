@@ -96,8 +96,8 @@ static int google_chromeec_status_check(u16 port, u8 mask, u8 cond)
 	struct stopwatch timeout_sw;
 	/* One second is more than plenty for any EC operation to complete */
 	const uint64_t ec_status_timeout_us = 1 * USECS_PER_SEC;
-	/* Wait 1 usec between read attempts  */
-	const uint64_t ec_status_read_period_us = 1;
+	/* Wait 100 usec between read attempts  */
+	const uint64_t ec_status_read_period_us = 100;
 
 	stopwatch_init_usecs_expire(&timeout_sw, ec_status_timeout_us);
 	do {
