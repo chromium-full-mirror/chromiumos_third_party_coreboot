@@ -4,6 +4,7 @@
 #define __BOOTMODE_H__
 
 #include <stdbool.h>
+#include <commonlib/coreboot_tables.h>
 
 /* functions implemented per mainboard: */
 int get_write_protect_state(void);
@@ -24,5 +25,8 @@ void gfx_set_init_done(int done);
  * not resuming, > 0 if resuming, and < 0 on error.
  */
 int platform_is_resuming(void);
+
+enum lb_boot_reason_t get_boot_reason(void);
+void set_boot_reason(const enum lb_boot_reason_t reason);
 
 #endif /* __BOOTMODE_H__ */
