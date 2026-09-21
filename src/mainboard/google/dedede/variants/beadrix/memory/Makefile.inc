@@ -5,3 +5,4 @@ SPD_SOURCES =
 SPD_SOURCES += lp4x-spd-1.hex      # ID = 0(0b0000)  Parts = MT53E512M32D1NP-046 WT:B, K4U6E3S4AA-MGCR, H54G46CYRBX267
 SPD_SOURCES += lp4x-spd-11.hex      # ID = 1(0b0001)  Parts = CXDB4CBAM-ML-A
 SPD_SOURCES += lp4x-spd-5.hex      # ID = 2(0b0010)  Parts = SDVB8D8A34XGCL3N3T
+SPD_SOURCES += lp4x-spd-14.hex      # ID = 3(0b0011)  Parts = ZTLX04GCCQ-CA2G
