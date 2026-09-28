@@ -290,7 +290,7 @@ IGNORED_IASL_WARNINGS = $(addprefix -vw , $(IASL_WARNINGS_LIST))
 define asl_template
 $(CONFIG_CBFS_PREFIX)/$(1).aml-file = $(obj)/$(1).aml
 $(CONFIG_CBFS_PREFIX)/$(1).aml-type = raw
-$(CONFIG_CBFS_PREFIX)/$(1).aml-compression = $(CBFS_COMPRESS_FLAG)
+$(CONFIG_CBFS_PREFIX)/$(1).aml-compression = none
 ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_LPC_SPI_DMA),y)
 $(CONFIG_CBFS_PREFIX)/$(1).aml-align = 64
 endif
