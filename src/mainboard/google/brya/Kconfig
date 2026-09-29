@@ -1037,4 +1037,8 @@ config SKIP_RAM_ID_STRAPS
 
 	  If unsure, leave this option disabled.
 
+config RAMSTAGE_CBFS_CACHE_SIZE
+	hex
+	default 0x8000 if BOARD_GOOGLE_BASEBOARD_NISSA
+
 endif # BOARD_GOOGLE_BRYA_COMMON
