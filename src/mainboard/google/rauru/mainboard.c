@@ -15,6 +15,7 @@
 #include <soc/mt6373.h>
 #include <soc/pcie.h>
 #include <soc/spm_common.h>
+#include <soc/spm_mtcmos.h>
 #include <soc/storage.h>
 #include <soc/usb.h>
 
@@ -106,6 +107,8 @@ bool mainboard_needs_pcie_init(void)
 
 static void mainboard_init(struct device *dev)
 {
+	mtcmos_dsi_phy_switch_to_sw();
+
 	if (display_init_required()) {
 		enable_display_power_rail();
 		if (mtk_display_init() < 0)
