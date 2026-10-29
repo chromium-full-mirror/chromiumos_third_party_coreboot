@@ -118,6 +118,13 @@ int google_chromeec_set_usb_pd_role(uint8_t port, enum usb_pd_control_role role)
 int google_chromeec_get_usb_pd_power_info(enum usb_chg_type *type,
 					  uint16_t *current_max, uint16_t *voltage_max);
 
+/**
+ * Wait until a stable power source (battery, barrel jack, or settled USB-PD
+ * contract) is providing power before starting an EC firmware update.
+ *
+ * @return 0 if stable power is confirmed, -1 on timeout
+ */
+int google_chromeec_wait_for_stable_power(void);
 /*
  * Set max current and voltage of a dedicated charger.
  *
