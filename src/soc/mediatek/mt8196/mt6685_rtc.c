@@ -439,7 +439,15 @@ static bool rtc_init_after_recovery(void)
 
 static void rtc_recovery_flow(void)
 {
-	printk(BIOS_INFO, "%s: enter\n", __func__);
+	u16 bbpu, osc32con, con;
+
+	rtc_read(RTC_BBPU, &bbpu);
+	rtc_read(RTC_OSC32CON, &osc32con);
+	rtc_read(RTC_CON, &con);
+	printk(BIOS_INFO, "%s: enter, bbpu=%#x osc32con=%#x con=%#x ckpdn=%#x xtal_sel=%u\n",
+	       __func__, bbpu, osc32con, con, rtc_read_byte(SCK_TOP_CKPDN_CON0_L),
+	       mt6685_read_field(SCK_TOP_XTAL_SEL_ADDR, SCK_TOP_XTAL_SEL_MASK,
+				 SCK_TOP_XTAL_SEL_SHIFT));
 
 	/* Set SCK_TOP_XTAL_SEL = 1, select internal EOSC */
 	config_interface(SCK_TOP_XTAL_SEL_ADDR, 1, SCK_TOP_XTAL_SEL_MASK,
