@@ -4,6 +4,7 @@
 #include <console/console.h>
 #include <timestamp.h>
 #include <romstage_common.h>
+#include <security/vboot/vboot_common.h>
 
 asmlinkage void car_stage_entry(void)
 {
@@ -11,6 +12,10 @@ asmlinkage void car_stage_entry(void)
 
 	/* Assumes the hardware was set up during the bootblock */
 	console_init();
+
+	/* Must run before anything that can reset the system. */
+	if (!CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK))
+		vboot_rw_backport_hook();
 
 	romstage_main();
 }

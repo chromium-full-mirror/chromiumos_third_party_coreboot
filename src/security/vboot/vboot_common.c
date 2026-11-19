@@ -92,3 +92,15 @@ void vboot_fail_and_reboot(struct vb2_context *ctx, uint8_t reason, uint8_t subc
 
 	vboot_save_and_reboot(ctx, subcode);
 }
+
+void vboot_rw_backport_hook(void)
+{
+	struct vb2_context *ctx;
+
+	if (!vboot_logic_executed())
+		return;
+
+	ctx = vboot_get_context();
+	vb2api_rw_backport_hook(ctx);
+	vboot_save_data(ctx);
+}

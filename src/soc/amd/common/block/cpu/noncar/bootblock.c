@@ -8,6 +8,7 @@
 #include <cpu/amd/msr.h>
 #include <cpu/x86/tsc.h>
 #include <psp_verstage/psp_transfer.h>
+#include <security/vboot/vboot_common.h>
 #include <soc/southbridge.h>
 #include <stdint.h>
 
@@ -40,6 +41,11 @@ void bootblock_soc_init(void)
 	if (CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK)) {
 		verify_psp_transfer_buf();
 		show_psp_transfer_info();
+		/*
+		 * The bootblock is the first RW stage. Needs the verified vboot
+		 * workbuf, and must run before anything that can reset.
+		 */
+		vboot_rw_backport_hook();
 	}
 
 	fch_early_init();

@@ -6,6 +6,7 @@
 #include <console/console.h>
 #include <program_loading.h>
 #include <romstage_common.h>
+#include <security/vboot/vboot_common.h>
 #include <timestamp.h>
 
 __weak void platform_romstage_main(void) { /* no-op, for bring-up */ }
@@ -19,6 +20,10 @@ void main(void)
 	console_init();
 
 	exception_init();
+
+	/* Must run before anything that can reset the system. */
+	vboot_rw_backport_hook();
+
 	romstage_main();
 }
 #endif

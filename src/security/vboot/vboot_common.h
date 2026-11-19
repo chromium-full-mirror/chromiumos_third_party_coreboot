@@ -62,6 +62,13 @@ int vboot_recovery_mode_enabled(void);
 int vboot_can_enable_udc(void);
 void vboot_run_logic(void);
 const struct cbfs_boot_device *vboot_get_cbfs_boot_device(void);
+/*
+ * Firmware branch backport only. Call vb2api_rw_backport_hook() and save
+ * nvdata. Call this early in the first stage loaded from the RW slot
+ * (romstage, or the bootblock with AMD PSP verstage), before anything that
+ * can reset the system. It's a no-op if verification hasn't run yet.
+ */
+void vboot_rw_backport_hook(void);
 #else /* !CONFIG_VBOOT */
 static inline int vboot_developer_mode_enabled(void) { return 0; }
 static inline int vboot_recovery_mode_enabled(void) { return 0; }
@@ -72,6 +79,7 @@ static inline const struct cbfs_boot_device *vboot_get_cbfs_boot_device(void)
 {
 	return NULL;
 }
+static inline void vboot_rw_backport_hook(void) {}
 #endif
 
 /*
